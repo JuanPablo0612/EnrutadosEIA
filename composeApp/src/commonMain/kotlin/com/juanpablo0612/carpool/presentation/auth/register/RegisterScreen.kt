@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.auth.register
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,13 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import enrutadoseia.composeapp.generated.resources.*
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
+import enrutadoseia.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -39,7 +42,10 @@ fun RegisterScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onNavigateToLogin() }) {
-                        Icon(imageVector = vectorResource(Res.drawable.arrow_back_24px), contentDescription = null)
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                            contentDescription = null
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -67,15 +73,12 @@ fun RegisterScreen(
                     .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Surface(
-                    color = Color.LightGray,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text("Register Image Placeholder", color = Color.DarkGray)
-                    }
-                }
+                Image(
+                    painter = painterResource(Res.drawable.register_image),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
             }
 
             Text(
@@ -147,16 +150,22 @@ fun RegisterScreen(
                         onCheckedChange = { viewModel.onAction(RegisterAction.OnPassengerChanged(it)) },
                         colors = CheckboxDefaults.colors(checkedColor = Color(0xFF00838F))
                     )
-                    Text(text = stringResource(Res.string.passenger_option), style = MaterialTheme.typography.bodyMedium)
-                    
+                    Text(
+                        text = stringResource(Res.string.passenger_option),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Checkbox(
                         checked = state.isDriver,
                         onCheckedChange = { viewModel.onAction(RegisterAction.OnDriverChanged(it)) },
                         colors = CheckboxDefaults.colors(checkedColor = Color(0xFF00838F))
                     )
-                    Text(text = stringResource(Res.string.driver_option), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = stringResource(Res.string.driver_option),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
 
