@@ -1,3 +1,34 @@
 <resources>
+    <string name="login_title">CampusRide</string>
+    <string name="login_welcome_back">Bienvenido de nuevo</string>
+    <string name="login_subtitle">Inicia sesión en tu cuenta universitaria</string>
+    <string name="email_label">Correo electrónico</string>
+    <string name="email_placeholder">Correo universitario</string>
+    <string name="password_label">Contraseña</string>
+    <string name="password_placeholder">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="or_separator">o</string>
+    <string name="dont_have_account_question">¿Aún no tienes una cuenta?</string>
+    <string name="signup_button">Regístrate</string>
 
+    <string name="register_title">Regístrate</string>
+    <string name="register_join_title">Únete a CampusRide</string>
+    <string name="register_subtitle">Empieza a ahorrar en tu trayecto diario al campus.</string>
+    <string name="full_name_label">Nombre completo</string>
+    <string name="full_name_placeholder">Juan Pérez</string>
+    <string name="confirm_password_label">Confirmar contraseña</string>
+    <string name="user_type_prompt">Quiero usar CampusRide como:</string>
+    <string name="passenger_option">Soy pasajero</string>
+    <string name="driver_option">Soy conductor</string>
+    <string name="create_account_button">Crear cuenta</string>
+    <string name="already_have_account_question">¿Ya tienes una cuenta?</string>
+    <string name="login_link">Inicia sesión</string>
+    <string name="terms_and_privacy">AL CREAR UNA CUENTA, ACEPTAS NUESTROS TÉRMINOS DE SERVICIO Y POLÍTICA DE PRIVACIDAD</string>
+
+    <string name="error_invalid_credentials">Correo o contraseña incorrectos</string>
+    <string name="error_network">Error de red, por favor intenta de nuevo</string>
+    <string name="error_email_already_in_use">El correo electrónico ya está en uso</string>
+    <string name="error_weak_password">La contraseña es muy débil</string>
+    <string name="error_unknown">Ocurrió un error inesperado</string>
 </resources>

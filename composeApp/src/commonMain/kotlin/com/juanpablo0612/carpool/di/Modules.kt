@@ -15,6 +15,7 @@ import dev.gitlive.firebase.auth.auth
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
@@ -30,8 +31,8 @@ val authModule = module {
     factoryOf(::LogoutUseCase)
     factoryOf(::ObserveAuthStateUseCase)
 
-    viewModelOf(::LoginViewModel)
-    viewModelOf(::RegisterViewModel)
+    viewModel { LoginViewModel(get()) }
+    viewModel { RegisterViewModel(get()) }
 }
 
 val appModule = module {

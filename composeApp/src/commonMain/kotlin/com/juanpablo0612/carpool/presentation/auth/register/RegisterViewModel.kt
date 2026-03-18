@@ -24,22 +24,29 @@ class RegisterViewModel(
 
     fun onAction(action: RegisterAction) {
         when (action) {
+            is RegisterAction.OnFullNameChanged -> _uiState.update { it.copy(fullName = action.fullName) }
             is RegisterAction.OnEmailChanged -> _uiState.update { it.copy(email = action.email) }
             is RegisterAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password) }
+            is RegisterAction.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = action.confirmPassword) }
+            is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger) }
+            is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver) }
             RegisterAction.OnRegisterClicked -> register()
             RegisterAction.OnClearError -> _uiState.update { it.copy(error = null) }
         }
     }
 
     private fun register() {
-        val email = _uiState.value.email
-        val password = _uiState.value.password
-
-        if (email.isBlank() || password.isBlank()) return
+        val state = _uiState.value
+        if (state.email.isBlank() || state.password.isBlank() || state.fullName.isBlank()) return
+        if (state.password != state.confirmPassword) {
+            // TODO: Handle password mismatch error
+            return
+        }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            when (val result = registerUseCase(email, password)) {
+            // Note: RegisterUseCase might need to be updated to accept more parameters
+            when (val result = registerUseCase(state.email, state.password)) {
                 is AppResult.Success -> {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     _events.emit(AuthEvent.NavigateToHome)
