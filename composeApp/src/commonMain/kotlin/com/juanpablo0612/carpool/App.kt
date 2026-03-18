@@ -15,11 +15,12 @@ import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App() {
-    MaterialTheme {
+    CarpoolTheme {
         val navController = rememberNavController()
         val loginViewModel: LoginViewModel = koinViewModel()
         val registerViewModel: RegisterViewModel = koinViewModel()
