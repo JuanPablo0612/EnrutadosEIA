@@ -1,52 +1,41 @@
 package com.juanpablo0612.carpool.data.auth.repository
 
-import com.juanpablo0612.carpool.core.result.AppResult
-import com.juanpablo0612.carpool.data.auth.mapper.mapFirebaseError
-import com.juanpablo0612.carpool.data.auth.mapper.toDomain
 import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
-import com.juanpablo0612.carpool.domain.auth.model.AuthError
-import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import dev.gitlive.firebase.auth.FirebaseAuthException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class AuthRepositoryImpl(
     private val remoteDataSource: AuthRemoteDataSource
 ) : AuthRepository {
 
-    override suspend fun login(email: String, password: String): AppResult<User, AuthError> {
+    override suspend fun login(email: String, password: String): Result<Unit> {
         return try {
-            val userDto = remoteDataSource.signIn(email, password)
-            AppResult.Success(userDto.toDomain())
+            remoteDataSource.signIn(email, password)
+            Result.success(Unit)
         } catch (e: FirebaseAuthException) {
-            AppResult.Error(mapFirebaseError(e))
+            Result.failure(e)
         } catch (e: Exception) {
-            AppResult.Error(AuthError.UnknownError)
+            Result.failure(e)
         }
     }
 
-    override suspend fun register(email: String, password: String): AppResult<User, AuthError> {
+    override suspend fun register(email: String, password: String): Result<Unit> {
         return try {
-            val userDto = remoteDataSource.signUp(email, password)
-            AppResult.Success(userDto.toDomain())
+            remoteDataSource.signUp(email, password)
+            Result.success(Unit)
         } catch (e: FirebaseAuthException) {
-            AppResult.Error(mapFirebaseError(e))
+            Result.failure(e)
         } catch (e: Exception) {
-            AppResult.Error(AuthError.UnknownError)
+            Result.failure(e)
         }
     }
 
-    override suspend fun logout(): AppResult<Unit, AuthError> {
+    override suspend fun logout(): Result<Unit> {
         return try {
             remoteDataSource.signOut()
-            AppResult.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            AppResult.Error(AuthError.UnknownError)
+            Result.failure(e)
         }
-    }
-
-    override fun observeAuthState(): Flow<User?> {
-        return remoteDataSource.getAuthState().map { it?.toDomain() }
     }
 }

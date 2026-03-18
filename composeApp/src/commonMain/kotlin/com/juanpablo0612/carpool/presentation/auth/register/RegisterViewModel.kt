@@ -2,7 +2,6 @@ package com.juanpablo0612.carpool.presentation.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.core.result.AppResult
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,15 +45,16 @@ class RegisterViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             // Note: RegisterUseCase might need to be updated to accept more parameters
-            when (val result = registerUseCase(state.email, state.password)) {
-                is AppResult.Success -> {
+            val result = registerUseCase(state.email, state.password)
+            result.fold(
+                onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     _events.emit(AuthEvent.NavigateToHome)
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, error = null) }
                 }
-                is AppResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, error = result.error) }
-                }
-            }
+            )
         }
     }
 }
