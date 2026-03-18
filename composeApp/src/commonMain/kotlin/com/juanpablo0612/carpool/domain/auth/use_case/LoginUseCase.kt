@@ -1,0 +1,12 @@
+package com.juanpablo0612.carpool.domain.auth.use_case
+
+import com.juanpablo0612.carpool.core.result.AppResult
+import com.juanpablo0612.carpool.domain.auth.model.AuthError
+import com.juanpablo0612.carpool.domain.auth.model.User
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+
+class LoginUseCase(private val repository: AuthRepository) {
+    suspend operator fun invoke(email: String, password: String): AppResult<User, AuthError> {
+        return repository.login(email, password)
+    }
+}

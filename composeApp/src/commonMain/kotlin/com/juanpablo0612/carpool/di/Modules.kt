@@ -1,14 +1,15 @@
 package com.juanpablo0612.carpool.di
 
-import com.juanpablo0612.carpool.data.datasource.AuthRemoteDataSource
-import com.juanpablo0612.carpool.data.datasource.FirebaseAuthRemoteDataSource
-import com.juanpablo0612.carpool.data.repository.AuthRepositoryImpl
-import com.juanpablo0612.carpool.domain.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.usecase.LoginUseCase
-import com.juanpablo0612.carpool.domain.usecase.LogoutUseCase
-import com.juanpablo0612.carpool.domain.usecase.ObserveAuthStateUseCase
-import com.juanpablo0612.carpool.domain.usecase.RegisterUseCase
-import com.juanpablo0612.carpool.presentation.viewmodel.AuthViewModel
+import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
+import com.juanpablo0612.carpool.data.auth.remote.FirebaseAuthRemoteDataSource
+import com.juanpablo0612.carpool.data.auth.repository.AuthRepositoryImpl
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.ObserveAuthStateUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
+import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
+import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import org.koin.core.context.startKoin
@@ -29,7 +30,8 @@ val authModule = module {
     factoryOf(::LogoutUseCase)
     factoryOf(::ObserveAuthStateUseCase)
 
-    viewModelOf(::AuthViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::RegisterViewModel)
 }
 
 val appModule = module {
