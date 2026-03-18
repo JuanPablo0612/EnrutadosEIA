@@ -1,0 +1,15 @@
+<resources>
+    <string name="login_title">Login</string>
+    <string name="register_title">Register</string>
+    <string name="email_placeholder">Email</string>
+    <string name="password_placeholder">Password</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Sign Up</string>
+    <string name="dont_have_account">Don\'t have an account? Register</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="error_invalid_credentials">Invalid email or password</string>
+    <string name="error_network">Network error, please try again</string>
+    <string name="error_email_already_in_use">Email already in use</string>
+    <string name="error_weak_password">Password is too weak</string>
+    <string name="error_unknown">An unexpected error occurred</string>
+</resources>
