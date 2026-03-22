@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import enrutadoseia.composeapp.generated.resources.*
@@ -24,11 +25,24 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is AuthEvent.NavigateToHome -> onLoginSuccess()
+            is AuthEvent.ShowErrorMessage -> {
+                // We can show a snackbar or handle it via state
+            }
+            else -> Unit
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {

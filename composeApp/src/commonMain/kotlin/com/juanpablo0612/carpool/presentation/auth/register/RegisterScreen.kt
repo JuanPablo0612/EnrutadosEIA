@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import enrutadoseia.composeapp.generated.resources.*
@@ -26,9 +27,17 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
+    onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is AuthEvent.NavigateToHome -> onRegisterSuccess()
+            else -> Unit
+        }
+    }
 
     Scaffold(
         topBar = {

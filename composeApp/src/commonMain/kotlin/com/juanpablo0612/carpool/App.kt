@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
@@ -23,21 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App() {
     CarpoolTheme {
         val navController = rememberNavController()
-        val loginViewModel: LoginViewModel = koinViewModel()
-        val registerViewModel: RegisterViewModel = koinViewModel()
         val snackbarHostState = remember { SnackbarHostState() }
-
-        LaunchedEffect(Unit) {
-            loginViewModel.events.collect { event ->
-                handleAuthEvent(event, navController, snackbarHostState)
-            }
-        }
-
-        LaunchedEffect(Unit) {
-            registerViewModel.events.collect { event ->
-                handleAuthEvent(event, navController, snackbarHostState)
-            }
-        }
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -49,14 +34,26 @@ fun App() {
                 modifier = Modifier.padding(padding)
             ) {
                 composable("login") {
+                    val viewModel: LoginViewModel = koinViewModel()
                     LoginScreen(
-                        viewModel = loginViewModel,
+                        viewModel = viewModel,
+                        onLoginSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
                         onNavigateToRegister = { navController.navigate("register") }
                     )
                 }
                 composable("register") {
+                    val viewModel: RegisterViewModel = koinViewModel()
                     RegisterScreen(
-                        viewModel = registerViewModel,
+                        viewModel = viewModel,
+                        onRegisterSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
                         onNavigateToLogin = { navController.popBackStack() }
                     )
                 }
@@ -66,29 +63,6 @@ fun App() {
                     }
                 }
             }
-        }
-    }
-}
-
-private suspend fun handleAuthEvent(
-    event: AuthEvent,
-    navController: androidx.navigation.NavHostController,
-    snackbarHostState: SnackbarHostState
-) {
-    when (event) {
-        is AuthEvent.NavigateToHome -> {
-            navController.navigate("home") {
-                popUpTo("login") { inclusive = true }
-                popUpTo("register") { inclusive = true }
-            }
-        }
-        is AuthEvent.NavigateToLogin -> {
-            navController.navigate("login") {
-                popUpTo(0)
-            }
-        }
-        is AuthEvent.ShowErrorMessage -> {
-            snackbarHostState.showSnackbar(event.message)
         }
     }
 }
