@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,10 +48,6 @@ fun LoginScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = Color.Unspecified,
-                    navigationIconContentColor = Color.Unspecified,
-                    titleContentColor = Color.Unspecified,
-                    actionIconContentColor = Color.Unspecified
                 )
             )
         }
@@ -92,29 +87,28 @@ fun LoginScreen(
             Text(
                 text = stringResource(Res.string.login_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            AuthTextField(
+            EmailTextField(
                 value = state.email,
                 onValueChange = { viewModel.onAction(LoginAction.OnEmailChanged(it)) },
                 label = stringResource(Res.string.email_label),
-                placeholder = stringResource(Res.string.email_placeholder),
-                leadingIcon = vectorResource(Res.drawable.mail_24px)
+                placeholder = stringResource(Res.string.email_placeholder)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            AuthTextField(
+            PasswordTextField(
                 value = state.password,
                 onValueChange = { viewModel.onAction(LoginAction.OnPasswordChanged(it)) },
                 label = stringResource(Res.string.password_label),
                 placeholder = stringResource(Res.string.password_placeholder),
-                leadingIcon = vectorResource(Res.drawable.lock_24px),
-                isPassword = true
+                isPasswordVisible = state.isPasswordVisible,
+                onTogglePasswordVisibility = { viewModel.onAction(LoginAction.OnTogglePasswordVisibility) }
             )
 
             Box(
@@ -123,7 +117,7 @@ fun LoginScreen(
             ) {
                 Text(
                     text = stringResource(Res.string.forgot_password),
-                    color = Color(0xFF00838F),
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -141,7 +135,7 @@ fun LoginScreen(
             PrimaryButton(
                 text = stringResource(Res.string.login_button),
                 onClick = { viewModel.onAction(LoginAction.OnLoginClicked) },
-                enabled = !state.isLoading
+                isLoading = state.isLoading
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -150,13 +144,19 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
                 Text(
                     text = stringResource(Res.string.or_separator),
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -164,7 +164,7 @@ fun LoginScreen(
             Text(
                 text = stringResource(Res.string.dont_have_account_question),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -178,8 +178,11 @@ fun LoginScreen(
         }
 
         if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFF00838F))
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
     }

@@ -9,9 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,10 +50,6 @@ fun RegisterScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = Color.Unspecified,
-                    navigationIconContentColor = Color.Unspecified,
-                    titleContentColor = Color.Unspecified,
-                    actionIconContentColor = Color.Unspecified
                 )
             )
         }
@@ -91,7 +87,7 @@ fun RegisterScreen(
             Text(
                 text = stringResource(Res.string.register_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
@@ -106,7 +102,7 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            AuthTextField(
+            EmailTextField(
                 value = state.email,
                 onValueChange = { viewModel.onAction(RegisterAction.OnEmailChanged(it)) },
                 label = stringResource(Res.string.email_label),
@@ -115,22 +111,26 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            AuthTextField(
+            PasswordTextField(
                 value = state.password,
                 onValueChange = { viewModel.onAction(RegisterAction.OnPasswordChanged(it)) },
                 label = stringResource(Res.string.password_label),
                 placeholder = stringResource(Res.string.password_placeholder),
-                isPassword = true
+                isPasswordVisible = state.isPasswordVisible,
+                onTogglePasswordVisibility = { viewModel.onAction(RegisterAction.OnTogglePasswordVisibility) },
+                imeAction = ImeAction.Next
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            AuthTextField(
+            PasswordTextField(
                 value = state.confirmPassword,
                 onValueChange = { viewModel.onAction(RegisterAction.OnConfirmPasswordChanged(it)) },
                 label = stringResource(Res.string.confirm_password_label),
                 placeholder = stringResource(Res.string.password_placeholder),
-                isPassword = true
+                isPasswordVisible = state.isConfirmPasswordVisible,
+                onTogglePasswordVisibility = { viewModel.onAction(RegisterAction.OnToggleConfirmPasswordVisibility) },
+                imeAction = ImeAction.Done
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -148,7 +148,7 @@ fun RegisterScreen(
                     Checkbox(
                         checked = state.isPassenger,
                         onCheckedChange = { viewModel.onAction(RegisterAction.OnPassengerChanged(it)) },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF00838F))
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                     )
                     Text(
                         text = stringResource(Res.string.passenger_option),
@@ -160,7 +160,7 @@ fun RegisterScreen(
                     Checkbox(
                         checked = state.isDriver,
                         onCheckedChange = { viewModel.onAction(RegisterAction.OnDriverChanged(it)) },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF00838F))
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                     )
                     Text(
                         text = stringResource(Res.string.driver_option),
@@ -178,7 +178,7 @@ fun RegisterScreen(
             PrimaryButton(
                 text = stringResource(Res.string.create_account_button),
                 onClick = { viewModel.onAction(RegisterAction.OnRegisterClicked) },
-                enabled = !state.isLoading,
+                isLoading = state.isLoading,
                 trailingIcon = vectorResource(Res.drawable.arrow_forward_24px)
             )
 
@@ -192,14 +192,14 @@ fun RegisterScreen(
                 Text(
                     text = stringResource(Res.string.already_have_account_question),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(Res.string.login_link),
                     modifier = Modifier.clickable { onNavigateToLogin() },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF00838F),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -209,7 +209,7 @@ fun RegisterScreen(
             Text(
                 text = stringResource(Res.string.terms_and_privacy),
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.LightGray,
+                color = MaterialTheme.colorScheme.outline,
                 textAlign = TextAlign.Center,
                 lineHeight = 16.sp,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -220,7 +220,7 @@ fun RegisterScreen(
 
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFF00838F))
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
     }

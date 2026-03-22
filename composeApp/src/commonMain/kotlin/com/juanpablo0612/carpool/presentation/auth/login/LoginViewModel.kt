@@ -25,6 +25,7 @@ class LoginViewModel(
         when (action) {
             is LoginAction.OnEmailChanged -> _uiState.update { it.copy(email = action.email) }
             is LoginAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password) }
+            LoginAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             LoginAction.OnLoginClicked -> login()
             LoginAction.OnClearError -> _uiState.update { it.copy(error = null) }
         }

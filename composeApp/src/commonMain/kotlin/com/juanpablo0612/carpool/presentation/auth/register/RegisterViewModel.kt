@@ -27,6 +27,8 @@ class RegisterViewModel(
             is RegisterAction.OnEmailChanged -> _uiState.update { it.copy(email = action.email) }
             is RegisterAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password) }
             is RegisterAction.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = action.confirmPassword) }
+            RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
+            RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
             is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger) }
             is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver) }
             RegisterAction.OnRegisterClicked -> register()
@@ -44,7 +46,6 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            // Note: RegisterUseCase might need to be updated to accept more parameters
             val result = registerUseCase(state.email, state.password)
             result.fold(
                 onSuccess = {
