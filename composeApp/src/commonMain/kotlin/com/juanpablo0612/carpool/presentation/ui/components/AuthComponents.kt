@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import enrutadoseia.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
@@ -144,11 +145,19 @@ fun PasswordTextField(
         leadingIcon = { Icon(imageVector = leadingIcon, contentDescription = null) },
         trailingIcon = {
             IconButton(onClick = onTogglePasswordVisibility) {
-                // Using text for now as icons might be missing, but standardizing the slot
-                Text(
-                    text = if (isPasswordVisible) "Hide" else "Show",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                val icon = if (isPasswordVisible) {
+                    vectorResource(Res.drawable.visibility_off_24px)
+                } else {
+                    vectorResource(Res.drawable.visibility_24px)
+                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = if (isPasswordVisible) {
+                        stringResource(Res.string.hide_password)
+                    } else {
+                        stringResource(Res.string.show_password)
+                    },
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },

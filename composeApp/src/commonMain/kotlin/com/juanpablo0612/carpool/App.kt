@@ -16,6 +16,9 @@ import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.home_welcome
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -59,7 +62,7 @@ fun App() {
                 }
                 composable("home") {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Welcome to Home!")
+                        Text(text = stringResource(Res.string.home_welcome))
                     }
                 }
             }

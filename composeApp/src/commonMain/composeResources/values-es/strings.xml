@@ -31,4 +31,8 @@
     <string name="error_email_already_in_use">El correo electrónico ya está en uso</string>
     <string name="error_weak_password">La contraseña es muy débil</string>
     <string name="error_unknown">Ocurrió un error inesperado</string>
+
+    <string name="show_password">Mostrar contraseña</string>
+    <string name="hide_password">Ocultar contraseña</string>
+    <string name="home_welcome">¡Bienvenido al Inicio!</string>
 </resources>
