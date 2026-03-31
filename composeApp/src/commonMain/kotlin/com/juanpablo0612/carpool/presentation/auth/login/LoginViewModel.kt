@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
+import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -39,16 +40,14 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = loginUseCase(email, password)
-            result.fold(
-                onSuccess = {
+            loginUseCase(email, password)
+                .onSuccess {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     _events.emit(AuthEvent.NavigateToHome)
-                },
-                onFailure = {
-                    _uiState.update { it.copy(isLoading = false, error = null) }
                 }
-            )
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
+                }
         }
     }
 }

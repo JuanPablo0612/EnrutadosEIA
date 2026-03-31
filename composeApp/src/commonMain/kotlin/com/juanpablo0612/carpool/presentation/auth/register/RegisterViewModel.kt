@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
+import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -46,16 +47,14 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = registerUseCase(state.email, state.password)
-            result.fold(
-                onSuccess = {
+            registerUseCase(state.email, state.password)
+                .onSuccess {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     _events.emit(AuthEvent.NavigateToHome)
-                },
-                onFailure = {
-                    _uiState.update { it.copy(isLoading = false, error = null) }
                 }
-            )
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
+                }
         }
     }
 }
