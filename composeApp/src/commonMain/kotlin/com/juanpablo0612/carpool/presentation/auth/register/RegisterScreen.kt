@@ -105,16 +105,13 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            AuthTextField(
+            NameTextField(
                 value = state.fullName,
                 onValueChange = { viewModel.onAction(RegisterAction.OnFullNameChanged(it)) },
                 label = stringResource(Res.string.full_name_label),
                 placeholder = stringResource(Res.string.full_name_placeholder),
                 errorMessage = state.fullNameError?.asStringResource()?.let { stringResource(it) },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                )
+                imeAction = ImeAction.Next
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -159,38 +156,28 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(Res.string.user_type_prompt),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
+            Text(
+                text = stringResource(Res.string.user_type_prompt),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                RoleSelectionCard(
+                    title = stringResource(Res.string.passenger_option),
+                    isSelected = state.isPassenger,
+                    onClick = { viewModel.onAction(RegisterAction.OnPassengerChanged(!state.isPassenger)) },
+                    modifier = Modifier.weight(1f)
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = state.isPassenger,
-                        onCheckedChange = { viewModel.onAction(RegisterAction.OnPassengerChanged(it)) },
-                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-                    )
-                    Text(
-                        text = stringResource(Res.string.passenger_option),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Checkbox(
-                        checked = state.isDriver,
-                        onCheckedChange = { viewModel.onAction(RegisterAction.OnDriverChanged(it)) },
-                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-                    )
-                    Text(
-                        text = stringResource(Res.string.driver_option),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                RoleSelectionCard(
+                    title = stringResource(Res.string.driver_option),
+                    isSelected = state.isDriver,
+                    onClick = { viewModel.onAction(RegisterAction.OnDriverChanged(!state.isDriver)) },
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             state.error?.let {
