@@ -10,9 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
@@ -33,6 +35,23 @@ fun LoginScreen(
         }
     }
 
+    LoginContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onNavigateToRegister = onNavigateToRegister,
+        onForgotPasswordClick = onForgotPasswordClick,
+        onBackClick = onBackClick
+    )
+}
+
+@Composable
+fun LoginContent(
+    state: LoginUiState,
+    onAction: (LoginAction) -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -59,7 +78,7 @@ fun LoginScreen(
 
             LoginForm(
                 state = state,
-                onAction = viewModel::onAction,
+                onAction = onAction,
                 onForgotPasswordClick = onForgotPasswordClick
             )
 
@@ -142,6 +161,20 @@ private fun LoginForm(
             text = stringResource(Res.string.login_button),
             onClick = { onAction(LoginAction.OnLoginClicked) },
             isLoading = state.isLoading
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenPreview() {
+    CarpoolTheme {
+        LoginContent(
+            state = LoginUiState(),
+            onAction = {},
+            onNavigateToRegister = {},
+            onForgotPasswordClick = {},
+            onBackClick = {}
         )
     }
 }

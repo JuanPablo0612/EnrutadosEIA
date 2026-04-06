@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
@@ -31,6 +33,19 @@ fun ForgotPasswordScreen(
         }
     }
 
+    ForgotPasswordContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onBackClick = onBackClick
+    )
+}
+
+@Composable
+fun ForgotPasswordContent(
+    state: ForgotPasswordUiState,
+    onAction: (ForgotPasswordAction) -> Unit,
+    onBackClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -69,7 +84,7 @@ fun ForgotPasswordScreen(
             } else {
                 ForgotPasswordForm(
                     state = state,
-                    onAction = viewModel::onAction
+                    onAction = onAction
                 )
             }
 
@@ -139,5 +154,17 @@ private fun SuccessMessage(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ForgotPasswordScreenPreview() {
+    CarpoolTheme {
+        ForgotPasswordContent(
+            state = ForgotPasswordUiState(),
+            onAction = {},
+            onBackClick = {}
+        )
     }
 }

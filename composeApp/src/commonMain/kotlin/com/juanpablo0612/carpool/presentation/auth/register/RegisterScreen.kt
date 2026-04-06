@@ -13,9 +13,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -36,6 +38,21 @@ fun RegisterScreen(
         }
     }
 
+    RegisterContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onNavigateToLogin = onNavigateToLogin,
+        onBackClick = onBackClick
+    )
+}
+
+@Composable
+fun RegisterContent(
+    state: RegisterUiState,
+    onAction: (RegisterAction) -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onBackClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -62,7 +79,7 @@ fun RegisterScreen(
 
             RegisterForm(
                 state = state,
-                onAction = viewModel::onAction
+                onAction = onAction
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -213,5 +230,18 @@ private fun RoleSelectionSection(
                 modifier = Modifier.weight(1f)
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun RegisterScreenPreview() {
+    CarpoolTheme {
+        RegisterContent(
+            state = RegisterUiState(),
+            onAction = {},
+            onNavigateToLogin = {},
+            onBackClick = {}
+        )
     }
 }

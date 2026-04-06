@@ -8,8 +8,8 @@ Agents must strictly follow these guidelines when generating, modifying, or refa
 
 # 1. Project Overview
 
-CampusRide is a mobile application designed to organize the informal carpooling system used by university students.
-CampusRide replaces disorganized chat groups with a structured platform where drivers can publish trips and passengers can easily find and reserve seats.
+EnrutadosEIA is a mobile application designed to organize the informal carpooling system used by university students.
+EnrutadosEIA replaces disorganized chat groups with a structured platform where drivers can publish trips and passengers can easily find and reserve seats.
 
 ------------------------------------------------------------------------
 
@@ -49,9 +49,9 @@ Inside each layer, organize by feature (e.g., `presentation/auth/`).
 
 ------------------------------------------------------------------------
 
-# 6. Core Module
+# 6. UI Components & Core Infrastructure
 
-Contains shared infrastructure: Result wrappers, dispatchers, shared extensions, base error abstractions, and **generic reusable UI components** (e.g., `AuthTextField`).
+Contains shared infrastructure: Result wrappers, dispatchers, shared extensions, base error abstractions. **Generic reusable UI components** are located in `presentation/ui/components/` (e.g., `AuthTextField`).
 
 ------------------------------------------------------------------------
 
@@ -113,13 +113,24 @@ Represent events from UI to ViewModel. UI calls `viewModel.onAction(Action)`.
 
 ------------------------------------------------------------------------
 
-# 15. Localization
+# 15. Previews and Content Separation
+
+To enable Compose Previews and maintain a clean separation of concerns:
+- Each screen must be split into two main functions:
+    1. **Screen Function:** (e.g., `LoginScreen`) Handles lifecycle, ViewModel interaction, state collection, and event observation.
+    2. **Content Function:** (e.g., `LoginContent`) A stateless or state-receiver composable that only takes the necessary state and event callbacks. It **must not** reference the ViewModel.
+- All screens must include a `@Preview` composable that uses the `Content` function wrapped in the project's theme (e.g., `CarpoolTheme`).
+- This separation facilitates testing and allows the use of the Compose Preview tool without requiring complex ViewModel injection.
+
+------------------------------------------------------------------------
+
+# 16. Localization
 
 No hardcoded strings. Use `Res.string.*` for all UI text.
 
 ------------------------------------------------------------------------
 
-# 16. Iconography & Resources
+# 17. Iconography & Resources
 
 - **NO `material-icons-extended`:** This library is forbidden due to size and performance.
 - **Local XML Vectors:** Use only local XML vectors located in `composeResources/drawable`.
@@ -129,32 +140,32 @@ No hardcoded strings. Use `Res.string.*` for all UI text.
 
 ------------------------------------------------------------------------
 
-# 17. Input Usability & IME
+# 18. Input Usability & IME
 
 - **KeyboardOptions:** Disable `autoCorrect` for credentials (email, password). Use `KeyboardCapitalization.Words` for names.
 - **IME Actions:** Use `ImeAction.Next` to move between fields and `ImeAction.Done` to trigger the primary action (Login/Register) from the last field.
 
 ------------------------------------------------------------------------
 
-# 18. Navigation & Side-Effects
+# 19. Navigation & Side-Effects
 
 - Use `AppNavigation` with Type-Safe Routes (Kotlin Serialization).
 - **ObserveAsEvents:** Use the `ObserveAsEvents` utility to handle one-time side-effects like navigation or showing success messages, triggered by a `SharedFlow` in the ViewModel.
 
 ------------------------------------------------------------------------
 
-# 19. Security Guidelines
+# 20. Security Guidelines
 
 Validate inputs before sending requests. Never store passwords locally. Do not log sensitive info.
 
 ------------------------------------------------------------------------
 
-# 20. Code Quality Standards
+# 21. Code Quality Standards
 
 Follow SOLID, DRY, and Clean Architecture. Avoid business logic in UI, tight coupling, and hardcoded values.
 
 ------------------------------------------------------------------------
 
-# 21. Expected AI Behavior
+# 22. Expected AI Behavior
 
 Strictly follow architecture, naming, and structure. Generated code must be production-ready and placed in the correct feature/layer. No pseudo-code.
