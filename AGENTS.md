@@ -125,6 +125,7 @@ No hardcoded strings. Use `Res.string.*` for all UI text.
 - **Local XML Vectors:** Use only local XML vectors located in `composeResources/drawable`.
 - **Access:** Use `vectorResource(Res.drawable.icon_name)`.
 - **Material Symbols:** Prefer rounded or sharp Material Symbols exported as XML.
+- **Icon Provisioning:** If the agent uses an icon that is not currently in the project, it must include the reference in the code (e.g., `Res.drawable.new_icon`) and clearly state the name of the required icon in the response so the user can download and add it.
 
 ------------------------------------------------------------------------
 
