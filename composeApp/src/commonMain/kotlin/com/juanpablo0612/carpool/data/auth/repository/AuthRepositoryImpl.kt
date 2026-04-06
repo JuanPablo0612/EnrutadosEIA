@@ -20,9 +20,15 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun register(email: String, password: String): Result<Unit> {
+    override suspend fun register(
+        email: String,
+        password: String,
+        name: String,
+        isPassenger: Boolean,
+        isDriver: Boolean
+    ): Result<Unit> {
         return try {
-            remoteDataSource.signUp(email, password)
+            remoteDataSource.signUp(email, password, name, isPassenger, isDriver)
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())

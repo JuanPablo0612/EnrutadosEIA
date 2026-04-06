@@ -29,7 +29,12 @@ class RegisterViewModel(
             is RegisterAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password) }
             is RegisterAction.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = action.confirmPassword) }
             RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
-            RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
+            RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update {
+                it.copy(
+                    isConfirmPasswordVisible = !it.isConfirmPasswordVisible
+                )
+            }
+
             is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger) }
             is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver) }
             RegisterAction.OnRegisterClicked -> register()
@@ -47,7 +52,13 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            registerUseCase(state.email, state.password)
+            registerUseCase(
+                email = state.email,
+                password = state.password,
+                name = state.fullName,
+                isPassenger = state.isPassenger,
+                isDriver = state.isDriver
+            )
                 .onSuccess {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                     _events.emit(AuthEvent.NavigateToHome)

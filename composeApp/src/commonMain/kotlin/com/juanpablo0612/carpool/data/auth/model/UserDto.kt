@@ -7,5 +7,7 @@ data class UserDto(
     val id: String,
     val email: String,
     val name: String?,
-    val isEmailVerified: Boolean
+    val isEmailVerified: Boolean,
+    val isPassenger: Boolean,
+    val isDriver: Boolean
 )

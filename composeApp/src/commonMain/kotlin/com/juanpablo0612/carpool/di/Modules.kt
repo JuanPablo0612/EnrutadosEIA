@@ -11,6 +11,7 @@ import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.firestore.firestore
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -21,6 +22,7 @@ import org.koin.dsl.module
 
 val authModule = module {
     single { Firebase.auth }
+    single { Firebase.firestore }
     singleOf(::FirebaseAuthRemoteDataSource) bind AuthRemoteDataSource::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
 
