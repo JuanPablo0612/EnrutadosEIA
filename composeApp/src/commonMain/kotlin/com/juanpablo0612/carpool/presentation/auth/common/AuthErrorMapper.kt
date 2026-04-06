@@ -28,7 +28,7 @@ fun AuthError.asStringResource(): StringResource {
         AuthError.NetworkError -> Res.string.error_network
         AuthError.WeakPassword -> Res.string.error_weak_password
         AuthError.UnknownError -> Res.string.error_unknown
-        AuthError.UserNotFound -> Res.string.error_invalid_credentials
+        AuthError.UserNotFound -> Res.string.error_user_not_found
     }
 }
 

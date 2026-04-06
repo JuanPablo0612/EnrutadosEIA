@@ -13,4 +13,5 @@ interface AuthRemoteDataSource {
         isDriver: Boolean
     )
     suspend fun signOut()
+    suspend fun sendPasswordResetEmail(email: String)
 }

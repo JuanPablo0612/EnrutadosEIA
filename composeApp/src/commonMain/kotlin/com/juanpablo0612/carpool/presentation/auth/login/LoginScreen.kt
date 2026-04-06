@@ -21,6 +21,7 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -59,7 +60,7 @@ fun LoginScreen(
             LoginForm(
                 state = state,
                 onAction = viewModel::onAction,
-                onForgotPasswordClick = { /* TODO */ }
+                onForgotPasswordClick = onForgotPasswordClick
             )
 
             Spacer(modifier = Modifier.height(24.dp))

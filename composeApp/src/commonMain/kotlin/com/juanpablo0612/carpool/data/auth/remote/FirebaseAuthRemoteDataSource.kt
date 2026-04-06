@@ -38,4 +38,8 @@ class FirebaseAuthRemoteDataSource(
     override suspend fun signOut() {
         firebaseAuth.signOut()
     }
+
+    override suspend fun sendPasswordResetEmail(email: String) {
+        firebaseAuth.sendPasswordResetEmail(email)
+    }
 }

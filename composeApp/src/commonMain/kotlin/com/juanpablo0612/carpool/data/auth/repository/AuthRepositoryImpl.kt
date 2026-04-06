@@ -46,6 +46,17 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> {
+        return try {
+            remoteDataSource.sendPasswordResetEmail(email)
+            Result.success(Unit)
+        } catch (e: FirebaseAuthException) {
+            Result.failure(e.toAppException())
+        } catch (e: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
     private fun FirebaseAuthException.toAppException(): AppException.AuthException {
         return when (this) {
             is FirebaseAuthInvalidCredentialsException -> AppException.AuthException.InvalidCredentials

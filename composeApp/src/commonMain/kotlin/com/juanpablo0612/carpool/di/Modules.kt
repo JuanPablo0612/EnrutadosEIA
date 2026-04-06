@@ -7,6 +7,8 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.SendPasswordResetEmailUseCase
+import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import dev.gitlive.firebase.Firebase
@@ -29,9 +31,11 @@ val authModule = module {
     factoryOf(::LoginUseCase)
     factoryOf(::RegisterUseCase)
     factoryOf(::LogoutUseCase)
+    factoryOf(::SendPasswordResetEmailUseCase)
 
     viewModel { LoginViewModel(get()) }
     viewModel { RegisterViewModel(get()) }
+    viewModel { ForgotPasswordViewModel(get()) }
 }
 
 val appModule = module {

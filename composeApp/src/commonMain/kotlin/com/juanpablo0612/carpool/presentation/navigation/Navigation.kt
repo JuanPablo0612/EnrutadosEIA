@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordScreen
+import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
@@ -26,6 +28,9 @@ sealed interface Route {
 
     @Serializable
     data object Register : Route
+
+    @Serializable
+    data object ForgotPassword : Route
 
     @Serializable
     data object Home : Route
@@ -53,6 +58,9 @@ fun AppNavigation(
                 onNavigateToRegister = {
                     navController.navigate(Route.Register)
                 },
+                onForgotPasswordClick = {
+                    navController.navigate(Route.ForgotPassword)
+                },
                 onBackClick = {
                     navController.popBackStack()
                 }
@@ -71,6 +79,16 @@ fun AppNavigation(
                 onNavigateToLogin = {
                     navController.popBackStack()
                 },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Route.ForgotPassword> {
+            val viewModel: ForgotPasswordViewModel = koinViewModel()
+            ForgotPasswordScreen(
+                viewModel = viewModel,
                 onBackClick = {
                     navController.popBackStack()
                 }

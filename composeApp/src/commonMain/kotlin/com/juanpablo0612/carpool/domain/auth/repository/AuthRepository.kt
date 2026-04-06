@@ -10,4 +10,5 @@ interface AuthRepository {
         isDriver: Boolean
     ): Result<Unit>
     suspend fun logout(): Result<Unit>
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 }

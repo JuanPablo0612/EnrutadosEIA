@@ -44,4 +44,11 @@
     <string name="show_password">Mostrar contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
     <string name="home_welcome">¡Bienvenido al Inicio!</string>
+
+    <string name="forgot_password_title">Restablecer contraseña</string>
+    <string name="forgot_password_subtitle">Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.</string>
+    <string name="send_reset_link">Enviar enlace</string>
+    <string name="back_to_login">Volver al inicio</string>
+    <string name="reset_link_sent_success">¡Enlace enviado! Revisa tu correo electrónico.</string>
+    <string name="error_user_not_found">No se encontró una cuenta con este correo.</string>
 </resources>

@@ -44,4 +44,11 @@
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
     <string name="home_welcome">Welcome to Home!</string>
+
+    <string name="forgot_password_title">Reset Password</string>
+    <string name="forgot_password_subtitle">Enter your email and we\'ll send you instructions to reset your password.</string>
+    <string name="send_reset_link">Send Reset Link</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="reset_link_sent_success">Password reset link sent! Check your email.</string>
+    <string name="error_user_not_found">No account found with this email.</string>
 </resources>
