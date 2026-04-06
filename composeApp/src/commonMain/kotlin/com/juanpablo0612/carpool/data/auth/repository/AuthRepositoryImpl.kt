@@ -15,7 +15,7 @@ class AuthRepositoryImpl(
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }
     }
@@ -32,7 +32,7 @@ class AuthRepositoryImpl(
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }
     }
@@ -41,7 +41,7 @@ class AuthRepositoryImpl(
         return try {
             remoteDataSource.signOut()
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }
     }
@@ -52,7 +52,7 @@ class AuthRepositoryImpl(
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }
     }
