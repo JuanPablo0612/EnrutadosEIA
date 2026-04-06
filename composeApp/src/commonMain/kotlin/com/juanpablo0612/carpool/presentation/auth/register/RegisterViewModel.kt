@@ -3,6 +3,9 @@ package com.juanpablo0612.carpool.presentation.auth.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
+import com.juanpablo0612.carpool.domain.auth.util.ValidationError
+import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
+import com.juanpablo0612.carpool.domain.auth.util.Validator
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,10 +27,18 @@ class RegisterViewModel(
 
     fun onAction(action: RegisterAction) {
         when (action) {
-            is RegisterAction.OnFullNameChanged -> _uiState.update { it.copy(fullName = action.fullName) }
-            is RegisterAction.OnEmailChanged -> _uiState.update { it.copy(email = action.email) }
-            is RegisterAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password) }
-            is RegisterAction.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = action.confirmPassword) }
+            is RegisterAction.OnFullNameChanged -> {
+                _uiState.update { it.copy(fullName = action.fullName, fullNameError = null) }
+            }
+            is RegisterAction.OnEmailChanged -> {
+                _uiState.update { it.copy(email = action.email, emailError = null) }
+            }
+            is RegisterAction.OnPasswordChanged -> {
+                _uiState.update { it.copy(password = action.password, passwordError = null) }
+            }
+            is RegisterAction.OnConfirmPasswordChanged -> {
+                _uiState.update { it.copy(confirmPassword = action.confirmPassword, confirmPasswordError = null) }
+            }
             RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update {
                 it.copy(
@@ -44,9 +55,24 @@ class RegisterViewModel(
 
     private fun register() {
         val state = _uiState.value
-        if (state.email.isBlank() || state.password.isBlank() || state.fullName.isBlank()) return
-        if (state.password != state.confirmPassword) {
-            // TODO: Handle password mismatch error
+        
+        val nameResult = Validator.validateFullName(state.fullName)
+        val emailResult = Validator.validateEmail(state.email)
+        val passwordResult = Validator.validatePassword(state.password)
+        val confirmResult = Validator.validateConfirmPassword(state.password, state.confirmPassword)
+
+        val hasError = listOf(nameResult, emailResult, passwordResult, confirmResult)
+            .any { it is ValidationResult.Error }
+
+        if (hasError) {
+            _uiState.update { 
+                it.copy(
+                    fullNameError = (nameResult as? ValidationResult.Error)?.error,
+                    emailError = (emailResult as? ValidationResult.Error)?.error,
+                    passwordError = (passwordResult as? ValidationResult.Error)?.error,
+                    confirmPasswordError = (confirmResult as? ValidationResult.Error)?.error
+                )
+            }
             return
         }
 

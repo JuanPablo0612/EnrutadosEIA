@@ -20,6 +20,8 @@ import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.text.KeyboardActions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +113,9 @@ fun LoginScreen(
                 value = state.email,
                 onValueChange = { viewModel.onAction(LoginAction.OnEmailChanged(it)) },
                 label = stringResource(Res.string.email_label),
-                placeholder = stringResource(Res.string.email_placeholder)
+                placeholder = stringResource(Res.string.email_placeholder),
+                errorMessage = state.emailError?.asStringResource()?.let { stringResource(it) },
+                imeAction = ImeAction.Next
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -122,7 +126,12 @@ fun LoginScreen(
                 label = stringResource(Res.string.password_label),
                 placeholder = stringResource(Res.string.password_placeholder),
                 isPasswordVisible = state.isPasswordVisible,
-                onTogglePasswordVisibility = { viewModel.onAction(LoginAction.OnTogglePasswordVisibility) }
+                onTogglePasswordVisibility = { viewModel.onAction(LoginAction.OnTogglePasswordVisibility) },
+                errorMessage = state.passwordError?.asStringResource()?.let { stringResource(it) },
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(
+                    onDone = { viewModel.onAction(LoginAction.OnLoginClicked) }
+                )
             )
 
             Box(

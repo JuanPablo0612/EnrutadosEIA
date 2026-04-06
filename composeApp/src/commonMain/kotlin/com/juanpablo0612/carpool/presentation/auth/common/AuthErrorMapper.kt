@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.auth.common
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.auth.model.AuthError
+import com.juanpablo0612.carpool.domain.auth.util.ValidationError
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 
@@ -28,5 +29,18 @@ fun AuthError.asStringResource(): StringResource {
         AuthError.WeakPassword -> Res.string.error_weak_password
         AuthError.UnknownError -> Res.string.error_unknown
         AuthError.UserNotFound -> Res.string.error_invalid_credentials
+    }
+}
+
+fun ValidationError.asStringResource(): StringResource {
+    return when (this) {
+        ValidationError.EmailEmpty -> Res.string.error_email_empty
+        ValidationError.EmailInvalid -> Res.string.error_email_invalid
+        ValidationError.PasswordEmpty -> Res.string.error_password_empty
+        ValidationError.PasswordTooShort -> Res.string.error_password_too_short
+        ValidationError.NameEmpty -> Res.string.error_name_empty
+        ValidationError.NameTooShort -> Res.string.error_name_too_short
+        ValidationError.ConfirmPasswordEmpty -> Res.string.error_confirm_password_empty
+        ValidationError.PasswordsDoNotMatch -> Res.string.error_passwords_do_not_match
     }
 }

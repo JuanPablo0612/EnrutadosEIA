@@ -32,6 +32,15 @@
     <string name="error_weak_password">La contraseña es muy débil</string>
     <string name="error_unknown">Ocurrió un error inesperado</string>
 
+    <string name="error_email_empty">El correo no puede estar vacío</string>
+    <string name="error_email_invalid">Ingresa un correo electrónico válido</string>
+    <string name="error_password_empty">La contraseña no puede estar vacía</string>
+    <string name="error_password_too_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_name_empty">El nombre completo no puede estar vacío</string>
+    <string name="error_name_too_short">Ingresa tu nombre completo (nombre y apellido)</string>
+    <string name="error_confirm_password_empty">Por favor confirma tu contraseña</string>
+    <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
+
     <string name="show_password">Mostrar contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
     <string name="home_welcome">¡Bienvenido al Inicio!</string>

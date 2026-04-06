@@ -22,6 +22,9 @@ import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +109,12 @@ fun RegisterScreen(
                 value = state.fullName,
                 onValueChange = { viewModel.onAction(RegisterAction.OnFullNameChanged(it)) },
                 label = stringResource(Res.string.full_name_label),
-                placeholder = stringResource(Res.string.full_name_placeholder)
+                placeholder = stringResource(Res.string.full_name_placeholder),
+                errorMessage = state.fullNameError?.asStringResource()?.let { stringResource(it) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -115,7 +123,9 @@ fun RegisterScreen(
                 value = state.email,
                 onValueChange = { viewModel.onAction(RegisterAction.OnEmailChanged(it)) },
                 label = stringResource(Res.string.email_label),
-                placeholder = stringResource(Res.string.email_placeholder)
+                placeholder = stringResource(Res.string.email_placeholder),
+                errorMessage = state.emailError?.asStringResource()?.let { stringResource(it) },
+                imeAction = ImeAction.Next
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -127,6 +137,7 @@ fun RegisterScreen(
                 placeholder = stringResource(Res.string.password_placeholder),
                 isPasswordVisible = state.isPasswordVisible,
                 onTogglePasswordVisibility = { viewModel.onAction(RegisterAction.OnTogglePasswordVisibility) },
+                errorMessage = state.passwordError?.asStringResource()?.let { stringResource(it) },
                 imeAction = ImeAction.Next
             )
 
@@ -139,7 +150,11 @@ fun RegisterScreen(
                 placeholder = stringResource(Res.string.password_placeholder),
                 isPasswordVisible = state.isConfirmPasswordVisible,
                 onTogglePasswordVisibility = { viewModel.onAction(RegisterAction.OnToggleConfirmPasswordVisibility) },
-                imeAction = ImeAction.Done
+                errorMessage = state.confirmPasswordError?.asStringResource()?.let { stringResource(it) },
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(
+                    onDone = { viewModel.onAction(RegisterAction.OnRegisterClicked) }
+                )
             )
 
             Spacer(modifier = Modifier.height(24.dp))
