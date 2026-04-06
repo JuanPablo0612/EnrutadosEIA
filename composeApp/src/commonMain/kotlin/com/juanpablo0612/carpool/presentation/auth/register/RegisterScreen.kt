@@ -1,15 +1,13 @@
 package com.juanpablo0612.carpool.presentation.auth.register
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -19,19 +17,15 @@ import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import enrutadoseia.composeapp.generated.resources.*
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
     onRegisterSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -44,25 +38,9 @@ fun RegisterScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.register_title),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateToLogin() }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                )
+            AuthTopBar(
+                title = stringResource(Res.string.register_title),
+                onBackClick = onBackClick
             )
         }
     ) { padding ->
@@ -74,123 +52,17 @@ fun RegisterScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .padding(vertical = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.register_image),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            Text(
-                text = stringResource(Res.string.register_join_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Text(
-                text = stringResource(Res.string.register_subtitle),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
+            AuthHeader(
+                title = stringResource(Res.string.register_join_title),
+                subtitle = stringResource(Res.string.register_subtitle),
+                imageRes = Res.drawable.register_image
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            NameTextField(
-                value = state.fullName,
-                onValueChange = { viewModel.onAction(RegisterAction.OnFullNameChanged(it)) },
-                label = stringResource(Res.string.full_name_label),
-                placeholder = stringResource(Res.string.full_name_placeholder),
-                errorMessage = state.fullNameError?.asStringResource()?.let { stringResource(it) },
-                imeAction = ImeAction.Next
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            EmailTextField(
-                value = state.email,
-                onValueChange = { viewModel.onAction(RegisterAction.OnEmailChanged(it)) },
-                label = stringResource(Res.string.email_label),
-                placeholder = stringResource(Res.string.email_placeholder),
-                errorMessage = state.emailError?.asStringResource()?.let { stringResource(it) },
-                imeAction = ImeAction.Next
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PasswordTextField(
-                value = state.password,
-                onValueChange = { viewModel.onAction(RegisterAction.OnPasswordChanged(it)) },
-                label = stringResource(Res.string.password_label),
-                placeholder = stringResource(Res.string.password_placeholder),
-                isPasswordVisible = state.isPasswordVisible,
-                onTogglePasswordVisibility = { viewModel.onAction(RegisterAction.OnTogglePasswordVisibility) },
-                errorMessage = state.passwordError?.asStringResource()?.let { stringResource(it) },
-                imeAction = ImeAction.Next
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PasswordTextField(
-                value = state.confirmPassword,
-                onValueChange = { viewModel.onAction(RegisterAction.OnConfirmPasswordChanged(it)) },
-                label = stringResource(Res.string.confirm_password_label),
-                placeholder = stringResource(Res.string.password_placeholder),
-                isPasswordVisible = state.isConfirmPasswordVisible,
-                onTogglePasswordVisibility = { viewModel.onAction(RegisterAction.OnToggleConfirmPasswordVisibility) },
-                errorMessage = state.confirmPasswordError?.asStringResource()?.let { stringResource(it) },
-                imeAction = ImeAction.Done,
-                keyboardActions = KeyboardActions(
-                    onDone = { viewModel.onAction(RegisterAction.OnRegisterClicked) }
-                )
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = stringResource(Res.string.user_type_prompt),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                RoleSelectionCard(
-                    title = stringResource(Res.string.passenger_option),
-                    isSelected = state.isPassenger,
-                    onClick = { viewModel.onAction(RegisterAction.OnPassengerChanged(!state.isPassenger)) },
-                    modifier = Modifier.weight(1f)
-                )
-                RoleSelectionCard(
-                    title = stringResource(Res.string.driver_option),
-                    isSelected = state.isDriver,
-                    onClick = { viewModel.onAction(RegisterAction.OnDriverChanged(!state.isDriver)) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            state.error?.let {
-                ErrorMessage(message = stringResource(it.asStringResource()))
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            PrimaryButton(
-                text = stringResource(Res.string.create_account_button),
-                onClick = { viewModel.onAction(RegisterAction.OnRegisterClicked) },
-                isLoading = state.isLoading,
-                trailingIcon = vectorResource(Res.drawable.arrow_forward_24px)
+            RegisterForm(
+                state = state,
+                onAction = viewModel::onAction
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -206,12 +78,9 @@ fun RegisterScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
+                AuthClickableText(
                     text = stringResource(Res.string.login_link),
-                    modifier = Modifier.clickable { onNavigateToLogin() },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    onClick = onNavigateToLogin
                 )
             }
 
@@ -228,11 +97,121 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+}
 
-        if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-            }
+@Composable
+private fun RegisterForm(
+    state: RegisterUiState,
+    onAction: (RegisterAction) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        NameTextField(
+            value = state.fullName,
+            onValueChange = { onAction(RegisterAction.OnFullNameChanged(it)) },
+            label = stringResource(Res.string.full_name_label),
+            placeholder = stringResource(Res.string.full_name_placeholder),
+            errorMessage = state.fullNameError?.asStringResource()?.let { stringResource(it) },
+            imeAction = ImeAction.Next
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EmailTextField(
+            value = state.email,
+            onValueChange = { onAction(RegisterAction.OnEmailChanged(it)) },
+            label = stringResource(Res.string.email_label),
+            placeholder = stringResource(Res.string.email_placeholder),
+            errorMessage = state.emailError?.asStringResource()?.let { stringResource(it) },
+            imeAction = ImeAction.Next
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PasswordTextField(
+            value = state.password,
+            onValueChange = { onAction(RegisterAction.OnPasswordChanged(it)) },
+            label = stringResource(Res.string.password_label),
+            placeholder = stringResource(Res.string.password_placeholder),
+            isPasswordVisible = state.isPasswordVisible,
+            onTogglePasswordVisibility = { onAction(RegisterAction.OnTogglePasswordVisibility) },
+            errorMessage = state.passwordError?.asStringResource()?.let { stringResource(it) },
+            imeAction = ImeAction.Next
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PasswordTextField(
+            value = state.confirmPassword,
+            onValueChange = { onAction(RegisterAction.OnConfirmPasswordChanged(it)) },
+            label = stringResource(Res.string.confirm_password_label),
+            placeholder = stringResource(Res.string.password_placeholder),
+            isPasswordVisible = state.isConfirmPasswordVisible,
+            onTogglePasswordVisibility = { onAction(RegisterAction.OnToggleConfirmPasswordVisibility) },
+            errorMessage = state.confirmPasswordError?.asStringResource()?.let { stringResource(it) },
+            imeAction = ImeAction.Done,
+            keyboardActions = KeyboardActions(
+                onDone = { onAction(RegisterAction.OnRegisterClicked) }
+            )
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        RoleSelectionSection(
+            isPassenger = state.isPassenger,
+            isDriver = state.isDriver,
+            onPassengerToggle = { onAction(RegisterAction.OnPassengerChanged(it)) },
+            onDriverToggle = { onAction(RegisterAction.OnDriverChanged(it)) }
+        )
+
+        state.error?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            ErrorMessage(message = stringResource(it.asStringResource()))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        PrimaryButton(
+            text = stringResource(Res.string.create_account_button),
+            onClick = { onAction(RegisterAction.OnRegisterClicked) },
+            isLoading = state.isLoading,
+            trailingIcon = vectorResource(Res.drawable.arrow_forward_24px)
+        )
+    }
+}
+
+@Composable
+private fun RoleSelectionSection(
+    isPassenger: Boolean,
+    isDriver: Boolean,
+    onPassengerToggle: (Boolean) -> Unit,
+    onDriverToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(Res.string.user_type_prompt),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            RoleSelectionCard(
+                title = stringResource(Res.string.passenger_option),
+                isSelected = isPassenger,
+                onClick = { onPassengerToggle(!isPassenger) },
+                modifier = Modifier.weight(1f)
+            )
+            RoleSelectionCard(
+                title = stringResource(Res.string.driver_option),
+                isSelected = isDriver,
+                onClick = { onDriverToggle(!isDriver) },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
