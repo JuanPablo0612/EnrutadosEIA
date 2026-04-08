@@ -12,4 +12,5 @@ interface AuthRemoteDataSource {
 
     suspend fun signOut()
     suspend fun sendPasswordResetEmail(email: String)
+    fun getCurrentUserId(): String?
 }

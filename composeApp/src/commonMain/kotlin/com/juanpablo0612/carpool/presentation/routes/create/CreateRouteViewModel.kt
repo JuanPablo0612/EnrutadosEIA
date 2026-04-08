@@ -73,6 +73,35 @@ class CreateRouteViewModel(
             CreateRouteAction.OnBackClick -> {
                 viewModelScope.launch { _events.emit(CreateRouteEvent.NavigateBack) }
             }
+            is CreateRouteAction.OnWaypointClick -> {
+                _state.update { it.copy(activeWaypointIndex = action.index) }
+            }
+            is CreateRouteAction.OnPlaceSelectedFromResult -> {
+                val index = _state.value.activeWaypointIndex
+                if (index == -1) {
+                    if (_state.value.routeType is RouteType.ToUniversity) {
+                        _state.update { it.copy(origin = action.place, activeWaypointIndex = null) }
+                    } else {
+                        _state.update { it.copy(activeWaypointIndex = null) }
+                    }
+                } else if (index == -2) {
+                    if (_state.value.routeType is RouteType.FromUniversity) {
+                        _state.update { it.copy(destination = action.place, activeWaypointIndex = null) }
+                    } else {
+                        _state.update { it.copy(activeWaypointIndex = null) }
+                    }
+                } else if (index != null) {
+                    _state.update {
+                        val newWaypoints = it.waypoints.toMutableList()
+                        if (index < newWaypoints.size) {
+                            newWaypoints[index] = action.place
+                        } else {
+                            newWaypoints.add(action.place)
+                        }
+                        it.copy(waypoints = newWaypoints, activeWaypointIndex = null)
+                    }
+                }
+            }
         }
     }
 
@@ -82,15 +111,31 @@ class CreateRouteViewModel(
         val destination = currentState.destination
         
         if (origin == null || destination == null) {
-            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError("Origin and destination are required")) }
+            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.OriginDestinationRequired)) }
             return
         }
 
-        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        if (currentState.waypoints.isEmpty()) {
+            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.AtLeastOneWaypoint)) }
+            return
+        }
+
+        if (currentState.selectedDays.isEmpty()) {
+            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.AtLeastOneDay)) }
+            return
+        }
+
+        val userId = authRepository.getCurrentUserId()
+        if (userId == null) {
+            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.UserNotAuthenticated)) }
+            return
+        }
+
+        _state.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
             val route = Route(
-                driverId = "TODO_GET_CURRENT_USER_ID", // This needs to be fetched from AuthRepository
+                driverId = userId,
                 origin = origin,
                 destination = destination,
                 waypoints = currentState.waypoints,
@@ -105,8 +150,8 @@ class CreateRouteViewModel(
                     _events.emit(CreateRouteEvent.RouteCreated)
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(isLoading = false, errorMessage = error.message) }
-                    _events.emit(CreateRouteEvent.ShowError(error.message ?: "Unknown error"))
+                    _state.update { it.copy(isLoading = false, error = CreateRouteError.Unknown) }
+                    _events.emit(CreateRouteEvent.ShowError(CreateRouteError.Unknown))
                 }
         }
     }

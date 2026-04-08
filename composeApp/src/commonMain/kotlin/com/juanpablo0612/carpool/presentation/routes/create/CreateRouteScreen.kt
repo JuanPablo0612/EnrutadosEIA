@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.routes.create
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -7,16 +8,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
+import com.juanpablo0612.carpool.presentation.routes.create.components.LocationField
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteTypeToggle
+import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.routes.create.components.WaypointItem
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import enrutadoseia.composeapp.generated.resources.*
+import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -24,7 +30,8 @@ import org.jetbrains.compose.resources.vectorResource
 fun CreateRouteScreen(
     viewModel: CreateRouteViewModel,
     onBackClick: () -> Unit,
-    onRouteCreated: () -> Unit
+    onRouteCreated: () -> Unit,
+    onNavigateToPlaceSelector: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -33,8 +40,14 @@ fun CreateRouteScreen(
             is CreateRouteEvent.NavigateBack -> onBackClick()
             is CreateRouteEvent.RouteCreated -> onRouteCreated()
             is CreateRouteEvent.ShowError -> {
-                // Error handling via state is preferred as per AGENTS.md
+                // Using global ErrorMessage component or handling state error
             }
+        }
+    }
+
+    if (state.activeWaypointIndex != null) {
+        androidx.compose.runtime.LaunchedEffect(state.activeWaypointIndex) {
+            onNavigateToPlaceSelector()
         }
     }
 
@@ -50,6 +63,8 @@ fun CreateRouteContent(
     state: CreateRouteUiState,
     onAction: (CreateRouteAction) -> Unit
 ) {
+    var showTimePicker by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,7 +104,8 @@ fun CreateRouteContent(
                     else 
                         stringResource(Res.string.origin_eia_label),
                     place = state.origin,
-                    isLocked = state.routeType is RouteType.FromUniversity
+                    isLocked = state.routeType is RouteType.FromUniversity,
+                    onClick = { onAction(CreateRouteAction.OnWaypointClick(-1)) }
                 )
             }
 
@@ -97,16 +113,14 @@ fun CreateRouteContent(
                 WaypointItem(
                     place = waypoint,
                     onRemove = { onAction(CreateRouteAction.OnRemoveWaypoint(index)) },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    onClick = { onAction(CreateRouteAction.OnWaypointClick(index)) }
                 )
             }
 
             item {
                 TextButton(
-                    onClick = { 
-                        // In a real app, this would open a place picker
-                        onAction(CreateRouteAction.OnAddWaypoint(Place(name = "Nueva Parada", address = "...", latitude = 0.0, longitude = 0.0)))
-                    },
+                    onClick = { onAction(CreateRouteAction.OnWaypointClick(state.waypoints.size)) },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
@@ -122,7 +136,8 @@ fun CreateRouteContent(
                     else 
                         stringResource(Res.string.destination_eia_label),
                     place = state.destination,
-                    isLocked = state.routeType is RouteType.ToUniversity
+                    isLocked = state.routeType is RouteType.ToUniversity,
+                    onClick = { onAction(CreateRouteAction.OnWaypointClick(-2)) }
                 )
             }
 
@@ -136,7 +151,7 @@ fun CreateRouteContent(
                 else 
                     stringResource(Res.string.departure_time_label)
                 
-                Column(Modifier.padding(horizontal = 16.dp)) {
+                Column(Modifier.padding(horizontal = 16.dp).clickable { showTimePicker = true }) {
                     Text(timeLabel, style = MaterialTheme.typography.titleMedium)
                     Text(
                         state.targetTime.toString(),
@@ -155,9 +170,9 @@ fun CreateRouteContent(
             }
 
             item {
-                if (state.errorMessage != null) {
+                if (state.error != null) {
                     Text(
-                        text = state.errorMessage,
+                        text = stringResource(state.error.asStringResource()),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -185,37 +200,20 @@ fun CreateRouteContent(
             }
         }
     }
-}
 
-@Composable
-private fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(16.dp)
-    )
-}
-
-@Composable
-private fun LocationField(
-    label: String,
-    place: Place?,
-    isLocked: Boolean
-) {
-    OutlinedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        colors = if (isLocked) CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                 else CardDefaults.outlinedCardColors()
-    ) {
-        Column(Modifier.padding(12.dp)) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-            Text(
-                place?.name ?: stringResource(Res.string.select_location_placeholder),
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (place == null) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
-            )
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = state.targetTime.hour,
+            initialMinute = state.targetTime.minute
+        )
+        TimePickerDialog(
+            onCancel = { showTimePicker = false },
+            onConfirm = {
+                onAction(CreateRouteAction.OnTimeChange(LocalTime(timePickerState.hour, timePickerState.minute)))
+                showTimePicker = false
+            }
+        ) {
+            TimePicker(state = timePickerState)
         }
     }
 }

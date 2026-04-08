@@ -16,6 +16,10 @@ import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
+import com.juanpablo0612.carpool.presentation.home.HomeScreen
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorScreen
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
+import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteAction
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteScreen
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
 import enrutadoseia.composeapp.generated.resources.Res
@@ -44,6 +48,9 @@ sealed interface Route {
 
     @Serializable
     data object CreateRoute : Route
+
+    @Serializable
+    data object PlaceSelector : Route
 }
 
 @Composable
@@ -106,35 +113,60 @@ fun AppNavigation(
         }
 
         composable<Route.Home> {
-            Scaffold(
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = { navController.navigate(Route.CreateRoute) }
-                    ) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.add_24px),
-                            contentDescription = "Create Route"
-                        )
-                    }
-                }
-            ) { padding ->
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = stringResource(Res.string.home_welcome))
-                }
-            }
+            HomeScreen(
+                onCreateRouteClick = { navController.navigate(Route.CreateRoute) }
+            )
         }
 
-        composable<Route.CreateRoute> {
+        composable<Route.CreateRoute> { backStackEntry ->
             val viewModel: CreateRouteViewModel = koinViewModel()
+            val savedStateHandle = backStackEntry.savedStateHandle
+            val selectedPlaceJson = savedStateHandle.get<String>("selected_place")
+
+            androidx.compose.runtime.LaunchedEffect(selectedPlaceJson) {
+                if (selectedPlaceJson != null) {
+                    try {
+                        val place = kotlinx.serialization.json.Json.decodeFromString(
+                            com.juanpablo0612.carpool.data.places.model.PlaceDto.serializer(), 
+                            selectedPlaceJson
+                        ).toDomain()
+                        viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
+                    } catch (e: Exception) {
+                        // Log or handle deserialization error
+                    } finally {
+                        savedStateHandle.remove<String>("selected_place")
+                    }
+                }
+            }
+
             CreateRouteScreen(
                 viewModel = viewModel,
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onRouteCreated = {
+                    navController.popBackStack()
+                },
+                onNavigateToPlaceSelector = {
+                    navController.navigate(Route.PlaceSelector)
+                }
+            )
+        }
+
+        composable<Route.PlaceSelector> {
+            val viewModel: PlaceSelectorViewModel = koinViewModel()
+            
+            PlaceSelectorScreen(
+                viewModel = viewModel,
+                onPlaceSelected = { place ->
+                    val placeJson = kotlinx.serialization.json.Json.encodeToString(
+                        com.juanpablo0612.carpool.data.places.model.PlaceDto.serializer(), 
+                        com.juanpablo0612.carpool.data.places.model.PlaceDto.fromDomain(place)
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_place", placeJson)
+                    navController.popBackStack()
+                },
+                onBack = {
                     navController.popBackStack()
                 }
             )

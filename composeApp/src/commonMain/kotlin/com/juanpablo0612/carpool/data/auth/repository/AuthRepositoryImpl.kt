@@ -57,6 +57,10 @@ class AuthRepositoryImpl(
         }
     }
 
+    override fun getCurrentUserId(): String? {
+        return remoteDataSource.getCurrentUserId()
+    }
+
     private fun FirebaseAuthException.toAppException(): AppException.AuthException {
         return when (this) {
             is FirebaseAuthInvalidCredentialsException -> AppException.AuthException.InvalidCredentials

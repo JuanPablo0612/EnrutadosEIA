@@ -13,6 +13,9 @@ data class CreateRouteUiState(
     val targetTime: LocalTime = LocalTime(7, 0),
     val selectedDays: Set<DayOfWeek> = emptySet(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val isSuccess: Boolean = false
+    val error: CreateRouteError? = null,
+    val isSuccess: Boolean = false,
+    val activeWaypointIndex: Int? = null,
+    val isSelectingOrigin: Boolean = false,
+    val isSelectingDestination: Boolean = false
 )

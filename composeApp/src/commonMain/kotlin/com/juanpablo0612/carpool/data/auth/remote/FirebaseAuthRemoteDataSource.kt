@@ -42,4 +42,8 @@ class FirebaseAuthRemoteDataSource(
     override suspend fun sendPasswordResetEmail(email: String) {
         firebaseAuth.sendPasswordResetEmail(email)
     }
+
+    override fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
+    }
 }

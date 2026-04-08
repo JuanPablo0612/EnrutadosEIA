@@ -15,6 +15,13 @@ import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswor
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
+import com.juanpablo0612.carpool.data.places.repository.PlacesRepositoryImpl
+import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
+import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
+import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
+import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
+import com.juanpablo0612.carpool.presentation.home.HomeScreen
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
@@ -48,8 +55,16 @@ val routeModule = module {
     viewModel { CreateRouteViewModel(get(), get()) }
 }
 
+val placeModule = module {
+    singleOf(::PlacesRepositoryImpl) bind PlacesRepository::class
+    factoryOf(::GetSavedPlacesUseCase)
+    factoryOf(::SearchPlacesUseCase)
+    factoryOf(::CreatePlaceUseCase)
+    viewModel { PlaceSelectorViewModel(get(), get(), get()) }
+}
+
 val appModule = module {
-    includes(authModule, routeModule)
+    includes(authModule, routeModule, placeModule)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

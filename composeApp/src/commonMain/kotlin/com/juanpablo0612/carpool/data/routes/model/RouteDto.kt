@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.data.routes.model
 
 import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
+import com.juanpablo0612.carpool.data.places.model.PlaceDto
 import kotlinx.serialization.Serializable
 
 @Serializable

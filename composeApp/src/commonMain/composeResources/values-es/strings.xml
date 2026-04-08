@@ -79,4 +79,14 @@
     <string name="day_fri">Vie</string>
     <string name="day_sat">Sáb</string>
     <string name="day_sun">Dom</string>
+    <string name="search_places">Buscar lugares</string>
+
+    <string name="add_new_place_title">Agregar Nuevo Lugar</string>
+    <string name="place_name_label">Nombre del lugar</string>
+    <string name="place_address_label">Dirección</string>
+    <string name="save_button">Guardar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="no_saved_places">No hay lugares guardados</string>
+    <string name="no_results_found">No se encontraron resultados</string>
+    <string name="error_user_not_authenticated">Usuario no autenticado</string>
 </resources>

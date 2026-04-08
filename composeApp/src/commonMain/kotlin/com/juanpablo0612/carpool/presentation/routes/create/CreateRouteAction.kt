@@ -13,6 +13,8 @@ sealed class CreateRouteAction {
     data class OnRemoveWaypoint(val index: Int) : CreateRouteAction()
     data class OnTimeChange(val time: LocalTime) : CreateRouteAction()
     data class OnDayToggled(val day: DayOfWeek) : CreateRouteAction()
-    object OnSaveClick : CreateRouteAction()
-    object OnBackClick : CreateRouteAction()
+    data object OnSaveClick : CreateRouteAction()
+    data object OnBackClick : CreateRouteAction()
+    data class OnWaypointClick(val index: Int?) : CreateRouteAction()
+    data class OnPlaceSelectedFromResult(val place: Place) : CreateRouteAction()
 }

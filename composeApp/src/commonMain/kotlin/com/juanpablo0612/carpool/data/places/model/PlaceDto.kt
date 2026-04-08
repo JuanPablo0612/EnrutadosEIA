@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.data.routes.model
+package com.juanpablo0612.carpool.data.places.model
 
 import com.juanpablo0612.carpool.domain.places.model.Place
 import kotlinx.serialization.Serializable
