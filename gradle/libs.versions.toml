@@ -20,6 +20,7 @@ navigation-compose = "2.9.2"
 firebase-kotlin-sdk = "2.4.0"
 kotlinx-serialization = "2.3.20"
 kotlinx-serialization-json = "1.10.0"
+kotlinx-datetime = "0.7.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -50,6 +51,7 @@ firebase-analytics = { module = "dev.gitlive:firebase-analytics", version.ref = 
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-kotlin-sdk" }
 firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-kotlin-sdk" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

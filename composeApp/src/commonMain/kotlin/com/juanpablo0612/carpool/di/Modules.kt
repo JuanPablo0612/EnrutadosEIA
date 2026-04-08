@@ -3,14 +3,18 @@ package com.juanpablo0612.carpool.di
 import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
 import com.juanpablo0612.carpool.data.auth.remote.FirebaseAuthRemoteDataSource
 import com.juanpablo0612.carpool.data.auth.repository.AuthRepositoryImpl
+import com.juanpablo0612.carpool.data.routes.repository.RouteRepositoryImpl
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.SendPasswordResetEmailUseCase
+import com.juanpablo0612.carpool.domain.routes.use_case.CreateRouteUseCase
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
+import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
@@ -38,8 +42,14 @@ val authModule = module {
     viewModel { ForgotPasswordViewModel(get()) }
 }
 
+val routeModule = module {
+    singleOf(::RouteRepositoryImpl) bind RouteRepository::class
+    factoryOf(::CreateRouteUseCase)
+    viewModel { CreateRouteViewModel(get(), get()) }
+}
+
 val appModule = module {
-    includes(authModule)
+    includes(authModule, routeModule)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

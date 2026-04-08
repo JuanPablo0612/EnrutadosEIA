@@ -52,6 +52,7 @@ kotlin {
             implementation(libs.firebase.auth)
             implementation(libs.firebase.firestore)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

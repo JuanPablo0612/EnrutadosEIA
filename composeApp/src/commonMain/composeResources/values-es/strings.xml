@@ -51,4 +51,32 @@
     <string name="back_to_login">Volver al inicio</string>
     <string name="reset_link_sent_success">¡Enlace enviado! Revisa tu correo electrónico.</string>
     <string name="error_user_not_found">No se encontró una cuenta con este correo.</string>
+
+    <!-- Route Creation -->
+    <string name="create_route_title">Crear Ruta Recurrente</string>
+    <string name="route_type_to_uni">Hacia la Universidad</string>
+    <string name="route_type_from_uni">Desde la Universidad</string>
+    <string name="waypoints_section_title">Puntos de encuentro (Waypoints)</string>
+    <string name="origin_label">Origen</string>
+    <string name="destination_label">Destino</string>
+    <string name="origin_eia_label">Origen (EIA)</string>
+    <string name="destination_eia_label">Destino (EIA)</string>
+    <string name="add_waypoint_button">Agregar parada intermedia</string>
+    <string name="select_location_placeholder">Seleccionar ubicación</string>
+    <string name="arrival_time_label">Hora de llegada a la EIA</string>
+    <string name="departure_time_label">Hora de salida de la EIA</string>
+    <string name="days_of_week_title">Días de la semana</string>
+    <string name="save_route_button">Guardar Ruta</string>
+    <string name="error_origin_destination_required">El origen y el destino son obligatorios</string>
+    <string name="error_at_least_one_waypoint">Se requiere al menos una parada intermedia</string>
+    <string name="error_at_least_one_day">Se debe seleccionar al menos un día</string>
+
+    <!-- Days of Week -->
+    <string name="day_mon">Lun</string>
+    <string name="day_tue">Mar</string>
+    <string name="day_wed">Mié</string>
+    <string name="day_thu">Jue</string>
+    <string name="day_fri">Vie</string>
+    <string name="day_sat">Sáb</string>
+    <string name="day_sun">Dom</string>
 </resources>

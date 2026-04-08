@@ -51,4 +51,32 @@
     <string name="back_to_login">Back to Login</string>
     <string name="reset_link_sent_success">Password reset link sent! Check your email.</string>
     <string name="error_user_not_found">No account found with this email.</string>
+
+    <!-- Route Creation -->
+    <string name="create_route_title">Create Recurring Route</string>
+    <string name="route_type_to_uni">To University</string>
+    <string name="route_type_from_uni">From University</string>
+    <string name="waypoints_section_title">Meeting Points (Waypoints)</string>
+    <string name="origin_label">Origin</string>
+    <string name="destination_label">Destination</string>
+    <string name="origin_eia_label">Origin (EIA)</string>
+    <string name="destination_eia_label">Destination (EIA)</string>
+    <string name="add_waypoint_button">Add intermediate stop</string>
+    <string name="select_location_placeholder">Select location</string>
+    <string name="arrival_time_label">Arrival time at EIA</string>
+    <string name="departure_time_label">Departure time from EIA</string>
+    <string name="days_of_week_title">Days of the week</string>
+    <string name="save_route_button">Save Route</string>
+    <string name="error_origin_destination_required">Origin and destination are required</string>
+    <string name="error_at_least_one_waypoint">At least one intermediate stop is required</string>
+    <string name="error_at_least_one_day">At least one day must be selected</string>
+
+    <!-- Days of Week -->
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
 </resources>
