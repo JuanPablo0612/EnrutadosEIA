@@ -1,7 +1,9 @@
 package com.juanpablo0612.carpool.presentation.routes.create
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.data.places.model.PlaceDto
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
@@ -13,8 +15,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class CreateRouteViewModel(
     private val createRouteUseCase: CreateRouteUseCase,
@@ -73,33 +78,42 @@ class CreateRouteViewModel(
             CreateRouteAction.OnBackClick -> {
                 viewModelScope.launch { _events.emit(CreateRouteEvent.NavigateBack) }
             }
+            CreateRouteAction.OnCancelSelection -> {
+                _state.update { it.copy(selectionTarget = null) }
+            }
             is CreateRouteAction.OnWaypointClick -> {
-                _state.update { it.copy(activeWaypointIndex = action.index) }
+                val index = action.index
+                _state.update {
+                    val target = when (index) {
+                        -1 -> SelectionTarget.Origin
+                        -2 -> SelectionTarget.Destination
+                        null -> null
+                        else -> SelectionTarget.Waypoint(index)
+                    }
+                    it.copy(selectionTarget = target)
+                }
             }
             is CreateRouteAction.OnPlaceSelectedFromResult -> {
-                val index = _state.value.activeWaypointIndex
-                if (index == -1) {
-                    if (_state.value.routeType is RouteType.ToUniversity) {
-                        _state.update { it.copy(origin = action.place, activeWaypointIndex = null) }
-                    } else {
-                        _state.update { it.copy(activeWaypointIndex = null) }
+                val target = _state.value.selectionTarget
+                when (target) {
+                    SelectionTarget.Origin -> {
+                        _state.update { it.copy(origin = action.place, selectionTarget = null) }
                     }
-                } else if (index == -2) {
-                    if (_state.value.routeType is RouteType.FromUniversity) {
-                        _state.update { it.copy(destination = action.place, activeWaypointIndex = null) }
-                    } else {
-                        _state.update { it.copy(activeWaypointIndex = null) }
+                    SelectionTarget.Destination -> {
+                        _state.update { it.copy(destination = action.place, selectionTarget = null) }
                     }
-                } else if (index != null) {
-                    _state.update {
-                        val newWaypoints = it.waypoints.toMutableList()
-                        if (index < newWaypoints.size) {
-                            newWaypoints[index] = action.place
-                        } else {
-                            newWaypoints.add(action.place)
+                    is SelectionTarget.Waypoint -> {
+                        _state.update {
+                            val newWaypoints = it.waypoints.toMutableList()
+                            if (target.index < newWaypoints.size) {
+                                newWaypoints[target.index] = action.place
+                            } else {
+                                newWaypoints.add(action.place)
+                            }
+                            it.copy(waypoints = newWaypoints, selectionTarget = null)
                         }
-                        it.copy(waypoints = newWaypoints, activeWaypointIndex = null)
                     }
+                    null -> {}
                 }
             }
         }

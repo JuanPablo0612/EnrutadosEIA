@@ -17,7 +17,7 @@ class PlaceSelectorViewModel(
     private val createPlaceUseCase: CreatePlaceUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(PlaceSelectorState())
+    private val _state = MutableStateFlow(PlaceSelectorUiState())
     val state = _state.asStateFlow()
 
     private var getPlacesJob: Job? = null

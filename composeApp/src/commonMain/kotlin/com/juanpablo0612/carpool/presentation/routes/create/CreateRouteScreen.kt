@@ -14,26 +14,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
-import com.juanpablo0612.carpool.presentation.routes.create.components.LocationField
+import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteTypeToggle
 import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
-import com.juanpablo0612.carpool.presentation.routes.create.components.WaypointItem
+import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreateRouteScreen(
     viewModel: CreateRouteViewModel,
     onBackClick: () -> Unit,
-    onRouteCreated: () -> Unit,
-    onNavigateToPlaceSelector: () -> Unit
+    onRouteCreated: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val placeSelectorViewModel: PlaceSelectorViewModel = koinViewModel()
+    val placeSelectorState = placeSelectorViewModel.state.collectAsState().value
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -45,16 +49,23 @@ fun CreateRouteScreen(
         }
     }
 
-    if (state.activeWaypointIndex != null) {
-        androidx.compose.runtime.LaunchedEffect(state.activeWaypointIndex) {
-            onNavigateToPlaceSelector()
-        }
+    if (state.selectionTarget != null) {
+        PlaceSelectorContent(
+            state = placeSelectorState,
+            onAction = placeSelectorViewModel::onAction,
+            onPlaceSelected = { place ->
+                viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
+            },
+            onBack = {
+                viewModel.onAction(CreateRouteAction.OnCancelSelection)
+            }
+        )
+    } else {
+        CreateRouteContent(
+            state = state,
+            onAction = viewModel::onAction
+        )
     }
-
-    CreateRouteContent(
-        state = state,
-        onAction = viewModel::onAction
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,22 +109,25 @@ fun CreateRouteContent(
             }
 
             item {
-                LocationField(
+                RouteStopItem(
                     label = if (state.routeType is RouteType.ToUniversity) 
                         stringResource(Res.string.origin_label) 
                     else 
                         stringResource(Res.string.origin_eia_label),
                     place = state.origin,
+                    type = StopType.START,
                     isLocked = state.routeType is RouteType.FromUniversity,
                     onClick = { onAction(CreateRouteAction.OnWaypointClick(-1)) }
                 )
             }
 
             itemsIndexed(state.waypoints) { index, waypoint ->
-                WaypointItem(
+                RouteStopItem(
+                    label = "Stop ${index + 1}",
                     place = waypoint,
+                    type = StopType.MIDDLE,
+                    isLocked = false,
                     onRemove = { onAction(CreateRouteAction.OnRemoveWaypoint(index)) },
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     onClick = { onAction(CreateRouteAction.OnWaypointClick(index)) }
                 )
             }
@@ -121,7 +135,7 @@ fun CreateRouteContent(
             item {
                 TextButton(
                     onClick = { onAction(CreateRouteAction.OnWaypointClick(state.waypoints.size)) },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 40.dp) // Align with text
                 ) {
                     Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
                     Spacer(Modifier.width(8.dp))
@@ -130,13 +144,15 @@ fun CreateRouteContent(
             }
 
             item {
-                LocationField(
+                RouteStopItem(
                     label = if (state.routeType is RouteType.FromUniversity) 
                         stringResource(Res.string.destination_label) 
                     else 
                         stringResource(Res.string.destination_eia_label),
                     place = state.destination,
+                    type = StopType.END,
                     isLocked = state.routeType is RouteType.ToUniversity,
+                    showConnector = false,
                     onClick = { onAction(CreateRouteAction.OnWaypointClick(-2)) }
                 )
             }

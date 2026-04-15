@@ -118,26 +118,8 @@ fun AppNavigation(
             )
         }
 
-        composable<Route.CreateRoute> { backStackEntry ->
+        composable<Route.CreateRoute> {
             val viewModel: CreateRouteViewModel = koinViewModel()
-            val savedStateHandle = backStackEntry.savedStateHandle
-            val selectedPlaceJson = savedStateHandle.get<String>("selected_place")
-
-            androidx.compose.runtime.LaunchedEffect(selectedPlaceJson) {
-                if (selectedPlaceJson != null) {
-                    try {
-                        val place = kotlinx.serialization.json.Json.decodeFromString(
-                            com.juanpablo0612.carpool.data.places.model.PlaceDto.serializer(), 
-                            selectedPlaceJson
-                        ).toDomain()
-                        viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
-                    } catch (e: Exception) {
-                        // Log or handle deserialization error
-                    } finally {
-                        savedStateHandle.remove<String>("selected_place")
-                    }
-                }
-            }
 
             CreateRouteScreen(
                 viewModel = viewModel,
@@ -146,9 +128,6 @@ fun AppNavigation(
                 },
                 onRouteCreated = {
                     navController.popBackStack()
-                },
-                onNavigateToPlaceSelector = {
-                    navController.navigate(Route.PlaceSelector)
                 }
             )
         }

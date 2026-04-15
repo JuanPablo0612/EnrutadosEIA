@@ -15,7 +15,11 @@ data class CreateRouteUiState(
     val isLoading: Boolean = false,
     val error: CreateRouteError? = null,
     val isSuccess: Boolean = false,
-    val activeWaypointIndex: Int? = null,
-    val isSelectingOrigin: Boolean = false,
-    val isSelectingDestination: Boolean = false
+    val selectionTarget: SelectionTarget? = null
 )
+
+sealed class SelectionTarget {
+    data object Origin : SelectionTarget()
+    data object Destination : SelectionTarget()
+    data class Waypoint(val index: Int) : SelectionTarget()
+}

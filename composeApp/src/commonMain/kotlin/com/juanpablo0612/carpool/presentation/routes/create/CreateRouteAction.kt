@@ -17,4 +17,5 @@ sealed class CreateRouteAction {
     data object OnBackClick : CreateRouteAction()
     data class OnWaypointClick(val index: Int?) : CreateRouteAction()
     data class OnPlaceSelectedFromResult(val place: Place) : CreateRouteAction()
+    data object OnCancelSelection : CreateRouteAction()
 }

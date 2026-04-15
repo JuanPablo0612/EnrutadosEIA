@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaceSelectorScreen(
     viewModel: PlaceSelectorViewModel,
@@ -28,6 +27,23 @@ fun PlaceSelectorScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    
+    PlaceSelectorContent(
+        state = state,
+        onAction = viewModel::onAction,
+        onPlaceSelected = onPlaceSelected,
+        onBack = onBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PlaceSelectorContent(
+    state: PlaceSelectorUiState,
+    onAction: (PlaceSelectorAction) -> Unit,
+    onPlaceSelected: (Place) -> Unit,
+    onBack: () -> Unit
+) {
     var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -61,7 +77,7 @@ fun PlaceSelectorScreen(
         ) {
             OutlinedTextField(
                 value = state.query,
-                onValueChange = { viewModel.onAction(PlaceSelectorAction.OnQueryChange(it)) },
+                onValueChange = { onAction(PlaceSelectorAction.OnQueryChange(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(Res.string.search_places)) },
                 leadingIcon = { 
@@ -106,7 +122,7 @@ fun PlaceSelectorScreen(
         AddPlaceDialog(
             onDismiss = { showAddDialog = false },
             onSave = { name, address ->
-                viewModel.onAction(PlaceSelectorAction.OnSavePlace(name, address, 0.0, 0.0))
+                onAction(PlaceSelectorAction.OnSavePlace(name, address, 0.0, 0.0))
                 showAddDialog = false
             }
         )
