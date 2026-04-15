@@ -21,5 +21,6 @@ data class CreateRouteUiState(
 sealed class SelectionTarget {
     data object Origin : SelectionTarget()
     data object Destination : SelectionTarget()
-    data class Waypoint(val index: Int) : SelectionTarget()
+    data class EditWaypoint(val index: Int) : SelectionTarget()
+    data object NewWaypoint : SelectionTarget()
 }

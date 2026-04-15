@@ -1,11 +1,6 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,19 +12,9 @@ import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorScreen
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
-import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteAction
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteScreen
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
-import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.home_welcome
-import enrutadoseia.composeapp.generated.resources.add_24px
-import androidx.compose.material3.*
-import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.vectorResource
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
@@ -48,9 +33,6 @@ sealed interface Route {
 
     @Serializable
     data object CreateRoute : Route
-
-    @Serializable
-    data object PlaceSelector : Route
 }
 
 @Composable
@@ -120,32 +102,12 @@ fun AppNavigation(
 
         composable<Route.CreateRoute> {
             val viewModel: CreateRouteViewModel = koinViewModel()
-
             CreateRouteScreen(
                 viewModel = viewModel,
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onRouteCreated = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable<Route.PlaceSelector> {
-            val viewModel: PlaceSelectorViewModel = koinViewModel()
-            
-            PlaceSelectorScreen(
-                viewModel = viewModel,
-                onPlaceSelected = { place ->
-                    val placeJson = kotlinx.serialization.json.Json.encodeToString(
-                        com.juanpablo0612.carpool.data.places.model.PlaceDto.serializer(), 
-                        com.juanpablo0612.carpool.data.places.model.PlaceDto.fromDomain(place)
-                    )
-                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_place", placeJson)
-                    navController.popBackStack()
-                },
-                onBack = {
                     navController.popBackStack()
                 }
             )

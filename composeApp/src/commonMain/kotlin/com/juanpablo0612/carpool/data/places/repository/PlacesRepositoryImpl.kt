@@ -14,7 +14,7 @@ class PlacesRepositoryImpl(
     @OptIn(kotlin.uuid.ExperimentalUuidApi::class)
     override suspend fun createPlace(place: Place): Result<Unit> {
         return try {
-            val collectionRef = firestore.collection("places")
+            val collectionRef = firestore.collection(COLLECTION_NAME)
             val docRef = collectionRef.document(kotlin.uuid.Uuid.random().toString())
             val dto = PlaceDto.fromDomain(place).copy(id = docRef.id)
             docRef.set(PlaceDto.serializer(), dto)
@@ -25,7 +25,7 @@ class PlacesRepositoryImpl(
     }
 
     override fun getSavedPlaces(): Flow<List<Place>> {
-        return firestore.collection("places")
+        return firestore.collection(COLLECTION_NAME)
             .snapshots
             .map { snapshot ->
                 snapshot.documents.map { doc ->
@@ -34,18 +34,23 @@ class PlacesRepositoryImpl(
             }
     }
 
+    // Fetches all places and filters locally; suitable for small datasets
     override suspend fun searchPlaces(query: String): Result<List<Place>> {
         return try {
-            // Fetching all places and filtering locally for simple prefix/contains search
-            val snapshot = firestore.collection("places").get()
-            val allPlaces = snapshot.documents.map { it.data(PlaceDto.serializer()).toDomain() }
-            val filtered = allPlaces.filter { 
-                it.name.contains(query, ignoreCase = true) || 
-                it.address.contains(query, ignoreCase = true) 
-            }
+            val snapshot = firestore.collection(COLLECTION_NAME).get()
+            val filtered = snapshot.documents
+                .map { it.data(PlaceDto.serializer()).toDomain() }
+                .filter {
+                    it.name.contains(query, ignoreCase = true) ||
+                    it.address.contains(query, ignoreCase = true)
+                }
             Result.success(filtered)
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    companion object {
+        private const val COLLECTION_NAME = "places"
     }
 }

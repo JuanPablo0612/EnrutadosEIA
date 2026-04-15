@@ -11,14 +11,16 @@ class RouteRepositoryImpl(
 
     override suspend fun createRoute(route: Route): Result<Unit> {
         return try {
-            val routeDto = RouteDto.fromDomain(route)
-            val documentReference = firestore.collection("routes").document
-            val finalDto = routeDto.copy(id = documentReference.id)
-            
-            documentReference.set(RouteDto.serializer(), finalDto)
+            val docRef = firestore.collection(COLLECTION_NAME).document
+            val dto = RouteDto.fromDomain(route).copy(id = docRef.id)
+            docRef.set(RouteDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    companion object {
+        private const val COLLECTION_NAME = "routes"
     }
 }

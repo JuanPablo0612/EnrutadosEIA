@@ -43,9 +43,7 @@ fun CreateRouteScreen(
         when (event) {
             is CreateRouteEvent.NavigateBack -> onBackClick()
             is CreateRouteEvent.RouteCreated -> onRouteCreated()
-            is CreateRouteEvent.ShowError -> {
-                // Using global ErrorMessage component or handling state error
-            }
+            is CreateRouteEvent.ShowError -> Unit
         }
     }
 
@@ -110,14 +108,14 @@ fun CreateRouteContent(
 
             item {
                 RouteStopItem(
-                    label = if (state.routeType is RouteType.ToUniversity) 
-                        stringResource(Res.string.origin_label) 
-                    else 
+                    label = if (state.routeType is RouteType.ToUniversity)
+                        stringResource(Res.string.origin_label)
+                    else
                         stringResource(Res.string.origin_eia_label),
                     place = state.origin,
                     type = StopType.START,
                     isLocked = state.routeType is RouteType.FromUniversity,
-                    onClick = { onAction(CreateRouteAction.OnWaypointClick(-1)) }
+                    onClick = { onAction(CreateRouteAction.OnOriginClick) }
                 )
             }
 
@@ -128,14 +126,14 @@ fun CreateRouteContent(
                     type = StopType.MIDDLE,
                     isLocked = false,
                     onRemove = { onAction(CreateRouteAction.OnRemoveWaypoint(index)) },
-                    onClick = { onAction(CreateRouteAction.OnWaypointClick(index)) }
+                    onClick = { onAction(CreateRouteAction.OnEditWaypointClick(index)) }
                 )
             }
 
             item {
                 TextButton(
-                    onClick = { onAction(CreateRouteAction.OnWaypointClick(state.waypoints.size)) },
-                    modifier = Modifier.padding(horizontal = 40.dp) // Align with text
+                    onClick = { onAction(CreateRouteAction.OnAddWaypointClick) },
+                    modifier = Modifier.padding(horizontal = 40.dp)
                 ) {
                     Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
                     Spacer(Modifier.width(8.dp))
@@ -145,15 +143,15 @@ fun CreateRouteContent(
 
             item {
                 RouteStopItem(
-                    label = if (state.routeType is RouteType.FromUniversity) 
-                        stringResource(Res.string.destination_label) 
-                    else 
+                    label = if (state.routeType is RouteType.FromUniversity)
+                        stringResource(Res.string.destination_label)
+                    else
                         stringResource(Res.string.destination_eia_label),
                     place = state.destination,
                     type = StopType.END,
                     isLocked = state.routeType is RouteType.ToUniversity,
                     showConnector = false,
-                    onClick = { onAction(CreateRouteAction.OnWaypointClick(-2)) }
+                    onClick = { onAction(CreateRouteAction.OnDestinationClick) }
                 )
             }
 
@@ -162,15 +160,19 @@ fun CreateRouteContent(
             }
 
             item {
-                val timeLabel = if (state.routeType is RouteType.ToUniversity) 
-                    stringResource(Res.string.arrival_time_label) 
-                else 
+                val timeLabel = if (state.routeType is RouteType.ToUniversity)
+                    stringResource(Res.string.arrival_time_label)
+                else
                     stringResource(Res.string.departure_time_label)
-                
-                Column(Modifier.padding(horizontal = 16.dp).clickable { showTimePicker = true }) {
+
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .clickable { showTimePicker = true }
+                ) {
                     Text(timeLabel, style = MaterialTheme.typography.titleMedium)
                     Text(
-                        state.targetTime.toString(),
+                        text = state.targetTime.toString(),
                         style = MaterialTheme.typography.displaySmall,
                         color = MaterialTheme.colorScheme.primary
                     )

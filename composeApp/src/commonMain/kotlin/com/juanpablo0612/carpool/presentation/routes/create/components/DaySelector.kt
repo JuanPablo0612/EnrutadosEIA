@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.DayOfWeek
 import org.jetbrains.compose.resources.stringResource

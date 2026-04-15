@@ -6,10 +6,7 @@ import kotlinx.serialization.Serializable
 sealed class RouteType {
     @Serializable
     data object ToUniversity : RouteType()
-    
+
     @Serializable
     data object FromUniversity : RouteType()
-
-    fun isToUniversity() = this is ToUniversity
-    fun isFromUniversity() = this is FromUniversity
 }

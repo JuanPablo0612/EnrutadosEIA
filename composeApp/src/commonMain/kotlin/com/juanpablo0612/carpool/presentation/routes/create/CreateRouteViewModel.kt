@@ -1,9 +1,7 @@
 package com.juanpablo0612.carpool.presentation.routes.create
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.data.places.model.PlaceDto
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
@@ -15,15 +13,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class CreateRouteViewModel(
     private val createRouteUseCase: CreateRouteUseCase,
-    private val authRepository: AuthRepository // To get current user ID
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CreateRouteUiState())
@@ -34,87 +29,69 @@ class CreateRouteViewModel(
 
     fun onAction(action: CreateRouteAction) {
         when (action) {
-            is CreateRouteAction.OnRouteTypeChange -> {
-                _state.update {
-                    it.copy(
-                        routeType = action.type,
-                        origin = if (action.type is RouteType.FromUniversity) Place.UNIVERSITY_EIA else null,
-                        destination = if (action.type is RouteType.ToUniversity) Place.UNIVERSITY_EIA else null
-                    )
-                }
+            is CreateRouteAction.OnRouteTypeChange -> onRouteTypeChange(action.type)
+            is CreateRouteAction.OnTimeChange -> _state.update { it.copy(targetTime = action.time) }
+            is CreateRouteAction.OnDayToggled -> onDayToggled(action)
+            is CreateRouteAction.OnRemoveWaypoint -> _state.update {
+                it.copy(waypoints = it.waypoints.filterIndexed { i, _ -> i != action.index })
             }
-            is CreateRouteAction.OnOriginChange -> {
-                if (_state.value.routeType is RouteType.ToUniversity) {
-                    _state.update { it.copy(origin = action.place) }
-                }
+            CreateRouteAction.OnOriginClick -> _state.update {
+                it.copy(selectionTarget = SelectionTarget.Origin)
             }
-            is CreateRouteAction.OnDestinationChange -> {
-                if (_state.value.routeType is RouteType.FromUniversity) {
-                    _state.update { it.copy(destination = action.place) }
-                }
+            CreateRouteAction.OnDestinationClick -> _state.update {
+                it.copy(selectionTarget = SelectionTarget.Destination)
             }
-            is CreateRouteAction.OnAddWaypoint -> {
-                _state.update { it.copy(waypoints = it.waypoints + action.place) }
+            is CreateRouteAction.OnEditWaypointClick -> _state.update {
+                it.copy(selectionTarget = SelectionTarget.EditWaypoint(action.index))
             }
-            is CreateRouteAction.OnRemoveWaypoint -> {
-                _state.update {
-                    it.copy(waypoints = it.waypoints.filterIndexed { index, _ -> index != action.index })
-                }
+            CreateRouteAction.OnAddWaypointClick -> _state.update {
+                it.copy(selectionTarget = SelectionTarget.NewWaypoint)
             }
-            is CreateRouteAction.OnTimeChange -> {
-                _state.update { it.copy(targetTime = action.time) }
-            }
-            is CreateRouteAction.OnDayToggled -> {
-                _state.update {
-                    val newDays = if (it.selectedDays.contains(action.day)) {
-                        it.selectedDays - action.day
-                    } else {
-                        it.selectedDays + action.day
-                    }
-                    it.copy(selectedDays = newDays)
-                }
-            }
+            is CreateRouteAction.OnPlaceSelectedFromResult -> onPlaceSelected(action)
+            CreateRouteAction.OnCancelSelection -> _state.update { it.copy(selectionTarget = null) }
             CreateRouteAction.OnSaveClick -> createRoute()
-            CreateRouteAction.OnBackClick -> {
-                viewModelScope.launch { _events.emit(CreateRouteEvent.NavigateBack) }
+            CreateRouteAction.OnBackClick -> viewModelScope.launch {
+                _events.emit(CreateRouteEvent.NavigateBack)
             }
-            CreateRouteAction.OnCancelSelection -> {
-                _state.update { it.copy(selectionTarget = null) }
+        }
+    }
+
+    private fun onRouteTypeChange(type: RouteType) {
+        _state.update {
+            it.copy(
+                routeType = type,
+                origin = if (type is RouteType.FromUniversity) Place.UNIVERSITY_EIA else null,
+                destination = if (type is RouteType.ToUniversity) Place.UNIVERSITY_EIA else null
+            )
+        }
+    }
+
+    private fun onDayToggled(action: CreateRouteAction.OnDayToggled) {
+        _state.update {
+            val newDays = if (it.selectedDays.contains(action.day)) {
+                it.selectedDays - action.day
+            } else {
+                it.selectedDays + action.day
             }
-            is CreateRouteAction.OnWaypointClick -> {
-                val index = action.index
-                _state.update {
-                    val target = when (index) {
-                        -1 -> SelectionTarget.Origin
-                        -2 -> SelectionTarget.Destination
-                        null -> null
-                        else -> SelectionTarget.Waypoint(index)
-                    }
-                    it.copy(selectionTarget = target)
+            it.copy(selectedDays = newDays)
+        }
+    }
+
+    private fun onPlaceSelected(action: CreateRouteAction.OnPlaceSelectedFromResult) {
+        val target = _state.value.selectionTarget ?: return
+        _state.update {
+            when (target) {
+                SelectionTarget.Origin -> it.copy(origin = action.place, selectionTarget = null)
+                SelectionTarget.Destination -> it.copy(destination = action.place, selectionTarget = null)
+                is SelectionTarget.EditWaypoint -> {
+                    val updated = it.waypoints.toMutableList()
+                    updated[target.index] = action.place
+                    it.copy(waypoints = updated, selectionTarget = null)
                 }
-            }
-            is CreateRouteAction.OnPlaceSelectedFromResult -> {
-                val target = _state.value.selectionTarget
-                when (target) {
-                    SelectionTarget.Origin -> {
-                        _state.update { it.copy(origin = action.place, selectionTarget = null) }
-                    }
-                    SelectionTarget.Destination -> {
-                        _state.update { it.copy(destination = action.place, selectionTarget = null) }
-                    }
-                    is SelectionTarget.Waypoint -> {
-                        _state.update {
-                            val newWaypoints = it.waypoints.toMutableList()
-                            if (target.index < newWaypoints.size) {
-                                newWaypoints[target.index] = action.place
-                            } else {
-                                newWaypoints.add(action.place)
-                            }
-                            it.copy(waypoints = newWaypoints, selectionTarget = null)
-                        }
-                    }
-                    null -> {}
-                }
+                SelectionTarget.NewWaypoint -> it.copy(
+                    waypoints = it.waypoints + action.place,
+                    selectionTarget = null
+                )
             }
         }
     }
@@ -123,25 +100,22 @@ class CreateRouteViewModel(
         val currentState = _state.value
         val origin = currentState.origin
         val destination = currentState.destination
-        
+
         if (origin == null || destination == null) {
-            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.OriginDestinationRequired)) }
+            emitError(CreateRouteError.OriginDestinationRequired)
             return
         }
-
         if (currentState.waypoints.isEmpty()) {
-            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.AtLeastOneWaypoint)) }
+            emitError(CreateRouteError.AtLeastOneWaypoint)
             return
         }
-
         if (currentState.selectedDays.isEmpty()) {
-            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.AtLeastOneDay)) }
+            emitError(CreateRouteError.AtLeastOneDay)
             return
         }
-
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
-            viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(CreateRouteError.UserNotAuthenticated)) }
+            emitError(CreateRouteError.UserNotAuthenticated)
             return
         }
 
@@ -157,16 +131,19 @@ class CreateRouteViewModel(
                 daysOfWeek = currentState.selectedDays.toList(),
                 type = currentState.routeType
             )
-
             createRouteUseCase(route)
                 .onSuccess {
                     _state.update { it.copy(isLoading = false, isSuccess = true) }
                     _events.emit(CreateRouteEvent.RouteCreated)
                 }
-                .onFailure { error ->
+                .onFailure {
                     _state.update { it.copy(isLoading = false, error = CreateRouteError.Unknown) }
                     _events.emit(CreateRouteEvent.ShowError(CreateRouteError.Unknown))
                 }
         }
+    }
+
+    private fun emitError(error: CreateRouteError) {
+        viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(error)) }
     }
 }

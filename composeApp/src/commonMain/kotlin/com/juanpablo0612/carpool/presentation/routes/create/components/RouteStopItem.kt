@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.select_location_placeholder
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 enum class StopType {
@@ -83,7 +85,7 @@ fun RouteStopItem(
             )
             
             Text(
-                text = place?.name ?: "Select a location...",
+                text = place?.name ?: stringResource(Res.string.select_location_placeholder),
                 style = MaterialTheme.typography.bodyLarge,
                 color = if (place == null) MaterialTheme.colorScheme.onSurfaceVariant 
                         else MaterialTheme.colorScheme.onSurface,
