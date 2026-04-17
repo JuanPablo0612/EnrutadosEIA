@@ -53,6 +53,9 @@ kotlin {
             implementation(libs.firebase.firestore)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs.compose)
+            implementation(libs.filekit.coil)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
