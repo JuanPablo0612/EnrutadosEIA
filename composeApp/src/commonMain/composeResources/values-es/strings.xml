@@ -89,4 +89,35 @@
     <string name="no_saved_places">No hay lugares guardados</string>
     <string name="no_results_found">No se encontraron resultados</string>
     <string name="error_user_not_authenticated">Usuario no autenticado</string>
+    <string name="select_time_title">Seleccionar hora</string>
+    <string name="ok_button">Aceptar</string>
+
+    <!-- Vehicle Registration -->
+    <string name="register_vehicle_title">Registrar Vehículo</string>
+    <string name="vehicle_photo_section">Foto del Vehículo</string>
+    <string name="vehicle_add_photo">Toca para agregar foto del vehículo</string>
+    <string name="vehicle_change_photo">Toca para cambiar la foto</string>
+    <string name="vehicle_select_photo_title">Seleccionar foto del vehículo</string>
+    <string name="vehicle_brand_label">Marca</string>
+    <string name="vehicle_brand_placeholder">Toyota, Mazda…</string>
+    <string name="vehicle_model_label">Modelo</string>
+    <string name="vehicle_model_placeholder">Corolla, CX-5…</string>
+    <string name="vehicle_license_plate_label">Placa</string>
+    <string name="vehicle_license_plate_placeholder">ABC-123</string>
+    <string name="vehicle_color_label">Color</string>
+    <string name="vehicle_color_placeholder">Blanco, Negro…</string>
+    <string name="vehicle_year_label">Año</string>
+    <string name="vehicle_year_placeholder">2024</string>
+    <string name="vehicle_seats_label">Asientos disponibles</string>
+    <string name="vehicle_seats_placeholder">4</string>
+    <string name="register_vehicle_button">Registrar Vehículo</string>
+    <string name="error_vehicle_brand_required">La marca es obligatoria</string>
+    <string name="error_vehicle_model_required">El modelo es obligatorio</string>
+    <string name="error_vehicle_license_plate_required">La placa es obligatoria</string>
+    <string name="error_vehicle_color_required">El color es obligatorio</string>
+    <string name="error_vehicle_year_required">El año es obligatorio</string>
+    <string name="error_vehicle_year_invalid">Ingresa un año válido (p.ej. 2024)</string>
+    <string name="error_vehicle_seats_required">El número de asientos es obligatorio</string>
+    <string name="error_vehicle_seats_invalid">Los asientos deben estar entre 1 y 8</string>
+    <string name="error_vehicle_photo_required">La foto del vehículo es obligatoria</string>
 </resources>

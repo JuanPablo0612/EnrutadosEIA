@@ -91,4 +91,37 @@
     <string name="error_user_not_authenticated">User not authenticated</string>
     <string name="select_time_title">Select Time</string>
     <string name="ok_button">OK</string>
+
+    <!-- Vehicle Registration -->
+    <string name="register_vehicle_title">Register Vehicle</string>
+    <string name="vehicle_photo_section">Vehicle Photo</string>
+    <string name="vehicle_add_photo">Tap to add vehicle photo</string>
+    <string name="vehicle_change_photo">Tap to change photo</string>
+    <string name="vehicle_select_photo_title">Select vehicle photo</string>
+    <string name="vehicle_brand_label">Brand</string>
+    <string name="vehicle_brand_placeholder">Toyota, Mazda…</string>
+    <string name="vehicle_model_label">Model</string>
+    <string name="vehicle_model_placeholder">Corolla, CX-5…</string>
+    <string name="vehicle_license_plate_label">License Plate</string>
+    <string name="vehicle_license_plate_placeholder">ABC-123</string>
+    <string name="vehicle_color_label">Color</string>
+    <string name="vehicle_color_placeholder">White, Black…</string>
+    <string name="vehicle_year_label">Year</string>
+    <string name="vehicle_year_placeholder">2024</string>
+    <string name="vehicle_seats_label">Available Seats</string>
+    <string name="vehicle_seats_placeholder">4</string>
+    <string name="register_vehicle_button">Register Vehicle</string>
+    <string name="error_vehicle_brand_required">Brand is required</string>
+    <string name="error_vehicle_model_required">Model is required</string>
+    <string name="error_vehicle_license_plate_required">License plate is required</string>
+    <string name="error_vehicle_color_required">Color is required</string>
+    <string name="error_vehicle_year_required">Year is required</string>
+    <string name="error_vehicle_year_invalid">Please enter a valid year (e.g. 2024)</string>
+    <string name="error_vehicle_seats_required">Number of seats is required</string>
+    <string name="error_vehicle_seats_invalid">Seats must be between 1 and 8</string>
+    <string name="error_vehicle_photo_required">A vehicle photo is required</string>
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_create_route">Create</string>
+    <string name="nav_register_vehicle">Vehicle</string>
 </resources>

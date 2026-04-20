@@ -51,6 +51,7 @@ navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-co
 firebase-analytics = { module = "dev.gitlive:firebase-analytics", version.ref = "firebase-kotlin-sdk" }
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase-kotlin-sdk" }
 firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase-kotlin-sdk" }
+firebase-storage = { module = "dev.gitlive:firebase-storage", version.ref = "firebase-kotlin-sdk" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }

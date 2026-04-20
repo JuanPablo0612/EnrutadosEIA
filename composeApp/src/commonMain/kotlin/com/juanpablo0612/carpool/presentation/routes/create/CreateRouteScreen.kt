@@ -13,8 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
@@ -23,7 +27,9 @@ import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHe
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -37,7 +43,7 @@ fun CreateRouteScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val placeSelectorViewModel: PlaceSelectorViewModel = koinViewModel()
-    val placeSelectorState = placeSelectorViewModel.state.collectAsState().value
+    val placeSelectorState by placeSelectorViewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -47,21 +53,36 @@ fun CreateRouteScreen(
         }
     }
 
+    CreateRouteScreenContent(
+        state = state,
+        placeSelectorState = placeSelectorState,
+        onAction = viewModel::onAction,
+        onPlaceSelectorAction = placeSelectorViewModel::onAction
+    )
+}
+
+@Composable
+fun CreateRouteScreenContent(
+    state: CreateRouteUiState,
+    placeSelectorState: PlaceSelectorUiState,
+    onAction: (CreateRouteAction) -> Unit,
+    onPlaceSelectorAction: (PlaceSelectorAction) -> Unit
+) {
     if (state.selectionTarget != null) {
         PlaceSelectorContent(
             state = placeSelectorState,
-            onAction = placeSelectorViewModel::onAction,
+            onAction = onPlaceSelectorAction,
             onPlaceSelected = { place ->
-                viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
+                onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
             },
             onBack = {
-                viewModel.onAction(CreateRouteAction.OnCancelSelection)
+                onAction(CreateRouteAction.OnCancelSelection)
             }
         )
     } else {
         CreateRouteContent(
             state = state,
-            onAction = viewModel::onAction
+            onAction = onAction
         )
     }
 }
@@ -233,5 +254,48 @@ fun CreateRouteContent(
         ) {
             TimePicker(state = timePickerState)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CreateRouteScreenPreview() {
+    CarpoolTheme {
+        CreateRouteScreenContent(
+            state = CreateRouteUiState(
+                origin = Place(
+                    name = "Home",
+                    address = "123 Main St",
+                    latitude = 0.0,
+                    longitude = 0.0
+                ),
+                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+            ),
+            placeSelectorState = PlaceSelectorUiState(),
+            onAction = {},
+            onPlaceSelectorAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CreateRouteContentPreview() {
+    CarpoolTheme {
+        CreateRouteContent(
+            state = CreateRouteUiState(
+                origin = Place(
+                    name = "Home",
+                    address = "123 Main St",
+                    latitude = 0.0,
+                    longitude = 0.0
+                ),
+                waypoints = listOf(
+                    Place(name = "Stop 1", address = "Address 1", latitude = 0.0, longitude = 0.0)
+                ),
+                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+            ),
+            onAction = {}
+        )
     }
 }
