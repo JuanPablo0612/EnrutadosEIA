@@ -17,14 +17,21 @@ import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.routes.use_case.CreateRouteUseCase
+import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
+import com.juanpablo0612.carpool.domain.routes.use_case.GetUserRoutesUseCase
+import com.juanpablo0612.carpool.domain.routes.use_case.UpdateRouteUseCase
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
+import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
+import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailViewModel
+import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
+import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleViewModel
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
@@ -58,7 +65,12 @@ val authModule = module {
 val routeModule = module {
     singleOf(::RouteRepositoryImpl) bind RouteRepository::class
     factoryOf(::CreateRouteUseCase)
+    factoryOf(::GetUserRoutesUseCase)
+    factoryOf(::GetRouteByIdUseCase)
+    factoryOf(::UpdateRouteUseCase)
     viewModel { CreateRouteViewModel(get(), get()) }
+    viewModel { RoutesListViewModel(get(), get()) }
+    viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get()) }
 }
 
 val placeModule = module {
@@ -67,6 +79,7 @@ val placeModule = module {
     factoryOf(::SearchPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
     viewModel { PlaceSelectorViewModel(get(), get(), get()) }
+    viewModel { AddPlaceViewModel(get()) }
 }
 
 val vehicleModule = module {
@@ -74,6 +87,7 @@ val vehicleModule = module {
     factoryOf(::CreateVehicleUseCase)
     factoryOf(::GetUserVehiclesUseCase)
     viewModel { RegisterVehicleViewModel(get(), get()) }
+    viewModel { VehiclesListViewModel(get(), get()) }
 }
 
 val appModule = module {

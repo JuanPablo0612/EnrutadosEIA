@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.routes.create
+package com.juanpablo0612.carpool.presentation.routes.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,10 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
-import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
@@ -27,20 +26,17 @@ import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHe
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
-import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CreateRouteScreen(
-    viewModel: CreateRouteViewModel,
+fun RouteDetailScreen(
+    viewModel: RouteDetailViewModel,
     onBackClick: () -> Unit,
-    onRouteCreated: () -> Unit,
-    onNavigateToAddPlace: () -> Unit = {}
+    onNavigateToAddPlace: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val placeSelectorViewModel: PlaceSelectorViewModel = koinViewModel()
@@ -48,13 +44,12 @@ fun CreateRouteScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is CreateRouteEvent.NavigateBack -> onBackClick()
-            is CreateRouteEvent.RouteCreated -> onRouteCreated()
-            is CreateRouteEvent.ShowError -> Unit
+            RouteDetailEvent.RouteUpdated -> onBackClick()
+            RouteDetailEvent.NavigateBack -> onBackClick()
         }
     }
 
-    CreateRouteScreenContent(
+    RouteDetailScreenContent(
         state = state,
         placeSelectorState = placeSelectorState,
         onAction = viewModel::onAction,
@@ -64,27 +59,27 @@ fun CreateRouteScreen(
 }
 
 @Composable
-fun CreateRouteScreenContent(
-    state: CreateRouteUiState,
+fun RouteDetailScreenContent(
+    state: RouteDetailUiState,
     placeSelectorState: PlaceSelectorUiState,
-    onAction: (CreateRouteAction) -> Unit,
+    onAction: (RouteDetailAction) -> Unit,
     onPlaceSelectorAction: (PlaceSelectorAction) -> Unit,
-    onNavigateToAddPlace: () -> Unit = {}
+    onNavigateToAddPlace: () -> Unit
 ) {
     if (state.selectionTarget != null) {
         PlaceSelectorContent(
             state = placeSelectorState,
             onAction = onPlaceSelectorAction,
             onPlaceSelected = { place ->
-                onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
+                onAction(RouteDetailAction.OnPlaceSelectedFromResult(place))
             },
             onBack = {
-                onAction(CreateRouteAction.OnCancelSelection)
+                onAction(RouteDetailAction.OnCancelSelection)
             },
             onNavigateToAddPlace = onNavigateToAddPlace
         )
     } else {
-        CreateRouteContent(
+        RouteDetailContent(
             state = state,
             onAction = onAction
         )
@@ -93,18 +88,18 @@ fun CreateRouteScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateRouteContent(
-    state: CreateRouteUiState,
-    onAction: (CreateRouteAction) -> Unit
+fun RouteDetailContent(
+    state: RouteDetailUiState,
+    onAction: (RouteDetailAction) -> Unit
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.create_route_title)) },
+                title = { Text(stringResource(Res.string.route_detail_title)) },
                 navigationIcon = {
-                    IconButton(onClick = { onAction(CreateRouteAction.OnBackClick) }) {
+                    IconButton(onClick = { onAction(RouteDetailAction.OnBackClick) }) {
                         Icon(
                             imageVector = vectorResource(Res.drawable.arrow_back_24px),
                             contentDescription = null
@@ -114,6 +109,16 @@ fun CreateRouteContent(
             )
         }
     ) { padding ->
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -123,7 +128,7 @@ fun CreateRouteContent(
             item {
                 RouteTypeToggle(
                     selectedType = state.routeType,
-                    onTypeChange = { onAction(CreateRouteAction.OnRouteTypeChange(it)) }
+                    onTypeChange = { onAction(RouteDetailAction.OnRouteTypeChange(it)) }
                 )
             }
 
@@ -140,7 +145,7 @@ fun CreateRouteContent(
                     place = state.origin,
                     type = StopType.START,
                     isLocked = state.routeType is RouteType.FromUniversity,
-                    onClick = { onAction(CreateRouteAction.OnOriginClick) }
+                    onClick = { onAction(RouteDetailAction.OnOriginClick) }
                 )
             }
 
@@ -150,14 +155,14 @@ fun CreateRouteContent(
                     place = waypoint,
                     type = StopType.MIDDLE,
                     isLocked = false,
-                    onRemove = { onAction(CreateRouteAction.OnRemoveWaypoint(index)) },
-                    onClick = { onAction(CreateRouteAction.OnEditWaypointClick(index)) }
+                    onRemove = { onAction(RouteDetailAction.OnRemoveWaypoint(index)) },
+                    onClick = { onAction(RouteDetailAction.OnEditWaypointClick(index)) }
                 )
             }
 
             item {
                 TextButton(
-                    onClick = { onAction(CreateRouteAction.OnAddWaypointClick) },
+                    onClick = { onAction(RouteDetailAction.OnAddWaypointClick) },
                     modifier = Modifier.padding(horizontal = 40.dp)
                 ) {
                     Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
@@ -176,7 +181,7 @@ fun CreateRouteContent(
                     type = StopType.END,
                     isLocked = state.routeType is RouteType.ToUniversity,
                     showConnector = false,
-                    onClick = { onAction(CreateRouteAction.OnDestinationClick) }
+                    onClick = { onAction(RouteDetailAction.OnDestinationClick) }
                 )
             }
 
@@ -207,15 +212,15 @@ fun CreateRouteContent(
             item {
                 DaySelector(
                     selectedDays = state.selectedDays,
-                    onDayToggled = { onAction(CreateRouteAction.OnDayToggled(it)) },
+                    onDayToggled = { onAction(RouteDetailAction.OnDayToggled(it)) },
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
 
             item {
-                if (state.error != null) {
+                state.error?.let { error ->
                     Text(
-                        text = stringResource(state.error.asStringResource()),
+                        text = stringResource(error.asStringResource()),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -224,20 +229,20 @@ fun CreateRouteContent(
 
             item {
                 Button(
-                    onClick = { onAction(CreateRouteAction.OnSaveClick) },
+                    onClick = { onAction(RouteDetailAction.OnUpdateClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    enabled = !state.isLoading
+                    enabled = !state.isSaving
                 ) {
-                    if (state.isLoading) {
+                    if (state.isSaving) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text(stringResource(Res.string.save_route_button))
+                        Text(stringResource(Res.string.update_route_button))
                     }
                 }
             }
@@ -252,54 +257,11 @@ fun CreateRouteContent(
         TimePickerDialog(
             onCancel = { showTimePicker = false },
             onConfirm = {
-                onAction(CreateRouteAction.OnTimeChange(LocalTime(timePickerState.hour, timePickerState.minute)))
+                onAction(RouteDetailAction.OnTimeChange(LocalTime(timePickerState.hour, timePickerState.minute)))
                 showTimePicker = false
             }
         ) {
             TimePicker(state = timePickerState)
         }
-    }
-}
-
-@Preview
-@Composable
-private fun CreateRouteScreenPreview() {
-    CarpoolTheme {
-        CreateRouteScreenContent(
-            state = CreateRouteUiState(
-                origin = Place(
-                    name = "Home",
-                    address = "123 Main St",
-                    latitude = 0.0,
-                    longitude = 0.0
-                ),
-                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
-            ),
-            placeSelectorState = PlaceSelectorUiState(),
-            onAction = {},
-            onPlaceSelectorAction = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun CreateRouteContentPreview() {
-    CarpoolTheme {
-        CreateRouteContent(
-            state = CreateRouteUiState(
-                origin = Place(
-                    name = "Home",
-                    address = "123 Main St",
-                    latitude = 0.0,
-                    longitude = 0.0
-                ),
-                waypoints = listOf(
-                    Place(name = "Stop 1", address = "Address 1", latitude = 0.0, longitude = 0.0)
-                ),
-                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
-            ),
-            onAction = {}
-        )
     }
 }

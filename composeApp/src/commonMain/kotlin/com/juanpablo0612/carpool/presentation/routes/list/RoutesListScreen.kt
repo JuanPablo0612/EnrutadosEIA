@@ -42,13 +42,15 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun RoutesListScreen(
     viewModel: RoutesListViewModel,
-    onNavigateToCreateRoute: () -> Unit
+    onNavigateToCreateRoute: () -> Unit,
+    onNavigateToRouteDetail: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             RoutesListEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
+            is RoutesListEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
         }
     }
 
@@ -112,7 +114,10 @@ fun RoutesListContent(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(state.routes, key = { it.id }) { route ->
-                        RouteCard(route = route)
+                        RouteCard(
+                            route = route,
+                            onClick = { onAction(RoutesListAction.OnRouteClick(route.id)) }
+                        )
                     }
                 }
             }

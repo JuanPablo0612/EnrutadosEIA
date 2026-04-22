@@ -11,28 +11,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
-import com.juanpablo0612.carpool.presentation.places.selector.components.AddPlaceDialog
 import com.juanpablo0612.carpool.presentation.places.selector.components.PlaceItem
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 @Composable
 fun PlaceSelectorScreen(
     viewModel: PlaceSelectorViewModel,
     onPlaceSelected: (Place) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToAddPlace: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    
+
     PlaceSelectorContent(
         state = state,
         onAction = viewModel::onAction,
         onPlaceSelected = onPlaceSelected,
-        onBack = onBack
+        onBack = onBack,
+        onNavigateToAddPlace = onNavigateToAddPlace
     )
 }
 
@@ -42,10 +40,9 @@ fun PlaceSelectorContent(
     state: PlaceSelectorUiState,
     onAction: (PlaceSelectorAction) -> Unit,
     onPlaceSelected: (Place) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToAddPlace: () -> Unit
 ) {
-    var showAddDialog by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,10 +56,10 @@ fun PlaceSelectorContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showAddDialog = true }) {
+                    IconButton(onClick = onNavigateToAddPlace) {
                         Icon(
                             imageVector = vectorResource(Res.drawable.add_24px),
-                            contentDescription = "Add Place"
+                            contentDescription = null
                         )
                     }
                 }
@@ -80,11 +77,11 @@ fun PlaceSelectorContent(
                 onValueChange = { onAction(PlaceSelectorAction.OnQueryChange(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(Res.string.search_places)) },
-                leadingIcon = { 
+                leadingIcon = {
                     Icon(
                         imageVector = vectorResource(Res.drawable.search_24px),
                         contentDescription = null
-                    ) 
+                    )
                 }
             )
 
@@ -100,7 +97,8 @@ fun PlaceSelectorContent(
                     item {
                         Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
-                                text = if (state.query.isBlank()) stringResource(Res.string.no_saved_places) else stringResource(Res.string.no_results_found),
+                                text = if (state.query.isBlank()) stringResource(Res.string.no_saved_places)
+                                else stringResource(Res.string.no_results_found),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -116,15 +114,5 @@ fun PlaceSelectorContent(
                 }
             }
         }
-    }
-
-    if (showAddDialog) {
-        AddPlaceDialog(
-            onDismiss = { showAddDialog = false },
-            onSave = { name, address ->
-                onAction(PlaceSelectorAction.OnSavePlace(name, address, 0.0, 0.0))
-                showAddDialog = false
-            }
-        )
     }
 }

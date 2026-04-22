@@ -1,11 +1,11 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.home_24px
-import enrutadoseia.composeapp.generated.resources.nav_create_route
+import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.nav_home
-import enrutadoseia.composeapp.generated.resources.nav_register_vehicle
+import enrutadoseia.composeapp.generated.resources.nav_my_routes
+import enrutadoseia.composeapp.generated.resources.nav_my_vehicles
 import enrutadoseia.composeapp.generated.resources.person_24px
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -21,15 +21,15 @@ sealed class BottomNavItem<T : Any>(
         route = Route.Home
     )
 
-    data object CreateRoute : BottomNavItem<Route.CreateRoute>(
-        label = Res.string.nav_create_route,
-        icon = Res.drawable.add_24px,
-        route = Route.CreateRoute
+    data object MyRoutes : BottomNavItem<Route.RoutesList>(
+        label = Res.string.nav_my_routes,
+        icon = Res.drawable.location_on_24px,
+        route = Route.RoutesList
     )
 
-    data object RegisterVehicle : BottomNavItem<Route.RegisterVehicle>(
-        label = Res.string.nav_register_vehicle,
+    data object MyVehicles : BottomNavItem<Route.VehiclesList>(
+        label = Res.string.nav_my_vehicles,
         icon = Res.drawable.person_24px,
-        route = Route.RegisterVehicle
+        route = Route.VehiclesList
     )
 }

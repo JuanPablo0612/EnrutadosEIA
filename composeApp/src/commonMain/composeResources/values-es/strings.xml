@@ -122,8 +122,36 @@
     <string name="error_vehicle_seats_required">El número de asientos es obligatorio</string>
     <string name="error_vehicle_seats_invalid">Los asientos deben estar entre 1 y 8</string>
     <string name="error_vehicle_photo_required">La foto del vehículo es obligatoria</string>
+    <!-- Route Detail -->
+    <string name="route_detail_title">Detalles de la Ruta</string>
+    <string name="update_route_button">Actualizar Ruta</string>
+    <string name="error_route_not_found">Ruta no encontrada</string>
+
+    <!-- Vehicle Detail -->
+    <string name="vehicle_detail_title">Detalles del Vehículo</string>
+    <string name="update_vehicle_button">Actualizar Vehículo</string>
+    <string name="error_vehicle_not_found">Vehículo no encontrado</string>
+
     <!-- Navigation -->
     <string name="nav_home">Inicio</string>
     <string name="nav_create_route">Crear</string>
     <string name="nav_register_vehicle">Vehículo</string>
+    <string name="nav_my_routes">Rutas</string>
+    <string name="nav_my_vehicles">Vehículos</string>
+
+    <!-- Lists -->
+    <string name="vehicles_list_title">Mis Vehículos</string>
+    <string name="vehicles_empty_title">Sin vehículos aún</string>
+    <string name="vehicles_empty_subtitle">Registra tu primer vehículo para ofrecer viajes</string>
+    <string name="vehicle_seats_count">%1$d asientos</string>
+    <string name="routes_list_title">Mis Rutas</string>
+    <string name="routes_empty_title">Sin rutas aún</string>
+    <string name="routes_empty_subtitle">Crea tu primera ruta para ofrecer viajes</string>
+    <string name="route_to_university">Hacia la Universidad</string>
+    <string name="route_from_university">Desde la Universidad</string>
+    <string name="route_waypoints_count">%1$d paradas</string>
+
+    <!-- Add Place -->
+    <string name="error_place_name_required">El nombre del lugar es obligatorio</string>
+    <string name="error_place_address_required">La dirección es obligatoria</string>
 </resources>

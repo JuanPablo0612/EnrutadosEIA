@@ -122,8 +122,36 @@
     <string name="error_vehicle_seats_required">Number of seats is required</string>
     <string name="error_vehicle_seats_invalid">Seats must be between 1 and 8</string>
     <string name="error_vehicle_photo_required">A vehicle photo is required</string>
+    <!-- Route Detail -->
+    <string name="route_detail_title">Route Details</string>
+    <string name="update_route_button">Update Route</string>
+    <string name="error_route_not_found">Route not found</string>
+
+    <!-- Vehicle Detail -->
+    <string name="vehicle_detail_title">Vehicle Details</string>
+    <string name="update_vehicle_button">Update Vehicle</string>
+    <string name="error_vehicle_not_found">Vehicle not found</string>
+
     <!-- Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_create_route">Create</string>
     <string name="nav_register_vehicle">Vehicle</string>
+    <string name="nav_my_routes">Routes</string>
+    <string name="nav_my_vehicles">Vehicles</string>
+
+    <!-- Lists -->
+    <string name="vehicles_list_title">My Vehicles</string>
+    <string name="vehicles_empty_title">No vehicles yet</string>
+    <string name="vehicles_empty_subtitle">Register your first vehicle to start offering rides</string>
+    <string name="vehicle_seats_count">%1$d seats</string>
+    <string name="routes_list_title">My Routes</string>
+    <string name="routes_empty_title">No routes yet</string>
+    <string name="routes_empty_subtitle">Create your first route to start offering rides</string>
+    <string name="route_to_university">To University</string>
+    <string name="route_from_university">From University</string>
+    <string name="route_waypoints_count">%1$d stops</string>
+
+    <!-- Add Place -->
+    <string name="error_place_name_required">Place name is required</string>
+    <string name="error_place_address_required">Address is required</string>
 </resources>

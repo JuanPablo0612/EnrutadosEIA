@@ -48,6 +48,9 @@ class RoutesListViewModel(
             RoutesListAction.OnCreateRouteClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateToCreateRoute)
             }
+            is RoutesListAction.OnRouteClick -> viewModelScope.launch {
+                _events.emit(RoutesListEvent.NavigateToRouteDetail(action.routeId))
+            }
         }
     }
 }

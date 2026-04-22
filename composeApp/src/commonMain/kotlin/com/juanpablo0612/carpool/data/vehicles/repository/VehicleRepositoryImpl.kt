@@ -6,6 +6,9 @@ import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.storage.FirebaseStorage
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.ImageFormat
+import io.github.vinceglb.filekit.compressImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,9 +21,14 @@ class VehicleRepositoryImpl(
         return try {
             val docRef = firestore.collection(COLLECTION_NAME).document
             val vehicleId = docRef.id
+            val compressedBytes = FileKit.compressImage(
+                bytes = photoBytes,
+                quality = 80,
+                imageFormat = ImageFormat.JPEG // JPEG or PNG
+            )
 
             val photoRef = storage.reference.child("$STORAGE_PATH/${vehicle.driverId}/$vehicleId.jpg")
-            photoRef.upload(photoBytes)
+            photoRef.upload(compressedBytes)
             val photoUrl = photoRef.getDownloadUrl()
 
             val dto = VehicleDto.fromDomain(vehicle).copy(id = vehicleId, photoUrl = photoUrl)

@@ -24,8 +24,8 @@ fun AppNavigation(
 
     val bottomNavItems = listOf(
         BottomNavItem.Home,
-        BottomNavItem.CreateRoute,
-        BottomNavItem.RegisterVehicle
+        BottomNavItem.MyRoutes,
+        BottomNavItem.MyVehicles
     )
     val showBottomBar = bottomNavItems.any { currentDestination?.hasRoute(it.route::class) == true }
 
@@ -66,6 +66,9 @@ fun AppNavigation(
             )
             mainNavGraph(
                 onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
+                onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle) },
+                onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
+                onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
