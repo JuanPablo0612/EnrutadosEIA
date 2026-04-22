@@ -105,10 +105,9 @@ fun RegisterContent(
 
             Text(
                 text = stringResource(Res.string.terms_and_privacy),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(lineHeight = 16.sp),
                 color = MaterialTheme.colorScheme.outline,
                 textAlign = TextAlign.Center,
-                lineHeight = 16.sp,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
@@ -209,8 +208,7 @@ private fun RoleSelectionSection(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(Res.string.user_type_prompt),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             modifier = Modifier.padding(bottom = 12.dp)
         )
         Row(

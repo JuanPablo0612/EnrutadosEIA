@@ -98,6 +98,8 @@
     <string name="vehicle_add_photo">Toca para agregar foto del vehículo</string>
     <string name="vehicle_change_photo">Toca para cambiar la foto</string>
     <string name="vehicle_select_photo_title">Seleccionar foto del vehículo</string>
+    <string name="vehicle_select_camera">Cámara</string>
+    <string name="vehicle_select_gallery">Galería</string>
     <string name="vehicle_brand_label">Marca</string>
     <string name="vehicle_brand_placeholder">Toyota, Mazda…</string>
     <string name="vehicle_model_label">Modelo</string>
@@ -120,4 +122,8 @@
     <string name="error_vehicle_seats_required">El número de asientos es obligatorio</string>
     <string name="error_vehicle_seats_invalid">Los asientos deben estar entre 1 y 8</string>
     <string name="error_vehicle_photo_required">La foto del vehículo es obligatoria</string>
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_create_route">Crear</string>
+    <string name="nav_register_vehicle">Vehículo</string>
 </resources>

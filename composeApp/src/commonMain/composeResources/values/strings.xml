@@ -98,6 +98,8 @@
     <string name="vehicle_add_photo">Tap to add vehicle photo</string>
     <string name="vehicle_change_photo">Tap to change photo</string>
     <string name="vehicle_select_photo_title">Select vehicle photo</string>
+    <string name="vehicle_select_camera">Camera</string>
+    <string name="vehicle_select_gallery">Gallery</string>
     <string name="vehicle_brand_label">Brand</string>
     <string name="vehicle_brand_placeholder">Toyota, Mazda…</string>
     <string name="vehicle_model_label">Model</string>

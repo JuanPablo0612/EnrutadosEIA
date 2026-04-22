@@ -74,8 +74,7 @@ fun AuthTopBar(
         title = {
             Text(
                 text = title,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
         },
         navigationIcon = {
@@ -120,8 +119,7 @@ fun AuthHeader(
 
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
@@ -167,8 +165,7 @@ fun AuthTextField(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             color = if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 6.dp)
         )
@@ -362,8 +359,7 @@ fun PrimaryButton(
             ) {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 if (trailingIcon != null) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -472,8 +468,7 @@ fun AuthClickableText(
         text = text,
         modifier = modifier.clickable { onClick() },
         color = color,
-        fontWeight = fontWeight,
-        style = MaterialTheme.typography.bodyMedium
+        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = fontWeight)
     )
 }
 
@@ -511,8 +506,9 @@ fun RoleSelectionCard(
             }
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                ),
                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
             if (isSelected) {

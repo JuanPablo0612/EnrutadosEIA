@@ -78,10 +78,9 @@ fun RouteStopItem(
         ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = if (isLocked) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) 
-                        else MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = if (isLocked) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        else MaterialTheme.colorScheme.primary
             )
             
             Text(
