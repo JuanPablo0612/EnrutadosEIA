@@ -2,8 +2,8 @@ package com.juanpablo0612.carpool.presentation.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
-import com.juanpablo0612.carpool.domain.auth.util.ValidationError
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -41,36 +42,34 @@ class RegisterViewModel(
             }
             RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update {
-                it.copy(
-                    isConfirmPasswordVisible = !it.isConfirmPasswordVisible
-                )
+                it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible)
             }
-
-            is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger) }
-            is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver) }
+            is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger, roleError = null) }
+            is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver, roleError = null) }
             RegisterAction.OnRegisterClicked -> register()
-            RegisterAction.OnClearError -> _uiState.update { it.copy(error = null) }
         }
     }
 
     private fun register() {
         val state = _uiState.value
-        
+
         val nameResult = Validator.validateFullName(state.fullName)
         val emailResult = Validator.validateEmail(state.email)
         val passwordResult = Validator.validatePassword(state.password)
         val confirmResult = Validator.validateConfirmPassword(state.password, state.confirmPassword)
+        val roleResult = Validator.validateRole(state.isPassenger, state.isDriver)
 
-        val hasError = listOf(nameResult, emailResult, passwordResult, confirmResult)
+        val hasError = listOf(nameResult, emailResult, passwordResult, confirmResult, roleResult)
             .any { it is ValidationResult.Error }
 
         if (hasError) {
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
                     fullNameError = (nameResult as? ValidationResult.Error)?.error,
                     emailError = (emailResult as? ValidationResult.Error)?.error,
                     passwordError = (passwordResult as? ValidationResult.Error)?.error,
-                    confirmPasswordError = (confirmResult as? ValidationResult.Error)?.error
+                    confirmPasswordError = (confirmResult as? ValidationResult.Error)?.error,
+                    roleError = (roleResult as? ValidationResult.Error)?.error
                 )
             }
             return
@@ -86,8 +85,14 @@ class RegisterViewModel(
                 isDriver = state.isDriver
             )
                 .onSuccess {
-                    _uiState.update { it.copy(isLoading = false, isSuccess = true) }
-                    _events.emit(AuthEvent.NavigateToHome)
+                    getCurrentUserUseCase()
+                        .onSuccess { user ->
+                            _uiState.update { it.copy(isLoading = false) }
+                            _events.emit(AuthEvent.NavigateAfterAuth(user))
+                        }
+                        .onFailure { throwable ->
+                            _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
+                        }
                 }
                 .onFailure { throwable ->
                     _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }

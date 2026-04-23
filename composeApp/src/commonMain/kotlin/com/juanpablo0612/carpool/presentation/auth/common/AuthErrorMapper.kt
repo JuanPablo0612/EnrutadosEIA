@@ -6,10 +6,6 @@ import com.juanpablo0612.carpool.domain.auth.util.ValidationError
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 
-/**
- * Maps domain-agnostic exceptions to UI-specific error models.
- * This lives in the presentation layer because AuthError is a UI class.
- */
 fun Throwable.toAuthError(): AuthError {
     return when (this) {
         is AppException.AuthException.InvalidCredentials -> AuthError.InvalidCredentials
@@ -42,5 +38,6 @@ fun ValidationError.asStringResource(): StringResource {
         ValidationError.NameTooShort -> Res.string.error_name_too_short
         ValidationError.ConfirmPasswordEmpty -> Res.string.error_confirm_password_empty
         ValidationError.PasswordsDoNotMatch -> Res.string.error_passwords_do_not_match
+        ValidationError.RoleNotSelected -> Res.string.error_role_not_selected
     }
 }

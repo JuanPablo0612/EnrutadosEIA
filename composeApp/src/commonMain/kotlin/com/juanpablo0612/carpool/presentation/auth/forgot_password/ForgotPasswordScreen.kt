@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -25,13 +24,6 @@ fun ForgotPasswordScreen(
     onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-
-    ObserveAsEvents(viewModel.events) { event ->
-        when (event) {
-            AuthEvent.NavigateToLogin -> onBackClick()
-            else -> Unit
-        }
-    }
 
     ForgotPasswordContent(
         state = state,

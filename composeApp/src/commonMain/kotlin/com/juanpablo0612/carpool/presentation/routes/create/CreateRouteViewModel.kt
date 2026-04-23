@@ -102,20 +102,20 @@ class CreateRouteViewModel(
         val destination = currentState.destination
 
         if (origin == null || destination == null) {
-            emitError(CreateRouteError.OriginDestinationRequired)
+            _state.update { it.copy(error = CreateRouteError.OriginDestinationRequired) }
             return
         }
         if (currentState.waypoints.isEmpty()) {
-            emitError(CreateRouteError.AtLeastOneWaypoint)
+            _state.update { it.copy(error = CreateRouteError.AtLeastOneWaypoint) }
             return
         }
         if (currentState.selectedDays.isEmpty()) {
-            emitError(CreateRouteError.AtLeastOneDay)
+            _state.update { it.copy(error = CreateRouteError.AtLeastOneDay) }
             return
         }
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
-            emitError(CreateRouteError.UserNotAuthenticated)
+            _state.update { it.copy(error = CreateRouteError.UserNotAuthenticated) }
             return
         }
 
@@ -133,17 +133,13 @@ class CreateRouteViewModel(
             )
             createRouteUseCase(route)
                 .onSuccess {
-                    _state.update { it.copy(isLoading = false, isSuccess = true) }
+                    _state.update { it.copy(isLoading = false) }
                     _events.emit(CreateRouteEvent.RouteCreated)
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false, error = CreateRouteError.Unknown) }
-                    _events.emit(CreateRouteEvent.ShowError(CreateRouteError.Unknown))
                 }
         }
     }
 
-    private fun emitError(error: CreateRouteError) {
-        viewModelScope.launch { _events.emit(CreateRouteEvent.ShowError(error)) }
-    }
 }

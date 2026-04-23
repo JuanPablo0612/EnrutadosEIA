@@ -34,20 +34,29 @@ object Validator {
             else -> ValidationResult.Success
         }
     }
+
+    fun validateRole(isPassenger: Boolean, isDriver: Boolean): ValidationResult {
+        return if (!isPassenger && !isDriver) {
+            ValidationResult.Error(ValidationError.RoleNotSelected)
+        } else {
+            ValidationResult.Success
+        }
+    }
 }
 
 sealed class ValidationResult {
-    object Success : ValidationResult()
+    data object Success : ValidationResult()
     data class Error(val error: ValidationError) : ValidationResult()
 }
 
 sealed class ValidationError {
-    object EmailEmpty : ValidationError()
-    object EmailInvalid : ValidationError()
-    object PasswordEmpty : ValidationError()
-    object PasswordTooShort : ValidationError()
-    object NameEmpty : ValidationError()
-    object NameTooShort : ValidationError()
-    object ConfirmPasswordEmpty : ValidationError()
-    object PasswordsDoNotMatch : ValidationError()
+    data object EmailEmpty : ValidationError()
+    data object EmailInvalid : ValidationError()
+    data object PasswordEmpty : ValidationError()
+    data object PasswordTooShort : ValidationError()
+    data object NameEmpty : ValidationError()
+    data object NameTooShort : ValidationError()
+    data object ConfirmPasswordEmpty : ValidationError()
+    data object PasswordsDoNotMatch : ValidationError()
+    data object RoleNotSelected : ValidationError()
 }

@@ -6,6 +6,5 @@ data class PlaceSelectorUiState(
     val query: String = "",
     val savedPlaces: List<Place> = emptyList(),
     val searchResults: List<Place> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
+    val isLoading: Boolean = false
 )

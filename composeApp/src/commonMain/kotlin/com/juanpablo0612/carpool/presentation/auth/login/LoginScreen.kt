@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (com.juanpablo0612.carpool.domain.auth.model.User) -> Unit,
     onNavigateToRegister: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onBackClick: () -> Unit
@@ -30,8 +30,7 @@ fun LoginScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is AuthEvent.NavigateToHome -> onLoginSuccess()
-            else -> Unit
+            is AuthEvent.NavigateAfterAuth -> onLoginSuccess(event.user)
         }
     }
 

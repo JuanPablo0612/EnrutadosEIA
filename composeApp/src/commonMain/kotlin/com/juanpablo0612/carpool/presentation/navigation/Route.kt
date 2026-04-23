@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface Route {
     @Serializable
+    data object Splash : Route
+
+    @Serializable
     data object Login : Route
 
     @Serializable
@@ -12,6 +15,9 @@ sealed interface Route {
 
     @Serializable
     data object ForgotPassword : Route
+
+    @Serializable
+    data object RoleSelector : Route
 
     @Serializable
     data object Home : Route
@@ -33,4 +39,7 @@ sealed interface Route {
 
     @Serializable
     data class RouteDetail(val routeId: String) : Route
+
+    @Serializable
+    data object PassengerHome : Route
 }

@@ -16,12 +16,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_new_place_title
 import enrutadoseia.composeapp.generated.resources.place_address_label
@@ -109,5 +111,16 @@ fun AddPlaceContent(
 
             Spacer(Modifier.height(24.dp))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AddPlacePreview() {
+    CarpoolTheme {
+        AddPlaceContent(
+            state = AddPlaceUiState(),
+            onAction = {}
+        )
     }
 }

@@ -14,7 +14,6 @@ data class CreateRouteUiState(
     val selectedDays: Set<DayOfWeek> = emptySet(),
     val isLoading: Boolean = false,
     val error: CreateRouteError? = null,
-    val isSuccess: Boolean = false,
     val selectionTarget: SelectionTarget? = null
 )
 

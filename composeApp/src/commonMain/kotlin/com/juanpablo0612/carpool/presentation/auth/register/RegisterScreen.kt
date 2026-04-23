@@ -25,7 +25,7 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
-    onRegisterSuccess: () -> Unit,
+    onRegisterSuccess: (com.juanpablo0612.carpool.domain.auth.model.User) -> Unit,
     onNavigateToLogin: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -33,8 +33,7 @@ fun RegisterScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is AuthEvent.NavigateToHome -> onRegisterSuccess()
-            else -> Unit
+            is AuthEvent.NavigateAfterAuth -> onRegisterSuccess(event.user)
         }
     }
 
@@ -178,7 +177,8 @@ private fun RegisterForm(
             isPassenger = state.isPassenger,
             isDriver = state.isDriver,
             onPassengerToggle = { onAction(RegisterAction.OnPassengerChanged(it)) },
-            onDriverToggle = { onAction(RegisterAction.OnDriverChanged(it)) }
+            onDriverToggle = { onAction(RegisterAction.OnDriverChanged(it)) },
+            errorMessage = state.roleError?.asStringResource()?.let { stringResource(it) }
         )
 
         state.error?.let {
@@ -203,6 +203,7 @@ private fun RoleSelectionSection(
     isDriver: Boolean,
     onPassengerToggle: (Boolean) -> Unit,
     onDriverToggle: (Boolean) -> Unit,
+    errorMessage: String?,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -227,6 +228,10 @@ private fun RoleSelectionSection(
                 onClick = { onDriverToggle(!isDriver) },
                 modifier = Modifier.weight(1f)
             )
+        }
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            ErrorMessage(message = errorMessage)
         }
     }
 }

@@ -27,8 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.vehicles.list.components.VehicleCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
@@ -117,6 +120,52 @@ fun VehiclesListContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun VehiclesListEmptyPreview() {
+    CarpoolTheme {
+        VehiclesListContent(
+            state = VehiclesListUiState(isLoading = false),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun VehiclesListWithDataPreview() {
+    CarpoolTheme {
+        VehiclesListContent(
+            state = VehiclesListUiState(
+                isLoading = false,
+                vehicles = listOf(
+                    Vehicle(
+                        id = "1",
+                        driverId = "driver1",
+                        brand = "Toyota",
+                        model = "Corolla",
+                        licensePlate = "ABC-123",
+                        color = "Blanco",
+                        year = 2020,
+                        seatsAvailable = 3
+                    ),
+                    Vehicle(
+                        id = "2",
+                        driverId = "driver1",
+                        brand = "Mazda",
+                        model = "3",
+                        licensePlate = "XYZ-456",
+                        color = "Gris",
+                        year = 2019,
+                        seatsAvailable = 2
+                    )
+                )
+            ),
+            onAction = {}
+        )
     }
 }
 

@@ -48,9 +48,8 @@ fun CreateRouteScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is CreateRouteEvent.NavigateBack -> onBackClick()
-            is CreateRouteEvent.RouteCreated -> onRouteCreated()
-            is CreateRouteEvent.ShowError -> Unit
+            CreateRouteEvent.NavigateBack -> onBackClick()
+            CreateRouteEvent.RouteCreated -> onRouteCreated()
         }
     }
 

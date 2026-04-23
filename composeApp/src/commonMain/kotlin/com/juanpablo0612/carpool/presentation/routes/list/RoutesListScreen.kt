@@ -27,9 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.places.model.Place
+import com.juanpablo0612.carpool.domain.routes.model.Route
+import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.routes.list.components.RouteCard
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
@@ -122,6 +129,44 @@ fun RoutesListContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun RoutesListEmptyPreview() {
+    CarpoolTheme {
+        RoutesListContent(
+            state = RoutesListUiState(isLoading = false),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RoutesListWithDataPreview() {
+    val origin = Place(id = "1", name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6)
+    val destination = Place(id = "2", name = "EIA", address = "Cl. 49 Sur #50-90", latitude = 6.18, longitude = -75.59)
+    CarpoolTheme {
+        RoutesListContent(
+            state = RoutesListUiState(
+                isLoading = false,
+                routes = listOf(
+                    Route(
+                        id = "r1",
+                        driverId = "d1",
+                        origin = origin,
+                        destination = destination,
+                        waypoints = emptyList(),
+                        targetTime = LocalTime(7, 30),
+                        daysOfWeek = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                        type = RouteType.ToUniversity
+                    )
+                )
+            ),
+            onAction = {}
+        )
     }
 }
 

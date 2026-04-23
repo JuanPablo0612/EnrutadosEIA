@@ -9,9 +9,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.presentation.places.selector.components.PlaceItem
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -114,5 +116,38 @@ fun PlaceSelectorContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PlaceSelectorEmptyPreview() {
+    CarpoolTheme {
+        PlaceSelectorContent(
+            state = PlaceSelectorUiState(),
+            onAction = {},
+            onPlaceSelected = {},
+            onBack = {},
+            onNavigateToAddPlace = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PlaceSelectorWithSavedPlacesPreview() {
+    CarpoolTheme {
+        PlaceSelectorContent(
+            state = PlaceSelectorUiState(
+                savedPlaces = listOf(
+                    Place(id = "1", name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
+                    Place(id = "2", name = "Oficina", address = "Carrera 43A #1-50", latitude = 6.21, longitude = -75.57)
+                )
+            ),
+            onAction = {},
+            onPlaceSelected = {},
+            onBack = {},
+            onNavigateToAddPlace = {}
+        )
     }
 }

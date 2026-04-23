@@ -40,6 +40,7 @@
     <string name="error_name_too_short">Ingresa tu nombre completo (nombre y apellido)</string>
     <string name="error_confirm_password_empty">Por favor confirma tu contraseña</string>
     <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
+    <string name="error_role_not_selected">Por favor selecciona al menos un rol (pasajero o conductor)</string>
 
     <string name="show_password">Mostrar contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
@@ -154,4 +155,25 @@
     <!-- Add Place -->
     <string name="error_place_name_required">El nombre del lugar es obligatorio</string>
     <string name="error_place_address_required">La dirección es obligatoria</string>
+
+    <!-- Role Selector -->
+    <string name="role_selector_greeting">¡Hola, %1$s!</string>
+    <string name="role_selector_subtitle">¿Cómo quieres usar CampusRide hoy?</string>
+    <string name="role_selector_driver_title">Conducir</string>
+    <string name="role_selector_driver_subtitle">Ofrece viajes y ahorra en tu trayecto</string>
+    <string name="role_selector_passenger_title">Viajar</string>
+    <string name="role_selector_passenger_subtitle">Encuentra y reserva viajes al campus</string>
+
+    <!-- Driver Home -->
+    <string name="driver_home_title">Inicio Conductor</string>
+    <string name="driver_home_welcome">Bienvenido, %1$s</string>
+
+    <!-- Passenger Home -->
+    <string name="passenger_home_title">Buscar Viaje</string>
+    <string name="search_routes_filter_all">Todos</string>
+
+    <!-- Common -->
+    <string name="switch_role">Cambiar rol</string>
+    <string name="logout_title">Cerrar sesión</string>
+    <string name="nav_search_routes">Buscar</string>
 </resources>

@@ -10,6 +10,5 @@ data class LoginUiState(
     val passwordError: ValidationError? = null,
     val isPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,
-    val error: AuthError? = null,
-    val isSuccess: Boolean = false
+    val error: AuthError? = null
 )

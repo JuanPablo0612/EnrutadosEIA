@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.navigation.graph
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -13,14 +15,18 @@ import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailScreen
 import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
+import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListScreen
 import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleScreen
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleViewModel
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.mainNavGraph(
+    onSwitchRole: () -> Unit,
+    onLogout: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
@@ -28,7 +34,18 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateBack: () -> Unit
 ) {
     composable<Route.Home> {
-        HomeScreen(onCreateRouteClick = onNavigateToCreateRoute)
+        val userSession: UserSession = koinInject()
+        val user by userSession.user.collectAsState()
+        val isDualRole = user?.let { it.isDriver && it.isPassenger } ?: false
+        user?.let { u ->
+            HomeScreen(
+                user = u,
+                isDualRole = isDualRole,
+                onCreateRouteClick = onNavigateToCreateRoute,
+                onSwitchRole = onSwitchRole,
+                onLogout = onLogout
+            )
+        }
     }
 
     composable<Route.RoutesList> {

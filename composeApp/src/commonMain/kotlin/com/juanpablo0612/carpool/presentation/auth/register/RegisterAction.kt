@@ -5,10 +5,9 @@ sealed class RegisterAction {
     data class OnEmailChanged(val email: String) : RegisterAction()
     data class OnPasswordChanged(val password: String) : RegisterAction()
     data class OnConfirmPasswordChanged(val confirmPassword: String) : RegisterAction()
-    object OnTogglePasswordVisibility : RegisterAction()
-    object OnToggleConfirmPasswordVisibility : RegisterAction()
+    data object OnTogglePasswordVisibility : RegisterAction()
+    data object OnToggleConfirmPasswordVisibility : RegisterAction()
     data class OnPassengerChanged(val isPassenger: Boolean) : RegisterAction()
     data class OnDriverChanged(val isDriver: Boolean) : RegisterAction()
-    object OnRegisterClicked : RegisterAction()
-    object OnClearError : RegisterAction()
+    data object OnRegisterClicked : RegisterAction()
 }

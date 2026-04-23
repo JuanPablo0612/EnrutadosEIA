@@ -14,11 +14,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteTypeToggle
@@ -27,6 +30,7 @@ import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import enrutadoseia.composeapp.generated.resources.*
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -263,5 +267,26 @@ fun RouteDetailContent(
         ) {
             TimePicker(state = timePickerState)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun RouteDetailContentPreview() {
+    CarpoolTheme {
+        RouteDetailContent(
+            state = RouteDetailUiState(
+                isLoading = false,
+                routeType = RouteType.ToUniversity,
+                origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
+                destination = Place.UNIVERSITY_EIA,
+                waypoints = listOf(
+                    Place(name = "Parada 1", address = "Carrera 43A #1-50", latitude = 6.21, longitude = -75.57)
+                ),
+                targetTime = LocalTime(7, 30),
+                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+            ),
+            onAction = {}
+        )
     }
 }

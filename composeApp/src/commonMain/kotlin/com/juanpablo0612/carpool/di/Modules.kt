@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.data.places.repository.PlacesRepositoryImpl
 import com.juanpablo0612.carpool.data.routes.repository.RouteRepositoryImpl
 import com.juanpablo0612.carpool.data.vehicles.repository.VehicleRepositoryImpl
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
@@ -17,6 +18,7 @@ import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.routes.use_case.CreateRouteUseCase
+import com.juanpablo0612.carpool.domain.routes.use_case.GetAvailableRoutesUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.GetUserRoutesUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.UpdateRouteUseCase
@@ -31,6 +33,9 @@ import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewM
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
 import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
+import com.juanpablo0612.carpool.presentation.routes.search.SearchRoutesViewModel
+import com.juanpablo0612.carpool.presentation.session.UserSession
+import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleViewModel
 import dev.gitlive.firebase.Firebase
@@ -51,15 +56,18 @@ val authModule = module {
     single { Firebase.storage }
     singleOf(::FirebaseAuthRemoteDataSource) bind AuthRemoteDataSource::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
+    singleOf(::UserSession)
 
     factoryOf(::LoginUseCase)
     factoryOf(::RegisterUseCase)
     factoryOf(::LogoutUseCase)
     factoryOf(::SendPasswordResetEmailUseCase)
+    factoryOf(::GetCurrentUserUseCase)
 
-    viewModel { LoginViewModel(get()) }
-    viewModel { RegisterViewModel(get()) }
+    viewModel { LoginViewModel(get(), get()) }
+    viewModel { RegisterViewModel(get(), get()) }
     viewModel { ForgotPasswordViewModel(get()) }
+    viewModel { SplashViewModel(get(), get()) }
 }
 
 val routeModule = module {
@@ -68,9 +76,11 @@ val routeModule = module {
     factoryOf(::GetUserRoutesUseCase)
     factoryOf(::GetRouteByIdUseCase)
     factoryOf(::UpdateRouteUseCase)
+    factoryOf(::GetAvailableRoutesUseCase)
     viewModel { CreateRouteViewModel(get(), get()) }
     viewModel { RoutesListViewModel(get(), get()) }
     viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get()) }
+    viewModel { SearchRoutesViewModel(get()) }
 }
 
 val placeModule = module {
@@ -78,7 +88,7 @@ val placeModule = module {
     factoryOf(::GetSavedPlacesUseCase)
     factoryOf(::SearchPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
-    viewModel { PlaceSelectorViewModel(get(), get(), get()) }
+    viewModel { PlaceSelectorViewModel(get(), get()) }
     viewModel { AddPlaceViewModel(get()) }
 }
 

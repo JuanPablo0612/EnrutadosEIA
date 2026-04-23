@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.data.auth.repository
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
+import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import dev.gitlive.firebase.auth.*
 
@@ -59,6 +60,15 @@ class AuthRepositoryImpl(
 
     override fun getCurrentUserId(): String? {
         return remoteDataSource.getCurrentUserId()
+    }
+
+    override suspend fun getCurrentUser(): Result<User> {
+        return try {
+            val dto = remoteDataSource.getCurrentUser()
+            Result.success(dto.toDomain())
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
     }
 
     private fun FirebaseAuthException.toAppException(): AppException.AuthException {

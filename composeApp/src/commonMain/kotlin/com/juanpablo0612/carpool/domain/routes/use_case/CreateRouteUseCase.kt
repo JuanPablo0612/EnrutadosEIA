@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.domain.routes.use_case
 
 import com.juanpablo0612.carpool.domain.routes.model.Route
-import com.juanpablo0612.carpool.domain.routes.model.RouteError
 import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
 
 class CreateRouteUseCase(private val repository: RouteRepository) {

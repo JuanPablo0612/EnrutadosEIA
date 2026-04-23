@@ -16,7 +16,7 @@ data class RegisterUiState(
     val isConfirmPasswordVisible: Boolean = false,
     val isPassenger: Boolean = false,
     val isDriver: Boolean = false,
+    val roleError: ValidationError? = null,
     val isLoading: Boolean = false,
-    val error: AuthError? = null,
-    val isSuccess: Boolean = false
+    val error: AuthError? = null
 )

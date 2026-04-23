@@ -52,6 +52,14 @@ class RouteRepositoryImpl(
         }
     }
 
+    override fun getAvailableRoutes(): Flow<List<Route>> {
+        return firestore.collection(COLLECTION_NAME)
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents.map { it.data(RouteDto.serializer()).toDomain() }
+            }
+    }
+
     companion object {
         private const val COLLECTION_NAME = "routes"
     }

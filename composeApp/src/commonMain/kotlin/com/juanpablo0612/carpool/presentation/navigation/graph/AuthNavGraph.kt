@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.navigation.graph
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordScreen
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
@@ -12,7 +13,7 @@ import com.juanpablo0612.carpool.presentation.navigation.Route
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.authNavGraph(
-    onAuthSuccess: () -> Unit,
+    onAuthSuccess: (User) -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateBack: () -> Unit

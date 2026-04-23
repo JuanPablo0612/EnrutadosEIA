@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.auth.common
 
+import com.juanpablo0612.carpool.domain.auth.model.User
+
 sealed class AuthEvent {
-    object NavigateToHome : AuthEvent()
-    object NavigateToLogin : AuthEvent()
-    data class ShowErrorMessage(val message: String) : AuthEvent()
+    data class NavigateAfterAuth(val user: User) : AuthEvent()
 }

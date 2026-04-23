@@ -21,18 +21,16 @@ class FirebaseAuthRemoteDataSource(
         isDriver: Boolean
     ) {
         val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password)
-        val user = authResult.user
-        if (user != null) {
-            val userDto = UserDto(
-                id = user.uid,
-                email = email,
-                name = name,
-                isEmailVerified = user.isEmailVerified,
-                isPassenger = isPassenger,
-                isDriver = isDriver
-            )
-            firestore.collection("users").document(user.uid).set(UserDto.serializer(), userDto)
-        }
+        val user = checkNotNull(authResult.user) { "Firebase returned null user after successful sign-up" }
+        val userDto = UserDto(
+            id = user.uid,
+            email = email,
+            name = name,
+            isEmailVerified = user.isEmailVerified,
+            isPassenger = isPassenger,
+            isDriver = isDriver
+        )
+        firestore.collection("users").document(user.uid).set(UserDto.serializer(), userDto)
     }
 
     override suspend fun signOut() {
@@ -45,5 +43,11 @@ class FirebaseAuthRemoteDataSource(
 
     override fun getCurrentUserId(): String? {
         return firebaseAuth.currentUser?.uid
+    }
+
+    override suspend fun getCurrentUser(): UserDto {
+        val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
+        val snapshot = firestore.collection("users").document(userId).get()
+        return snapshot.data(UserDto.serializer())
     }
 }

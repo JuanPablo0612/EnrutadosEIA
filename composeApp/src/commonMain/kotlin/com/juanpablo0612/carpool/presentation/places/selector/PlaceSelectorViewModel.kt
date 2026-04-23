@@ -2,19 +2,19 @@ package com.juanpablo0612.carpool.presentation.places.selector
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.places.model.Place
-import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlaceSelectorViewModel(
     private val getSavedPlacesUseCase: GetSavedPlacesUseCase,
-    private val searchPlacesUseCase: SearchPlacesUseCase,
-    private val createPlaceUseCase: CreatePlaceUseCase
+    private val searchPlacesUseCase: SearchPlacesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PlaceSelectorUiState())
@@ -51,34 +51,19 @@ class PlaceSelectorViewModel(
                             .onSuccess { results ->
                                 _state.update { it.copy(searchResults = results, isLoading = false) }
                             }
-                            .onFailure { error ->
-                                _state.update { it.copy(error = error.message, isLoading = false) }
+                            .onFailure {
+                                _state.update { it.copy(isLoading = false) }
                             }
                     }
                 } else {
                     _state.update { it.copy(searchResults = emptyList()) }
                 }
             }
-            is PlaceSelectorAction.OnSavePlace -> {
-                viewModelScope.launch {
-                    val place = Place(
-                        id = "",
-                        name = action.name,
-                        address = action.address,
-                        latitude = action.lat,
-                        longitude = action.lng
-                    )
-                    createPlaceUseCase(place)
-                        .onSuccess {
-                            _state.update { it.copy(query = "") }
-                        }
-                }
-            }
             PlaceSelectorAction.OnDismiss -> {
-                _state.update { it.copy(query = "", searchResults = emptyList(), error = null) }
+                _state.update { it.copy(query = "", searchResults = emptyList()) }
             }
             is PlaceSelectorAction.OnPlaceSelected -> {
-                // Handled by navigation/UI
+                // Handled by navigation/UI callback
             }
         }
     }
