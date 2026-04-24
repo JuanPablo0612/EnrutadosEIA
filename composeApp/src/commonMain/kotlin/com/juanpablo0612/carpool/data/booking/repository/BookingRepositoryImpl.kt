@@ -43,13 +43,13 @@ class BookingRepositoryImpl(
             }
     }
 
-    override fun getBookingsForVehicleOnRoute(routeId: String, vehicleId: String): Flow<List<Booking>> {
+    override fun getBookingsForTrip(tripId: String): Flow<List<Booking>> {
         return firestore.collection(COLLECTION_NAME)
             .snapshots
             .map { snapshot ->
                 snapshot.documents
                     .map { it.data(BookingDto.serializer()).toDomain() }
-                    .filter { it.routeId == routeId && it.vehicleId == vehicleId }
+                    .filter { it.tripId == tripId }
             }
     }
 
@@ -69,19 +69,14 @@ class BookingRepositoryImpl(
         }
     }
 
-    override suspend fun hasActiveBooking(
-        passengerId: String,
-        routeId: String,
-        vehicleId: String
-    ): Result<Boolean> {
+    override suspend fun hasActiveBooking(passengerId: String, tripId: String): Result<Boolean> {
         return try {
             val snapshot = firestore.collection(COLLECTION_NAME).get()
             val hasActive = snapshot.documents
                 .map { it.data(BookingDto.serializer()).toDomain() }
                 .any { booking ->
                     booking.passengerId == passengerId &&
-                        booking.routeId == routeId &&
-                        booking.vehicleId == vehicleId &&
+                        booking.tripId == tripId &&
                         (booking.status is BookingStatus.Pending || booking.status is BookingStatus.Confirmed)
                 }
             Result.success(hasActive)

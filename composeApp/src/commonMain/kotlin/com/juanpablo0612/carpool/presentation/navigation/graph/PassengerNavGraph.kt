@@ -20,7 +20,7 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.passengerNavGraph(
     onSwitchRole: () -> Unit,
     onLogout: () -> Unit,
-    onNavigateToRouteDetail: (String) -> Unit,
+    onNavigateToTripDetail: (String) -> Unit,
     onNavigateToPassengerBookings: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -36,14 +36,14 @@ fun NavGraphBuilder.passengerNavGraph(
                 isDualRole = isDualRole,
                 onSwitchRole = onSwitchRole,
                 onLogout = onLogout,
-                onNavigateToRouteDetail = onNavigateToRouteDetail
+                onNavigateToTripDetail = onNavigateToTripDetail
             )
         }
     }
 
-    composable<Route.RouteDetailPassenger> { backStackEntry ->
-        val args = backStackEntry.toRoute<Route.RouteDetailPassenger>()
-        val viewModel: RouteDetailPassengerViewModel = koinViewModel { parametersOf(args.routeId) }
+    composable<Route.TripDetailPassenger> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.TripDetailPassenger>()
+        val viewModel: RouteDetailPassengerViewModel = koinViewModel { parametersOf(args.tripId) }
         RouteDetailPassengerScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,

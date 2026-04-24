@@ -9,10 +9,12 @@ import enrutadoseia.composeapp.generated.resources.nav_booking_requests
 import enrutadoseia.composeapp.generated.resources.nav_home
 import enrutadoseia.composeapp.generated.resources.nav_my_bookings
 import enrutadoseia.composeapp.generated.resources.nav_my_routes
+import enrutadoseia.composeapp.generated.resources.nav_my_trips
 import enrutadoseia.composeapp.generated.resources.nav_my_vehicles
 import enrutadoseia.composeapp.generated.resources.nav_search_routes
 import enrutadoseia.composeapp.generated.resources.person_24px
 import enrutadoseia.composeapp.generated.resources.search_24px
+import enrutadoseia.composeapp.generated.resources.train_24px
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
@@ -37,6 +39,12 @@ sealed class BottomNavItem<T : Any>(
         label = Res.string.nav_my_vehicles,
         icon = Res.drawable.person_24px,
         route = Route.VehiclesList
+    )
+
+    data object MyTrips : BottomNavItem<Route.DriverTrips>(
+        label = Res.string.nav_my_trips,
+        icon = Res.drawable.train_24px,
+        route = Route.DriverTrips
     )
 
     data object BookingRequests : BottomNavItem<Route.DriverBookingRequests>(

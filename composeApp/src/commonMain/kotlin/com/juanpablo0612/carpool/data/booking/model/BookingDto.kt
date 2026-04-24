@@ -7,8 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BookingDto(
     val id: String = "",
-    val routeId: String = "",
-    val vehicleId: String = "",
+    val tripId: String = "",
     val passengerId: String = "",
     val driverId: String = "",
     val passengerName: String = "",
@@ -18,8 +17,7 @@ data class BookingDto(
 ) {
     fun toDomain(): Booking = Booking(
         id = id,
-        routeId = routeId,
-        vehicleId = vehicleId,
+        tripId = tripId,
         passengerId = passengerId,
         driverId = driverId,
         passengerName = passengerName,
@@ -36,8 +34,7 @@ data class BookingDto(
     companion object {
         fun fromDomain(booking: Booking): BookingDto = BookingDto(
             id = booking.id,
-            routeId = booking.routeId,
-            vehicleId = booking.vehicleId,
+            tripId = booking.tripId,
             passengerId = booking.passengerId,
             driverId = booking.driverId,
             passengerName = booking.passengerName,

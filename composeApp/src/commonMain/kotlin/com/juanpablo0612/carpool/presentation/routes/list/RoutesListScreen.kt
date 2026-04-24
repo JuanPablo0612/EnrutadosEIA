@@ -31,12 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
-import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.routes.list.components.RouteCard
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
@@ -50,7 +47,8 @@ import org.jetbrains.compose.resources.vectorResource
 fun RoutesListScreen(
     viewModel: RoutesListViewModel,
     onNavigateToCreateRoute: () -> Unit,
-    onNavigateToRouteDetail: (String) -> Unit
+    onNavigateToRouteDetail: (String) -> Unit,
+    onNavigateToCreateTrip: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -58,6 +56,7 @@ fun RoutesListScreen(
         when (event) {
             RoutesListEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
             is RoutesListEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
+            is RoutesListEvent.NavigateToCreateTrip -> onNavigateToCreateTrip(event.routeId)
         }
     }
 
@@ -123,7 +122,8 @@ fun RoutesListContent(
                     items(state.routes, key = { it.id }) { route ->
                         RouteCard(
                             route = route,
-                            onClick = { onAction(RoutesListAction.OnRouteClick(route.id)) }
+                            onClick = { onAction(RoutesListAction.OnRouteClick(route.id)) },
+                            onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(route.id)) }
                         )
                     }
                 }
@@ -158,10 +158,7 @@ private fun RoutesListWithDataPreview() {
                         driverId = "d1",
                         origin = origin,
                         destination = destination,
-                        waypoints = emptyList(),
-                        targetTime = LocalTime(7, 30),
-                        daysOfWeek = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
-                        type = RouteType.ToUniversity
+                        waypoints = emptyList()
                     )
                 )
             ),

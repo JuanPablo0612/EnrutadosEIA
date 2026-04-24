@@ -43,6 +43,7 @@ fun AppNavigation(
         BottomNavItem.Home,
         BottomNavItem.MyRoutes,
         BottomNavItem.MyVehicles,
+        BottomNavItem.MyTrips,
         BottomNavItem.BookingRequests
     )
     val passengerBottomNavItems = listOf(
@@ -193,6 +194,7 @@ fun AppNavigation(
                 onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                 onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle) },
                 onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
+                onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
                 onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -204,8 +206,8 @@ fun AppNavigation(
                     }
                 },
                 onLogout = onLogout,
-                onNavigateToRouteDetail = { routeId ->
-                    navController.navigate(Route.RouteDetailPassenger(routeId))
+                onNavigateToTripDetail = { tripId ->
+                    navController.navigate(Route.TripDetailPassenger(tripId))
                 },
                 onNavigateToPassengerBookings = {
                     navController.navigate(Route.PassengerBookings)

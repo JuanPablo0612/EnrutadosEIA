@@ -41,10 +41,16 @@ sealed interface Route {
     data class RouteDetail(val routeId: String) : Route
 
     @Serializable
+    data class CreateTrip(val routeId: String) : Route
+
+    @Serializable
+    data object DriverTrips : Route
+
+    @Serializable
     data object PassengerHome : Route
 
     @Serializable
-    data class RouteDetailPassenger(val routeId: String) : Route
+    data class TripDetailPassenger(val tripId: String) : Route
 
     @Serializable
     data object PassengerBookings : Route

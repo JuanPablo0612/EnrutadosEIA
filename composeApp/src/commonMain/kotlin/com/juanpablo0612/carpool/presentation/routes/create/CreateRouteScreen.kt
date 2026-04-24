@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.routes.create
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -8,29 +7,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
-import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
-import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
-import com.juanpablo0612.carpool.presentation.routes.create.components.RouteTypeToggle
 import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
-import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -96,8 +86,6 @@ fun CreateRouteContent(
     state: CreateRouteUiState,
     onAction: (CreateRouteAction) -> Unit
 ) {
-    var showTimePicker by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -120,25 +108,15 @@ fun CreateRouteContent(
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             item {
-                RouteTypeToggle(
-                    selectedType = state.routeType,
-                    onTypeChange = { onAction(CreateRouteAction.OnRouteTypeChange(it)) }
-                )
-            }
-
-            item {
                 SectionHeader(stringResource(Res.string.waypoints_section_title))
             }
 
             item {
                 RouteStopItem(
-                    label = if (state.routeType is RouteType.ToUniversity)
-                        stringResource(Res.string.origin_label)
-                    else
-                        stringResource(Res.string.origin_eia_label),
+                    label = stringResource(Res.string.origin_label),
                     place = state.origin,
                     type = StopType.START,
-                    isLocked = state.routeType is RouteType.FromUniversity,
+                    isLocked = false,
                     onClick = { onAction(CreateRouteAction.OnOriginClick) }
                 )
             }
@@ -167,47 +145,12 @@ fun CreateRouteContent(
 
             item {
                 RouteStopItem(
-                    label = if (state.routeType is RouteType.FromUniversity)
-                        stringResource(Res.string.destination_label)
-                    else
-                        stringResource(Res.string.destination_eia_label),
+                    label = stringResource(Res.string.destination_label),
                     place = state.destination,
                     type = StopType.END,
-                    isLocked = state.routeType is RouteType.ToUniversity,
+                    isLocked = false,
                     showConnector = false,
                     onClick = { onAction(CreateRouteAction.OnDestinationClick) }
-                )
-            }
-
-            item {
-                HorizontalDivider(Modifier.padding(vertical = 16.dp, horizontal = 16.dp))
-            }
-
-            item {
-                val timeLabel = if (state.routeType is RouteType.ToUniversity)
-                    stringResource(Res.string.arrival_time_label)
-                else
-                    stringResource(Res.string.departure_time_label)
-
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .clickable { showTimePicker = true }
-                ) {
-                    Text(timeLabel, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        text = state.targetTime.toString(),
-                        style = MaterialTheme.typography.displaySmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            item {
-                DaySelector(
-                    selectedDays = state.selectedDays,
-                    onDayToggled = { onAction(CreateRouteAction.OnDayToggled(it)) },
-                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
 
@@ -242,43 +185,6 @@ fun CreateRouteContent(
             }
         }
     }
-
-    if (showTimePicker) {
-        val timePickerState = rememberTimePickerState(
-            initialHour = state.targetTime.hour,
-            initialMinute = state.targetTime.minute
-        )
-        TimePickerDialog(
-            onCancel = { showTimePicker = false },
-            onConfirm = {
-                onAction(CreateRouteAction.OnTimeChange(LocalTime(timePickerState.hour, timePickerState.minute)))
-                showTimePicker = false
-            }
-        ) {
-            TimePicker(state = timePickerState)
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun CreateRouteScreenPreview() {
-    CarpoolTheme {
-        CreateRouteScreenContent(
-            state = CreateRouteUiState(
-                origin = Place(
-                    name = "Home",
-                    address = "123 Main St",
-                    latitude = 0.0,
-                    longitude = 0.0
-                ),
-                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
-            ),
-            placeSelectorState = PlaceSelectorUiState(),
-            onAction = {},
-            onPlaceSelectorAction = {}
-        )
-    }
 }
 
 @Preview
@@ -295,8 +201,7 @@ private fun CreateRouteContentPreview() {
                 ),
                 waypoints = listOf(
                     Place(name = "Stop 1", address = "Address 1", latitude = 0.0, longitude = 0.0)
-                ),
-                selectedDays = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+                )
             ),
             onAction = {}
         )

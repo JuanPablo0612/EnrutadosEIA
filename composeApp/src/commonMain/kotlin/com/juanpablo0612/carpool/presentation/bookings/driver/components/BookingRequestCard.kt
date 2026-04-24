@@ -62,7 +62,7 @@ fun BookingRequestCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = booking.routeId,
+                text = booking.tripId,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

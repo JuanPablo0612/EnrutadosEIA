@@ -11,11 +11,10 @@ import kotlin.time.Clock
 class CreateBookingUseCase(
     private val bookingRepository: BookingRepository,
     private val authRepository: AuthRepository,
-    private val getVehicleAvailableSeatsUseCase: GetVehicleAvailableSeatsUseCase
+    private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase
 ) {
     suspend operator fun invoke(
-        routeId: String,
-        vehicleId: String,
+        tripId: String,
         driverId: String,
         totalSeats: Int
     ): Result<Unit> {
@@ -23,20 +22,19 @@ class CreateBookingUseCase(
             return Result.failure(AppException.BookingException.NotAuthenticated)
         }
 
-        val alreadyBooked = bookingRepository.hasActiveBooking(user.id, routeId, vehicleId)
+        val alreadyBooked = bookingRepository.hasActiveBooking(user.id, tripId)
             .getOrElse { return Result.failure(AppException.BookingException.Unknown) }
         if (alreadyBooked) {
             return Result.failure(AppException.BookingException.AlreadyBooked)
         }
 
-        val availableSeats = getVehicleAvailableSeatsUseCase(routeId, vehicleId, totalSeats).first()
+        val availableSeats = getTripAvailableSeatsUseCase(tripId, totalSeats).first()
         if (availableSeats <= 0) {
             return Result.failure(AppException.BookingException.NoSeatsAvailable)
         }
 
         val booking = Booking(
-            routeId = routeId,
-            vehicleId = vehicleId,
+            tripId = tripId,
             passengerId = user.id,
             driverId = driverId,
             passengerName = user.name.orEmpty(),

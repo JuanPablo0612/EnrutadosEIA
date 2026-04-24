@@ -8,7 +8,7 @@ interface BookingRepository {
     suspend fun createBooking(booking: Booking): Result<Unit>
     fun getPassengerBookings(passengerId: String): Flow<List<Booking>>
     fun getDriverBookingRequests(driverId: String): Flow<List<Booking>>
-    fun getBookingsForVehicleOnRoute(routeId: String, vehicleId: String): Flow<List<Booking>>
+    fun getBookingsForTrip(tripId: String): Flow<List<Booking>>
     suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): Result<Unit>
-    suspend fun hasActiveBooking(passengerId: String, routeId: String, vehicleId: String): Result<Boolean>
+    suspend fun hasActiveBooking(passengerId: String, tripId: String): Result<Boolean>
 }

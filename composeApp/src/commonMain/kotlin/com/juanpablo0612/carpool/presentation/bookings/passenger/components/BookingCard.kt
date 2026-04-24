@@ -45,13 +45,7 @@ fun BookingCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = booking.routeId,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = booking.vehicleId,
+                        text = booking.tripId,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

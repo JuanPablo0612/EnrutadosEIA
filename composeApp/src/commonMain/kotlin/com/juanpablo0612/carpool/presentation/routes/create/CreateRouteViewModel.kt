@@ -3,9 +3,7 @@ package com.juanpablo0612.carpool.presentation.routes.create
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
-import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.domain.routes.use_case.CreateRouteUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,9 +27,6 @@ class CreateRouteViewModel(
 
     fun onAction(action: CreateRouteAction) {
         when (action) {
-            is CreateRouteAction.OnRouteTypeChange -> onRouteTypeChange(action.type)
-            is CreateRouteAction.OnTimeChange -> _state.update { it.copy(targetTime = action.time) }
-            is CreateRouteAction.OnDayToggled -> onDayToggled(action)
             is CreateRouteAction.OnRemoveWaypoint -> _state.update {
                 it.copy(waypoints = it.waypoints.filterIndexed { i, _ -> i != action.index })
             }
@@ -53,27 +48,6 @@ class CreateRouteViewModel(
             CreateRouteAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(CreateRouteEvent.NavigateBack)
             }
-        }
-    }
-
-    private fun onRouteTypeChange(type: RouteType) {
-        _state.update {
-            it.copy(
-                routeType = type,
-                origin = if (type is RouteType.FromUniversity) Place.UNIVERSITY_EIA else null,
-                destination = if (type is RouteType.ToUniversity) Place.UNIVERSITY_EIA else null
-            )
-        }
-    }
-
-    private fun onDayToggled(action: CreateRouteAction.OnDayToggled) {
-        _state.update {
-            val newDays = if (it.selectedDays.contains(action.day)) {
-                it.selectedDays - action.day
-            } else {
-                it.selectedDays + action.day
-            }
-            it.copy(selectedDays = newDays)
         }
     }
 
@@ -105,14 +79,6 @@ class CreateRouteViewModel(
             _state.update { it.copy(error = CreateRouteError.OriginDestinationRequired) }
             return
         }
-        if (currentState.waypoints.isEmpty()) {
-            _state.update { it.copy(error = CreateRouteError.AtLeastOneWaypoint) }
-            return
-        }
-        if (currentState.selectedDays.isEmpty()) {
-            _state.update { it.copy(error = CreateRouteError.AtLeastOneDay) }
-            return
-        }
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
             _state.update { it.copy(error = CreateRouteError.UserNotAuthenticated) }
@@ -120,16 +86,12 @@ class CreateRouteViewModel(
         }
 
         _state.update { it.copy(isLoading = true, error = null) }
-
         viewModelScope.launch {
             val route = Route(
                 driverId = userId,
                 origin = origin,
                 destination = destination,
-                waypoints = currentState.waypoints,
-                targetTime = currentState.targetTime,
-                daysOfWeek = currentState.selectedDays.toList(),
-                type = currentState.routeType
+                waypoints = currentState.waypoints
             )
             createRouteUseCase(route)
                 .onSuccess {
@@ -141,5 +103,4 @@ class CreateRouteViewModel(
                 }
         }
     }
-
 }

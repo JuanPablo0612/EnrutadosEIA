@@ -65,7 +65,9 @@
     <string name="add_waypoint_button">Agregar parada intermedia</string>
     <string name="select_location_placeholder">Seleccionar ubicación</string>
     <string name="arrival_time_label">Hora de llegada a la EIA</string>
-    <string name="departure_time_label">Hora de salida de la EIA</string>
+    <string name="departure_time_label">Salida: %1$s</string>
+    <string name="departure_date_label">Fecha de salida</string>
+    <string name="departure_time_section_label">Hora de salida</string>
     <string name="days_of_week_title">Días de la semana</string>
     <string name="save_route_button">Guardar Ruta</string>
     <string name="error_origin_destination_required">El origen y el destino son obligatorios</string>
@@ -211,4 +213,20 @@
     <!-- Navegación -->
     <string name="nav_booking_requests">Solicitudes</string>
     <string name="nav_my_bookings">Mis Reservas</string>
+    <string name="nav_my_trips">Mis Viajes</string>
+
+    <!-- Viaje -->
+    <string name="create_trip_title">Publicar Viaje</string>
+    <string name="publish_trip">Publicar Viaje</string>
+    <string name="select_vehicle_section">Seleccionar Vehículo</string>
+    <string name="trip_status_active">Activo</string>
+    <string name="trip_status_cancelled">Cancelado</string>
+    <string name="trip_status_completed">Completado</string>
+    <string name="my_trips_empty">Sin viajes publicados aún</string>
+    <string name="error_trip_not_found">Viaje no encontrado</string>
+    <string name="error_no_vehicle_selected">Por favor selecciona un vehículo</string>
+
+    <!-- Acciones de diálogo -->
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
 </resources>

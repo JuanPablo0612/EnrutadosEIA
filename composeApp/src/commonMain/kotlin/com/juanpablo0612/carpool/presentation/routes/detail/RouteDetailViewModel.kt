@@ -2,9 +2,7 @@ package com.juanpablo0612.carpool.presentation.routes.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
-import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.UpdateRouteUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -39,12 +37,9 @@ class RouteDetailViewModel(
                     _state.update {
                         it.copy(
                             driverId = route.driverId,
-                            routeType = route.type,
                             origin = route.origin,
                             destination = route.destination,
                             waypoints = route.waypoints,
-                            targetTime = route.targetTime,
-                            selectedDays = route.daysOfWeek.toSet(),
                             isLoading = false
                         )
                     }
@@ -57,9 +52,6 @@ class RouteDetailViewModel(
 
     fun onAction(action: RouteDetailAction) {
         when (action) {
-            is RouteDetailAction.OnRouteTypeChange -> onRouteTypeChange(action.type)
-            is RouteDetailAction.OnTimeChange -> _state.update { it.copy(targetTime = action.time) }
-            is RouteDetailAction.OnDayToggled -> onDayToggled(action.day)
             is RouteDetailAction.OnRemoveWaypoint -> _state.update {
                 it.copy(waypoints = it.waypoints.filterIndexed { i, _ -> i != action.index })
             }
@@ -84,24 +76,7 @@ class RouteDetailViewModel(
         }
     }
 
-    private fun onRouteTypeChange(type: RouteType) {
-        _state.update {
-            it.copy(
-                routeType = type,
-                origin = if (type is RouteType.FromUniversity) Place.UNIVERSITY_EIA else it.origin,
-                destination = if (type is RouteType.ToUniversity) Place.UNIVERSITY_EIA else it.destination
-            )
-        }
-    }
-
-    private fun onDayToggled(day: kotlinx.datetime.DayOfWeek) {
-        _state.update {
-            val newDays = if (it.selectedDays.contains(day)) it.selectedDays - day else it.selectedDays + day
-            it.copy(selectedDays = newDays)
-        }
-    }
-
-    private fun onPlaceSelected(place: Place) {
+    private fun onPlaceSelected(place: com.juanpablo0612.carpool.domain.places.model.Place) {
         val target = _state.value.selectionTarget ?: return
         _state.update {
             when (target) {
@@ -129,14 +104,6 @@ class RouteDetailViewModel(
             _state.update { it.copy(error = RouteDetailError.OriginDestinationRequired) }
             return
         }
-        if (s.waypoints.isEmpty()) {
-            _state.update { it.copy(error = RouteDetailError.AtLeastOneWaypoint) }
-            return
-        }
-        if (s.selectedDays.isEmpty()) {
-            _state.update { it.copy(error = RouteDetailError.AtLeastOneDay) }
-            return
-        }
 
         _state.update { it.copy(isSaving = true, error = null) }
         viewModelScope.launch {
@@ -145,10 +112,7 @@ class RouteDetailViewModel(
                 driverId = s.driverId,
                 origin = origin,
                 destination = destination,
-                waypoints = s.waypoints,
-                targetTime = s.targetTime,
-                daysOfWeek = s.selectedDays.toList(),
-                type = s.routeType
+                waypoints = s.waypoints
             )
             updateRouteUseCase(route)
                 .onSuccess {
