@@ -59,7 +59,7 @@ fun HomeScreen(
                     }
                     IconButton(onClick = onLogout) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                            imageVector = vectorResource(Res.drawable.logout_24px),
                             contentDescription = stringResource(Res.string.logout_title)
                         )
                     }

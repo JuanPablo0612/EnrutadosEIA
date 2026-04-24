@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.routes.search
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -36,7 +38,18 @@ import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.routes.search.components.AvailableRouteCard
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import enrutadoseia.composeapp.generated.resources.*
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
+import enrutadoseia.composeapp.generated.resources.logout_24px
+import enrutadoseia.composeapp.generated.resources.logout_title
+import enrutadoseia.composeapp.generated.resources.no_results_found
+import enrutadoseia.composeapp.generated.resources.passenger_home_title
+import enrutadoseia.composeapp.generated.resources.route_from_university
+import enrutadoseia.composeapp.generated.resources.route_to_university
+import enrutadoseia.composeapp.generated.resources.search_24px
+import enrutadoseia.composeapp.generated.resources.search_places
+import enrutadoseia.composeapp.generated.resources.search_routes_filter_all
+import enrutadoseia.composeapp.generated.resources.switch_role
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
@@ -100,7 +113,7 @@ fun SearchRoutesContent(
                     }
                     IconButton(onClick = onLogout) {
                         Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                            imageVector = vectorResource(Res.drawable.logout_24px),
                             contentDescription = stringResource(Res.string.logout_title)
                         )
                     }
@@ -132,7 +145,10 @@ fun SearchRoutesContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 FilterChip(
                     selected = state.selectedType == null,
                     onClick = { onAction(SearchRoutesAction.OnTypeFilterChanged(null)) },
@@ -211,7 +227,13 @@ private fun SearchRoutesEmptyPreview() {
 @Preview
 @Composable
 private fun SearchRoutesWithResultsPreview() {
-    val origin = Place(id = "1", name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6)
+    val origin = Place(
+        id = "1",
+        name = "Casa",
+        address = "Calle 10 #20-30",
+        latitude = 6.2,
+        longitude = -75.6
+    )
     CarpoolTheme {
         SearchRoutesContent(
             state = SearchRoutesUiState(
@@ -224,7 +246,11 @@ private fun SearchRoutesWithResultsPreview() {
                         destination = Place.UNIVERSITY_EIA,
                         waypoints = emptyList(),
                         targetTime = LocalTime(7, 30),
-                        daysOfWeek = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+                        daysOfWeek = listOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.FRIDAY
+                        ),
                         type = RouteType.ToUniversity
                     )
                 )
