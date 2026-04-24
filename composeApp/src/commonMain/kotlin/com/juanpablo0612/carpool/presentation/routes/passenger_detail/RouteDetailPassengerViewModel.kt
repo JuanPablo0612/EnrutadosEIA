@@ -78,7 +78,14 @@ class RouteDetailPassengerViewModel(
         val vehicle = _state.value.vehicle ?: return
         _state.update { it.copy(isBooking = true, error = null) }
         viewModelScope.launch {
-            createBookingUseCase(tripId, trip.driverId, vehicle.seatsAvailable)
+            createBookingUseCase(
+                tripId = tripId,
+                driverId = trip.driverId,
+                originName = trip.origin.name,
+                destinationName = trip.destination.name,
+                departureTime = trip.departureTime,
+                totalSeats = vehicle.seatsAvailable
+            )
                 .onSuccess {
                     _state.update { it.copy(isBooking = false) }
                     _events.emit(RouteDetailPassengerEvent.BookingCreated)

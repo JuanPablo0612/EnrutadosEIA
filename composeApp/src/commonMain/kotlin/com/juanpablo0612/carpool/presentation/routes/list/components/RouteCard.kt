@@ -25,7 +25,7 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.publish_trip
 import enrutadoseia.composeapp.generated.resources.route_waypoints_count
-import enrutadoseia.composeapp.generated.resources.train_24px
+import enrutadoseia.composeapp.generated.resources.add_road_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -84,7 +84,7 @@ fun RouteCard(
                 }
                 IconButton(onClick = onPublishTripClick) {
                     Icon(
-                        imageVector = vectorResource(Res.drawable.train_24px),
+                        imageVector = vectorResource(Res.drawable.add_road_24px),
                         contentDescription = stringResource(Res.string.publish_trip),
                         tint = MaterialTheme.colorScheme.primary
                     )

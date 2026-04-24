@@ -7,6 +7,9 @@ data class Booking(
     val driverId: String,
     val passengerName: String,
     val passengerEmail: String,
+    val originName: String,
+    val destinationName: String,
+    val departureTime: Long,
     val status: BookingStatus,
     val createdAt: Long
 )

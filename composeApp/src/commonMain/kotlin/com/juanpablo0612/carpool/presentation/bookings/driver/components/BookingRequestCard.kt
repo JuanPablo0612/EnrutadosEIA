@@ -7,25 +7,34 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.booking_status_pending
 import enrutadoseia.composeapp.generated.resources.confirm_button
+import enrutadoseia.composeapp.generated.resources.departure_time_label
 import enrutadoseia.composeapp.generated.resources.passenger_label
 import enrutadoseia.composeapp.generated.resources.reject_button
+import kotlin.time.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun BookingRequestCard(
@@ -61,10 +70,36 @@ fun BookingRequestCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = booking.originName,
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1
+                )
+                Icon(
+                    imageVector = vectorResource(Res.drawable.arrow_forward_24px),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 4.dp).size(14.dp)
+                )
+                Text(
+                    text = booking.destinationName,
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = booking.tripId,
+                text = stringResource(
+                    Res.string.departure_time_label,
+                    formatDepartureTime(booking.departureTime)
+                ),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
             SuggestionChip(
@@ -105,4 +140,16 @@ fun BookingRequestCard(
             }
         }
     }
+}
+
+private fun formatDepartureTime(epochMs: Long): String {
+    val local = Instant.fromEpochMilliseconds(epochMs)
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+    val hour = local.hour.toString().padStart(2, '0')
+    val minute = local.minute.toString().padStart(2, '0')
+    @Suppress("DEPRECATION")
+    val day = local.dayOfMonth.toString().padStart(2, '0')
+    @Suppress("DEPRECATION")
+    val month = local.monthNumber.toString().padStart(2, '0')
+    return "$hour:$minute - $day/$month/${local.year}"
 }

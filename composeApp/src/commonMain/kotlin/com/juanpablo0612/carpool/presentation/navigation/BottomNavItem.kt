@@ -14,7 +14,7 @@ import enrutadoseia.composeapp.generated.resources.nav_my_vehicles
 import enrutadoseia.composeapp.generated.resources.nav_search_routes
 import enrutadoseia.composeapp.generated.resources.person_24px
 import enrutadoseia.composeapp.generated.resources.search_24px
-import enrutadoseia.composeapp.generated.resources.train_24px
+import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
@@ -43,7 +43,7 @@ sealed class BottomNavItem<T : Any>(
 
     data object MyTrips : BottomNavItem<Route.DriverTrips>(
         label = Res.string.nav_my_trips,
-        icon = Res.drawable.train_24px,
+        icon = Res.drawable.directions_car_24px,
         route = Route.DriverTrips
     )
 

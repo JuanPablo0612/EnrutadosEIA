@@ -16,6 +16,9 @@ class CreateBookingUseCase(
     suspend operator fun invoke(
         tripId: String,
         driverId: String,
+        originName: String,
+        destinationName: String,
+        departureTime: Long,
         totalSeats: Int
     ): Result<Unit> {
         val user = authRepository.getCurrentUser().getOrElse {
@@ -39,6 +42,9 @@ class CreateBookingUseCase(
             driverId = driverId,
             passengerName = user.name.orEmpty(),
             passengerEmail = user.email,
+            originName = originName,
+            destinationName = destinationName,
+            departureTime = departureTime,
             status = BookingStatus.Pending,
             createdAt = Clock.System.now().toEpochMilliseconds()
         )

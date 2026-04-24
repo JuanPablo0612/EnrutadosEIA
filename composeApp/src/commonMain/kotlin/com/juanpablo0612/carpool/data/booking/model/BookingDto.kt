@@ -12,6 +12,9 @@ data class BookingDto(
     val driverId: String = "",
     val passengerName: String = "",
     val passengerEmail: String = "",
+    val originName: String = "",
+    val destinationName: String = "",
+    val departureTime: Long = 0L,
     val status: String = "PENDING",
     val createdAt: Long = 0L
 ) {
@@ -22,6 +25,9 @@ data class BookingDto(
         driverId = driverId,
         passengerName = passengerName,
         passengerEmail = passengerEmail,
+        originName = originName,
+        destinationName = destinationName,
+        departureTime = departureTime,
         status = when (status) {
             "CONFIRMED" -> BookingStatus.Confirmed
             "REJECTED" -> BookingStatus.Rejected
@@ -39,6 +45,9 @@ data class BookingDto(
             driverId = booking.driverId,
             passengerName = booking.passengerName,
             passengerEmail = booking.passengerEmail,
+            originName = booking.originName,
+            destinationName = booking.destinationName,
+            departureTime = booking.departureTime,
             status = when (booking.status) {
                 is BookingStatus.Pending -> "PENDING"
                 is BookingStatus.Confirmed -> "CONFIRMED"
