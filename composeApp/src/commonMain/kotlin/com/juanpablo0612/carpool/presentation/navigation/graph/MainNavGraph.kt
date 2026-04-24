@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsScreen
+import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsViewModel
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceScreen
@@ -101,5 +103,10 @@ fun NavGraphBuilder.mainNavGraph(
             onBack = onNavigateBack,
             onPlaceSaved = onNavigateBack
         )
+    }
+
+    composable<Route.DriverBookingRequests> {
+        val viewModel: BookingRequestsViewModel = koinViewModel()
+        BookingRequestsScreen(viewModel = viewModel)
     }
 }

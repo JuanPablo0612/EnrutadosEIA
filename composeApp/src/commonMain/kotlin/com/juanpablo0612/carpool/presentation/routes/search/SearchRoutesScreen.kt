@@ -37,6 +37,7 @@ import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.presentation.routes.search.components.AvailableRouteCard
+import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
@@ -62,9 +63,16 @@ fun SearchRoutesScreen(
     user: User,
     isDualRole: Boolean,
     onSwitchRole: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToRouteDetail: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is SearchRoutesEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
+        }
+    }
 
     SearchRoutesContent(
         state = state,
@@ -192,7 +200,10 @@ fun SearchRoutesContent(
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
                     items(state.routes, key = { it.id }) { route ->
-                        AvailableRouteCard(route = route)
+                        AvailableRouteCard(
+                            route = route,
+                            onClick = { onAction(SearchRoutesAction.OnRouteClick(route.id)) }
+                        )
                     }
                 }
             }

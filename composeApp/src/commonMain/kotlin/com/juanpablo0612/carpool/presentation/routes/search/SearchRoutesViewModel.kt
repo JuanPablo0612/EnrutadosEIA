@@ -5,12 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.domain.routes.model.RouteType
 import com.juanpablo0612.carpool.domain.routes.use_case.GetAvailableRoutesUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SearchRoutesViewModel(
     getAvailableRoutesUseCase: GetAvailableRoutesUseCase
@@ -18,6 +22,9 @@ class SearchRoutesViewModel(
 
     private val _uiState = MutableStateFlow(SearchRoutesUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _events = MutableSharedFlow<SearchRoutesEvent>()
+    val events: SharedFlow<SearchRoutesEvent> = _events.asSharedFlow()
 
     private val allRoutes = MutableStateFlow<List<Route>>(emptyList())
     private val query = MutableStateFlow("")
@@ -53,6 +60,9 @@ class SearchRoutesViewModel(
             is SearchRoutesAction.OnTypeFilterChanged -> {
                 selectedType.value = action.type
                 _uiState.update { it.copy(selectedType = action.type) }
+            }
+            is SearchRoutesAction.OnRouteClick -> viewModelScope.launch {
+                _events.emit(SearchRoutesEvent.NavigateToRouteDetail(action.routeId))
             }
         }
     }

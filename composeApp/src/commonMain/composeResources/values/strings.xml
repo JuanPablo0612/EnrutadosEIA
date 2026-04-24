@@ -176,4 +176,39 @@
     <string name="switch_role">Switch role</string>
     <string name="logout_title">Log out</string>
     <string name="nav_search_routes">Search</string>
+
+    <!-- Booking -->
+    <string name="book_button">Book Seat</string>
+    <string name="cancel_booking_button">Cancel Booking</string>
+    <string name="confirm_button">Confirm</string>
+    <string name="reject_button">Reject</string>
+    <string name="booking_status_pending">Pending</string>
+    <string name="booking_status_confirmed">Confirmed</string>
+    <string name="booking_status_rejected">Rejected</string>
+    <string name="booking_status_cancelled">Cancelled</string>
+    <string name="available_seats_label">%1$d seats available</string>
+    <string name="no_seats_available">No seats available</string>
+    <string name="error_no_seats_available">No seats available on this vehicle</string>
+    <string name="error_already_booked">You already have a booking on this route</string>
+    <string name="error_booking_not_found">Booking not found</string>
+
+    <!-- Route Detail Passenger -->
+    <string name="route_detail_passenger_title">Route Details</string>
+    <string name="route_vehicles_section">Available Vehicles</string>
+    <string name="no_vehicles_available">No vehicles available for this route</string>
+
+    <!-- Passenger Bookings -->
+    <string name="passenger_bookings_title">My Bookings</string>
+    <string name="bookings_empty_title">No bookings yet</string>
+    <string name="bookings_empty_subtitle">Book a seat on an available route to get started</string>
+
+    <!-- Driver Booking Requests -->
+    <string name="booking_requests_title">Booking Requests</string>
+    <string name="requests_empty_title">No pending requests</string>
+    <string name="requests_empty_subtitle">Pending booking requests from passengers will appear here</string>
+    <string name="passenger_label">Passenger</string>
+
+    <!-- Navigation -->
+    <string name="nav_booking_requests">Requests</string>
+    <string name="nav_my_bookings">My Bookings</string>
 </resources>

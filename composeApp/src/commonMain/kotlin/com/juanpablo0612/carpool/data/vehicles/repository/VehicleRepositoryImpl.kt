@@ -51,6 +51,16 @@ class VehicleRepositoryImpl(
             }
     }
 
+    override fun getDriverVehicles(driverId: String): Flow<List<Vehicle>> {
+        return firestore.collection(COLLECTION_NAME)
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents
+                    .map { it.data(VehicleDto.serializer()).toDomain() }
+                    .filter { it.driverId == driverId }
+            }
+    }
+
     companion object {
         private const val COLLECTION_NAME = "vehicles"
         private const val STORAGE_PATH = "vehicles"

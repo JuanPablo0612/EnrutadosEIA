@@ -42,10 +42,24 @@ fun AppNavigation(
     val driverBottomNavItems = listOf(
         BottomNavItem.Home,
         BottomNavItem.MyRoutes,
-        BottomNavItem.MyVehicles
+        BottomNavItem.MyVehicles,
+        BottomNavItem.BookingRequests
     )
-    val showBottomBar = driverBottomNavItems.any {
+    val passengerBottomNavItems = listOf(
+        BottomNavItem.SearchRoutes,
+        BottomNavItem.PassengerBookings
+    )
+    val showDriverBottomBar = driverBottomNavItems.any {
         currentDestination?.hasRoute(it.route::class) == true
+    }
+    val showPassengerBottomBar = passengerBottomNavItems.any {
+        currentDestination?.hasRoute(it.route::class) == true
+    }
+    val showBottomBar = showDriverBottomBar || showPassengerBottomBar
+    val currentBottomNavItems = when {
+        showDriverBottomBar -> driverBottomNavItems
+        showPassengerBottomBar -> passengerBottomNavItems
+        else -> emptyList()
     }
 
     val onLogout: () -> Unit = {
@@ -63,11 +77,13 @@ fun AppNavigation(
             if (showBottomBar) {
                 BottomNavigationBar(
                     currentDestination = currentDestination,
-                    items = driverBottomNavItems,
+                    items = currentBottomNavItems,
                     onNavigate = { route ->
                         navController.navigate(route) {
-                            popUpTo<Route.Home> {
-                                saveState = true
+                            if (showDriverBottomBar) {
+                                popUpTo<Route.Home> { saveState = true }
+                            } else {
+                                popUpTo<Route.PassengerHome> { saveState = true }
                             }
                             launchSingleTop = true
                             restoreState = true
@@ -187,7 +203,14 @@ fun AppNavigation(
                         popUpTo(0) { inclusive = false }
                     }
                 },
-                onLogout = onLogout
+                onLogout = onLogout,
+                onNavigateToRouteDetail = { routeId ->
+                    navController.navigate(Route.RouteDetailPassenger(routeId))
+                },
+                onNavigateToPassengerBookings = {
+                    navController.navigate(Route.PassengerBookings)
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

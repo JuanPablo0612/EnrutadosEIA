@@ -37,9 +37,11 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun AvailableRouteCard(
     route: Route,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)

@@ -22,15 +22,28 @@ import com.juanpablo0612.carpool.domain.routes.use_case.GetAvailableRoutesUseCas
 import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.GetUserRoutesUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.UpdateRouteUseCase
+import com.juanpablo0612.carpool.data.booking.repository.BookingRepositoryImpl
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
+import com.juanpablo0612.carpool.domain.booking.use_case.CancelBookingUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.ConfirmBookingUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.GetDriverBookingRequestsUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.GetPassengerBookingsUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.GetVehicleAvailableSeatsUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
+import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsViewModel
+import com.juanpablo0612.carpool.presentation.bookings.passenger.PassengerBookingsViewModel
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
+import com.juanpablo0612.carpool.presentation.routes.passenger_detail.RouteDetailPassengerViewModel
 import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.routes.search.SearchRoutesViewModel
@@ -100,8 +113,23 @@ val vehicleModule = module {
     viewModel { VehiclesListViewModel(get(), get()) }
 }
 
+val bookingModule = module {
+    singleOf(::BookingRepositoryImpl) bind BookingRepository::class
+    factoryOf(::CreateBookingUseCase)
+    factoryOf(::GetPassengerBookingsUseCase)
+    factoryOf(::GetDriverBookingRequestsUseCase)
+    factoryOf(::ConfirmBookingUseCase)
+    factoryOf(::RejectBookingUseCase)
+    factoryOf(::CancelBookingUseCase)
+    factoryOf(::GetVehicleAvailableSeatsUseCase)
+    factoryOf(::GetDriverVehiclesUseCase)
+    viewModel { (routeId: String) -> RouteDetailPassengerViewModel(routeId, get(), get(), get(), get(), get()) }
+    viewModel { PassengerBookingsViewModel(get(), get(), get()) }
+    viewModel { BookingRequestsViewModel(get(), get(), get(), get()) }
+}
+
 val appModule = module {
-    includes(authModule, routeModule, placeModule, vehicleModule)
+    includes(authModule, routeModule, placeModule, vehicleModule, bookingModule)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

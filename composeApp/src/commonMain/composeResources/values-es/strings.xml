@@ -176,4 +176,39 @@
     <string name="switch_role">Cambiar rol</string>
     <string name="logout_title">Cerrar sesión</string>
     <string name="nav_search_routes">Buscar</string>
+
+    <!-- Reservas -->
+    <string name="book_button">Reservar Asiento</string>
+    <string name="cancel_booking_button">Cancelar Reserva</string>
+    <string name="confirm_button">Confirmar</string>
+    <string name="reject_button">Rechazar</string>
+    <string name="booking_status_pending">Pendiente</string>
+    <string name="booking_status_confirmed">Confirmada</string>
+    <string name="booking_status_rejected">Rechazada</string>
+    <string name="booking_status_cancelled">Cancelada</string>
+    <string name="available_seats_label">%1$d asientos disponibles</string>
+    <string name="no_seats_available">Sin asientos disponibles</string>
+    <string name="error_no_seats_available">No hay asientos disponibles en este vehículo</string>
+    <string name="error_already_booked">Ya tienes una reserva en esta ruta</string>
+    <string name="error_booking_not_found">Reserva no encontrada</string>
+
+    <!-- Detalle de ruta (pasajero) -->
+    <string name="route_detail_passenger_title">Detalles de la Ruta</string>
+    <string name="route_vehicles_section">Vehículos Disponibles</string>
+    <string name="no_vehicles_available">No hay vehículos disponibles para esta ruta</string>
+
+    <!-- Reservas del pasajero -->
+    <string name="passenger_bookings_title">Mis Reservas</string>
+    <string name="bookings_empty_title">Sin reservas aún</string>
+    <string name="bookings_empty_subtitle">Reserva un asiento en una ruta disponible para comenzar</string>
+
+    <!-- Solicitudes del conductor -->
+    <string name="booking_requests_title">Solicitudes de Reserva</string>
+    <string name="requests_empty_title">Sin solicitudes pendientes</string>
+    <string name="requests_empty_subtitle">Las solicitudes pendientes de los pasajeros aparecerán aquí</string>
+    <string name="passenger_label">Pasajero</string>
+
+    <!-- Navegación -->
+    <string name="nav_booking_requests">Solicitudes</string>
+    <string name="nav_my_bookings">Mis Reservas</string>
 </resources>
