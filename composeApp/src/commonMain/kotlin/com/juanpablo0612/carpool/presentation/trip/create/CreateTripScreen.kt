@@ -43,8 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.places.model.Place
+import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import kotlinx.datetime.LocalDate
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
@@ -363,5 +368,33 @@ private fun VehicleRadioItem(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CreateTripContentPreview() {
+    CarpoolTheme {
+        CreateTripContent(
+            state = CreateTripUiState(
+                isLoading = false,
+                route = Route(
+                    id = "r1", driverId = "d1",
+                    origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
+                    destination = Place.UNIVERSITY_EIA,
+                    waypoints = emptyList()
+                ),
+                vehicles = listOf(
+                    Vehicle(
+                        id = "v1", driverId = "d1", brand = "Toyota", model = "Corolla",
+                        licensePlate = "ABC123", color = "Blanco", year = 2020, seatsAvailable = 3
+                    )
+                ),
+                selectedVehicleId = "v1",
+                departureDate = LocalDate(2026, 5, 10),
+                departureTime = LocalTime(8, 0)
+            ),
+            onAction = {}
+        )
     }
 }

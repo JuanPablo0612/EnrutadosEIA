@@ -33,9 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
@@ -224,4 +227,47 @@ private fun formatDepartureTime(epochMs: Long): String {
     @Suppress("DEPRECATION")
     val month = local.monthNumber.toString().padStart(2, '0')
     return "$hour:$minute - $day/$month/${local.year}"
+}
+
+@Preview
+@Composable
+private fun DriverTripsEmptyPreview() {
+    CarpoolTheme {
+        DriverTripsContent(
+            state = DriverTripsUiState(isLoading = false, trips = emptyList()),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DriverTripsWithDataPreview() {
+    val origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6)
+    CarpoolTheme {
+        DriverTripsContent(
+            state = DriverTripsUiState(
+                isLoading = false,
+                trips = listOf(
+                    Trip(
+                        id = "1", routeId = "r1", driverId = "d1", vehicleId = "v1",
+                        origin = origin,
+                        destination = Place.UNIVERSITY_EIA,
+                        waypoints = emptyList(),
+                        departureTime = 1746360000000L,
+                        status = TripStatus.Active
+                    ),
+                    Trip(
+                        id = "2", routeId = "r1", driverId = "d1", vehicleId = "v1",
+                        origin = origin,
+                        destination = Place.UNIVERSITY_EIA,
+                        waypoints = emptyList(),
+                        departureTime = 1746446400000L,
+                        status = TripStatus.Completed
+                    )
+                )
+            ),
+            onAction = {}
+        )
+    }
 }

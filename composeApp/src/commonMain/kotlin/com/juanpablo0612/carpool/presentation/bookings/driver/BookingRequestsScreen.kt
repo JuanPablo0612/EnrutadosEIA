@@ -28,8 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.presentation.bookings.asStringResource
 import com.juanpablo0612.carpool.presentation.bookings.driver.components.BookingRequestCard
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_requests_title
 import enrutadoseia.composeapp.generated.resources.person_24px
@@ -144,6 +148,39 @@ private fun EmptyRequestsState(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 40.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BookingRequestsEmptyPreview() {
+    CarpoolTheme {
+        BookingRequestsContent(
+            state = BookingRequestsUiState(isLoading = false, requests = emptyList()),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BookingRequestsWithDataPreview() {
+    CarpoolTheme {
+        BookingRequestsContent(
+            state = BookingRequestsUiState(
+                isLoading = false,
+                requests = listOf(
+                    Booking(
+                        id = "b1", tripId = "t1", passengerId = "p1", driverId = "d1",
+                        passengerName = "María García", passengerEmail = "maria@eia.edu.co",
+                        originName = "Casa", destinationName = "Universidad EIA",
+                        departureTime = 1746360000000L, status = BookingStatus.Pending,
+                        createdAt = 1746300000000L
+                    )
+                )
+            ),
+            onAction = {}
         )
     }
 }

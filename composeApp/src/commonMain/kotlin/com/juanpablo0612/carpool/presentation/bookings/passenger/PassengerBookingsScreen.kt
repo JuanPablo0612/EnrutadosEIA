@@ -27,8 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.presentation.bookings.asStringResource
 import com.juanpablo0612.carpool.presentation.bookings.passenger.components.BookingCard
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
@@ -151,6 +155,39 @@ private fun EmptyBookingsState(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 40.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PassengerBookingsEmptyPreview() {
+    CarpoolTheme {
+        PassengerBookingsContent(
+            state = PassengerBookingsUiState(isLoading = false, bookings = emptyList()),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PassengerBookingsWithDataPreview() {
+    CarpoolTheme {
+        PassengerBookingsContent(
+            state = PassengerBookingsUiState(
+                isLoading = false,
+                bookings = listOf(
+                    Booking(
+                        id = "b1", tripId = "t1", passengerId = "p1", driverId = "d1",
+                        passengerName = "Juan Pablo", passengerEmail = "juan@eia.edu.co",
+                        originName = "Casa", destinationName = "Universidad EIA",
+                        departureTime = 1746360000000L, status = BookingStatus.Confirmed,
+                        createdAt = 1746300000000L
+                    )
+                )
+            ),
+            onAction = {}
         )
     }
 }
