@@ -10,16 +10,16 @@ EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app f
 
 ```bash
 # Build Android debug APK
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # Run tests
 ./gradlew :composeApp:testDebugUnitTest
 
 # Clean build
-./gradlew clean :composeApp:assembleDebug
+./gradlew clean :androidApp:assembleDebug
 ```
 
-Single module project (`composeApp`). Gradle configuration cache is enabled. JVM target is 17.
+Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library). Gradle configuration cache is enabled. JVM target is 17.
 
 ## Architecture
 
