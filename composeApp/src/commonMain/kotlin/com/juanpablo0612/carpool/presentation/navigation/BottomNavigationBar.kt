@@ -29,6 +29,7 @@ fun BottomNavigationBar(
                 },
                 label = { Text(text = stringResource(item.label)) },
                 selected = selected,
+                alwaysShowLabel = false,
                 onClick = { onNavigate(item.route) }
             )
         }
