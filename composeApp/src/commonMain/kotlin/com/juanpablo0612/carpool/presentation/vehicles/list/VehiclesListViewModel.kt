@@ -48,6 +48,9 @@ class VehiclesListViewModel(
             VehiclesListAction.OnRegisterVehicleClick -> viewModelScope.launch {
                 _events.emit(VehiclesListEvent.NavigateToRegisterVehicle)
             }
+            VehiclesListAction.OnBackClick -> viewModelScope.launch {
+                _events.emit(VehiclesListEvent.NavigateBack)
+            }
         }
     }
 }

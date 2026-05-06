@@ -53,6 +53,7 @@ import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.routes.passenger_detail.RouteDetailPassengerViewModel
 import com.juanpablo0612.carpool.presentation.routes.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.session.UserSession
+import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
 import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.driver_list.DriverTripsViewModel
@@ -89,6 +90,7 @@ val authModule = module {
     viewModel { RegisterViewModel(get(), get()) }
     viewModel { ForgotPasswordViewModel(get()) }
     viewModel { SplashViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get()) }
 }
 
 val routeModule = module {

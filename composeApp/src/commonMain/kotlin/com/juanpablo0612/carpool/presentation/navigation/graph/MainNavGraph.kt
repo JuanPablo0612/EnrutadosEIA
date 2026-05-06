@@ -61,7 +61,8 @@ fun NavGraphBuilder.mainNavGraph(
             viewModel = viewModel,
             onNavigateToCreateRoute = onNavigateToCreateRoute,
             onNavigateToRouteDetail = onNavigateToRouteDetail,
-            onNavigateToCreateTrip = onNavigateToCreateTrip
+            onNavigateToCreateTrip = onNavigateToCreateTrip,
+            onBackClick = onNavigateBack
         )
     }
 
@@ -107,7 +108,8 @@ fun NavGraphBuilder.mainNavGraph(
         val viewModel: VehiclesListViewModel = koinViewModel()
         VehiclesListScreen(
             viewModel = viewModel,
-            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onBackClick = onNavigateBack
         )
     }
 

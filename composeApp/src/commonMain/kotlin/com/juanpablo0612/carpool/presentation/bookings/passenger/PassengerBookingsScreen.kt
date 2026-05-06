@@ -76,14 +76,6 @@ fun PassengerBookingsContent(
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(PassengerBookingsAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )

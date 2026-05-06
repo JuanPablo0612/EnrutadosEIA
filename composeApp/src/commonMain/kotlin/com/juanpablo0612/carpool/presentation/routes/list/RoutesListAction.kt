@@ -4,4 +4,5 @@ sealed class RoutesListAction {
     data object OnCreateRouteClick : RoutesListAction()
     data class OnRouteClick(val routeId: String) : RoutesListAction()
     data class OnPublishTripClick(val routeId: String) : RoutesListAction()
+    data object OnBackClick : RoutesListAction()
 }

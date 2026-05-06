@@ -79,15 +79,7 @@ fun DriverTripsContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.nav_my_trips)) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(DriverTripsAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                }
+                title = { Text(stringResource(Res.string.nav_my_trips)) }
             )
         }
     ) { padding ->

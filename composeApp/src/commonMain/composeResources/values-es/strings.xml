@@ -214,6 +214,11 @@
     <string name="nav_booking_requests">Solicitudes</string>
     <string name="nav_my_bookings">Mis Reservas</string>
     <string name="nav_my_trips">Mis Viajes</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Perfil -->
+    <string name="profile_title">Perfil</string>
+    <string name="profile_driver_section">Opciones de Conductor</string>
 
     <!-- Viaje -->
     <string name="create_trip_title">Publicar Viaje</string>

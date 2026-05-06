@@ -15,6 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.routes_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.routes_empty_title
@@ -48,7 +50,8 @@ fun RoutesListScreen(
     viewModel: RoutesListViewModel,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
-    onNavigateToCreateTrip: (String) -> Unit
+    onNavigateToCreateTrip: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -57,6 +60,7 @@ fun RoutesListScreen(
             RoutesListEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
             is RoutesListEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
             is RoutesListEvent.NavigateToCreateTrip -> onNavigateToCreateTrip(event.routeId)
+            RoutesListEvent.NavigateBack -> onBackClick()
         }
     }
 
@@ -80,6 +84,14 @@ fun RoutesListContent(
                         text = stringResource(Res.string.routes_list_title),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onAction(RoutesListAction.OnBackClick) }) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                            contentDescription = null
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background

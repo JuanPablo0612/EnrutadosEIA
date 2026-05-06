@@ -18,6 +18,8 @@ import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.mainNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
+import com.juanpablo0612.carpool.presentation.profile.ProfileScreen
+import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
 import com.juanpablo0612.carpool.presentation.role_selector.RoleSelectorScreen
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.splash.SplashScreen
@@ -34,20 +36,21 @@ fun AppNavigation(
     val userSession = koinInject<UserSession>()
     val logoutUseCase = koinInject<LogoutUseCase>()
     val scope = rememberCoroutineScope()
+    val activeRole by userSession.activeRole.collectAsState()
 
     val navBackstackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackstackEntry?.destination
 
     val driverBottomNavItems = listOf(
         BottomNavItem.Home,
-        BottomNavItem.MyRoutes,
-        BottomNavItem.MyVehicles,
         BottomNavItem.MyTrips,
-        BottomNavItem.BookingRequests
+        BottomNavItem.BookingRequests,
+        BottomNavItem.Profile
     )
     val passengerBottomNavItems = listOf(
         BottomNavItem.SearchRoutes,
-        BottomNavItem.PassengerBookings
+        BottomNavItem.PassengerBookings,
+        BottomNavItem.Profile
     )
     val showDriverBottomBar = driverBottomNavItems.any {
         currentDestination?.hasRoute(it.route::class) == true
@@ -57,6 +60,10 @@ fun AppNavigation(
     }
     val showBottomBar = showDriverBottomBar || showPassengerBottomBar
     val currentBottomNavItems = when {
+        showDriverBottomBar && showPassengerBottomBar -> {
+            // Profile is in both lists — use active role to pick the correct set
+            if (activeRole == UserRole.Passenger) passengerBottomNavItems else driverBottomNavItems
+        }
         showDriverBottomBar -> driverBottomNavItems
         showPassengerBottomBar -> passengerBottomNavItems
         else -> emptyList()
@@ -80,7 +87,7 @@ fun AppNavigation(
                     items = currentBottomNavItems,
                     onNavigate = { route ->
                         navController.navigate(route) {
-                            if (showDriverBottomBar) {
+                            if (activeRole != UserRole.Passenger) {
                                 popUpTo<Route.Home> { saveState = true }
                             } else {
                                 popUpTo<Route.PassengerHome> { saveState = true }
@@ -213,6 +220,16 @@ fun AppNavigation(
                 },
                 onNavigateBack = { navController.popBackStack() }
             )
+
+            composable<Route.Profile> {
+                val viewModel: ProfileViewModel = koinViewModel()
+                ProfileScreen(
+                    viewModel = viewModel,
+                    onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
+                    onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
+                    onLogout = onLogout
+                )
+            }
         }
     }
 }

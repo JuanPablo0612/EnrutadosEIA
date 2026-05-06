@@ -15,6 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.vehicles.list.components.VehicleCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.person_24px
 import enrutadoseia.composeapp.generated.resources.vehicles_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.vehicles_empty_title
@@ -45,13 +47,15 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun VehiclesListScreen(
     viewModel: VehiclesListViewModel,
-    onNavigateToRegisterVehicle: () -> Unit
+    onNavigateToRegisterVehicle: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             VehiclesListEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
+            VehiclesListEvent.NavigateBack -> onBackClick()
         }
     }
 
@@ -75,6 +79,14 @@ fun VehiclesListContent(
                         text = stringResource(Res.string.vehicles_list_title),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onAction(VehiclesListAction.OnBackClick) }) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                            contentDescription = null
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background

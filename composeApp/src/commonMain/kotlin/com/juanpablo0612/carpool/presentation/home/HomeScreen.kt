@@ -52,7 +52,7 @@ fun HomeScreen(
                     if (isDualRole) {
                         IconButton(onClick = onSwitchRole) {
                             Icon(
-                                imageVector = vectorResource(Res.drawable.arrow_forward_24px),
+                                imageVector = vectorResource(Res.drawable.swap_horiz_24px),
                                 contentDescription = stringResource(Res.string.switch_role)
                             )
                         }
