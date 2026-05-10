@@ -234,4 +234,20 @@
     <!-- Common dialog actions -->
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+
+    <!-- State components -->
+    <string name="error_state_title">Something went wrong</string>
+    <string name="error_state_retry">Retry</string>
+    <string name="offline_banner_message">No internet connection</string>
+    <string name="empty_state_no_data">No information available</string>
+
+    <!-- Logout confirm dialog -->
+    <string name="logout_confirm_title">Log out</string>
+    <string name="logout_confirm_description">Are you sure you want to log out?</string>
+    <string name="logout_confirm_button">Log out</string>
+
+    <!-- Empty state subtitles -->
+    <string name="my_trips_empty_subtitle">Trips you publish will appear here</string>
+    <string name="search_empty_title">No trips available</string>
+    <string name="search_empty_subtitle">Try a different search or check back later</string>
 </resources>

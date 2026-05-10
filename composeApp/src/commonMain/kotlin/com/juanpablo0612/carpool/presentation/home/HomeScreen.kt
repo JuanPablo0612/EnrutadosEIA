@@ -1,69 +1,46 @@
 package com.juanpablo0612.carpool.presentation.home
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.auth.model.User
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import enrutadoseia.composeapp.generated.resources.*
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.driver_home_title
+import enrutadoseia.composeapp.generated.resources.driver_home_welcome
+import enrutadoseia.composeapp.generated.resources.nav_create_route
+import enrutadoseia.composeapp.generated.resources.role_selector_driver_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     user: User,
     isDualRole: Boolean,
     onCreateRouteClick: () -> Unit,
     onSwitchRole: () -> Unit,
-    onLogout: () -> Unit
+    onNavigateToProfile: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(Res.string.driver_home_title),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                        Text(
-                            text = user.name ?: user.email,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                actions = {
-                    if (isDualRole) {
-                        IconButton(onClick = onSwitchRole) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.swap_horiz_24px),
-                                contentDescription = stringResource(Res.string.switch_role)
-                            )
-                        }
-                    }
-                    IconButton(onClick = onLogout) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.logout_24px),
-                            contentDescription = stringResource(Res.string.logout_title)
-                        )
-                    }
-                }
+            CarpoolTopBar(
+                title = stringResource(Res.string.driver_home_title),
+                user = user,
+                isDualRole = isDualRole,
+                currentRoleLabel = stringResource(Res.string.role_selector_driver_title),
+                onAvatarClick = onNavigateToProfile,
+                onRoleToggle = if (isDualRole) onSwitchRole else null
             )
         },
         floatingActionButton = {
@@ -105,7 +82,7 @@ private fun HomeScreenPreview() {
             isDualRole = false,
             onCreateRouteClick = {},
             onSwitchRole = {},
-            onLogout = {}
+            onNavigateToProfile = {}
         )
     }
 }
@@ -126,7 +103,7 @@ private fun HomeScreenDualRolePreview() {
             isDualRole = true,
             onCreateRouteClick = {},
             onSwitchRole = {},
-            onLogout = {}
+            onNavigateToProfile = {}
         )
     }
 }

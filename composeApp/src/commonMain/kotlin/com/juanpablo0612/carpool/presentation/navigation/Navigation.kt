@@ -24,6 +24,7 @@ import com.juanpablo0612.carpool.presentation.role_selector.RoleSelectorScreen
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.splash.SplashScreen
 import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,7 +62,6 @@ fun AppNavigation(
     val showBottomBar = showDriverBottomBar || showPassengerBottomBar
     val currentBottomNavItems = when {
         showDriverBottomBar && showPassengerBottomBar -> {
-            // Profile is in both lists — use active role to pick the correct set
             if (activeRole == UserRole.Passenger) passengerBottomNavItems else driverBottomNavItems
         }
         showDriverBottomBar -> driverBottomNavItems
@@ -79,156 +79,158 @@ fun AppNavigation(
         }
     }
 
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                BottomNavigationBar(
-                    currentDestination = currentDestination,
-                    items = currentBottomNavItems,
-                    onNavigate = { route ->
-                        navController.navigate(route) {
-                            if (activeRole != UserRole.Passenger) {
-                                popUpTo<Route.Home> { saveState = true }
-                            } else {
-                                popUpTo<Route.PassengerHome> { saveState = true }
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                )
-            }
-        },
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Route.Splash,
-            modifier = modifier.padding(innerPadding)
-        ) {
-            composable<Route.Splash> {
-                val viewModel: SplashViewModel = koinViewModel()
-                SplashScreen(
-                    viewModel = viewModel,
-                    onNavigateToAuth = {
-                        navController.navigate(Route.Login) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onNavigateToDriver = { user ->
-                        userSession.setSession(user, UserRole.Driver)
-                        navController.navigate(Route.Home) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onNavigateToPassenger = { user ->
-                        userSession.setSession(user, UserRole.Passenger)
-                        navController.navigate(Route.PassengerHome) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onNavigateToRoleSelector = { user ->
-                        userSession.setUser(user)
-                        navController.navigate(Route.RoleSelector) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    }
-                )
-            }
-
-            composable<Route.RoleSelector> {
-                val user by userSession.user.collectAsState()
-                user?.let { u ->
-                    RoleSelectorScreen(
-                        user = u,
-                        onSelectDriver = {
-                            userSession.setActiveRole(UserRole.Driver)
-                            navController.navigate(Route.Home) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        },
-                        onSelectPassenger = {
-                            userSession.setActiveRole(UserRole.Passenger)
-                            navController.navigate(Route.PassengerHome) {
-                                popUpTo(0) { inclusive = true }
+    CarpoolTheme(role = activeRole) {
+        Scaffold(
+            bottomBar = {
+                if (showBottomBar) {
+                    BottomNavigationBar(
+                        currentDestination = currentDestination,
+                        items = currentBottomNavItems,
+                        onNavigate = { route ->
+                            navController.navigate(route) {
+                                if (activeRole != UserRole.Passenger) {
+                                    popUpTo<Route.Home> { saveState = true }
+                                } else {
+                                    popUpTo<Route.PassengerHome> { saveState = true }
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
                 }
-            }
-
-            authNavGraph(
-                onAuthSuccess = { user ->
-                    when {
-                        user.isDriver && user.isPassenger -> {
-                            userSession.setUser(user)
-                            navController.navigate(Route.RoleSelector) {
-                                popUpTo(0) { inclusive = true }
+            },
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = Route.Splash,
+                modifier = modifier.padding(innerPadding)
+            ) {
+                composable<Route.Splash> {
+                    val viewModel: SplashViewModel = koinViewModel()
+                    SplashScreen(
+                        viewModel = viewModel,
+                        onNavigateToAuth = {
+                            navController.navigate(Route.Login) {
+                                popUpTo<Route.Splash> { inclusive = true }
                             }
-                        }
-                        user.isDriver -> {
+                        },
+                        onNavigateToDriver = { user ->
                             userSession.setSession(user, UserRole.Driver)
                             navController.navigate(Route.Home) {
-                                popUpTo(0) { inclusive = true }
+                                popUpTo<Route.Splash> { inclusive = true }
                             }
-                        }
-                        user.isPassenger -> {
+                        },
+                        onNavigateToPassenger = { user ->
                             userSession.setSession(user, UserRole.Passenger)
                             navController.navigate(Route.PassengerHome) {
-                                popUpTo(0) { inclusive = true }
+                                popUpTo<Route.Splash> { inclusive = true }
+                            }
+                        },
+                        onNavigateToRoleSelector = { user ->
+                            userSession.setUser(user)
+                            navController.navigate(Route.RoleSelector) {
+                                popUpTo<Route.Splash> { inclusive = true }
                             }
                         }
-                        else -> {
-                            navController.navigate(Route.Login) {
-                                popUpTo(0) { inclusive = true }
+                    )
+                }
+
+                composable<Route.RoleSelector> {
+                    val user by userSession.user.collectAsState()
+                    user?.let { u ->
+                        RoleSelectorScreen(
+                            user = u,
+                            onSelectDriver = {
+                                userSession.setActiveRole(UserRole.Driver)
+                                navController.navigate(Route.Home) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            },
+                            onSelectPassenger = {
+                                userSession.setActiveRole(UserRole.Passenger)
+                                navController.navigate(Route.PassengerHome) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                }
+
+                authNavGraph(
+                    onAuthSuccess = { user ->
+                        when {
+                            user.isDriver && user.isPassenger -> {
+                                userSession.setUser(user)
+                                navController.navigate(Route.RoleSelector) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                            user.isDriver -> {
+                                userSession.setSession(user, UserRole.Driver)
+                                navController.navigate(Route.Home) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                            user.isPassenger -> {
+                                userSession.setSession(user, UserRole.Passenger)
+                                navController.navigate(Route.PassengerHome) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                            else -> {
+                                navController.navigate(Route.Login) {
+                                    popUpTo(0) { inclusive = true }
+                                }
                             }
                         }
-                    }
-                },
-                onNavigateToRegister = { navController.navigate(Route.Register) },
-                onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
-                onNavigateBack = { navController.popBackStack() }
-            )
-
-            mainNavGraph(
-                onSwitchRole = {
-                    navController.navigate(Route.RoleSelector) {
-                        popUpTo(0) { inclusive = false }
-                    }
-                },
-                onLogout = onLogout,
-                onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
-                onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle) },
-                onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
-                onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
-                onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                onNavigateBack = { navController.popBackStack() }
-            )
-
-            passengerNavGraph(
-                onSwitchRole = {
-                    navController.navigate(Route.RoleSelector) {
-                        popUpTo(0) { inclusive = false }
-                    }
-                },
-                onLogout = onLogout,
-                onNavigateToTripDetail = { tripId ->
-                    navController.navigate(Route.TripDetailPassenger(tripId))
-                },
-                onNavigateToPassengerBookings = {
-                    navController.navigate(Route.PassengerBookings)
-                },
-                onNavigateBack = { navController.popBackStack() }
-            )
-
-            composable<Route.Profile> {
-                val viewModel: ProfileViewModel = koinViewModel()
-                ProfileScreen(
-                    viewModel = viewModel,
-                    onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
-                    onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
-                    onLogout = onLogout
+                    },
+                    onNavigateToRegister = { navController.navigate(Route.Register) },
+                    onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
+                    onNavigateBack = { navController.popBackStack() }
                 )
+
+                mainNavGraph(
+                    onSwitchRole = {
+                        navController.navigate(Route.RoleSelector) {
+                            popUpTo(0) { inclusive = false }
+                        }
+                    },
+                    onNavigateToProfile = { navController.navigate(Route.Profile) },
+                    onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
+                    onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle) },
+                    onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
+                    onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
+                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                    onNavigateBack = { navController.popBackStack() }
+                )
+
+                passengerNavGraph(
+                    onSwitchRole = {
+                        navController.navigate(Route.RoleSelector) {
+                            popUpTo(0) { inclusive = false }
+                        }
+                    },
+                    onNavigateToProfile = { navController.navigate(Route.Profile) },
+                    onNavigateToTripDetail = { tripId ->
+                        navController.navigate(Route.TripDetailPassenger(tripId))
+                    },
+                    onNavigateToPassengerBookings = {
+                        navController.navigate(Route.PassengerBookings)
+                    },
+                    onNavigateBack = { navController.popBackStack() }
+                )
+
+                composable<Route.Profile> {
+                    val viewModel: ProfileViewModel = koinViewModel()
+                    ProfileScreen(
+                        viewModel = viewModel,
+                        onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
+                        onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
+                        onLogout = onLogout
+                    )
+                }
             }
         }
     }

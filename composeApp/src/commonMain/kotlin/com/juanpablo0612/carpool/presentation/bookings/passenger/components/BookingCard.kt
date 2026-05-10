@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,12 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
-import enrutadoseia.composeapp.generated.resources.booking_status_cancelled
-import enrutadoseia.composeapp.generated.resources.booking_status_confirmed
-import enrutadoseia.composeapp.generated.resources.booking_status_pending
-import enrutadoseia.composeapp.generated.resources.booking_status_rejected
 import enrutadoseia.composeapp.generated.resources.cancel_booking_button
 import enrutadoseia.composeapp.generated.resources.departure_time_label
 import kotlin.time.Instant
@@ -43,7 +39,7 @@ fun BookingCard(
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(Spacing.lg)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -61,7 +57,7 @@ fun BookingCard(
                             imageVector = vectorResource(Res.drawable.arrow_forward_24px),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 4.dp).size(16.dp)
+                            modifier = Modifier.padding(horizontal = Spacing.xs).size(16.dp)
                         )
                         Text(
                             text = booking.destinationName,
@@ -70,7 +66,7 @@ fun BookingCard(
                             maxLines = 1
                         )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
                         text = stringResource(
                             Res.string.departure_time_label,
@@ -81,31 +77,11 @@ fun BookingCard(
                     )
                 }
 
-                val (chipLabel, chipContainerColor) = when (booking.status) {
-                    BookingStatus.Pending -> stringResource(Res.string.booking_status_pending) to
-                            MaterialTheme.colorScheme.surfaceVariant
-                    BookingStatus.Confirmed -> stringResource(Res.string.booking_status_confirmed) to
-                            MaterialTheme.colorScheme.primaryContainer
-                    BookingStatus.Rejected -> stringResource(Res.string.booking_status_rejected) to
-                            MaterialTheme.colorScheme.errorContainer
-                    BookingStatus.Cancelled -> stringResource(Res.string.booking_status_cancelled) to
-                            MaterialTheme.colorScheme.errorContainer
-                }
-
-                AssistChip(
-                    onClick = {},
-                    label = {
-                        Text(
-                            text = chipLabel,
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium)
-                        )
-                    },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = chipContainerColor)
-                )
+                BookingStatusBadge(status = booking.status)
             }
 
             if (booking.status is BookingStatus.Pending) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
                 OutlinedButton(
                     onClick = { onCancelClick(booking.id) },
                     modifier = Modifier.fillMaxWidth()

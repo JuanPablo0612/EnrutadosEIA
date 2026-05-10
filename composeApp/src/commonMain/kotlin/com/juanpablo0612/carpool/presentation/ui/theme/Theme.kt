@@ -5,6 +5,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+import com.juanpablo0612.carpool.domain.auth.model.UserRole
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -82,19 +86,55 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+private val passengerLightScheme = lightScheme.copy(
+    primary = passengerPrimaryLight,
+    onPrimary = passengerOnPrimaryLight,
+    primaryContainer = passengerPrimaryContainerLight,
+    onPrimaryContainer = passengerOnPrimaryContainerLight,
+)
+
+private val passengerDarkScheme = darkScheme.copy(
+    primary = passengerPrimaryDark,
+    onPrimary = passengerOnPrimaryDark,
+    primaryContainer = passengerPrimaryContainerDark,
+    onPrimaryContainer = passengerOnPrimaryContainerDark,
+)
+
+data class ExtendedColors(
+    val success: Color,
+    val onSuccess: Color,
+    val warning: Color,
+    val onWarning: Color,
+    val info: Color,
+    val onInfo: Color,
+)
+
+val LocalExtendedColors = staticCompositionLocalOf {
+    ExtendedColors(
+        success = successLight, onSuccess = onSuccessLight,
+        warning = warningLight, onWarning = onWarningLight,
+        info = infoLight, onInfo = onInfoLight,
+    )
+}
+
 @Composable
 fun CarpoolTheme(
+    role: UserRole? = null,
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
     val colorScheme = when {
+        role == UserRole.Passenger && darkTheme -> passengerDarkScheme
+        role == UserRole.Passenger -> passengerLightScheme
         darkTheme -> darkScheme
         else -> lightScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
-    )
+    val extendedColors = if (darkTheme) {
+        ExtendedColors(successDark, onSuccessDark, warningDark, onWarningDark, infoDark, onInfoDark)
+    } else {
+        ExtendedColors(successLight, onSuccessLight, warningLight, onWarningLight, infoLight, onInfoLight)
+    }
+    CompositionLocalProvider(LocalExtendedColors provides extendedColors) {
+        MaterialTheme(colorScheme = colorScheme, typography = AppTypography, content = content)
+    }
 }

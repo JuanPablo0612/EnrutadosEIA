@@ -234,4 +234,20 @@
     <!-- Acciones de diálogo -->
     <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
+
+    <!-- Componentes de estado -->
+    <string name="error_state_title">Algo salió mal</string>
+    <string name="error_state_retry">Reintentar</string>
+    <string name="offline_banner_message">Sin conexión a internet</string>
+    <string name="empty_state_no_data">No hay información</string>
+
+    <!-- Diálogo de confirmación de cierre de sesión -->
+    <string name="logout_confirm_title">Cerrar sesión</string>
+    <string name="logout_confirm_description">¿Seguro que deseas cerrar sesión?</string>
+    <string name="logout_confirm_button">Cerrar sesión</string>
+
+    <!-- Subtítulos de estado vacío -->
+    <string name="my_trips_empty_subtitle">Los viajes que publiques aparecerán aquí</string>
+    <string name="search_empty_title">Sin viajes disponibles</string>
+    <string name="search_empty_subtitle">Intenta otra búsqueda o vuelve más tarde</string>
 </resources>

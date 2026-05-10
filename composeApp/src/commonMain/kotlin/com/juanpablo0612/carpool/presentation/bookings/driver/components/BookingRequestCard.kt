@@ -14,8 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,9 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
-import enrutadoseia.composeapp.generated.resources.booking_status_pending
 import enrutadoseia.composeapp.generated.resources.confirm_button
 import enrutadoseia.composeapp.generated.resources.departure_time_label
 import enrutadoseia.composeapp.generated.resources.passenger_label
@@ -50,14 +49,14 @@ fun BookingRequestCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Spacing.lg)
         ) {
             Text(
                 text = stringResource(Res.string.passenger_label),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = booking.passengerName,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -69,7 +68,7 @@ fun BookingRequestCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = booking.originName,
@@ -82,7 +81,7 @@ fun BookingRequestCard(
                     imageVector = vectorResource(Res.drawable.arrow_forward_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 4.dp).size(14.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.xs).size(14.dp)
                 )
                 Text(
                     text = booking.destinationName,
@@ -92,7 +91,7 @@ fun BookingRequestCard(
                     maxLines = 1
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = stringResource(
                     Res.string.departure_time_label,
@@ -101,24 +100,12 @@ fun BookingRequestCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            SuggestionChip(
-                onClick = {},
-                label = {
-                    Text(
-                        text = stringResource(Res.string.booking_status_pending),
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                },
-                colors = SuggestionChipDefaults.suggestionChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            BookingStatusBadge(status = booking.status)
+            Spacer(modifier = Modifier.height(Spacing.md))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 Button(
                     onClick = { onConfirm(booking.id) },

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -25,18 +26,23 @@ class ProfileViewModel(
     init {
         viewModelScope.launch {
             combine(userSession.user, userSession.activeRole) { user, role ->
-                ProfileUiState(user = user, activeRole = role, isLoading = false)
-            }.collect { newState ->
-                _state.value = newState
+                user to role
+            }.collect { (user, role) ->
+                _state.update { it.copy(user = user, activeRole = role, isLoading = false) }
             }
         }
     }
 
     fun onAction(action: ProfileAction) {
         when (action) {
-            ProfileAction.OnLogoutClick -> viewModelScope.launch {
-                _events.emit(ProfileEvent.LogoutSuccess)
+            ProfileAction.OnLogoutClick -> _state.update { it.copy(showLogoutDialog = true) }
+            ProfileAction.OnLogoutConfirmed -> {
+                _state.update { it.copy(showLogoutDialog = false) }
+                viewModelScope.launch {
+                    _events.emit(ProfileEvent.LogoutSuccess)
+                }
             }
+            ProfileAction.OnLogoutDismissed -> _state.update { it.copy(showLogoutDialog = false) }
             ProfileAction.OnMyRoutesClick -> viewModelScope.launch {
                 _events.emit(ProfileEvent.NavigateToRoutes)
             }

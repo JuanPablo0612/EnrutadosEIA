@@ -19,7 +19,7 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.passengerNavGraph(
     onSwitchRole: () -> Unit,
-    onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToPassengerBookings: () -> Unit,
     onNavigateBack: () -> Unit
@@ -35,7 +35,7 @@ fun NavGraphBuilder.passengerNavGraph(
                 user = u,
                 isDualRole = isDualRole,
                 onSwitchRole = onSwitchRole,
-                onLogout = onLogout,
+                onNavigateToProfile = onNavigateToProfile,
                 onNavigateToTripDetail = onNavigateToTripDetail
             )
         }

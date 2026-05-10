@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.routes.passenger_detail
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -32,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -105,18 +106,11 @@ fun RouteDetailPassengerContent(
         }
     ) { padding ->
         when {
-            state.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+            state.isLoading -> DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
             else -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(bottom = 24.dp)
+                    contentPadding = PaddingValues(bottom = Spacing.xl)
                 ) {
                     state.trip?.let { trip ->
                         item {
@@ -150,7 +144,7 @@ fun RouteDetailPassengerContent(
                                 text = stringResource(error.asStringResource()),
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                                                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)
                             )
                         }
                     }
@@ -162,14 +156,14 @@ fun RouteDetailPassengerContent(
 
 @Composable
 private fun TripSummarySection(trip: Trip) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+    Column(modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)) {
         Text(
             text = stringResource(Res.string.departure_time_label, formatDepartureTime(trip.departureTime)),
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -185,7 +179,7 @@ private fun TripSummarySection(trip: Trip) {
                 imageVector = vectorResource(Res.drawable.arrow_forward_24px),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = Spacing.sm)
             )
             Text(
                 text = trip.destination.name,
@@ -196,7 +190,7 @@ private fun TripSummarySection(trip: Trip) {
         }
 
         if (trip.waypoints.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             Text(
                 text = stringResource(Res.string.route_waypoints_count, trip.waypoints.size),
                 style = MaterialTheme.typography.bodySmall,
@@ -208,7 +202,7 @@ private fun TripSummarySection(trip: Trip) {
 
 @Composable
 private fun VehicleInfoSection(vehicle: Vehicle) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+    Column(modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)) {
         Text(
             text = "${vehicle.brand} ${vehicle.model}",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
@@ -230,7 +224,7 @@ private fun SeatsAndBookSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
         SeatsBadge(

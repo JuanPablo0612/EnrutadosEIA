@@ -32,7 +32,7 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.mainNavGraph(
     onSwitchRole: () -> Unit,
-    onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
@@ -50,7 +50,7 @@ fun NavGraphBuilder.mainNavGraph(
                 isDualRole = isDualRole,
                 onCreateRouteClick = onNavigateToCreateRoute,
                 onSwitchRole = onSwitchRole,
-                onLogout = onLogout
+                onNavigateToProfile = onNavigateToProfile
             )
         }
     }

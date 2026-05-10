@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
@@ -43,6 +44,9 @@ import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.logout_24px
+import enrutadoseia.composeapp.generated.resources.logout_confirm_button
+import enrutadoseia.composeapp.generated.resources.logout_confirm_description
+import enrutadoseia.composeapp.generated.resources.logout_confirm_title
 import enrutadoseia.composeapp.generated.resources.logout_title
 import enrutadoseia.composeapp.generated.resources.profile_driver_section
 import enrutadoseia.composeapp.generated.resources.profile_title
@@ -79,6 +83,17 @@ fun ProfileContent(
     state: ProfileUiState,
     onAction: (ProfileAction) -> Unit
 ) {
+    if (state.showLogoutDialog) {
+        ConfirmDialog(
+            title = stringResource(Res.string.logout_confirm_title),
+            description = stringResource(Res.string.logout_confirm_description),
+            confirmText = stringResource(Res.string.logout_confirm_button),
+            onConfirm = { onAction(ProfileAction.OnLogoutConfirmed) },
+            onDismiss = { onAction(ProfileAction.OnLogoutDismissed) },
+            isDestructive = true
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -269,6 +284,29 @@ private fun ProfileContentPassengerPreview() {
                 ),
                 activeRole = UserRole.Passenger,
                 isLoading = false
+            ),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ProfileContentLogoutDialogPreview() {
+    CarpoolTheme {
+        ProfileContent(
+            state = ProfileUiState(
+                user = User(
+                    id = "1",
+                    email = "conductor@eia.edu.co",
+                    name = "Carlos López",
+                    isEmailVerified = true,
+                    isPassenger = false,
+                    isDriver = true
+                ),
+                activeRole = UserRole.Driver,
+                isLoading = false,
+                showLogoutDialog = true
             ),
             onAction = {}
         )
