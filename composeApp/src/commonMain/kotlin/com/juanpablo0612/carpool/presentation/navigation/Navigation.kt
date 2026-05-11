@@ -203,7 +203,14 @@ fun AppNavigation(
                     onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
                     onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
+                    onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
+                    onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
+                    onNavigateToSearchTrips = { navController.navigate(Route.PassengerHome) },
+                    onNavigateToPassengerBookings = { navController.navigate(Route.PassengerBookings) },
+                    onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
+                    onNavigateToTripDetailPassenger = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
+                    onNavigateBack = { navController.popBackStack() },
                 )
 
                 passengerNavGraph(

@@ -250,4 +250,41 @@
     <string name="my_trips_empty_subtitle">Trips you publish will appear here</string>
     <string name="search_empty_title">No trips available</string>
     <string name="search_empty_subtitle">Try a different search or check back later</string>
+
+    <!-- Home Dashboard -->
+    <string name="home_title">Inicio</string>
+    <string name="home_greeting_subtitle">¿Listo para tu viaje de hoy?</string>
+    <string name="home_next_trip_title">Próximo viaje</string>
+    <string name="home_next_booking_title">Tu próximo viaje</string>
+    <string name="home_pending_requests_title">Solicitudes pendientes (%1$d)</string>
+    <string name="home_quick_actions_title">Acciones rápidas</string>
+    <string name="home_stats_title">Este mes</string>
+    <string name="home_stats_trips">Viajes</string>
+    <string name="home_stats_passengers">Pasajeros</string>
+    <string name="home_see_all_requests">Ver todas las solicitudes</string>
+
+    <!-- Home quick actions -->
+    <string name="home_action_publish_trip">Publicar viaje</string>
+    <string name="home_action_create_route">Crear ruta</string>
+    <string name="home_action_my_routes">Mis rutas</string>
+    <string name="home_action_my_trips">Mis viajes</string>
+    <string name="home_action_search_trip">Buscar viaje</string>
+    <string name="home_action_my_places">Mis lugares</string>
+    <string name="home_action_my_bookings">Mis reservas</string>
+    <string name="home_action_history">Historial</string>
+
+    <!-- Home onboarding banners -->
+    <string name="home_no_vehicle_title">Registra un vehículo</string>
+    <string name="home_no_vehicle_subtitle">Para publicar viajes, primero necesitas registrar un vehículo.</string>
+    <string name="home_no_route_title">Crea una ruta</string>
+    <string name="home_no_route_subtitle">Define tu ruta recurrente y empieza a publicar viajes.</string>
+    <string name="home_register_vehicle_cta">Registrar vehículo</string>
+    <string name="home_create_route_cta">Crear ruta</string>
+    <string name="home_search_trip_cta">Buscar viaje</string>
+
+    <!-- Home empty states -->
+    <string name="home_driver_empty_title">¡Bienvenido, conductor!</string>
+    <string name="home_driver_empty_subtitle">Registra tu vehículo y crea una ruta para comenzar a ofrecer viajes.</string>
+    <string name="home_passenger_empty_title">¡Encuentra tu primer viaje!</string>
+    <string name="home_passenger_empty_subtitle">Busca rutas disponibles y reserva tu cupo fácilmente.</string>
 </resources>

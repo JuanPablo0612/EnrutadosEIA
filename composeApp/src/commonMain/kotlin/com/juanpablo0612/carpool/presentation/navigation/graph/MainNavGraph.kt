@@ -1,13 +1,12 @@
 package com.juanpablo0612.carpool.presentation.navigation.graph
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsScreen
 import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsViewModel
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
+import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceScreen
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
@@ -17,7 +16,6 @@ import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailScreen
 import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
-import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripScreen
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.driver_list.DriverTripsScreen
@@ -26,7 +24,6 @@ import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListScreen
 import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleScreen
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleViewModel
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -38,21 +35,31 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToRouteDetail: (String) -> Unit,
     onNavigateToCreateTrip: (String) -> Unit,
     onNavigateToAddPlace: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateToRoutesList: () -> Unit,
+    onNavigateToDriverTrips: () -> Unit,
+    onNavigateToDriverBookingRequests: () -> Unit,
+    onNavigateToSearchTrips: () -> Unit,
+    onNavigateToPassengerBookings: () -> Unit,
+    onNavigateToTripDetail: (String) -> Unit,
+    onNavigateToTripDetailPassenger: (String) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     composable<Route.Home> {
-        val userSession: UserSession = koinInject()
-        val user by userSession.user.collectAsState()
-        val isDualRole = user?.let { it.isDriver && it.isPassenger } ?: false
-        user?.let { u ->
-            HomeScreen(
-                user = u,
-                isDualRole = isDualRole,
-                onCreateRouteClick = onNavigateToCreateRoute,
-                onSwitchRole = onSwitchRole,
-                onNavigateToProfile = onNavigateToProfile
-            )
-        }
+        val viewModel: HomeViewModel = koinViewModel()
+        HomeScreen(
+            viewModel = viewModel,
+            onNavigateToProfile = onNavigateToProfile,
+            onSwitchRole = onSwitchRole,
+            onNavigateToCreateRoute = onNavigateToCreateRoute,
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToRoutesList = onNavigateToRoutesList,
+            onNavigateToDriverTrips = onNavigateToDriverTrips,
+            onNavigateToDriverBookingRequests = onNavigateToDriverBookingRequests,
+            onNavigateToSearchTrips = onNavigateToSearchTrips,
+            onNavigateToPassengerBookings = onNavigateToPassengerBookings,
+            onNavigateToTripDetail = onNavigateToTripDetail,
+            onNavigateToTripDetailPassenger = onNavigateToTripDetailPassenger,
+        )
     }
 
     composable<Route.RoutesList> {

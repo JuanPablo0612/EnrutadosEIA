@@ -40,6 +40,7 @@ import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
@@ -147,8 +148,14 @@ val bookingModule = module {
     viewModel { BookingRequestsViewModel(get(), get(), get(), get()) }
 }
 
+val homeModule = module {
+    viewModel {
+        HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get())
+    }
+}
+
 val appModule = module {
-    includes(authModule, routeModule, tripModule, placeModule, vehicleModule, bookingModule)
+    includes(authModule, routeModule, tripModule, placeModule, vehicleModule, bookingModule, homeModule)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
