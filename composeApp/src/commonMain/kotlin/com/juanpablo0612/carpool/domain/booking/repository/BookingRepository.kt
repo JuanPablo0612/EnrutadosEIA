@@ -2,13 +2,20 @@ package com.juanpablo0612.carpool.domain.booking.repository
 
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 import kotlinx.coroutines.flow.Flow
 
 interface BookingRepository {
     suspend fun createBooking(booking: Booking): Result<Unit>
     fun getPassengerBookings(passengerId: String): Flow<List<Booking>>
     fun getDriverBookingRequests(driverId: String): Flow<List<Booking>>
+    fun getAllDriverBookings(driverId: String): Flow<List<Booking>>
     fun getBookingsForTrip(tripId: String): Flow<List<Booking>>
     suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): Result<Unit>
+    suspend fun rejectBookingWithReason(
+        bookingId: String,
+        reason: RejectReason,
+        comment: String?,
+    ): Result<Unit>
     suspend fun hasActiveBooking(passengerId: String, tripId: String): Result<Boolean>
 }

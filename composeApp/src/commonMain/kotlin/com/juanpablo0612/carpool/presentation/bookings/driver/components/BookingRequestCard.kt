@@ -8,135 +8,213 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.booking.model.Booking
-import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
+import com.juanpablo0612.carpool.domain.booking.model.BookingWithPassenger
+import com.juanpablo0612.carpool.domain.booking.model.PassengerSummary
+import com.juanpablo0612.carpool.presentation.home.relativeTime
+import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
-import enrutadoseia.composeapp.generated.resources.confirm_button
-import enrutadoseia.composeapp.generated.resources.departure_time_label
-import enrutadoseia.composeapp.generated.resources.passenger_label
+import enrutadoseia.composeapp.generated.resources.booking_request_accept_button
+import enrutadoseia.composeapp.generated.resources.booking_request_eia_verified
+import enrutadoseia.composeapp.generated.resources.booking_request_trip_context
+import enrutadoseia.composeapp.generated.resources.booking_request_trips_count
+import enrutadoseia.composeapp.generated.resources.booking_request_view_profile
 import enrutadoseia.composeapp.generated.resources.reject_button
+import enrutadoseia.composeapp.generated.resources.relative_days_ago
+import enrutadoseia.composeapp.generated.resources.relative_hours_ago
+import enrutadoseia.composeapp.generated.resources.relative_just_now
+import enrutadoseia.composeapp.generated.resources.relative_minutes_ago
+import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun BookingRequestCard(
-    booking: Booking,
+    item: BookingWithPassenger,
     processingIds: Set<String>,
-    onConfirm: (String) -> Unit,
+    onAccept: (String, String) -> Unit,
     onReject: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onViewProfile: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    val booking = item.booking
+    val passenger = item.passenger
     val isProcessing = booking.id in processingIds
+    val firstName = remember(passenger.name) { passenger.name.split(" ").firstOrNull() ?: passenger.name }
 
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.lg)
+                .padding(Spacing.lg),
         ) {
+            // Header row: avatar + name/reputation + timestamp
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                UserAvatar(name = passenger.name, size = 48.dp)
+                Spacer(modifier = Modifier.width(Spacing.md))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = passenger.name,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    )
+                    ReputationLine(passenger = passenger)
+                }
+                Spacer(modifier = Modifier.width(Spacing.sm))
+                Text(
+                    text = relativeCreatedAt(booking.createdAt),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            // Trip context
             Text(
-                text = stringResource(Res.string.passenger_label),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(Spacing.xs))
-            Text(
-                text = booking.passengerName,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurface
+                text = stringResource(
+                    Res.string.booking_request_trip_context,
+                    relativeTime(booking.departureTime),
+                ),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
             )
             Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = booking.passengerEmail,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(Spacing.sm))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = booking.originName,
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.weight(1f),
-                    maxLines = 1
+                    maxLines = 1,
                 )
                 Icon(
                     imageVector = vectorResource(Res.drawable.arrow_forward_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = Spacing.xs).size(14.dp)
+                    modifier = Modifier
+                        .padding(horizontal = Spacing.xs)
+                        .size(14.dp),
                 )
                 Text(
                     text = booking.destinationName,
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                     modifier = Modifier.weight(1f),
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
-            Spacer(modifier = Modifier.height(Spacing.xs))
-            Text(
-                text = stringResource(
-                    Res.string.departure_time_label,
-                    formatDepartureTime(booking.departureTime)
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(Spacing.sm))
-            BookingStatusBadge(status = booking.status)
+
+            // Optional passenger message
+            if (!booking.passengerMessage.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(Spacing.sm))
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "💬 \"${booking.passengerMessage}\"",
+                        style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(Spacing.sm),
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(Spacing.md))
+
+            // Action buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 Button(
-                    onClick = { onConfirm(booking.id) },
+                    onClick = { onAccept(booking.id, booking.tripId) },
                     enabled = !isProcessing,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
-                    Text(text = stringResource(Res.string.confirm_button))
+                    Text(text = stringResource(Res.string.booking_request_accept_button))
                 }
                 OutlinedButton(
                     onClick = { onReject(booking.id) },
                     enabled = !isProcessing,
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
+                        contentColor = MaterialTheme.colorScheme.error,
                     ),
-                    modifier = Modifier.weight(1f)
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error),
+                    ),
+                    modifier = Modifier.weight(1f),
                 ) {
                     Text(text = stringResource(Res.string.reject_button))
+                }
+            }
+
+            // View profile link
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(onClick = { onViewProfile(booking.passengerId) }) {
+                    Text(
+                        text = stringResource(Res.string.booking_request_view_profile, firstName),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
                 }
             }
         }
     }
 }
 
-private fun formatDepartureTime(epochMs: Long): String {
-    val local = Instant.fromEpochMilliseconds(epochMs)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    val hour = local.hour.toString().padStart(2, '0')
-    val minute = local.minute.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val day = local.dayOfMonth.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val month = local.monthNumber.toString().padStart(2, '0')
-    return "$hour:$minute - $day/$month/${local.year}"
+@Composable
+private fun ReputationLine(passenger: PassengerSummary) {
+    val parts = buildList {
+        if (passenger.averageRating != null) add("⭐ ${"%.1f".format(passenger.averageRating)}")
+        if (passenger.tripsCompleted > 0) add(
+            stringResource(Res.string.booking_request_trips_count, passenger.tripsCompleted)
+        )
+        if (passenger.isEiaVerified) add(stringResource(Res.string.booking_request_eia_verified))
+    }
+    if (parts.isNotEmpty()) {
+        Text(
+            text = parts.joinToString(" · "),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun relativeCreatedAt(createdAtMs: Long): String {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val diffMs = now - createdAtMs
+    val diffMin = diffMs / 60_000
+    val diffHour = diffMs / 3_600_000
+    val diffDay = diffMs / 86_400_000
+    return when {
+        diffMin < 1 -> stringResource(Res.string.relative_just_now)
+        diffMin < 60 -> stringResource(Res.string.relative_minutes_ago, diffMin)
+        diffHour < 24 -> stringResource(Res.string.relative_hours_ago, diffHour)
+        else -> stringResource(Res.string.relative_days_ago, diffDay)
+    }
 }

@@ -1,9 +1,17 @@
 package com.juanpablo0612.carpool.domain.booking.use_case
 
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 
 class RejectBookingUseCase(private val repository: BookingRepository) {
-    suspend operator fun invoke(bookingId: String): Result<Unit> =
+    suspend operator fun invoke(
+        bookingId: String,
+        reason: RejectReason? = null,
+        comment: String? = null,
+    ): Result<Unit> = if (reason != null) {
+        repository.rejectBookingWithReason(bookingId, reason, comment)
+    } else {
         repository.updateBookingStatus(bookingId, BookingStatus.Rejected)
+    }
 }

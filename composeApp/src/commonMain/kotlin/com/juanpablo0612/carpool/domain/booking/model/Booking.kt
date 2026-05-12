@@ -11,5 +11,8 @@ data class Booking(
     val destinationName: String,
     val departureTime: Long,
     val status: BookingStatus,
-    val createdAt: Long
+    val createdAt: Long,
+    val passengerMessage: String? = null,
+    val rejectReason: RejectReason? = null,
+    val rejectComment: String? = null,
 )

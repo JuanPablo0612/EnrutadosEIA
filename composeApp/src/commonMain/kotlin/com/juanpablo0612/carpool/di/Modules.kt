@@ -21,6 +21,7 @@ import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.use_case.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.GetAllDriverBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetDriverBookingRequestsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetPassengerBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
@@ -178,11 +179,12 @@ val bookingModule = module {
     factoryOf(::GetTripAvailableSeatsUseCase)
     factoryOf(::GetPassengerBookingsUseCase)
     factoryOf(::GetDriverBookingRequestsUseCase)
+    factoryOf(::GetAllDriverBookingsUseCase)
     factoryOf(::ConfirmBookingUseCase)
     factoryOf(::RejectBookingUseCase)
     factoryOf(::CancelBookingUseCase)
     viewModel { PassengerBookingsViewModel(get(), get(), get()) }
-    viewModel { BookingRequestsViewModel(get(), get(), get(), get()) }
+    viewModel { BookingRequestsViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val homeModule = module {

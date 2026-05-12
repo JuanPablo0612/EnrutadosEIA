@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.data.booking.model
 
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,7 +17,10 @@ data class BookingDto(
     val destinationName: String = "",
     val departureTime: Long = 0L,
     val status: String = "PENDING",
-    val createdAt: Long = 0L
+    val createdAt: Long = 0L,
+    val passengerMessage: String? = null,
+    val rejectReason: String? = null,
+    val rejectComment: String? = null,
 ) {
     fun toDomain(): Booking = Booking(
         id = id,
@@ -34,7 +38,16 @@ data class BookingDto(
             "CANCELLED" -> BookingStatus.Cancelled
             else -> BookingStatus.Pending
         },
-        createdAt = createdAt
+        createdAt = createdAt,
+        passengerMessage = passengerMessage,
+        rejectReason = when (rejectReason) {
+            "TRIP_FULL" -> RejectReason.TripFull
+            "TRIP_CANCELLED" -> RejectReason.TripCancelled
+            "PICKUP_NOT_POSSIBLE" -> RejectReason.PickupNotPossible
+            "OTHER" -> RejectReason.Other
+            else -> null
+        },
+        rejectComment = rejectComment,
     )
 
     companion object {
@@ -54,7 +67,16 @@ data class BookingDto(
                 is BookingStatus.Rejected -> "REJECTED"
                 is BookingStatus.Cancelled -> "CANCELLED"
             },
-            createdAt = booking.createdAt
+            createdAt = booking.createdAt,
+            passengerMessage = booking.passengerMessage,
+            rejectReason = when (booking.rejectReason) {
+                RejectReason.TripFull -> "TRIP_FULL"
+                RejectReason.TripCancelled -> "TRIP_CANCELLED"
+                RejectReason.PickupNotPossible -> "PICKUP_NOT_POSSIBLE"
+                RejectReason.Other -> "OTHER"
+                null -> null
+            },
+            rejectComment = booking.rejectComment,
         )
     }
 }
