@@ -32,6 +32,7 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToProfile: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
+    onNavigateToEditVehicle: (String) -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
     onNavigateToCreateTrip: (String) -> Unit,
     onNavigateToAddPlace: () -> Unit,
@@ -122,12 +123,14 @@ fun NavGraphBuilder.mainNavGraph(
         VehiclesListScreen(
             viewModel = viewModel,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToEditVehicle = onNavigateToEditVehicle,
             onBackClick = onNavigateBack
         )
     }
 
-    composable<Route.RegisterVehicle> {
-        val viewModel: RegisterVehicleViewModel = koinViewModel()
+    composable<Route.RegisterVehicle> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.RegisterVehicle>()
+        val viewModel: RegisterVehicleViewModel = koinViewModel { parametersOf(args.vehicleId) }
         RegisterVehicleScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,

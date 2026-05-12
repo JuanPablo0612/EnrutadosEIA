@@ -26,7 +26,7 @@ sealed interface Route {
     data object CreateRoute : Route
 
     @Serializable
-    data object RegisterVehicle : Route
+    data class RegisterVehicle(val vehicleId: String? = null) : Route
 
     @Serializable
     data object RoutesList : Route

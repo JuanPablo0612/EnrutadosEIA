@@ -2,8 +2,11 @@ package com.juanpablo0612.carpool.presentation.vehicles.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,19 +20,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,16 +47,68 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.vehicles.model.VehicleType
+import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
+import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.NumberStepper
+import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import com.juanpablo0612.carpool.presentation.ui.components.*
-import enrutadoseia.composeapp.generated.resources.*
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
+import enrutadoseia.composeapp.generated.resources.photo_camera_24px
+import enrutadoseia.composeapp.generated.resources.register_vehicle_title
+import enrutadoseia.composeapp.generated.resources.vehicle_brand_label
+import enrutadoseia.composeapp.generated.resources.vehicle_brand_other
+import enrutadoseia.composeapp.generated.resources.vehicle_brand_placeholder
+import enrutadoseia.composeapp.generated.resources.vehicle_change_photo
+import enrutadoseia.composeapp.generated.resources.vehicle_color_blue
+import enrutadoseia.composeapp.generated.resources.vehicle_color_black
+import enrutadoseia.composeapp.generated.resources.vehicle_color_gray
+import enrutadoseia.composeapp.generated.resources.vehicle_color_label
+import enrutadoseia.composeapp.generated.resources.vehicle_color_other
+import enrutadoseia.composeapp.generated.resources.vehicle_color_red
+import enrutadoseia.composeapp.generated.resources.vehicle_color_silver
+import enrutadoseia.composeapp.generated.resources.vehicle_color_white
+import enrutadoseia.composeapp.generated.resources.vehicle_docs_description
+import enrutadoseia.composeapp.generated.resources.vehicle_docs_hide
+import enrutadoseia.composeapp.generated.resources.vehicle_docs_section
+import enrutadoseia.composeapp.generated.resources.vehicle_docs_show
+import enrutadoseia.composeapp.generated.resources.vehicle_model_label
+import enrutadoseia.composeapp.generated.resources.vehicle_model_placeholder
+import enrutadoseia.composeapp.generated.resources.vehicle_photo_choose_gallery
+import enrutadoseia.composeapp.generated.resources.vehicle_photo_hint
+import enrutadoseia.composeapp.generated.resources.vehicle_photo_section
+import enrutadoseia.composeapp.generated.resources.vehicle_photo_take_photo
+import enrutadoseia.composeapp.generated.resources.vehicle_photo_tap_to_add
+import enrutadoseia.composeapp.generated.resources.vehicle_plate_error_format
+import enrutadoseia.composeapp.generated.resources.vehicle_plate_label
+import enrutadoseia.composeapp.generated.resources.vehicle_save_button
+import enrutadoseia.composeapp.generated.resources.vehicle_seats_helper
+import enrutadoseia.composeapp.generated.resources.vehicle_seats_label
+import enrutadoseia.composeapp.generated.resources.vehicle_soat_label
+import enrutadoseia.composeapp.generated.resources.vehicle_tecno_label
+import enrutadoseia.composeapp.generated.resources.vehicle_type_hatchback
+import enrutadoseia.composeapp.generated.resources.vehicle_type_label
+import enrutadoseia.composeapp.generated.resources.vehicle_type_other
+import enrutadoseia.composeapp.generated.resources.vehicle_type_pickup
+import enrutadoseia.composeapp.generated.resources.vehicle_type_sedan
+import enrutadoseia.composeapp.generated.resources.vehicle_type_suv
+import enrutadoseia.composeapp.generated.resources.vehicle_update_button
+import enrutadoseia.composeapp.generated.resources.vehicle_year_label
 import io.github.vinceglb.filekit.dialogs.FileKitType
-import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import kotlin.time.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -72,64 +133,170 @@ fun RegisterVehicleScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun RegisterVehicleContent(
     state: RegisterVehicleUiState,
     onAction: (RegisterVehicleAction) -> Unit
 ) {
-    var showImageSourceSelector by remember { mutableStateOf(false) }
-
-    val photoPicker = rememberFilePickerLauncher(
-        type = FileKitType.Image
-    ) { file ->
-        if (file != null) {
-            onAction(RegisterVehicleAction.OnPhotoSelected(file))
-        }
+    val photoPicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        if (file != null) onAction(RegisterVehicleAction.OnPhotoSelected(file))
+    }
+    val cameraLauncher = rememberCameraPickerLauncher { file ->
+        if (file != null) onAction(RegisterVehicleAction.OnPhotoSelected(file))
     }
 
-    val cameraLauncher = rememberCameraPickerLauncher { file ->
-        if (file != null) {
-            onAction(RegisterVehicleAction.OnPhotoSelected(file))
+    // Date pickers
+    if (state.showSoatDatePicker) {
+        val pickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { onAction(RegisterVehicleAction.OnDismissSoatDatePicker) },
+            confirmButton = {
+                TextButton(onClick = {
+                    val ms = pickerState.selectedDateMillis
+                    if (ms != null) {
+                        val date = Instant.fromEpochMilliseconds(ms)
+                            .toLocalDateTime(TimeZone.UTC).date
+                        onAction(RegisterVehicleAction.OnSoatDateSelected(date))
+                    } else {
+                        onAction(RegisterVehicleAction.OnDismissSoatDatePicker)
+                    }
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { onAction(RegisterVehicleAction.OnDismissSoatDatePicker) }) {
+                    Text("Cancelar")
+                }
+            }
+        ) { DatePicker(state = pickerState) }
+    }
+
+    if (state.showTecnoDatePicker) {
+        val pickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { onAction(RegisterVehicleAction.OnDismissTecnoDatePicker) },
+            confirmButton = {
+                TextButton(onClick = {
+                    val ms = pickerState.selectedDateMillis
+                    if (ms != null) {
+                        val date = Instant.fromEpochMilliseconds(ms)
+                            .toLocalDateTime(TimeZone.UTC).date
+                        onAction(RegisterVehicleAction.OnTecnoDateSelected(date))
+                    } else {
+                        onAction(RegisterVehicleAction.OnDismissTecnoDatePicker)
+                    }
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { onAction(RegisterVehicleAction.OnDismissTecnoDatePicker) }) {
+                    Text("Cancelar")
+                }
+            }
+        ) { DatePicker(state = pickerState) }
+    }
+
+    // Photo source bottom sheet
+    if (state.showPhotoSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { onAction(RegisterVehicleAction.OnDismissPhotoSheet) },
+            dragHandle = { BottomSheetDefaults.DragHandle() },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 48.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.vehicle_photo_section),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
+                            onAction(RegisterVehicleAction.OnDismissPhotoSheet)
+                            cameraLauncher.launch()
+                        }
+                        .padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.photo_camera_24px),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        stringResource(Res.string.vehicle_photo_take_photo),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
+                            onAction(RegisterVehicleAction.OnDismissPhotoSheet)
+                            photoPicker.launch()
+                        }
+                        .padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.add_24px),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        stringResource(Res.string.vehicle_photo_choose_gallery),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
+            }
         }
     }
 
     Scaffold(
         topBar = {
             AuthTopBar(
-                title = stringResource(Res.string.register_vehicle_title),
+                title = if (state.mode == RegisterVehicleUiState.Mode.Edit)
+                    stringResource(Res.string.edit_vehicle_title)
+                else
+                    stringResource(Res.string.register_vehicle_title),
                 onBackClick = { onAction(RegisterVehicleAction.OnBackClick) }
             )
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
+            modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Photo picker
+
+            // 1. Photo
             item {
                 Text(
                     text = stringResource(Res.string.vehicle_photo_section),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                        .clickable { showImageSourceSelector = true },
+                        .height(180.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                        .clickable { onAction(RegisterVehicleAction.OnShowPhotoSheet) },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (state.vehiclePhoto != null) {
+                    val hasPhoto = state.photoFile != null || state.existingPhotoUrl != null
+                    if (hasPhoto) {
                         AsyncImage(
-                            model = state.vehiclePhoto,
+                            model = state.photoFile ?: state.existingPhotoUrl,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -138,8 +305,8 @@ fun RegisterVehicleContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
-                                .background(Color.Black.copy(alpha = 0.6f))
-                                .padding(vertical = 12.dp),
+                                .background(Color.Black.copy(alpha = 0.55f))
+                                .padding(vertical = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -153,63 +320,95 @@ fun RegisterVehicleContent(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                modifier = Modifier.size(64.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        imageVector = vectorResource(Res.drawable.photo_camera_24px),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.height(12.dp))
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.photo_camera_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(36.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(Modifier.height(8.dp))
                             Text(
-                                text = stringResource(Res.string.vehicle_add_photo),
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                                text = stringResource(Res.string.vehicle_photo_tap_to_add),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(Res.string.vehicle_photo_hint),
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
                 }
-
-                if (state.error == RegisterVehicleError.PhotoRequired) {
-                    Text(
-                        text = stringResource(RegisterVehicleError.PhotoRequired.asStringResource()),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, start = 4.dp)
-                    )
-                }
-
                 Spacer(Modifier.height(24.dp))
             }
 
-            // Brand
+            // 2. Brand dropdown
             item {
-                AuthTextField(
-                    value = state.brand,
-                    onValueChange = { onAction(RegisterVehicleAction.OnBrandChanged(it)) },
-                    label = stringResource(Res.string.vehicle_brand_label),
-                    placeholder = stringResource(Res.string.vehicle_brand_placeholder),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Next
-                    ),
-                    errorMessage = if (state.error == RegisterVehicleError.BrandRequired) {
-                        stringResource(state.error.asStringResource())
-                    } else null
+                Text(
+                    text = stringResource(Res.string.vehicle_brand_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
+                ExposedDropdownMenuBox(
+                    expanded = state.showBrandDropdown,
+                    onExpandedChange = { onAction(RegisterVehicleAction.OnToggleBrandDropdown) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = if (state.isCustomBrand) "" else state.brand,
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = { Text(stringResource(Res.string.vehicle_brand_placeholder)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.showBrandDropdown) },
+                        isError = state.brandError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = state.showBrandDropdown,
+                        onDismissRequest = { onAction(RegisterVehicleAction.OnToggleBrandDropdown) }
+                    ) {
+                        RegisterVehicleUiState.COMMON_BRANDS.forEach { brand ->
+                            DropdownMenuItem(
+                                text = { Text(brand) },
+                                onClick = { onAction(RegisterVehicleAction.OnBrandSelected(brand)) }
+                            )
+                        }
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.vehicle_brand_other)) },
+                            onClick = { onAction(RegisterVehicleAction.OnBrandSelected("Otro")) }
+                        )
+                    }
+                }
+                if (state.isCustomBrand) {
+                    Spacer(Modifier.height(8.dp))
+                    AuthTextField(
+                        value = state.brand,
+                        onValueChange = { onAction(RegisterVehicleAction.OnBrandSelected(it)) },
+                        label = stringResource(Res.string.vehicle_brand_other),
+                        placeholder = "",
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words,
+                            imeAction = ImeAction.Next
+                        ),
+                        errorMessage = if (state.brandError) " " else null
+                    )
+                }
+                if (state.brandError) {
+                    Text(
+                        text = stringResource(Res.string.vehicle_brand_label) + " es obligatorio",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                    )
+                }
                 Spacer(Modifier.height(16.dp))
             }
 
-            // Model
+            // 3. Model
             item {
                 AuthTextField(
                     value = state.model,
@@ -220,175 +419,255 @@ fun RegisterVehicleContent(
                         capitalization = KeyboardCapitalization.Words,
                         imeAction = ImeAction.Next
                     ),
-                    errorMessage = if (state.error == RegisterVehicleError.ModelRequired) {
-                        stringResource(state.error.asStringResource())
-                    } else null
+                    errorMessage = if (state.modelError) " " else null
                 )
                 Spacer(Modifier.height(16.dp))
             }
 
-            // License plate
+            // 4. Year dropdown
+            item {
+                Text(
+                    text = stringResource(Res.string.vehicle_year_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                val currentYear = Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault()).date.year
+                val years = (currentYear + 1 downTo currentYear - 30).toList()
+                ExposedDropdownMenuBox(
+                    expanded = state.showYearDropdown,
+                    onExpandedChange = { onAction(RegisterVehicleAction.OnToggleYearDropdown) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = state.year.toString(),
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.showYearDropdown) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = state.showYearDropdown,
+                        onDismissRequest = { onAction(RegisterVehicleAction.OnToggleYearDropdown) }
+                    ) {
+                        years.forEach { year ->
+                            DropdownMenuItem(
+                                text = { Text(year.toString()) },
+                                onClick = { onAction(RegisterVehicleAction.OnYearSelected(year)) }
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // 5. Color chips
+            item {
+                Text(
+                    text = stringResource(Res.string.vehicle_color_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                val colorLabels = listOf(
+                    "Blanco" to stringResource(Res.string.vehicle_color_white),
+                    "Negro" to stringResource(Res.string.vehicle_color_black),
+                    "Gris" to stringResource(Res.string.vehicle_color_gray),
+                    "Plateado" to stringResource(Res.string.vehicle_color_silver),
+                    "Rojo" to stringResource(Res.string.vehicle_color_red),
+                    "Azul" to stringResource(Res.string.vehicle_color_blue),
+                    "Otro" to stringResource(Res.string.vehicle_color_other),
+                )
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    colorLabels.forEach { (value, label) ->
+                        FilterChip(
+                            selected = state.color == value,
+                            onClick = { onAction(RegisterVehicleAction.OnColorSelected(value)) },
+                            label = { Text(label) }
+                        )
+                    }
+                }
+                if (state.isCustomColor) {
+                    Spacer(Modifier.height(8.dp))
+                    AuthTextField(
+                        value = state.customColor,
+                        onValueChange = { onAction(RegisterVehicleAction.OnCustomColorChanged(it)) },
+                        label = stringResource(Res.string.vehicle_color_other),
+                        placeholder = "",
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words,
+                            imeAction = ImeAction.Next
+                        ),
+                        errorMessage = if (state.colorError) " " else null
+                    )
+                }
+                if (state.colorError) {
+                    Text(
+                        text = stringResource(Res.string.vehicle_color_label) + " es obligatorio",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // 6. Plate
             item {
                 AuthTextField(
-                    value = state.licensePlate,
-                    onValueChange = { onAction(RegisterVehicleAction.OnLicensePlateChanged(it)) },
-                    label = stringResource(Res.string.vehicle_license_plate_label),
-                    placeholder = stringResource(Res.string.vehicle_license_plate_placeholder),
+                    value = state.plate,
+                    onValueChange = { onAction(RegisterVehicleAction.OnPlateChanged(it)) },
+                    label = stringResource(Res.string.vehicle_plate_label),
+                    placeholder = "ABC123",
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Characters,
                         autoCorrectEnabled = false,
                         imeAction = ImeAction.Next
                     ),
-                    errorMessage = if (state.error == RegisterVehicleError.LicensePlateRequired) {
-                        stringResource(state.error.asStringResource())
-                    } else null
+                    visualTransformation = ColombianPlateVisualTransformation(),
+                    errorMessage = if (state.plateError) stringResource(Res.string.vehicle_plate_error_format) else null
                 )
                 Spacer(Modifier.height(16.dp))
             }
 
-            // Color
+            // 7. Seat count stepper
             item {
-                AuthTextField(
-                    value = state.color,
-                    onValueChange = { onAction(RegisterVehicleAction.OnColorChanged(it)) },
-                    label = stringResource(Res.string.vehicle_color_label),
-                    placeholder = stringResource(Res.string.vehicle_color_placeholder),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Next
-                    ),
-                    errorMessage = if (state.error == RegisterVehicleError.ColorRequired) {
-                        stringResource(state.error.asStringResource())
-                    } else null
+                Text(
+                    text = stringResource(Res.string.vehicle_seats_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                NumberStepper(
+                    value = state.seatCount,
+                    onChange = { onAction(RegisterVehicleAction.OnSeatCountChanged(it)) },
+                    min = 1,
+                    max = 7
+                )
+                Text(
+                    text = stringResource(Res.string.vehicle_seats_helper),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
                 Spacer(Modifier.height(16.dp))
             }
 
-            // Year
+            // 8. Vehicle type (optional)
             item {
-                AuthTextField(
-                    value = state.year,
-                    onValueChange = { onAction(RegisterVehicleAction.OnYearChanged(it)) },
-                    label = stringResource(Res.string.vehicle_year_label),
-                    placeholder = stringResource(Res.string.vehicle_year_placeholder),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    errorMessage = if (state.error == RegisterVehicleError.YearRequired ||
-                        state.error == RegisterVehicleError.YearInvalid
-                    ) {
-                        stringResource(state.error.asStringResource())
-                    } else null
+                Text(
+                    text = stringResource(Res.string.vehicle_type_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
+                val typeEntries = listOf(
+                    VehicleType.Sedan to stringResource(Res.string.vehicle_type_sedan),
+                    VehicleType.Hatchback to stringResource(Res.string.vehicle_type_hatchback),
+                    VehicleType.SUV to stringResource(Res.string.vehicle_type_suv),
+                    VehicleType.Pickup to stringResource(Res.string.vehicle_type_pickup),
+                    VehicleType.Other to stringResource(Res.string.vehicle_type_other),
+                )
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    typeEntries.forEach { (type, label) ->
+                        FilterChip(
+                            selected = state.type == type,
+                            onClick = { onAction(RegisterVehicleAction.OnTypeSelected(type)) },
+                            label = { Text(label) }
+                        )
+                    }
+                }
                 Spacer(Modifier.height(16.dp))
             }
 
-            // Seats available
+            // 9. Documents (collapsible)
             item {
-                AuthTextField(
-                    value = state.seatsAvailable,
-                    onValueChange = { onAction(RegisterVehicleAction.OnSeatsChanged(it)) },
-                    label = stringResource(Res.string.vehicle_seats_label),
-                    placeholder = stringResource(Res.string.vehicle_seats_placeholder),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    errorMessage = if (state.error == RegisterVehicleError.SeatsRequired ||
-                        state.error == RegisterVehicleError.SeatsInvalid
-                    ) {
-                        stringResource(state.error.asStringResource())
-                    } else null
-                )
-                Spacer(Modifier.height(24.dp))
-            }
-
-            // Generic error
-            item {
-                if (state.error == RegisterVehicleError.UserNotAuthenticated ||
-                    state.error == RegisterVehicleError.Unknown
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onAction(RegisterVehicleAction.OnToggleDocuments) }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ErrorMessage(message = stringResource(state.error.asStringResource()))
-                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        text = stringResource(Res.string.vehicle_docs_section),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = if (state.showDocuments)
+                            stringResource(Res.string.vehicle_docs_hide)
+                        else
+                            stringResource(Res.string.vehicle_docs_show),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                if (state.showDocuments) {
+                    Text(
+                        text = stringResource(Res.string.vehicle_docs_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    // SOAT
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.vehicle_soat_label),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = { onAction(RegisterVehicleAction.OnShowSoatDatePicker) }) {
+                            Text(
+                                text = state.soatDate?.toString()
+                                    ?: stringResource(Res.string.vehicle_docs_show)
+                            )
+                        }
+                    }
+                    // Tecnomecánica
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.vehicle_tecno_label),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = { onAction(RegisterVehicleAction.OnShowTecnoDatePicker) }) {
+                            Text(
+                                text = state.tecnomecanicaDate?.toString()
+                                    ?: stringResource(Res.string.vehicle_docs_show)
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+            }
+
+            // General error
+            item {
+                if (state.generalError != null) {
+                    ErrorMessage(message = stringResource(state.generalError.asStringResource()))
+                    Spacer(Modifier.height(16.dp))
                 }
             }
 
             // Save button
             item {
+                Spacer(Modifier.height(8.dp))
                 PrimaryButton(
-                    text = stringResource(Res.string.register_vehicle_button),
+                    text = if (state.mode == RegisterVehicleUiState.Mode.Edit)
+                        stringResource(Res.string.vehicle_update_button)
+                    else
+                        stringResource(Res.string.vehicle_save_button),
                     onClick = { onAction(RegisterVehicleAction.OnSaveClick) },
-                    isLoading = state.isLoading
+                    enabled = state.isValid,
+                    isLoading = state.isSaving
                 )
                 Spacer(Modifier.height(24.dp))
-            }
-        }
-    }
-
-    if (showImageSourceSelector) {
-        ModalBottomSheet(
-            onDismissRequest = { showImageSourceSelector = false },
-            dragHandle = { BottomSheetDefaults.DragHandle() },
-            containerColor = MaterialTheme.colorScheme.surface
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 48.dp)
-            ) {
-                Text(
-                    text = stringResource(Res.string.vehicle_select_photo_title),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            showImageSourceSelector = false
-                            cameraLauncher.launch()
-                        }
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.photo_camera_24px),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.width(16.dp))
-                    Text(
-                        text = stringResource(Res.string.vehicle_select_camera),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            showImageSourceSelector = false
-                            photoPicker.launch()
-                        }
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.add_24px),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.width(16.dp))
-                    Text(
-                        text = stringResource(Res.string.vehicle_select_gallery),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                }
             }
         }
     }
@@ -396,16 +675,28 @@ fun RegisterVehicleContent(
 
 @Preview
 @Composable
-private fun RegisterVehicleScreenPreview() {
+private fun RegisterVehicleCreatePreview() {
+    CarpoolTheme {
+        RegisterVehicleContent(
+            state = RegisterVehicleUiState(),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RegisterVehicleEditPreview() {
     CarpoolTheme {
         RegisterVehicleContent(
             state = RegisterVehicleUiState(
+                mode = RegisterVehicleUiState.Mode.Edit,
                 brand = "Toyota",
                 model = "Corolla",
-                licensePlate = "ABC-123",
+                plate = "ABC123",
                 color = "Blanco",
-                year = "2024",
-                seatsAvailable = "4"
+                year = 2020,
+                seatCount = 3
             ),
             onAction = {}
         )

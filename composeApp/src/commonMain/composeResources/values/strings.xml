@@ -146,7 +146,10 @@
     <string name="vehicles_list_title">My Vehicles</string>
     <string name="vehicles_empty_title">No vehicles yet</string>
     <string name="vehicles_empty_subtitle">Register your first vehicle to start offering rides</string>
-    <string name="vehicle_seats_count">%1$d seats</string>
+    <plurals name="vehicle_seats_count">
+        <item quantity="one">%d cupo para pasajero</item>
+        <item quantity="other">%d cupos para pasajeros</item>
+    </plurals>
     <string name="routes_list_title">My Routes</string>
     <string name="routes_empty_title">No routes yet</string>
     <string name="routes_empty_subtitle">Create your first route to start offering rides</string>
@@ -431,6 +434,59 @@
     <string name="trip_action_start">Start trip</string>
     <string name="trip_action_finish">Finish trip</string>
     <string name="trip_action_view_passengers">View passengers</string>
+
+    <!-- VehiclesList - header & FAB -->
+    <string name="vehicles_list_subtitle">Vehículos que usas para ofrecer cupos</string>
+    <string name="vehicles_add_fab">Agregar vehículo</string>
+
+    <!-- VehicleCard - indicators -->
+    <string name="vehicle_primary_indicator">Vehículo principal</string>
+    <string name="vehicle_verified">Verificado</string>
+
+    <!-- VehicleCard - action menu -->
+    <string name="vehicle_action_edit">Editar</string>
+    <string name="vehicle_action_set_primary">Marcar como principal</string>
+    <string name="vehicle_action_delete">Eliminar</string>
+
+    <!-- VehicleCard - delete dialogs -->
+    <string name="vehicle_delete_confirm_title">Eliminar vehículo</string>
+    <string name="vehicle_delete_confirm_description">¿Estás seguro de que quieres eliminar este vehículo? Esta acción no se puede deshacer.</string>
+    <string name="vehicle_delete_confirm_button">Eliminar</string>
+    <string name="vehicle_delete_blocked_title">No puedes eliminar este vehículo</string>
+    <string name="vehicle_delete_blocked_description">Tiene viajes activos. Cancélalos o cámbiales el vehículo antes de eliminar este.</string>
+    <string name="vehicle_delete_blocked_ok">Entendido</string>
+
+    <!-- RegisterVehicle / EditVehicle -->
+    <string name="edit_vehicle_title">Editar vehículo</string>
+    <string name="vehicle_photo_tap_to_add">Toca para agregar una foto</string>
+    <string name="vehicle_photo_hint">La foto ayuda a tus pasajeros a reconocer tu carro.</string>
+    <string name="vehicle_photo_take_photo">Tomar foto</string>
+    <string name="vehicle_photo_choose_gallery">Elegir de galería</string>
+    <string name="vehicle_brand_other">Otro</string>
+    <string name="vehicle_color_white">Blanco</string>
+    <string name="vehicle_color_black">Negro</string>
+    <string name="vehicle_color_gray">Gris</string>
+    <string name="vehicle_color_silver">Plateado</string>
+    <string name="vehicle_color_red">Rojo</string>
+    <string name="vehicle_color_blue">Azul</string>
+    <string name="vehicle_color_other">Otro</string>
+    <string name="vehicle_plate_label">Placa</string>
+    <string name="vehicle_plate_error_format">Formato inválido. Usa 3 letras y 3 números (ej. ABC123)</string>
+    <string name="vehicle_seats_helper">Sin contar el conductor.</string>
+    <string name="vehicle_type_label">Tipo de vehículo (opcional)</string>
+    <string name="vehicle_type_sedan">Sedán</string>
+    <string name="vehicle_type_hatchback">Hatchback</string>
+    <string name="vehicle_type_suv">SUV</string>
+    <string name="vehicle_type_pickup">Pickup</string>
+    <string name="vehicle_type_other">Otro</string>
+    <string name="vehicle_docs_section">Documentos (opcional)</string>
+    <string name="vehicle_docs_description">Permite que verifiquemos tu vehículo y muestre el sello "Verificado".</string>
+    <string name="vehicle_docs_show">Mostrar</string>
+    <string name="vehicle_docs_hide">Ocultar</string>
+    <string name="vehicle_soat_label">SOAT</string>
+    <string name="vehicle_tecno_label">Tecnomecánica</string>
+    <string name="vehicle_save_button">Registrar vehículo</string>
+    <string name="vehicle_update_button">Guardar cambios</string>
 
     <!-- DriverTrips - empty states -->
     <string name="driver_trips_upcoming_empty_title">No upcoming trips.</string>

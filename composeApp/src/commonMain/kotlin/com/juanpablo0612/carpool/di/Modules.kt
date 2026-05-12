@@ -47,8 +47,12 @@ import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.DeleteVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.GetVehicleByIdUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.SetPrimaryVehicleUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.UpdateVehicleUseCase
 import com.juanpablo0612.carpool.presentation.auth.email_verification.EmailVerificationViewModel
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
@@ -156,10 +160,16 @@ val placeModule = module {
 val vehicleModule = module {
     singleOf(::VehicleRepositoryImpl) bind VehicleRepository::class
     factoryOf(::CreateVehicleUseCase)
+    factoryOf(::UpdateVehicleUseCase)
+    factoryOf(::DeleteVehicleUseCase)
+    factoryOf(::SetPrimaryVehicleUseCase)
     factoryOf(::GetUserVehiclesUseCase)
     factoryOf(::GetDriverVehiclesUseCase)
-    viewModel { RegisterVehicleViewModel(get(), get()) }
-    viewModel { VehiclesListViewModel(get(), get()) }
+    factoryOf(::GetVehicleByIdUseCase)
+    viewModel { (vehicleId: String?) ->
+        RegisterVehicleViewModel(vehicleId, get(), get(), get(), get())
+    }
+    viewModel { VehiclesListViewModel(get(), get(), get(), get(), get()) }
 }
 
 val bookingModule = module {
