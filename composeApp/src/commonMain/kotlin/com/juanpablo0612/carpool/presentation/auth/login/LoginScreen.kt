@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
@@ -31,6 +32,7 @@ fun LoginScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is AuthEvent.NavigateAfterAuth -> onLoginSuccess(event.user)
+            AuthEvent.NavigateToEmailVerification -> { /* not emitted from login */ }
         }
     }
 
@@ -67,11 +69,9 @@ fun LoginContent(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AuthHeader(
-                title = stringResource(Res.string.login_welcome_back),
-                subtitle = stringResource(Res.string.login_subtitle),
-                imageRes = Res.drawable.login_image
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            CompactAuthHeader(screenTitle = stringResource(Res.string.login_welcome_back))
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -80,10 +80,6 @@ fun LoginContent(
                 onAction = onAction,
                 onForgotPasswordClick = onForgotPasswordClick
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            AuthDivider(text = stringResource(Res.string.or_separator))
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -98,6 +94,16 @@ fun LoginContent(
             SecondaryButton(
                 text = stringResource(Res.string.signup_button),
                 onClick = onNavigateToRegister
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(Res.string.login_terms_footer),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))

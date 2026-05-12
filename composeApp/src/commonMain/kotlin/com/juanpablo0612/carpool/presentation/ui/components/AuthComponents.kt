@@ -1,7 +1,9 @@
 package com.juanpablo0612.carpool.presentation.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -34,27 +38,39 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
+import enrutadoseia.composeapp.generated.resources.call_24px
 import enrutadoseia.composeapp.generated.resources.check_circle_24px
+import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.error_24px
 import enrutadoseia.composeapp.generated.resources.hide_password
 import enrutadoseia.composeapp.generated.resources.lock_24px
+import enrutadoseia.composeapp.generated.resources.login_compact_tagline
 import enrutadoseia.composeapp.generated.resources.mail_24px
+import enrutadoseia.composeapp.generated.resources.password_strength_medium
+import enrutadoseia.composeapp.generated.resources.password_strength_strong
+import enrutadoseia.composeapp.generated.resources.password_strength_weak
 import enrutadoseia.composeapp.generated.resources.person_24px
 import enrutadoseia.composeapp.generated.resources.show_password
 import enrutadoseia.composeapp.generated.resources.visibility_24px
@@ -522,4 +538,169 @@ fun RoleSelectionCard(
             }
         }
     }
+}
+
+@Composable
+fun CompactAuthHeader(
+    screenTitle: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.directions_car_24px),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(36.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(
+                    text = "EnrutadosEIA",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(Res.string.login_compact_tagline),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = screenTitle,
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
+fun StepIndicator(
+    current: Int,
+    total: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(total) { index ->
+            val isCompleted = index < current - 1
+            val isCurrent = index == current - 1
+            val width = if (isCurrent) 24.dp else 8.dp
+            Box(
+                modifier = Modifier
+                    .size(width = width, height = 8.dp)
+                    .clip(CircleShape)
+                    .background(
+                        when {
+                            isCompleted || isCurrent -> MaterialTheme.colorScheme.primary
+                            else -> MaterialTheme.colorScheme.outlineVariant
+                        }
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+fun PasswordStrengthIndicator(
+    password: String,
+    modifier: Modifier = Modifier
+) {
+    if (password.isEmpty()) return
+
+    val strength = when {
+        password.length < 8 -> 0f
+        password.length < 12 && (password.any { it.isDigit() } || password.any { it.isUpperCase() }) -> 0.6f
+        else -> 1f
+    }
+    val extendedColors = LocalExtendedColors.current
+    val color = when {
+        strength < 0.4f -> MaterialTheme.colorScheme.error
+        strength < 0.8f -> Color(0xFFFFA000)
+        else -> extendedColors.success
+    }
+    val label = when {
+        strength < 0.4f -> stringResource(Res.string.password_strength_weak)
+        strength < 0.8f -> stringResource(Res.string.password_strength_medium)
+        else -> stringResource(Res.string.password_strength_strong)
+    }
+    val animatedStrength by animateFloatAsState(targetValue = strength, label = "strength")
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        LinearProgressIndicator(
+            progress = { animatedStrength },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(RoundedCornerShape(2.dp)),
+            color = color,
+            trackColor = MaterialTheme.colorScheme.outlineVariant
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = color
+        )
+    }
+}
+
+class ColombianPhoneVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val digits = text.text.filter { it.isDigit() }.take(10)
+        val formatted = buildString {
+            append("+57 ")
+            digits.forEachIndexed { i, c ->
+                if (i == 3 || i == 6) append(" ")
+                append(c)
+            }
+        }
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                val clamped = offset.coerceAtMost(digits.length)
+                var extra = 4 // "+57 "
+                if (clamped > 3) extra++
+                if (clamped > 6) extra++
+                return clamped + extra
+            }
+            override fun transformedToOriginal(offset: Int): Int {
+                val raw = (offset - 4).coerceAtLeast(0)
+                return raw.coerceAtMost(digits.length)
+            }
+        }
+        return TransformedText(AnnotatedString(formatted), offsetMapping)
+    }
+}
+
+@Composable
+fun PhoneTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    errorMessage: String? = null,
+    imeAction: ImeAction = ImeAction.Next,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
+) {
+    AuthTextField(
+        value = value,
+        onValueChange = { onValueChange(it.filter { c -> c.isDigit() }.take(10)) },
+        label = label,
+        placeholder = placeholder,
+        modifier = modifier,
+        errorMessage = errorMessage,
+        leadingIcon = { Icon(imageVector = vectorResource(Res.drawable.call_24px), contentDescription = null) },
+        visualTransformation = ColombianPhoneVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Phone,
+            imeAction = imeAction
+        ),
+        keyboardActions = keyboardActions
+    )
 }

@@ -9,8 +9,11 @@ interface AuthRepository {
         password: String,
         name: String,
         isPassenger: Boolean,
-        isDriver: Boolean
+        isDriver: Boolean,
+        phone: String = "",
+        photoBytes: ByteArray? = null
     ): Result<Unit>
+    suspend fun sendEmailVerification(): Result<Unit>
     suspend fun logout(): Result<Unit>
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
     fun getCurrentUserId(): String?

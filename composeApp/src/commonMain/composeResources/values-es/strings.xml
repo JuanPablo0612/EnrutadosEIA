@@ -35,7 +35,7 @@
     <string name="error_email_empty">El correo no puede estar vacío</string>
     <string name="error_email_invalid">Ingresa un correo electrónico válido</string>
     <string name="error_password_empty">La contraseña no puede estar vacía</string>
-    <string name="error_password_too_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_password_too_short">La contraseña debe tener al menos 8 caracteres</string>
     <string name="error_name_empty">El nombre completo no puede estar vacío</string>
     <string name="error_name_too_short">Ingresa tu nombre completo (nombre y apellido)</string>
     <string name="error_confirm_password_empty">Por favor confirma tu contraseña</string>
@@ -250,4 +250,55 @@
     <string name="my_trips_empty_subtitle">Los viajes que publiques aparecerán aquí</string>
     <string name="search_empty_title">Sin viajes disponibles</string>
     <string name="search_empty_subtitle">Intenta otra búsqueda o vuelve más tarde</string>
+
+    <!-- Login rediseño -->
+    <string name="login_terms_footer">Al iniciar sesión aceptas nuestros Términos de Servicio</string>
+    <string name="login_compact_tagline">Tu carpool universitario</string>
+
+    <!-- Pasos de registro -->
+    <string name="register_step_1_title">Crea tu cuenta</string>
+    <string name="register_step_2_title">Tu información de contacto</string>
+    <string name="register_step_3_title">Tu rol</string>
+    <string name="register_step_indicator">Paso %1$d de %2$d</string>
+    <string name="register_photo_placeholder">Agregar foto de perfil</string>
+    <string name="register_photo_tap">Toca para agregar una foto</string>
+    <string name="register_photo_action_camera">Cámara</string>
+    <string name="register_photo_action_gallery">Galería</string>
+    <string name="register_phone_label">Número de teléfono</string>
+    <string name="register_phone_placeholder">300 123 4567</string>
+    <string name="register_terms_checkbox">Acepto los términos y condiciones</string>
+    <string name="register_continue_button">Continuar</string>
+
+    <!-- Verificación de correo -->
+    <string name="email_verification_title">Verifica tu correo</string>
+    <string name="email_verification_subtitle">Enviamos un enlace de verificación a %1$s</string>
+    <string name="email_verification_resend">Reenviar correo</string>
+    <string name="email_verification_resend_countdown">Reenviar en %1$ds</string>
+    <string name="email_verification_open_gmail">Abrir Gmail</string>
+    <string name="email_verification_wrong_email">¿Correo incorrecto? Volver</string>
+
+    <!-- Pantalla de éxito de recuperar contraseña -->
+    <string name="forgot_password_success_title">Revisa tu correo</string>
+    <string name="forgot_password_success_subtitle">Si tu correo está registrado, enviamos instrucciones a %1$s</string>
+    <string name="forgot_password_resend_button">Reenviar enlace</string>
+    <string name="forgot_password_resend_countdown">Reenviar en %1$ds</string>
+    <string name="forgot_password_open_gmail">Abrir Gmail</string>
+
+    <!-- Selector de rol -->
+    <string name="role_selector_remember_choice">Recordar mi elección</string>
+    <string name="role_selector_driver_pending">%1$d solicitudes pendientes</string>
+    <string name="role_selector_last_used">Último uso: %1$s</string>
+    <string name="role_selector_never_used">Nunca usado</string>
+
+    <!-- Nuevos errores de validación -->
+    <string name="error_email_not_eia">Usa tu correo @eia.edu.co</string>
+    <string name="error_phone_empty">El número de teléfono no puede estar vacío</string>
+    <string name="error_phone_invalid">Ingresa un número de celular colombiano válido</string>
+    <string name="error_terms_not_accepted">Debes aceptar los términos para continuar</string>
+
+    <!-- Fuerza de contraseña -->
+    <string name="password_strength_weak">Débil</string>
+    <string name="password_strength_medium">Media</string>
+    <string name="password_strength_strong">Fuerte</string>
+    <string name="password_strength_label">Fuerza de contraseña: %1$s</string>
 </resources>

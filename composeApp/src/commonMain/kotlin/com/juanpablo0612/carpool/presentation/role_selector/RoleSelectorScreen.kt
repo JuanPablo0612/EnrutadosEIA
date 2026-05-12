@@ -1,48 +1,45 @@
 package com.juanpablo0612.carpool.presentation.role_selector
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.auth.model.User
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.location_on_24px
-import enrutadoseia.composeapp.generated.resources.person_24px
-import enrutadoseia.composeapp.generated.resources.role_selector_driver_subtitle
-import enrutadoseia.composeapp.generated.resources.role_selector_driver_title
-import enrutadoseia.composeapp.generated.resources.role_selector_greeting
-import enrutadoseia.composeapp.generated.resources.role_selector_passenger_subtitle
-import enrutadoseia.composeapp.generated.resources.role_selector_passenger_title
-import enrutadoseia.composeapp.generated.resources.role_selector_subtitle
+import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun RoleSelectorScreen(
-    user: User,
+    viewModel: RoleSelectorViewModel,
     onSelectDriver: () -> Unit,
     onSelectPassenger: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            RoleSelectorEvent.NavigateToDriver -> onSelectDriver()
+            RoleSelectorEvent.NavigateToPassenger -> onSelectPassenger()
+        }
+    }
+
+    RoleSelectorContent(
+        state = state,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+fun RoleSelectorContent(
+    state: RoleSelectorUiState,
+    onAction: (RoleSelectorAction) -> Unit
 ) {
     Scaffold { padding ->
         Column(
@@ -54,7 +51,7 @@ fun RoleSelectorScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(Res.string.role_selector_greeting, user.name ?: ""),
+                text = stringResource(Res.string.role_selector_greeting, state.userName),
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -65,80 +62,132 @@ fun RoleSelectorScreen(
             )
             Spacer(modifier = Modifier.height(48.dp))
 
-            RoleCard(
-                title = stringResource(Res.string.role_selector_driver_title),
-                subtitle = stringResource(Res.string.role_selector_driver_subtitle),
-                icon = vectorResource(Res.drawable.location_on_24px),
-                onClick = onSelectDriver
+            DriverRoleCard(
+                pendingCount = state.driverPendingCount,
+                onClick = { onAction(RoleSelectorAction.OnSelectDriver) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            RoleCard(
-                title = stringResource(Res.string.role_selector_passenger_title),
-                subtitle = stringResource(Res.string.role_selector_passenger_subtitle),
-                icon = vectorResource(Res.drawable.person_24px),
-                onClick = onSelectPassenger
+            PassengerRoleCard(
+                onClick = { onAction(RoleSelectorAction.OnSelectPassenger) }
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = state.rememberChoice,
+                    onCheckedChange = { onAction(RoleSelectorAction.OnToggleRememberChoice(it)) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(Res.string.role_selector_remember_choice),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
 
-@Preview
 @Composable
-private fun RoleSelectorScreenPreview() {
-    CarpoolTheme {
-        RoleSelectorScreen(
-            user = User(
-                id = "1",
-                email = "usuario@eia.edu.co",
-                name = "Juan Pablo",
-                isEmailVerified = true,
-                isPassenger = true,
-                isDriver = true
-            ),
-            onSelectDriver = {},
-            onSelectPassenger = {}
-        )
-    }
-}
-
-@Composable
-private fun RoleCard(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
+private fun DriverRoleCard(
+    pendingCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
+    Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        color = MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
             modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = icon,
+                imageVector = vectorResource(Res.drawable.directions_car_24px),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(Res.string.role_selector_driver_title),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = stringResource(Res.string.role_selector_driver_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+                if (pendingCount > 0) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(Res.string.role_selector_driver_pending, pendingCount),
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PassengerRoleCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.secondaryContainer
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.person_24px),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                    text = stringResource(Res.string.role_selector_passenger_title),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Text(
-                    text = subtitle,
+                    text = stringResource(Res.string.role_selector_passenger_subtitle),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun RoleSelectorPreview() {
+    CarpoolTheme {
+        RoleSelectorContent(
+            state = RoleSelectorUiState(
+                userName = "Juan Pablo",
+                driverPendingCount = 2
+            ),
+            onAction = {}
+        )
     }
 }

@@ -26,13 +26,24 @@ class AuthRepositoryImpl(
         password: String,
         name: String,
         isPassenger: Boolean,
-        isDriver: Boolean
+        isDriver: Boolean,
+        phone: String,
+        photoBytes: ByteArray?
     ): Result<Unit> {
         return try {
-            remoteDataSource.signUp(email, password, name, isPassenger, isDriver)
+            remoteDataSource.signUp(email, password, name, isPassenger, isDriver, phone, photoBytes)
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
+    override suspend fun sendEmailVerification(): Result<Unit> {
+        return try {
+            remoteDataSource.sendEmailVerification()
+            Result.success(Unit)
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }

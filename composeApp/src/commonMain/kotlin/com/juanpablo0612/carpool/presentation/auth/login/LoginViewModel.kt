@@ -37,7 +37,6 @@ class LoginViewModel(
 
     private fun login() {
         val state = _uiState.value
-
         val emailResult = Validator.validateEmail(state.email)
         val passwordResult = Validator.validatePassword(state.password)
 
@@ -54,19 +53,21 @@ class LoginViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             loginUseCase(state.email, state.password)
-                .onSuccess {
-                    getCurrentUserUseCase()
-                        .onSuccess { user ->
-                            _uiState.update { it.copy(isLoading = false) }
-                            _events.emit(AuthEvent.NavigateAfterAuth(user))
-                        }
-                        .onFailure { throwable ->
-                            _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
-                        }
-                }
+                .onSuccess { navigateAfterAuth() }
                 .onFailure { throwable ->
                     _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
                 }
         }
+    }
+
+    private suspend fun navigateAfterAuth() {
+        getCurrentUserUseCase()
+            .onSuccess { user ->
+                _uiState.update { it.copy(isLoading = false) }
+                _events.emit(AuthEvent.NavigateAfterAuth(user))
+            }
+            .onFailure { throwable ->
+                _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
+            }
     }
 }

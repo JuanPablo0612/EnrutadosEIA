@@ -8,5 +8,7 @@ data class ForgotPasswordUiState(
     val isLoading: Boolean = false,
     val emailError: ValidationError? = null,
     val isSuccess: Boolean = false,
+    val obfuscatedEmail: String = "",
+    val resendCountdown: Int = 0,
     val error: AuthError? = null
 )

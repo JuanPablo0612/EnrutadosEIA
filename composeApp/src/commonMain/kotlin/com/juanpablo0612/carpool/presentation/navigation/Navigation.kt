@@ -21,6 +21,7 @@ import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
 import com.juanpablo0612.carpool.presentation.profile.ProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
 import com.juanpablo0612.carpool.presentation.role_selector.RoleSelectorScreen
+import com.juanpablo0612.carpool.presentation.role_selector.RoleSelectorViewModel
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.splash.SplashScreen
 import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
@@ -138,24 +139,22 @@ fun AppNavigation(
                 }
 
                 composable<Route.RoleSelector> {
-                    val user by userSession.user.collectAsState()
-                    user?.let { u ->
-                        RoleSelectorScreen(
-                            user = u,
-                            onSelectDriver = {
-                                userSession.setActiveRole(UserRole.Driver)
-                                navController.navigate(Route.Home) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            },
-                            onSelectPassenger = {
-                                userSession.setActiveRole(UserRole.Passenger)
-                                navController.navigate(Route.PassengerHome) {
-                                    popUpTo(0) { inclusive = true }
-                                }
+                    val viewModel: RoleSelectorViewModel = koinViewModel()
+                    RoleSelectorScreen(
+                        viewModel = viewModel,
+                        onSelectDriver = {
+                            userSession.setActiveRole(UserRole.Driver)
+                            navController.navigate(Route.Home) {
+                                popUpTo(0) { inclusive = true }
                             }
-                        )
-                    }
+                        },
+                        onSelectPassenger = {
+                            userSession.setActiveRole(UserRole.Passenger)
+                            navController.navigate(Route.PassengerHome) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    )
                 }
 
                 authNavGraph(
@@ -188,6 +187,7 @@ fun AppNavigation(
                     },
                     onNavigateToRegister = { navController.navigate(Route.Register) },
                     onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
+                    onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
                     onNavigateBack = { navController.popBackStack() }
                 )
 

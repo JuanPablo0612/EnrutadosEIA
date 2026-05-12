@@ -32,6 +32,7 @@ fun ValidationError.asStringResource(): StringResource {
     return when (this) {
         ValidationError.EmailEmpty -> Res.string.error_email_empty
         ValidationError.EmailInvalid -> Res.string.error_email_invalid
+        ValidationError.EmailNotEia -> Res.string.error_email_not_eia
         ValidationError.PasswordEmpty -> Res.string.error_password_empty
         ValidationError.PasswordTooShort -> Res.string.error_password_too_short
         ValidationError.NameEmpty -> Res.string.error_name_empty
@@ -39,5 +40,8 @@ fun ValidationError.asStringResource(): StringResource {
         ValidationError.ConfirmPasswordEmpty -> Res.string.error_confirm_password_empty
         ValidationError.PasswordsDoNotMatch -> Res.string.error_passwords_do_not_match
         ValidationError.RoleNotSelected -> Res.string.error_role_not_selected
+        ValidationError.PhoneEmpty -> Res.string.error_phone_empty
+        ValidationError.PhoneInvalid -> Res.string.error_phone_invalid
+        ValidationError.TermsNotAccepted -> Res.string.error_terms_not_accepted
     }
 }

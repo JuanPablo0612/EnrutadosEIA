@@ -9,8 +9,11 @@ interface AuthRemoteDataSource {
         password: String,
         name: String,
         isPassenger: Boolean,
-        isDriver: Boolean
+        isDriver: Boolean,
+        phone: String = "",
+        photoBytes: ByteArray? = null
     )
+    suspend fun sendEmailVerification()
     suspend fun signOut()
     suspend fun sendPasswordResetEmail(email: String)
     fun getCurrentUserId(): String?

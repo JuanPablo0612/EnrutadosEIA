@@ -2,8 +2,10 @@ package com.juanpablo0612.carpool.presentation.auth.register
 
 import com.juanpablo0612.carpool.domain.auth.model.AuthError
 import com.juanpablo0612.carpool.domain.auth.util.ValidationError
+import io.github.vinceglb.filekit.PlatformFile
 
 data class RegisterUiState(
+    val currentStep: Int = 1,
     val fullName: String = "",
     val fullNameError: ValidationError? = null,
     val email: String = "",
@@ -14,9 +16,14 @@ data class RegisterUiState(
     val confirmPasswordError: ValidationError? = null,
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
+    val photoFile: PlatformFile? = null,
+    val phone: String = "",
+    val phoneError: ValidationError? = null,
     val isPassenger: Boolean = false,
     val isDriver: Boolean = false,
     val roleError: ValidationError? = null,
+    val hasAcceptedTerms: Boolean = false,
+    val termsError: Boolean = false,
     val isLoading: Boolean = false,
     val error: AuthError? = null
 )

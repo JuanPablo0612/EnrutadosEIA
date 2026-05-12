@@ -1,0 +1,5 @@
+package com.juanpablo0612.carpool.presentation.auth.forgot_password
+
+sealed class ForgotPasswordEvent {
+    data object OpenGmail : ForgotPasswordEvent()
+}

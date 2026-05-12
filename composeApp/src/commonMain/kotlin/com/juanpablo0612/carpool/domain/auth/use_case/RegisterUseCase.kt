@@ -8,8 +8,10 @@ class RegisterUseCase(private val repository: AuthRepository) {
         password: String,
         name: String,
         isPassenger: Boolean,
-        isDriver: Boolean
+        isDriver: Boolean,
+        phone: String = "",
+        photoBytes: ByteArray? = null
     ): Result<Unit> {
-        return repository.register(email, password, name, isPassenger, isDriver)
+        return repository.register(email, password, name, isPassenger, isDriver, phone, photoBytes)
     }
 }

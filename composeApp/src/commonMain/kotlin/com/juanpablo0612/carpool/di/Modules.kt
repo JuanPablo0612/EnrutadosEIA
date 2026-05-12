@@ -5,6 +5,8 @@ import com.juanpablo0612.carpool.data.auth.remote.FirebaseAuthRemoteDataSource
 import com.juanpablo0612.carpool.data.auth.repository.AuthRepositoryImpl
 import com.juanpablo0612.carpool.data.booking.repository.BookingRepositoryImpl
 import com.juanpablo0612.carpool.data.places.repository.PlacesRepositoryImpl
+import com.juanpablo0612.carpool.data.preferences.UserPreferencesDataSource
+import com.juanpablo0612.carpool.data.preferences.UserPreferencesRepositoryImpl
 import com.juanpablo0612.carpool.data.routes.repository.RouteRepositoryImpl
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
 import com.juanpablo0612.carpool.data.vehicles.repository.VehicleRepositoryImpl
@@ -13,6 +15,7 @@ import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.SendEmailVerificationUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.SendPasswordResetEmailUseCase
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.use_case.CancelBookingUseCase
@@ -26,6 +29,10 @@ import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
+import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
+import com.juanpablo0612.carpool.domain.preferences.use_case.ClearRolePreferenceUseCase
+import com.juanpablo0612.carpool.domain.preferences.use_case.GetRolePreferenceUseCase
+import com.juanpablo0612.carpool.domain.preferences.use_case.SaveRolePreferenceUseCase
 import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.routes.use_case.CreateRouteUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
@@ -40,28 +47,29 @@ import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
-import com.juanpablo0612.carpool.presentation.home.HomeViewModel
+import com.juanpablo0612.carpool.presentation.auth.email_verification.EmailVerificationViewModel
 import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsViewModel
 import com.juanpablo0612.carpool.presentation.bookings.passenger.PassengerBookingsViewModel
+import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
+import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
+import com.juanpablo0612.carpool.presentation.role_selector.RoleSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
 import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.routes.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.routes.passenger_detail.RouteDetailPassengerViewModel
 import com.juanpablo0612.carpool.presentation.routes.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.session.UserSession
-import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
 import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.driver_list.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicles.register.RegisterVehicleViewModel
 import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
 import dev.gitlive.firebase.storage.storage
@@ -85,13 +93,28 @@ val authModule = module {
     factoryOf(::RegisterUseCase)
     factoryOf(::LogoutUseCase)
     factoryOf(::SendPasswordResetEmailUseCase)
+    factoryOf(::SendEmailVerificationUseCase)
     factoryOf(::GetCurrentUserUseCase)
 
     viewModel { LoginViewModel(get(), get()) }
-    viewModel { RegisterViewModel(get(), get()) }
+    viewModel { RegisterViewModel(get()) }
     viewModel { ForgotPasswordViewModel(get()) }
-    viewModel { SplashViewModel(get(), get()) }
+    viewModel { EmailVerificationViewModel(get(), get()) }
+    viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { ProfileViewModel(get()) }
+}
+
+val preferencesModule = module {
+    // DataStore singleton is provided by platformModule (platform-specific)
+    singleOf(::UserPreferencesDataSource)
+    singleOf(::UserPreferencesRepositoryImpl) bind UserPreferencesRepository::class
+    factoryOf(::SaveRolePreferenceUseCase)
+    factoryOf(::GetRolePreferenceUseCase)
+    factoryOf(::ClearRolePreferenceUseCase)
+}
+
+val roleSelectorModule = module {
+    viewModel { RoleSelectorViewModel(get(), get(), get(), get()) }
 }
 
 val routeModule = module {
@@ -155,7 +178,18 @@ val homeModule = module {
 }
 
 val appModule = module {
-    includes(authModule, routeModule, tripModule, placeModule, vehicleModule, bookingModule, homeModule)
+    includes(
+        platformModule,
+        authModule,
+        preferencesModule,
+        roleSelectorModule,
+        routeModule,
+        tripModule,
+        placeModule,
+        vehicleModule,
+        bookingModule,
+        homeModule
+    )
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

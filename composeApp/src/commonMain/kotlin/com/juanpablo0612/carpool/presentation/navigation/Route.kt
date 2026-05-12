@@ -59,5 +59,8 @@ sealed interface Route {
     data object DriverBookingRequests : Route
 
     @Serializable
+    data object EmailVerification : Route
+
+    @Serializable
     data object Profile : Route
 }

@@ -26,6 +26,7 @@ filekit = "0.14.0"
 coil-compose = "3.4.0"
 coil-network-ktor = "3.4.0"
 ktor = "3.4.3"
+datastore = "1.1.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -67,6 +68,7 @@ coil-nletwork-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

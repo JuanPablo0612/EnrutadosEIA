@@ -10,7 +10,9 @@ data class UserDto(
     val name: String?,
     val isEmailVerified: Boolean,
     val isPassenger: Boolean,
-    val isDriver: Boolean
+    val isDriver: Boolean,
+    val phone: String? = null,
+    val photoUrl: String? = null
 ) {
     fun toDomain(): User = User(
         id = id,
@@ -18,6 +20,8 @@ data class UserDto(
         name = name,
         isEmailVerified = isEmailVerified,
         isPassenger = isPassenger,
-        isDriver = isDriver
+        isDriver = isDriver,
+        phone = phone,
+        photoUrl = photoUrl
     )
 }

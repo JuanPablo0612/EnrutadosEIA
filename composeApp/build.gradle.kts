@@ -66,6 +66,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.nletwork.ktor3)
             implementation(libs.ktor.client.core)
+            implementation(libs.datastore.preferences.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

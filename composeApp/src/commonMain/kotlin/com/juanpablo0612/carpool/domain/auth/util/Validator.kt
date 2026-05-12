@@ -1,12 +1,10 @@
 package com.juanpablo0612.carpool.domain.auth.util
 
 object Validator {
-    private const val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-
     fun validateEmail(email: String): ValidationResult {
         return when {
             email.isBlank() -> ValidationResult.Error(ValidationError.EmailEmpty)
-            !email.matches(Regex(EMAIL_REGEX)) -> ValidationResult.Error(ValidationError.EmailInvalid)
+            !email.endsWith("@eia.edu.co", ignoreCase = true) -> ValidationResult.Error(ValidationError.EmailNotEia)
             else -> ValidationResult.Success
         }
     }
@@ -14,7 +12,7 @@ object Validator {
     fun validatePassword(password: String): ValidationResult {
         return when {
             password.isBlank() -> ValidationResult.Error(ValidationError.PasswordEmpty)
-            password.length < 6 -> ValidationResult.Error(ValidationError.PasswordTooShort)
+            password.length < 8 -> ValidationResult.Error(ValidationError.PasswordTooShort)
             else -> ValidationResult.Success
         }
     }
@@ -42,6 +40,15 @@ object Validator {
             ValidationResult.Success
         }
     }
+
+    fun validatePhone(phone: String): ValidationResult {
+        val digits = phone.filter { it.isDigit() }
+        return when {
+            phone.isBlank() -> ValidationResult.Error(ValidationError.PhoneEmpty)
+            digits.length != 10 || !digits.startsWith("3") -> ValidationResult.Error(ValidationError.PhoneInvalid)
+            else -> ValidationResult.Success
+        }
+    }
 }
 
 sealed class ValidationResult {
@@ -52,6 +59,7 @@ sealed class ValidationResult {
 sealed class ValidationError {
     data object EmailEmpty : ValidationError()
     data object EmailInvalid : ValidationError()
+    data object EmailNotEia : ValidationError()
     data object PasswordEmpty : ValidationError()
     data object PasswordTooShort : ValidationError()
     data object NameEmpty : ValidationError()
@@ -59,4 +67,7 @@ sealed class ValidationError {
     data object ConfirmPasswordEmpty : ValidationError()
     data object PasswordsDoNotMatch : ValidationError()
     data object RoleNotSelected : ValidationError()
+    data object PhoneEmpty : ValidationError()
+    data object PhoneInvalid : ValidationError()
+    data object TermsNotAccepted : ValidationError()
 }

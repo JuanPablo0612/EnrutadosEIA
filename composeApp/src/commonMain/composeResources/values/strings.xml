@@ -35,7 +35,7 @@
     <string name="error_email_empty">Email cannot be empty</string>
     <string name="error_email_invalid">Please enter a valid email address</string>
     <string name="error_password_empty">Password cannot be empty</string>
-    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_password_too_short">Password must be at least 8 characters</string>
     <string name="error_name_empty">Full name cannot be empty</string>
     <string name="error_name_too_short">Please enter your full name (first and last)</string>
     <string name="error_confirm_password_empty">Please confirm your password</string>
@@ -287,4 +287,55 @@
     <string name="home_driver_empty_subtitle">Registra tu vehículo y crea una ruta para comenzar a ofrecer viajes.</string>
     <string name="home_passenger_empty_title">¡Encuentra tu primer viaje!</string>
     <string name="home_passenger_empty_subtitle">Busca rutas disponibles y reserva tu cupo fácilmente.</string>
+
+    <!-- Login redesign -->
+    <string name="login_terms_footer">By signing in you agree to our Terms of Service</string>
+    <string name="login_compact_tagline">Your university carpool</string>
+
+    <!-- Register steps -->
+    <string name="register_step_1_title">Create your account</string>
+    <string name="register_step_2_title">Your contact info</string>
+    <string name="register_step_3_title">Your role</string>
+    <string name="register_step_indicator">Step %1$d of %2$d</string>
+    <string name="register_photo_placeholder">Add profile photo</string>
+    <string name="register_photo_tap">Tap to add a photo</string>
+    <string name="register_photo_action_camera">Camera</string>
+    <string name="register_photo_action_gallery">Gallery</string>
+    <string name="register_phone_label">Phone number</string>
+    <string name="register_phone_placeholder">300 123 4567</string>
+    <string name="register_terms_checkbox">I accept the terms and conditions</string>
+    <string name="register_continue_button">Continue</string>
+
+    <!-- Email verification -->
+    <string name="email_verification_title">Verify your email</string>
+    <string name="email_verification_subtitle">We sent a verification link to %1$s</string>
+    <string name="email_verification_resend">Resend email</string>
+    <string name="email_verification_resend_countdown">Resend in %1$ds</string>
+    <string name="email_verification_open_gmail">Open Gmail</string>
+    <string name="email_verification_wrong_email">Wrong email? Go back</string>
+
+    <!-- Forgot password success screen -->
+    <string name="forgot_password_success_title">Check your email</string>
+    <string name="forgot_password_success_subtitle">If your email is registered, we sent reset instructions to %1$s</string>
+    <string name="forgot_password_resend_button">Resend link</string>
+    <string name="forgot_password_resend_countdown">Resend in %1$ds</string>
+    <string name="forgot_password_open_gmail">Open Gmail</string>
+
+    <!-- Role selector -->
+    <string name="role_selector_remember_choice">Remember my choice</string>
+    <string name="role_selector_driver_pending">%1$d pending requests</string>
+    <string name="role_selector_last_used">Last used: %1$s</string>
+    <string name="role_selector_never_used">Never used</string>
+
+    <!-- New validation errors -->
+    <string name="error_email_not_eia">Use your @eia.edu.co email</string>
+    <string name="error_phone_empty">Phone number cannot be empty</string>
+    <string name="error_phone_invalid">Enter a valid Colombian mobile number</string>
+    <string name="error_terms_not_accepted">You must accept the terms to continue</string>
+
+    <!-- Password strength -->
+    <string name="password_strength_weak">Weak</string>
+    <string name="password_strength_medium">Medium</string>
+    <string name="password_strength_strong">Strong</string>
+    <string name="password_strength_label">Password strength: %1$s</string>
 </resources>
