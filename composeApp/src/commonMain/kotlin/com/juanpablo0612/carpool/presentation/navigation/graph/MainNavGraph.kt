@@ -89,7 +89,8 @@ fun NavGraphBuilder.mainNavGraph(
         RouteDetailScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
-            onNavigateToAddPlace = onNavigateToAddPlace
+            onNavigateToAddPlace = onNavigateToAddPlace,
+            onNavigateToCreateTrip = onNavigateToCreateTrip
         )
     }
 

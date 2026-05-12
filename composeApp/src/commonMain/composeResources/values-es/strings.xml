@@ -57,12 +57,12 @@
     <string name="create_route_title">Crear Ruta Recurrente</string>
     <string name="route_type_to_uni">Hacia la Universidad</string>
     <string name="route_type_from_uni">Desde la Universidad</string>
-    <string name="waypoints_section_title">Puntos de encuentro (Waypoints)</string>
+    <string name="waypoints_section_title">Paradas</string>
     <string name="origin_label">Origen</string>
     <string name="destination_label">Destino</string>
     <string name="origin_eia_label">Origen (EIA)</string>
     <string name="destination_eia_label">Destino (EIA)</string>
-    <string name="add_waypoint_button">Agregar parada intermedia</string>
+    <string name="add_waypoint_button">+ Agregar parada</string>
     <string name="select_location_placeholder">Seleccionar ubicación</string>
     <string name="arrival_time_label">Hora de llegada a la EIA</string>
     <string name="departure_time_label">Salida: %1$s</string>
@@ -301,4 +301,57 @@
     <string name="password_strength_medium">Media</string>
     <string name="password_strength_strong">Fuerte</string>
     <string name="password_strength_label">Fuerza de contraseña: %1$s</string>
+
+    <!-- Rediseño lista de rutas -->
+    <string name="routes_list_subtitle">Tus trayectos recurrentes</string>
+    <string name="routes_list_new_route">Nueva ruta</string>
+    <string name="routes_empty_description">Una ruta define tu trayecto habitual. A partir de ella puedes publicar viajes en fechas específicas.</string>
+
+    <!-- Campo nombre de ruta -->
+    <string name="route_name_label">Nombre de la ruta</string>
+    <string name="route_name_placeholder">Ej: Casa → EIA mañana</string>
+    <string name="error_route_name_required">El nombre de la ruta es obligatorio</string>
+
+    <!-- Paradas (reemplaza Waypoints) -->
+    <string name="stops_section_title">Paradas</string>
+    <string name="stop_number">Parada %1$d</string>
+    <string name="add_stop_button">+ Agregar parada</string>
+
+    <!-- Sección de recurrencia -->
+    <string name="recurrence_section_title">Recurrencia (opcional)</string>
+    <string name="departure_time_not_set">Sin hora configurada</string>
+
+    <!-- Abreviaciones de días (chips de una letra) -->
+    <string name="day_abbr_mon">L</string>
+    <string name="day_abbr_tue">M</string>
+    <string name="day_abbr_wed">M</string>
+    <string name="day_abbr_thu">J</string>
+    <string name="day_abbr_fri">V</string>
+    <string name="day_abbr_sat">S</string>
+    <string name="day_abbr_sun">D</string>
+
+    <!-- Detalle de ruta (modo lectura) -->
+    <string name="route_detail_trajectory_section">Trayecto</string>
+    <string name="route_detail_stats_section">Estadísticas</string>
+    <string name="route_detail_trips_published">%1$d viajes publicados</string>
+    <string name="route_detail_last_used">Último uso: %1$s</string>
+    <string name="route_detail_never_used">Sin viajes publicados aún</string>
+    <string name="route_map_placeholder">Vista previa del mapa</string>
+
+    <!-- Acciones de detalle de ruta -->
+    <string name="route_publish_trip_button">Publicar viaje</string>
+    <string name="route_duplicate_button">Duplicar ruta</string>
+    <string name="route_edit_title">Editar Ruta</string>
+    <string name="route_save_changes_button">Guardar cambios</string>
+
+    <!-- Confirmación de eliminación -->
+    <string name="route_delete_confirm_title">Eliminar ruta</string>
+    <string name="route_delete_confirm_description">¿Seguro? Esta acción no se puede deshacer. Los viajes publicados con esta ruta no se eliminan.</string>
+    <string name="route_delete_confirm_button">Eliminar</string>
+
+    <!-- Ítems del menú desplegable -->
+    <string name="route_menu_publish_trip">Publicar viaje</string>
+    <string name="route_menu_edit">Editar</string>
+    <string name="route_menu_duplicate">Duplicar</string>
+    <string name="route_menu_delete">Eliminar</string>
 </resources>

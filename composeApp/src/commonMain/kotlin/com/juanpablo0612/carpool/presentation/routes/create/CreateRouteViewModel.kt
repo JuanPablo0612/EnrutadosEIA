@@ -27,6 +27,7 @@ class CreateRouteViewModel(
 
     fun onAction(action: CreateRouteAction) {
         when (action) {
+            is CreateRouteAction.OnNameChange -> _state.update { it.copy(name = action.name, error = null) }
             is CreateRouteAction.OnRemoveWaypoint -> _state.update {
                 it.copy(waypoints = it.waypoints.filterIndexed { i, _ -> i != action.index })
             }
@@ -44,6 +45,14 @@ class CreateRouteViewModel(
             }
             is CreateRouteAction.OnPlaceSelectedFromResult -> onPlaceSelected(action)
             CreateRouteAction.OnCancelSelection -> _state.update { it.copy(selectionTarget = null) }
+            is CreateRouteAction.OnToggleRecurringDay -> _state.update {
+                val days = it.recurringDays.toMutableSet()
+                if (action.day in days) days.remove(action.day) else days.add(action.day)
+                it.copy(recurringDays = days)
+            }
+            is CreateRouteAction.OnSetDepartureTime -> _state.update {
+                it.copy(typicalDepartureTime = action.time)
+            }
             CreateRouteAction.OnSaveClick -> createRoute()
             CreateRouteAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(CreateRouteEvent.NavigateBack)
@@ -72,9 +81,13 @@ class CreateRouteViewModel(
 
     private fun createRoute() {
         val currentState = _state.value
+
+        if (currentState.name.isBlank()) {
+            _state.update { it.copy(error = CreateRouteError.NameRequired) }
+            return
+        }
         val origin = currentState.origin
         val destination = currentState.destination
-
         if (origin == null || destination == null) {
             _state.update { it.copy(error = CreateRouteError.OriginDestinationRequired) }
             return
@@ -91,7 +104,10 @@ class CreateRouteViewModel(
                 driverId = userId,
                 origin = origin,
                 destination = destination,
-                waypoints = currentState.waypoints
+                waypoints = currentState.waypoints,
+                name = currentState.name,
+                recurringDays = currentState.recurringDays,
+                typicalDepartureTime = currentState.typicalDepartureTime
             )
             createRouteUseCase(route)
                 .onSuccess {

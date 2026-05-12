@@ -9,4 +9,5 @@ interface RouteRepository {
     suspend fun getRouteById(id: String): Result<Route>
     suspend fun updateRoute(route: Route): Result<Unit>
     fun getAvailableRoutes(): Flow<List<Route>>
+    suspend fun deleteRoute(id: String): Result<Unit>
 }

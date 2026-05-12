@@ -7,6 +7,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -15,12 +18,15 @@ import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorActio
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
+import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.*
+import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -86,6 +92,28 @@ fun CreateRouteContent(
     state: CreateRouteUiState,
     onAction: (CreateRouteAction) -> Unit
 ) {
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState(
+        initialHour = state.typicalDepartureTime?.hour ?: 7,
+        initialMinute = state.typicalDepartureTime?.minute ?: 0
+    )
+
+    if (showTimePicker) {
+        TimePickerDialog(
+            onCancel = { showTimePicker = false },
+            onConfirm = {
+                onAction(
+                    CreateRouteAction.OnSetDepartureTime(
+                        LocalTime(timePickerState.hour, timePickerState.minute)
+                    )
+                )
+                showTimePicker = false
+            }
+        ) {
+            TimePicker(state = timePickerState)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -107,6 +135,22 @@ fun CreateRouteContent(
                 .padding(padding),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+            // Route name field
+            item {
+                OutlinedTextField(
+                    value = state.name,
+                    onValueChange = { onAction(CreateRouteAction.OnNameChange(it)) },
+                    label = { Text(stringResource(Res.string.route_name_label)) },
+                    placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    singleLine = true,
+                    isError = state.error is CreateRouteError.NameRequired
+                )
+            }
+
+            // Trajectory section
             item {
                 SectionHeader(stringResource(Res.string.waypoints_section_title))
             }
@@ -123,7 +167,7 @@ fun CreateRouteContent(
 
             itemsIndexed(state.waypoints) { index, waypoint ->
                 RouteStopItem(
-                    label = "Stop ${index + 1}",
+                    label = stringResource(Res.string.stop_number, index + 1),
                     place = waypoint,
                     type = StopType.MIDDLE,
                     isLocked = false,
@@ -154,6 +198,35 @@ fun CreateRouteContent(
                 )
             }
 
+            // Recurrence section
+            item {
+                SectionHeader(stringResource(Res.string.recurrence_section_title))
+            }
+
+            item {
+                DaySelector(
+                    selectedDays = state.recurringDays,
+                    onToggleDay = { onAction(CreateRouteAction.OnToggleRecurringDay(it)) },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
+            item {
+                val timeLabel = state.typicalDepartureTime?.let { t ->
+                    stringResource(
+                        Res.string.departure_time_label,
+                        "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
+                    )
+                } ?: stringResource(Res.string.departure_time_not_set)
+                TextButton(
+                    onClick = { showTimePicker = true },
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    Text(timeLabel)
+                }
+            }
+
+            // Error
             item {
                 if (state.error != null) {
                     Text(
@@ -164,13 +237,14 @@ fun CreateRouteContent(
                 }
             }
 
+            // Save button
             item {
                 Button(
                     onClick = { onAction(CreateRouteAction.OnSaveClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    enabled = !state.isLoading
+                    enabled = state.isValid && !state.isLoading
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(
@@ -193,14 +267,15 @@ private fun CreateRouteContentPreview() {
     CarpoolTheme {
         CreateRouteContent(
             state = CreateRouteUiState(
+                name = "Ida a clase",
                 origin = Place(
-                    name = "Home",
-                    address = "123 Main St",
+                    name = "Casa",
+                    address = "Calle 10 #20-30",
                     latitude = 0.0,
                     longitude = 0.0
                 ),
                 waypoints = listOf(
-                    Place(name = "Stop 1", address = "Address 1", latitude = 0.0, longitude = 0.0)
+                    Place(name = "Parada 1", address = "Cra 50 #30", latitude = 0.0, longitude = 0.0)
                 )
             ),
             onAction = {}

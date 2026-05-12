@@ -57,12 +57,12 @@
     <string name="create_route_title">Create Recurring Route</string>
     <string name="route_type_to_uni">To University</string>
     <string name="route_type_from_uni">From University</string>
-    <string name="waypoints_section_title">Meeting Points (Waypoints)</string>
+    <string name="waypoints_section_title">Stops</string>
     <string name="origin_label">Origin</string>
     <string name="destination_label">Destination</string>
     <string name="origin_eia_label">Origin (EIA)</string>
     <string name="destination_eia_label">Destination (EIA)</string>
-    <string name="add_waypoint_button">Add intermediate stop</string>
+    <string name="add_waypoint_button">+ Add stop</string>
     <string name="select_location_placeholder">Select location</string>
     <string name="arrival_time_label">Arrival time at EIA</string>
     <string name="departure_time_label">Departure: %1$s</string>
@@ -338,4 +338,57 @@
     <string name="password_strength_medium">Medium</string>
     <string name="password_strength_strong">Strong</string>
     <string name="password_strength_label">Password strength: %1$s</string>
+
+    <!-- Routes list redesign -->
+    <string name="routes_list_subtitle">Your recurring routes</string>
+    <string name="routes_list_new_route">New route</string>
+    <string name="routes_empty_description">A route defines your usual journey. From it you can publish trips on specific dates.</string>
+
+    <!-- Route name field -->
+    <string name="route_name_label">Route name</string>
+    <string name="route_name_placeholder">E.g: Home → EIA morning</string>
+    <string name="error_route_name_required">Route name is required</string>
+
+    <!-- Stops (replacing Waypoints) -->
+    <string name="stops_section_title">Stops</string>
+    <string name="stop_number">Stop %1$d</string>
+    <string name="add_stop_button">+ Add stop</string>
+
+    <!-- Recurrence section -->
+    <string name="recurrence_section_title">Recurrence (optional)</string>
+    <string name="departure_time_not_set">No time set</string>
+
+    <!-- Day abbreviations (single letter chips) -->
+    <string name="day_abbr_mon">M</string>
+    <string name="day_abbr_tue">T</string>
+    <string name="day_abbr_wed">W</string>
+    <string name="day_abbr_thu">T</string>
+    <string name="day_abbr_fri">F</string>
+    <string name="day_abbr_sat">S</string>
+    <string name="day_abbr_sun">S</string>
+
+    <!-- Route detail (read mode) -->
+    <string name="route_detail_trajectory_section">Route</string>
+    <string name="route_detail_stats_section">Stats</string>
+    <string name="route_detail_trips_published">%1$d trips published</string>
+    <string name="route_detail_last_used">Last used: %1$s</string>
+    <string name="route_detail_never_used">No trips published yet</string>
+    <string name="route_map_placeholder">Map preview</string>
+
+    <!-- Route detail actions -->
+    <string name="route_publish_trip_button">Publish trip</string>
+    <string name="route_duplicate_button">Duplicate route</string>
+    <string name="route_edit_title">Edit Route</string>
+    <string name="route_save_changes_button">Save changes</string>
+
+    <!-- Delete confirmation -->
+    <string name="route_delete_confirm_title">Delete route</string>
+    <string name="route_delete_confirm_description">Are you sure? This action cannot be undone. Trips already published with this route are not deleted.</string>
+    <string name="route_delete_confirm_button">Delete</string>
+
+    <!-- Dropdown menu items -->
+    <string name="route_menu_publish_trip">Publish trip</string>
+    <string name="route_menu_edit">Edit</string>
+    <string name="route_menu_duplicate">Duplicate</string>
+    <string name="route_menu_delete">Delete</string>
 </resources>

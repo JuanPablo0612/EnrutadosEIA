@@ -60,6 +60,15 @@ class RouteRepositoryImpl(
             }
     }
 
+    override suspend fun deleteRoute(id: String): Result<Unit> {
+        return try {
+            firestore.collection(COLLECTION_NAME).document(id).delete()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     companion object {
         private const val COLLECTION_NAME = "routes"
     }

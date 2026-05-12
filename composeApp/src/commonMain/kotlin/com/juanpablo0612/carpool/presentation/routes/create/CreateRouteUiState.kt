@@ -1,15 +1,23 @@
 package com.juanpablo0612.carpool.presentation.routes.create
 
 import com.juanpablo0612.carpool.domain.places.model.Place
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalTime
 
 data class CreateRouteUiState(
+    val name: String = "",
     val origin: Place? = null,
     val destination: Place? = null,
     val waypoints: List<Place> = emptyList(),
+    val recurringDays: Set<DayOfWeek> = emptySet(),
+    val typicalDepartureTime: LocalTime? = null,
     val isLoading: Boolean = false,
     val error: CreateRouteError? = null,
     val selectionTarget: SelectionTarget? = null
-)
+) {
+    val isValid: Boolean
+        get() = name.isNotBlank() && origin != null && destination != null
+}
 
 sealed class SelectionTarget {
     data object Origin : SelectionTarget()

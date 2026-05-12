@@ -1,13 +1,14 @@
 package com.juanpablo0612.carpool.presentation.routes.list
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +26,7 @@ import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.presentation.routes.list.components.RouteCard
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
@@ -34,9 +36,13 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
-import enrutadoseia.composeapp.generated.resources.nav_create_route
-import enrutadoseia.composeapp.generated.resources.routes_empty_subtitle
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_button
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_description
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_title
+import enrutadoseia.composeapp.generated.resources.routes_empty_description
 import enrutadoseia.composeapp.generated.resources.routes_empty_title
+import enrutadoseia.composeapp.generated.resources.routes_list_new_route
+import enrutadoseia.composeapp.generated.resources.routes_list_subtitle
 import enrutadoseia.composeapp.generated.resources.routes_list_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -72,14 +78,32 @@ fun RoutesListContent(
     state: RoutesListUiState,
     onAction: (RoutesListAction) -> Unit
 ) {
+    if (state.pendingDeleteRouteId != null) {
+        ConfirmDialog(
+            title = stringResource(Res.string.route_delete_confirm_title),
+            description = stringResource(Res.string.route_delete_confirm_description),
+            confirmText = stringResource(Res.string.route_delete_confirm_button),
+            onConfirm = { onAction(RoutesListAction.OnConfirmDelete) },
+            onDismiss = { onAction(RoutesListAction.OnDismissDelete) },
+            isDestructive = true
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(Res.string.routes_list_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
+                    Column {
+                        Text(
+                            text = stringResource(Res.string.routes_list_title),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = stringResource(Res.string.routes_list_subtitle),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { onAction(RoutesListAction.OnBackClick) }) {
@@ -95,16 +119,18 @@ fun RoutesListContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
+                text = { Text(stringResource(Res.string.routes_list_new_route)) },
+                icon = {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.add_24px),
+                        contentDescription = null
+                    )
+                },
                 onClick = { onAction(RoutesListAction.OnCreateRouteClick) },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(
-                    imageVector = vectorResource(Res.drawable.add_24px),
-                    contentDescription = null
-                )
-            }
+            )
         }
     ) { padding ->
         when {
@@ -112,9 +138,9 @@ fun RoutesListContent(
             state.routes.isEmpty() -> EmptyState(
                 icon = vectorResource(Res.drawable.location_on_24px),
                 title = stringResource(Res.string.routes_empty_title),
-                description = stringResource(Res.string.routes_empty_subtitle),
+                description = stringResource(Res.string.routes_empty_description),
                 modifier = Modifier.fillMaxSize().padding(padding),
-                primaryAction = ActionButton(stringResource(Res.string.nav_create_route)) {
+                primaryAction = ActionButton(stringResource(Res.string.routes_list_new_route)) {
                     onAction(RoutesListAction.OnCreateRouteClick)
                 }
             )
@@ -124,11 +150,14 @@ fun RoutesListContent(
                     contentPadding = PaddingValues(Spacing.lg),
                     verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
-                    items(state.routes, key = { it.id }) { route ->
+                    items(state.routes, key = { it.route.id }) { routeWithStats ->
                         RouteCard(
-                            route = route,
-                            onClick = { onAction(RoutesListAction.OnRouteClick(route.id)) },
-                            onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(route.id)) }
+                            routeWithStats = routeWithStats,
+                            onClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
+                            onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
+                            onEditClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
+                            onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
+                            onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) }
                         )
                     }
                 }
@@ -158,12 +187,15 @@ private fun RoutesListWithDataPreview() {
             state = RoutesListUiState(
                 isLoading = false,
                 routes = listOf(
-                    Route(
-                        id = "r1",
-                        driverId = "d1",
-                        origin = origin,
-                        destination = destination,
-                        waypoints = emptyList()
+                    RouteWithStats(
+                        route = Route(
+                            id = "r1",
+                            driverId = "d1",
+                            origin = origin,
+                            destination = destination,
+                            waypoints = emptyList(),
+                            name = "Ida a clase"
+                        )
                     )
                 )
             ),
@@ -171,4 +203,3 @@ private fun RoutesListWithDataPreview() {
         )
     }
 }
-

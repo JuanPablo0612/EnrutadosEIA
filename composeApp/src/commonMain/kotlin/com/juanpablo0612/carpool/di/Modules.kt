@@ -35,6 +35,7 @@ import com.juanpablo0612.carpool.domain.preferences.use_case.GetRolePreferenceUs
 import com.juanpablo0612.carpool.domain.preferences.use_case.SaveRolePreferenceUseCase
 import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.routes.use_case.CreateRouteUseCase
+import com.juanpablo0612.carpool.domain.routes.use_case.DeleteRouteUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.GetUserRoutesUseCase
 import com.juanpablo0612.carpool.domain.routes.use_case.UpdateRouteUseCase
@@ -123,9 +124,10 @@ val routeModule = module {
     factoryOf(::GetUserRoutesUseCase)
     factoryOf(::GetRouteByIdUseCase)
     factoryOf(::UpdateRouteUseCase)
+    factoryOf(::DeleteRouteUseCase)
     viewModel { CreateRouteViewModel(get(), get()) }
-    viewModel { RoutesListViewModel(get(), get()) }
-    viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get()) }
+    viewModel { RoutesListViewModel(get(), get(), get(), get()) }
+    viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get(), get(), get(), get()) }
 }
 
 val tripModule = module {
