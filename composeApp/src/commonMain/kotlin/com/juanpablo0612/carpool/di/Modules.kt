@@ -44,6 +44,7 @@ import com.juanpablo0612.carpool.domain.trip.use_case.CreateTripUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetAvailableTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetDriverTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
+import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
@@ -136,9 +137,10 @@ val tripModule = module {
     factoryOf(::GetDriverTripsUseCase)
     factoryOf(::GetAvailableTripsUseCase)
     factoryOf(::GetTripByIdUseCase)
+    factoryOf(::UpdateTripStatusUseCase)
     viewModel { SearchRoutesViewModel(get()) }
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
-    viewModel { DriverTripsViewModel(get(), get()) }
+    viewModel { DriverTripsViewModel(get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get()) }
 }
 

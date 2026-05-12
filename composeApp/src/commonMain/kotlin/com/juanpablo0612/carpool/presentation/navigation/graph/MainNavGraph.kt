@@ -100,7 +100,9 @@ fun NavGraphBuilder.mainNavGraph(
         CreateTripScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
-            onTripPublished = onNavigateBack
+            onTripPublished = onNavigateBack,
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToVehiclesList = { onNavigateBack() }
         )
     }
 
@@ -108,7 +110,10 @@ fun NavGraphBuilder.mainNavGraph(
         val viewModel: DriverTripsViewModel = koinViewModel()
         DriverTripsScreen(
             viewModel = viewModel,
-            onBackClick = onNavigateBack
+            onBackClick = onNavigateBack,
+            onNavigateToRoutesList = onNavigateToRoutesList,
+            onNavigateToTripDetail = onNavigateToTripDetail,
+            onNavigateToPassengers = { /* TODO: wire when passenger management screen exists */ }
         )
     }
 

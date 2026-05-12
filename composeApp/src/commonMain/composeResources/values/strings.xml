@@ -391,4 +391,56 @@
     <string name="route_menu_edit">Edit</string>
     <string name="route_menu_duplicate">Duplicate</string>
     <string name="route_menu_delete">Delete</string>
+
+    <!-- CreateTrip - date quick-select -->
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="date_other">Other day</string>
+
+    <!-- CreateTrip - sections -->
+    <string name="trip_when_section">When are you leaving?</string>
+    <string name="trip_seats_section">Seats for passengers</string>
+    <string name="trip_seats_helper">Your %1$s has %2$d seats.</string>
+    <string name="trip_contribution_section">Contribution per passenger (optional)</string>
+    <string name="trip_contribution_hint">Suggested: $5,000 — You can leave it at zero.</string>
+    <string name="trip_message_section">Message (optional)</string>
+    <string name="trip_message_placeholder">e.g. I leave on time, I\'ll wait 5 min at the gate.</string>
+    <string name="trip_message_counter">%1$d / 140</string>
+    <string name="trip_no_vehicle_title">You need a vehicle to publish trips.</string>
+    <string name="trip_register_vehicle_action">Register vehicle</string>
+    <string name="trip_change_vehicle">Change</string>
+    <string name="trip_bottom_summary">%1$s · %2$s · %3$d seats</string>
+    <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d seats · $%4$s</string>
+
+    <!-- DriverTrips - tabs -->
+    <string name="tab_upcoming">Upcoming</string>
+    <string name="tab_past">Past</string>
+
+    <!-- DriverTrips - date group headers -->
+    <string name="relative_date_today">TODAY</string>
+    <string name="relative_date_tomorrow">TOMORROW</string>
+    <string name="relative_date_this_week">THIS WEEK</string>
+    <string name="relative_date_later">LATER</string>
+
+    <!-- Trip status labels -->
+    <string name="trip_status_scheduled">Scheduled</string>
+    <string name="trip_status_in_progress">In progress</string>
+
+    <!-- DriverTrips - trip card -->
+    <string name="trip_seats_occupied">%1$d of %2$d seats occupied</string>
+    <string name="trip_action_start">Start trip</string>
+    <string name="trip_action_finish">Finish trip</string>
+    <string name="trip_action_view_passengers">View passengers</string>
+
+    <!-- DriverTrips - empty states -->
+    <string name="driver_trips_upcoming_empty_title">No upcoming trips.</string>
+    <string name="driver_trips_upcoming_empty_subtitle">Publish your next trip and share the ride.</string>
+    <string name="driver_trips_past_empty_title">No trips yet.</string>
+    <string name="driver_trips_past_empty_subtitle">When you complete a trip, it will appear here.</string>
+    <string name="publish_trip_fab">Publish trip</string>
+
+    <!-- DriverTrips - cancel confirmation -->
+    <string name="trip_cancel_confirm_title">Cancel trip?</string>
+    <string name="trip_cancel_confirm_body">Confirmed passengers will be notified.</string>
+    <string name="trip_cancel_confirm_button">Cancel trip</string>
 </resources>

@@ -11,5 +11,8 @@ data class Trip(
     val destination: Place,
     val waypoints: List<Place>,
     val departureTime: Long,
+    val seatCount: Int = 1,
+    val contributionPerPassenger: Int? = null,
+    val messageToPassengers: String = "",
     val status: TripStatus
 )

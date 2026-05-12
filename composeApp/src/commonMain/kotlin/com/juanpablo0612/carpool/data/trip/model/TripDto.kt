@@ -15,6 +15,9 @@ data class TripDto(
     val destination: PlaceDto = PlaceDto(name = "", address = "", latitude = 0.0, longitude = 0.0),
     val waypoints: List<PlaceDto> = emptyList(),
     val departureTime: Long = 0L,
+    val seatCount: Int = 1,
+    val contributionPerPassenger: Int? = null,
+    val messageToPassengers: String = "",
     val status: String = "ACTIVE"
 ) {
     fun toDomain(): Trip = Trip(
@@ -26,9 +29,13 @@ data class TripDto(
         destination = destination.toDomain(),
         waypoints = waypoints.map { it.toDomain() },
         departureTime = departureTime,
+        seatCount = seatCount,
+        contributionPerPassenger = contributionPerPassenger,
+        messageToPassengers = messageToPassengers,
         status = when (status) {
-            "CANCELLED" -> TripStatus.Cancelled
+            "IN_PROGRESS" -> TripStatus.InProgress
             "COMPLETED" -> TripStatus.Completed
+            "CANCELLED" -> TripStatus.Cancelled
             else -> TripStatus.Active
         }
     )
@@ -43,10 +50,14 @@ data class TripDto(
             destination = PlaceDto.fromDomain(trip.destination),
             waypoints = trip.waypoints.map { PlaceDto.fromDomain(it) },
             departureTime = trip.departureTime,
+            seatCount = trip.seatCount,
+            contributionPerPassenger = trip.contributionPerPassenger,
+            messageToPassengers = trip.messageToPassengers,
             status = when (trip.status) {
                 is TripStatus.Active -> "ACTIVE"
-                is TripStatus.Cancelled -> "CANCELLED"
+                is TripStatus.InProgress -> "IN_PROGRESS"
                 is TripStatus.Completed -> "COMPLETED"
+                is TripStatus.Cancelled -> "CANCELLED"
             }
         )
     }

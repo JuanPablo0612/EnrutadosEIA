@@ -27,6 +27,8 @@ import enrutadoseia.composeapp.generated.resources.booking_status_rejected
 import enrutadoseia.composeapp.generated.resources.trip_status_active
 import enrutadoseia.composeapp.generated.resources.trip_status_cancelled
 import enrutadoseia.composeapp.generated.resources.trip_status_completed
+import enrutadoseia.composeapp.generated.resources.trip_status_in_progress
+import enrutadoseia.composeapp.generated.resources.trip_status_scheduled
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -59,7 +61,8 @@ private fun StatusBadge(text: String, dotColor: Color, modifier: Modifier = Modi
 fun TripStatusBadge(status: TripStatus, modifier: Modifier = Modifier) {
     val extended = LocalExtendedColors.current
     val (text, color) = when (status) {
-        TripStatus.Active -> stringResource(Res.string.trip_status_active) to extended.success
+        TripStatus.Active -> stringResource(Res.string.trip_status_scheduled) to extended.info
+        TripStatus.InProgress -> stringResource(Res.string.trip_status_in_progress) to extended.success
         TripStatus.Completed -> stringResource(Res.string.trip_status_completed) to MaterialTheme.colorScheme.outline
         TripStatus.Cancelled -> stringResource(Res.string.trip_status_cancelled) to MaterialTheme.colorScheme.error
     }

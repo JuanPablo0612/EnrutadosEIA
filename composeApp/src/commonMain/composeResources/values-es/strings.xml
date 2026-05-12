@@ -354,4 +354,56 @@
     <string name="route_menu_edit">Editar</string>
     <string name="route_menu_duplicate">Duplicar</string>
     <string name="route_menu_delete">Eliminar</string>
+
+    <!-- CreateTrip - selección rápida de fecha -->
+    <string name="date_today">Hoy</string>
+    <string name="date_tomorrow">Mañana</string>
+    <string name="date_other">Otro día</string>
+
+    <!-- CreateTrip - secciones -->
+    <string name="trip_when_section">¿Cuándo sales?</string>
+    <string name="trip_seats_section">Cupos para pasajeros</string>
+    <string name="trip_seats_helper">Tu %1$s tiene %2$d cupos.</string>
+    <string name="trip_contribution_section">Aporte por pasajero (opcional)</string>
+    <string name="trip_contribution_hint">Sugerido: $5.000 — Puedes dejarlo en cero.</string>
+    <string name="trip_message_section">Mensaje (opcional)</string>
+    <string name="trip_message_placeholder">Ej. Salgo puntual, espero 5 min en la portería.</string>
+    <string name="trip_message_counter">%1$d / 140</string>
+    <string name="trip_no_vehicle_title">Necesitas un vehículo para publicar viajes.</string>
+    <string name="trip_register_vehicle_action">Registrar vehículo</string>
+    <string name="trip_change_vehicle">Cambiar</string>
+    <string name="trip_bottom_summary">%1$s · %2$s · %3$d cupos</string>
+    <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d cupos · $%4$s</string>
+
+    <!-- DriverTrips - pestañas -->
+    <string name="tab_upcoming">Próximos</string>
+    <string name="tab_past">Pasados</string>
+
+    <!-- DriverTrips - encabezados de grupo por fecha -->
+    <string name="relative_date_today">HOY</string>
+    <string name="relative_date_tomorrow">MAÑANA</string>
+    <string name="relative_date_this_week">ESTA SEMANA</string>
+    <string name="relative_date_later">MÁS ADELANTE</string>
+
+    <!-- Estado del viaje -->
+    <string name="trip_status_scheduled">Programado</string>
+    <string name="trip_status_in_progress">En curso</string>
+
+    <!-- DriverTrips - tarjeta de viaje -->
+    <string name="trip_seats_occupied">%1$d de %2$d cupos ocupados</string>
+    <string name="trip_action_start">Iniciar viaje</string>
+    <string name="trip_action_finish">Finalizar viaje</string>
+    <string name="trip_action_view_passengers">Ver pasajeros</string>
+
+    <!-- DriverTrips - estados vacíos -->
+    <string name="driver_trips_upcoming_empty_title">No tienes viajes próximos.</string>
+    <string name="driver_trips_upcoming_empty_subtitle">Publica tu próximo viaje y comparte el camino.</string>
+    <string name="driver_trips_past_empty_title">Aún no has hecho viajes.</string>
+    <string name="driver_trips_past_empty_subtitle">Cuando termines un viaje, aparecerá aquí.</string>
+    <string name="publish_trip_fab">Publicar viaje</string>
+
+    <!-- DriverTrips - confirmación de cancelación -->
+    <string name="trip_cancel_confirm_title">¿Cancelar viaje?</string>
+    <string name="trip_cancel_confirm_body">Se notificará a los pasajeros confirmados.</string>
+    <string name="trip_cancel_confirm_button">Cancelar viaje</string>
 </resources>

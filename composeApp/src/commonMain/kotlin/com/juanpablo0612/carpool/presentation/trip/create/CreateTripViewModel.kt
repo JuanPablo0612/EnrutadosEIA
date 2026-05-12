@@ -20,9 +20,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
-import kotlin.time.Instant
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
@@ -41,9 +42,6 @@ class CreateTripViewModel(
     val events: SharedFlow<CreateTripEvent> = _events.asSharedFlow()
 
     init {
-        val nowMs = Clock.System.now().toEpochMilliseconds()
-        val now = Instant.fromEpochMilliseconds(nowMs).toLocalDateTime(TimeZone.currentSystemDefault())
-        _state.update { it.copy(departureDate = now.date, departureTime = now.time) }
         loadRoute()
         loadVehicles()
     }
@@ -52,7 +50,8 @@ class CreateTripViewModel(
         viewModelScope.launch {
             getRouteByIdUseCase(routeId)
                 .onSuccess { route ->
-                    _state.update { it.copy(route = route, isLoading = false) }
+                    val defaultTime = route.typicalDepartureTime ?: _state.value.departureTime
+                    _state.update { it.copy(route = route, departureTime = defaultTime, isLoading = false) }
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false, error = TripError.Unknown) }
@@ -64,15 +63,45 @@ class CreateTripViewModel(
         val userId = authRepository.getCurrentUserId() ?: return
         getUserVehiclesUseCase(userId)
             .onEach { vehicles ->
-                _state.update { it.copy(vehicles = vehicles) }
+                _state.update { state ->
+                    val autoSelected = if (state.selectedVehicleId == null && vehicles.isNotEmpty()) {
+                        vehicles.first().id
+                    } else {
+                        state.selectedVehicleId
+                    }
+                    val autoSeats = vehicles.find { it.id == autoSelected }?.seatsAvailable
+                        ?: state.seatCount
+                    state.copy(
+                        vehicles = vehicles,
+                        selectedVehicleId = autoSelected,
+                        seatCount = autoSeats
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }
 
     fun onAction(action: CreateTripAction) {
         when (action) {
-            is CreateTripAction.OnVehicleSelected -> _state.update {
-                it.copy(selectedVehicleId = action.vehicleId)
+            is CreateTripAction.OnVehicleSelected -> {
+                val vehicle = _state.value.vehicles.find { it.id == action.vehicleId }
+                _state.update {
+                    it.copy(
+                        selectedVehicleId = action.vehicleId,
+                        seatCount = vehicle?.seatsAvailable ?: it.seatCount
+                    )
+                }
+            }
+            CreateTripAction.OnSelectTodayDate -> {
+                val today = Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                _state.update { it.copy(departureDate = today, showDatePicker = false) }
+            }
+            CreateTripAction.OnSelectTomorrowDate -> {
+                val tomorrow = Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    .plus(1, DateTimeUnit.DAY)
+                _state.update { it.copy(departureDate = tomorrow, showDatePicker = false) }
             }
             is CreateTripAction.OnDateSelected -> _state.update {
                 it.copy(departureDate = action.date, showDatePicker = false)
@@ -84,7 +113,20 @@ class CreateTripViewModel(
             CreateTripAction.OnShowTimePicker -> _state.update { it.copy(showTimePicker = true) }
             CreateTripAction.OnDismissDatePicker -> _state.update { it.copy(showDatePicker = false) }
             CreateTripAction.OnDismissTimePicker -> _state.update { it.copy(showTimePicker = false) }
+            is CreateTripAction.OnSetSeats -> _state.update { it.copy(seatCount = action.count) }
+            is CreateTripAction.OnSetContribution -> _state.update {
+                it.copy(contributionPerPassenger = action.pesos)
+            }
+            is CreateTripAction.OnSetMessage -> _state.update {
+                it.copy(messageToPassengers = action.text.take(140))
+            }
             CreateTripAction.OnPublishClick -> publishTrip()
+            CreateTripAction.OnNavigateToRegisterVehicle -> viewModelScope.launch {
+                _events.emit(CreateTripEvent.NavigateToRegisterVehicle)
+            }
+            CreateTripAction.OnNavigateToVehiclesList -> viewModelScope.launch {
+                _events.emit(CreateTripEvent.NavigateToVehiclesList)
+            }
             CreateTripAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(CreateTripEvent.NavigateBack)
             }
@@ -98,14 +140,12 @@ class CreateTripViewModel(
             _state.update { it.copy(error = TripError.NoVehicleSelected) }
             return
         }
-        val date = s.departureDate ?: return
-        val time = s.departureTime ?: return
         val driverId = authRepository.getCurrentUserId() ?: run {
             _state.update { it.copy(error = TripError.UserNotAuthenticated) }
             return
         }
 
-        val departureMs = LocalDateTime(date, time)
+        val departureMs = LocalDateTime(s.departureDate, s.departureTime)
             .toInstant(TimeZone.currentSystemDefault())
             .toEpochMilliseconds()
 
@@ -119,6 +159,9 @@ class CreateTripViewModel(
                 destination = route.destination,
                 waypoints = route.waypoints,
                 departureTime = departureMs,
+                seatCount = s.seatCount,
+                contributionPerPassenger = s.contributionPerPassenger,
+                messageToPassengers = s.messageToPassengers,
                 status = TripStatus.Active
             )
             createTripUseCase(trip)

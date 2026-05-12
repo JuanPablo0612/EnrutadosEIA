@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.data.trip.repository
 
 import com.juanpablo0612.carpool.data.trip.model.TripDto
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -45,6 +46,22 @@ class TripRepositoryImpl(
             val snapshot = firestore.collection(COLLECTION_NAME).document(id).get()
             val trip = snapshot.data(TripDto.serializer()).toDomain()
             Result.success(trip)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateTripStatus(tripId: String, status: TripStatus): Result<Unit> {
+        return try {
+            val statusString = when (status) {
+                is TripStatus.Active -> "ACTIVE"
+                is TripStatus.InProgress -> "IN_PROGRESS"
+                is TripStatus.Completed -> "COMPLETED"
+                is TripStatus.Cancelled -> "CANCELLED"
+            }
+            firestore.collection(COLLECTION_NAME).document(tripId)
+                .update("status" to statusString)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
