@@ -31,6 +31,30 @@
     <string name="error_email_already_in_use">El correo electrónico ya está en uso</string>
     <string name="error_weak_password">La contraseña es muy débil</string>
     <string name="error_unknown">Ocurrió un error inesperado</string>
+    <string name="error_coordinates_required">Selecciona la ubicación en el mapa</string>
+    <string name="add_place_type_label">¿Qué tipo de lugar es?</string>
+    <string name="add_place_map_tip">Si el pin no está en el lugar exacto, arrástralo para ajustarlo.</string>
+    <string name="add_place_address_hint">Escribe una dirección...</string>
+
+    <!-- Place Types -->
+    <string name="place_type_home">Casa</string>
+    <string name="place_type_work">Trabajo</string>
+    <string name="place_type_gym">Gimnasio</string>
+    <string name="place_type_university">Universidad</string>
+    <string name="place_type_other">Otro</string>
+
+    <!-- Place Selector -->
+    <string name="place_selector_title_origin">Selecciona el origen</string>
+    <string name="place_selector_title_destination">Selecciona el destino</string>
+    <string name="place_selector_title_waypoint">Selecciona una parada</string>
+    <string name="place_selector_title_my_places">Mis lugares</string>
+    <string name="place_selector_search_hint">Busca una dirección o lugar...</string>
+    <string name="place_selector_current_location">Usar mi ubicación actual</string>
+    <string name="place_selector_resolving_location">Obteniendo ubicación...</string>
+    <string name="place_selector_allow_location">Permitir →</string>
+    <string name="place_selector_section_my_places">Mis lugares</string>
+    <string name="place_selector_section_eia">Sedes EIA</string>
+    <string name="place_selector_section_results">Resultados</string>
 
     <string name="error_email_empty">El correo no puede estar vacío</string>
     <string name="error_email_invalid">Ingresa un correo electrónico válido</string>

@@ -30,6 +30,7 @@ import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CreateRouteScreen(
@@ -39,7 +40,7 @@ fun CreateRouteScreen(
     onNavigateToAddPlace: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    val placeSelectorViewModel: PlaceSelectorViewModel = koinViewModel()
+    val placeSelectorViewModel: PlaceSelectorViewModel = koinViewModel { parametersOf("ORIGIN") }
     val placeSelectorState by placeSelectorViewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->

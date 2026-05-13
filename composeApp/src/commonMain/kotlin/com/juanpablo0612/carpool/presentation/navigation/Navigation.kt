@@ -204,6 +204,8 @@ fun AppNavigation(
                     onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
                     onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                    onNavigateToPlaceSelector = { mode -> navController.navigate(Route.PlaceSelector(mode)) },
+                    onPlaceSelected = { navController.popBackStack() },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },

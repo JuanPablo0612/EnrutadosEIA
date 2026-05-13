@@ -2,24 +2,42 @@ package com.juanpablo0612.carpool.presentation.places.selector
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.places.model.Place
+import com.juanpablo0612.carpool.domain.places.service.LocationService
+import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
-import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+sealed class PlaceSelectorEvent {
+    data class PlaceSelected(val place: Place) : PlaceSelectorEvent()
+    data object NavigateToAddPlace : PlaceSelectorEvent()
+    data object Dismiss : PlaceSelectorEvent()
+}
+
 class PlaceSelectorViewModel(
+    mode: String,
     private val getSavedPlacesUseCase: GetSavedPlacesUseCase,
-    private val searchPlacesUseCase: SearchPlacesUseCase
+    private val locationService: LocationService,
+    private val placesSearchService: PlacesSearchService,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(PlaceSelectorUiState())
+    private val _state = MutableStateFlow(
+        PlaceSelectorUiState(mode = PlaceSelectorMode.fromString(mode))
+    )
     val state = _state.asStateFlow()
+
+    private val _events = MutableSharedFlow<PlaceSelectorEvent>()
+    val events: SharedFlow<PlaceSelectorEvent> = _events.asSharedFlow()
 
     private var getPlacesJob: Job? = null
     private var searchJob: Job? = null
@@ -41,31 +59,72 @@ class PlaceSelectorViewModel(
 
     fun onAction(action: PlaceSelectorAction) {
         when (action) {
-            is PlaceSelectorAction.OnQueryChange -> {
-                _state.update { it.copy(query = action.query) }
-                searchJob?.cancel()
-                if (action.query.isNotBlank()) {
-                    searchJob = viewModelScope.launch {
-                        delay(300)
-                        _state.update { it.copy(isLoading = true) }
-                        searchPlacesUseCase(action.query)
-                            .onSuccess { results ->
-                                _state.update { it.copy(searchResults = results, isLoading = false) }
-                            }
-                            .onFailure {
-                                _state.update { it.copy(isLoading = false) }
-                            }
-                    }
-                } else {
-                    _state.update { it.copy(searchResults = emptyList()) }
-                }
+            is PlaceSelectorAction.OnQueryChange -> handleQueryChange(action.query)
+            PlaceSelectorAction.UseCurrentLocation -> resolveCurrentLocation()
+            PlaceSelectorAction.RequestLocationPermission -> {
+                _state.update { it.copy(locationPermissionGranted = false) }
             }
-            PlaceSelectorAction.OnDismiss -> {
-                _state.update { it.copy(query = "", searchResults = emptyList()) }
+            is PlaceSelectorAction.OnSuggestionSelected -> selectSuggestion(action.suggestion)
+            is PlaceSelectorAction.OnPlaceSelected -> viewModelScope.launch {
+                _events.emit(PlaceSelectorEvent.PlaceSelected(action.place))
             }
-            is PlaceSelectorAction.OnPlaceSelected -> {
-                // Handled by navigation/UI callback
+            PlaceSelectorAction.OnAddPlace -> viewModelScope.launch {
+                _events.emit(PlaceSelectorEvent.NavigateToAddPlace)
             }
+            PlaceSelectorAction.OnDismiss -> viewModelScope.launch {
+                _state.update { it.copy(searchQuery = "", searchResults = emptyList()) }
+                _events.emit(PlaceSelectorEvent.Dismiss)
+            }
+        }
+    }
+
+    private fun handleQueryChange(query: String) {
+        _state.update { it.copy(searchQuery = query) }
+        searchJob?.cancel()
+        if (query.length >= 2) {
+            searchJob = viewModelScope.launch {
+                delay(300)
+                _state.update { it.copy(isSearching = true) }
+                val results = placesSearchService.search(query)
+                _state.update { it.copy(searchResults = results, isSearching = false) }
+            }
+        } else {
+            _state.update { it.copy(searchResults = emptyList()) }
+        }
+    }
+
+    private fun resolveCurrentLocation() {
+        viewModelScope.launch {
+            _state.update { it.copy(isResolvingLocation = true) }
+            val coords = locationService.getCurrentCoordinates()
+            if (coords == null) {
+                _state.update { it.copy(isResolvingLocation = false, locationPermissionGranted = false) }
+                return@launch
+            }
+            val address = placesSearchService.reverseGeocode(coords) ?: ""
+            val place = Place(
+                id = "current_location",
+                name = "Mi ubicación actual",
+                address = address,
+                latitude = coords.latitude,
+                longitude = coords.longitude,
+            )
+            _state.update { it.copy(currentLocation = place, isResolvingLocation = false) }
+            _events.emit(PlaceSelectorEvent.PlaceSelected(place))
+        }
+    }
+
+    private fun selectSuggestion(suggestion: com.juanpablo0612.carpool.domain.places.model.AutocompleteSuggestion) {
+        viewModelScope.launch {
+            val coords = placesSearchService.getCoordinates(suggestion.placeId) ?: return@launch
+            val place = Place(
+                id = suggestion.placeId,
+                name = suggestion.primaryText,
+                address = suggestion.fullAddress,
+                latitude = coords.latitude,
+                longitude = coords.longitude,
+            )
+            _events.emit(PlaceSelectorEvent.PlaceSelected(place))
         }
     }
 }

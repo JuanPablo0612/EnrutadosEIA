@@ -38,6 +38,10 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation("com.google.maps.android:maps-compose:6.2.1")
+            implementation("com.google.android.libraries.places:places:4.1.0")
+            implementation("com.google.android.gms:play-services-location:21.3.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

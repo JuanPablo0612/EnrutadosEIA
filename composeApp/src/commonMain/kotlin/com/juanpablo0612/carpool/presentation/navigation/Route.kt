@@ -38,6 +38,9 @@ sealed interface Route {
     data object AddPlace : Route
 
     @Serializable
+    data class PlaceSelector(val mode: String = "ORIGIN") : Route
+
+    @Serializable
     data class RouteDetail(val routeId: String) : Route
 
     @Serializable

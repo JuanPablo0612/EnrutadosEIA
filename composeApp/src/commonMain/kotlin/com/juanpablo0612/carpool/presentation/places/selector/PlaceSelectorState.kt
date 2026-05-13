@@ -1,10 +1,16 @@
 package com.juanpablo0612.carpool.presentation.places.selector
 
+import com.juanpablo0612.carpool.domain.places.model.AutocompleteSuggestion
 import com.juanpablo0612.carpool.domain.places.model.Place
 
 data class PlaceSelectorUiState(
-    val query: String = "",
+    val mode: PlaceSelectorMode = PlaceSelectorMode.Origin,
+    val searchQuery: String = "",
     val savedPlaces: List<Place> = emptyList(),
-    val searchResults: List<Place> = emptyList(),
-    val isLoading: Boolean = false
+    val campusPlaces: List<Place> = Place.campusPresets,
+    val currentLocation: Place? = null,
+    val isResolvingLocation: Boolean = false,
+    val locationPermissionGranted: Boolean = true,
+    val searchResults: List<AutocompleteSuggestion> = emptyList(),
+    val isSearching: Boolean = false,
 )

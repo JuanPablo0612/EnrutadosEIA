@@ -1,15 +1,24 @@
 package com.juanpablo0612.carpool.presentation.places.add
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,6 +27,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.places.model.PlaceType
+import com.juanpablo0612.carpool.presentation.places.add.components.MapPreview
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
@@ -26,8 +37,15 @@ import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_new_place_title
-import enrutadoseia.composeapp.generated.resources.place_address_label
+import enrutadoseia.composeapp.generated.resources.add_place_address_hint
+import enrutadoseia.composeapp.generated.resources.add_place_map_tip
+import enrutadoseia.composeapp.generated.resources.add_place_type_label
 import enrutadoseia.composeapp.generated.resources.place_name_label
+import enrutadoseia.composeapp.generated.resources.place_type_gym
+import enrutadoseia.composeapp.generated.resources.place_type_home
+import enrutadoseia.composeapp.generated.resources.place_type_other
+import enrutadoseia.composeapp.generated.resources.place_type_university
+import enrutadoseia.composeapp.generated.resources.place_type_work
 import enrutadoseia.composeapp.generated.resources.save_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,11 +70,20 @@ fun AddPlaceScreen(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AddPlaceContent(
     state: AddPlaceUiState,
     onAction: (AddPlaceAction) -> Unit
 ) {
+    val placeTypes = listOf(
+        PlaceType.Home to stringResource(Res.string.place_type_home),
+        PlaceType.Work to stringResource(Res.string.place_type_work),
+        PlaceType.Gym to stringResource(Res.string.place_type_gym),
+        PlaceType.University to stringResource(Res.string.place_type_university),
+        PlaceType.Other to stringResource(Res.string.place_type_other),
+    )
+
     Scaffold(
         topBar = {
             AuthTopBar(
@@ -75,6 +102,21 @@ fun AddPlaceContent(
         ) {
             Spacer(Modifier.height(8.dp))
 
+            Text(
+                text = stringResource(Res.string.add_place_type_label),
+                style = MaterialTheme.typography.labelLarge,
+            )
+
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                placeTypes.forEach { (type, label) ->
+                    FilterChip(
+                        selected = state.type == type,
+                        onClick = { onAction(AddPlaceAction.SelectType(type)) },
+                        label = { Text(label) },
+                    )
+                }
+            }
+
             AuthTextField(
                 value = state.name,
                 onValueChange = { onAction(AddPlaceAction.OnNameChanged(it)) },
@@ -87,17 +129,52 @@ fun AddPlaceContent(
                 errorMessage = state.nameError?.asStringResource()?.let { stringResource(it) }
             )
 
-            AuthTextField(
-                value = state.address,
-                onValueChange = { onAction(AddPlaceAction.OnAddressChanged(it)) },
-                label = stringResource(Res.string.place_address_label),
-                placeholder = stringResource(Res.string.place_address_label),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Done
-                ),
-                errorMessage = state.addressError?.asStringResource()?.let { stringResource(it) }
-            )
+            Box {
+                AuthTextField(
+                    value = state.address,
+                    onValueChange = { onAction(AddPlaceAction.OnAddressChanged(it)) },
+                    label = stringResource(Res.string.add_place_address_hint),
+                    placeholder = stringResource(Res.string.add_place_address_hint),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Done
+                    ),
+                    errorMessage = null,
+                )
+                DropdownMenu(
+                    expanded = state.autocompleteSuggestions.isNotEmpty(),
+                    onDismissRequest = {},
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    state.autocompleteSuggestions.forEach { suggestion ->
+                        DropdownMenuItem(
+                            text = {
+                                Column {
+                                    Text(suggestion.primaryText, style = MaterialTheme.typography.bodyMedium)
+                                    Text(suggestion.secondaryText, style = MaterialTheme.typography.bodySmall)
+                                }
+                            },
+                            onClick = { onAction(AddPlaceAction.SelectSuggestion(suggestion)) },
+                        )
+                    }
+                }
+            }
+
+            if (state.coordinates != null) {
+                MapPreview(
+                    coordinates = state.coordinates,
+                    onPinDragged = { onAction(AddPlaceAction.DragPin(it)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                )
+
+                Text(
+                    text = stringResource(Res.string.add_place_map_tip),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             state.generalError?.let {
                 ErrorMessage(message = stringResource(it.asStringResource()))
@@ -106,7 +183,8 @@ fun AddPlaceContent(
             PrimaryButton(
                 text = stringResource(Res.string.save_button),
                 onClick = { onAction(AddPlaceAction.OnSaveClick) },
-                isLoading = state.isLoading
+                isLoading = state.isSaving,
+                enabled = state.isValid,
             )
 
             Spacer(Modifier.height(24.dp))

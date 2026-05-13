@@ -154,8 +154,8 @@ val placeModule = module {
     factoryOf(::GetSavedPlacesUseCase)
     factoryOf(::SearchPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
-    viewModel { PlaceSelectorViewModel(get(), get()) }
-    viewModel { AddPlaceViewModel(get()) }
+    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get()) }
+    viewModel { AddPlaceViewModel(get(), get()) }
 }
 
 val vehicleModule = module {

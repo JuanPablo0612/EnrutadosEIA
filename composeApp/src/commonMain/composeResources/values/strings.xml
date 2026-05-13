@@ -160,6 +160,30 @@
     <!-- Add Place -->
     <string name="error_place_name_required">Place name is required</string>
     <string name="error_place_address_required">Address is required</string>
+    <string name="error_coordinates_required">Select the location on the map</string>
+    <string name="add_place_type_label">What type of place is it?</string>
+    <string name="add_place_map_tip">If the pin is not in the exact location, drag it to adjust.</string>
+    <string name="add_place_address_hint">Type an address...</string>
+
+    <!-- Place Types -->
+    <string name="place_type_home">Home</string>
+    <string name="place_type_work">Work</string>
+    <string name="place_type_gym">Gym</string>
+    <string name="place_type_university">University</string>
+    <string name="place_type_other">Other</string>
+
+    <!-- Place Selector -->
+    <string name="place_selector_title_origin">Select origin</string>
+    <string name="place_selector_title_destination">Select destination</string>
+    <string name="place_selector_title_waypoint">Select a stop</string>
+    <string name="place_selector_title_my_places">My places</string>
+    <string name="place_selector_search_hint">Search an address or place...</string>
+    <string name="place_selector_current_location">Use my current location</string>
+    <string name="place_selector_resolving_location">Getting location...</string>
+    <string name="place_selector_allow_location">Allow →</string>
+    <string name="place_selector_section_my_places">My places</string>
+    <string name="place_selector_section_eia">EIA Campuses</string>
+    <string name="place_selector_section_results">Results</string>
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">Hello, %1$s!</string>
