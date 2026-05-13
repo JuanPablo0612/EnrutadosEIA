@@ -481,6 +481,52 @@
     <string name="history_empty_title">Tu historial está vacío</string>
     <string name="history_empty_subtitle">Verás aquí los viajes con pasajeros pasados.</string>
 
+    <!-- SearchRoutes rediseño -->
+    <string name="search_origin_placeholder">Origen</string>
+    <string name="search_destination_placeholder">Destino</string>
+    <string name="search_date_placeholder">Fecha y hora</string>
+    <string name="search_button">Buscar</string>
+    <string name="search_filters_button">Filtros</string>
+    <string name="search_filters_title">Filtros</string>
+    <string name="search_filter_max_contribution">Aporte máximo</string>
+    <string name="search_filter_verified_only">Solo verificados</string>
+    <string name="search_filter_female_driver">Conductora</string>
+    <string name="search_filter_female_driver_coming_soon">Próximamente</string>
+    <string name="search_tolerance_label">Tolerancia</string>
+    <string name="search_tolerance_format">%1$d min</string>
+    <string name="search_adjust_button">Ajustar búsqueda</string>
+    <string name="trip_contribution_free">Gratis</string>
+    <string name="trip_available_seats">%1$d cupos</string>
+
+    <!-- RouteDetailPassenger rediseño -->
+    <string name="trip_driver_section">Conductor</string>
+    <string name="trip_driver_placeholder">Conductor de la ruta</string>
+    <string name="trip_stops_section">Paradas</string>
+    <string name="trip_contribution_label">Aporte: %1$s</string>
+    <string name="trip_message_driver_label">Mensaje del conductor</string>
+    <string name="book_request_button">Solicitar cupo</string>
+    <string name="book_request_subtext">El conductor debe confirmar</string>
+    <string name="book_request_sent">Solicitud enviada</string>
+    <string name="confirm_request_title">Confirma tu solicitud</string>
+    <string name="passenger_message_label">Mensaje al conductor (opcional)</string>
+    <string name="passenger_message_counter">%1$d / 140</string>
+    <string name="send_request_button">Enviar solicitud</string>
+
+    <!-- PassengerBookings rediseño -->
+    <string name="bookings_tab_upcoming">Próximas</string>
+    <string name="bookings_tab_past">Pasadas</string>
+    <string name="bookings_upcoming_empty_title">Sin viajes próximos</string>
+    <string name="bookings_upcoming_empty_subtitle">Cuando reserves un cupo, aparecerá aquí</string>
+    <string name="bookings_past_empty_title">Sin viajes pasados aún</string>
+    <string name="bookings_past_empty_subtitle">Tus viajes completados aparecerán aquí</string>
+    <string name="booking_status_subtitle_pending">Esperando confirmación del conductor</string>
+    <string name="booking_status_subtitle_confirmed">Viaje confirmado</string>
+    <string name="booking_status_subtitle_rejected">Solicitud rechazada</string>
+    <string name="booking_status_subtitle_cancelled">Cancelado</string>
+    <string name="cancel_confirm_title">¿Cancelar reserva?</string>
+    <string name="cancel_confirm_body">Siempre puedes buscar otro viaje.</string>
+    <string name="cancel_confirm_button">Cancelar reserva</string>
+
     <!-- VehiclesList - encabezado y FAB -->
     <string name="vehicles_list_subtitle">Vehículos que usas para ofrecer cupos</string>
     <string name="vehicles_add_fab">Agregar vehículo</string>

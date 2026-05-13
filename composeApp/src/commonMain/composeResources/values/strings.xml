@@ -463,6 +463,52 @@
     <string name="vehicles_list_subtitle">Vehículos que usas para ofrecer cupos</string>
     <string name="vehicles_add_fab">Agregar vehículo</string>
 
+    <!-- SearchRoutes redesign -->
+    <string name="search_origin_placeholder">Origin</string>
+    <string name="search_destination_placeholder">Destination</string>
+    <string name="search_date_placeholder">Date and time</string>
+    <string name="search_button">Search</string>
+    <string name="search_filters_button">Filters</string>
+    <string name="search_filters_title">Filters</string>
+    <string name="search_filter_max_contribution">Max contribution</string>
+    <string name="search_filter_verified_only">Verified only</string>
+    <string name="search_filter_female_driver">Female driver</string>
+    <string name="search_filter_female_driver_coming_soon">Coming soon</string>
+    <string name="search_tolerance_label">Tolerance</string>
+    <string name="search_tolerance_format">%1$d min</string>
+    <string name="search_adjust_button">Adjust search</string>
+    <string name="trip_contribution_free">Free</string>
+    <string name="trip_available_seats">%1$d seats</string>
+
+    <!-- RouteDetailPassenger redesign -->
+    <string name="trip_driver_section">Driver</string>
+    <string name="trip_driver_placeholder">Route driver</string>
+    <string name="trip_stops_section">Stops</string>
+    <string name="trip_contribution_label">Contribution: %1$s</string>
+    <string name="trip_message_driver_label">Driver\'s message</string>
+    <string name="book_request_button">Request seat</string>
+    <string name="book_request_subtext">The driver must confirm</string>
+    <string name="book_request_sent">Request sent</string>
+    <string name="confirm_request_title">Confirm your request</string>
+    <string name="passenger_message_label">Message to driver (optional)</string>
+    <string name="passenger_message_counter">%1$d / 140</string>
+    <string name="send_request_button">Send request</string>
+
+    <!-- PassengerBookings redesign -->
+    <string name="bookings_tab_upcoming">Upcoming</string>
+    <string name="bookings_tab_past">Past</string>
+    <string name="bookings_upcoming_empty_title">No upcoming trips</string>
+    <string name="bookings_upcoming_empty_subtitle">Book a seat to see it here</string>
+    <string name="bookings_past_empty_title">No past trips yet</string>
+    <string name="bookings_past_empty_subtitle">Completed trips will appear here</string>
+    <string name="booking_status_subtitle_pending">Waiting for driver confirmation</string>
+    <string name="booking_status_subtitle_confirmed">Trip confirmed</string>
+    <string name="booking_status_subtitle_rejected">Request rejected</string>
+    <string name="booking_status_subtitle_cancelled">Cancelled</string>
+    <string name="cancel_confirm_title">Cancel booking?</string>
+    <string name="cancel_confirm_body">You can always find another trip.</string>
+    <string name="cancel_confirm_button">Cancel booking</string>
+
     <!-- VehicleCard - indicators -->
     <string name="vehicle_primary_indicator">Vehículo principal</string>
     <string name="vehicle_verified">Verificado</string>

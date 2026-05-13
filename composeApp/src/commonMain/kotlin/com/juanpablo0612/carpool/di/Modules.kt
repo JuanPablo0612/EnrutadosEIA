@@ -25,6 +25,7 @@ import com.juanpablo0612.carpool.domain.booking.use_case.GetAllDriverBookingsUse
 import com.juanpablo0612.carpool.domain.booking.use_case.GetDriverBookingRequestsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetPassengerBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
@@ -143,10 +144,10 @@ val tripModule = module {
     factoryOf(::GetAvailableTripsUseCase)
     factoryOf(::GetTripByIdUseCase)
     factoryOf(::UpdateTripStatusUseCase)
-    viewModel { SearchRoutesViewModel(get()) }
+    viewModel { SearchRoutesViewModel(get(), get(), get()) }
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get()) }
+    viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get()) }
 }
 
 val placeModule = module {
@@ -183,6 +184,7 @@ val bookingModule = module {
     factoryOf(::ConfirmBookingUseCase)
     factoryOf(::RejectBookingUseCase)
     factoryOf(::CancelBookingUseCase)
+    factoryOf(::CheckExistingBookingUseCase)
     viewModel { PassengerBookingsViewModel(get(), get(), get()) }
     viewModel { BookingRequestsViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }

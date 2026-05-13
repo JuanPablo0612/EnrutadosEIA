@@ -189,7 +189,11 @@ fun BookingRequestCard(
 @Composable
 private fun ReputationLine(passenger: PassengerSummary) {
     val parts = buildList {
-        if (passenger.averageRating != null) add("⭐ ${"%.1f".format(passenger.averageRating)}")
+        if (passenger.averageRating != null) {
+            val r = passenger.averageRating
+            val formatted = "${r.toInt()}.${((r * 10).toInt() % 10)}"
+            add("⭐ $formatted")
+        }
         if (passenger.tripsCompleted > 0) add(
             stringResource(Res.string.booking_request_trips_count, passenger.tripsCompleted)
         )

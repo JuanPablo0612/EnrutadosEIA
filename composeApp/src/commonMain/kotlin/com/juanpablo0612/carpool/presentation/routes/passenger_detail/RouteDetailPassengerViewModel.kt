@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.routes.passenger_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -24,7 +24,8 @@ class RouteDetailPassengerViewModel(
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getDriverVehiclesUseCase: GetDriverVehiclesUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
-    private val createBookingUseCase: CreateBookingUseCase
+    private val createBookingUseCase: CreateBookingUseCase,
+    private val checkExistingBookingUseCase: CheckExistingBookingUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState())
@@ -42,6 +43,8 @@ class RouteDetailPassengerViewModel(
             getTripByIdUseCase(tripId)
                 .onSuccess { trip ->
                     _state.update { it.copy(isLoading = false, trip = trip) }
+                    val alreadyRequested = checkExistingBookingUseCase(tripId)
+                    _state.update { it.copy(alreadyRequested = alreadyRequested) }
                     observeVehicleAndSeats(trip.driverId, trip.vehicleId, trip.id)
                 }
                 .onFailure {
@@ -68,15 +71,27 @@ class RouteDetailPassengerViewModel(
             RouteDetailPassengerAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RouteDetailPassengerEvent.NavigateBack)
             }
-            RouteDetailPassengerAction.OnBookClick -> book()
-            RouteDetailPassengerAction.OnDismissError -> _state.update { it.copy(error = null) }
+            RouteDetailPassengerAction.OnBookClick,
+            RouteDetailPassengerAction.OnOpenConfirmSheet ->
+                _state.update { it.copy(showConfirmSheet = true) }
+
+            RouteDetailPassengerAction.OnDismissConfirmSheet ->
+                _state.update { it.copy(showConfirmSheet = false) }
+
+            is RouteDetailPassengerAction.OnPassengerMessageChanged ->
+                _state.update { it.copy(passengerMessage = action.message.take(140)) }
+
+            RouteDetailPassengerAction.OnConfirmBookingRequest -> book()
+
+            RouteDetailPassengerAction.OnDismissError ->
+                _state.update { it.copy(error = null) }
         }
     }
 
     private fun book() {
         val trip = _state.value.trip ?: return
         val vehicle = _state.value.vehicle ?: return
-        _state.update { it.copy(isBooking = true, error = null) }
+        _state.update { it.copy(isBooking = true, error = null, showConfirmSheet = false) }
         viewModelScope.launch {
             createBookingUseCase(
                 tripId = tripId,
@@ -84,11 +99,12 @@ class RouteDetailPassengerViewModel(
                 originName = trip.origin.name,
                 destinationName = trip.destination.name,
                 departureTime = trip.departureTime,
-                totalSeats = vehicle.seatsAvailable
+                totalSeats = vehicle.seatsAvailable,
+                passengerMessage = _state.value.passengerMessage.ifBlank { null }
             )
                 .onSuccess {
-                    _state.update { it.copy(isBooking = false) }
-                    _events.emit(RouteDetailPassengerEvent.BookingCreated)
+                    _state.update { it.copy(isBooking = false, alreadyRequested = true) }
+                    _events.emit(RouteDetailPassengerEvent.NavigateToPassengerBookings)
                 }
                 .onFailure { throwable ->
                     _state.update { it.copy(isBooking = false, error = throwable.toBookingError()) }

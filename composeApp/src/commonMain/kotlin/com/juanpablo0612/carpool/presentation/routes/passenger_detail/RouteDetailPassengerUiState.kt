@@ -9,6 +9,9 @@ data class RouteDetailPassengerUiState(
     val trip: Trip? = null,
     val vehicle: Vehicle? = null,
     val availableSeats: Int = 0,
+    val alreadyRequested: Boolean = false,
     val isBooking: Boolean = false,
+    val showConfirmSheet: Boolean = false,
+    val passengerMessage: String = "",
     val error: BookingError? = null
 )

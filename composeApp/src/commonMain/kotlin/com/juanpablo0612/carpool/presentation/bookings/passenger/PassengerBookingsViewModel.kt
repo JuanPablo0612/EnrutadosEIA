@@ -51,15 +51,36 @@ class PassengerBookingsViewModel(
             PassengerBookingsAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(PassengerBookingsEvent.NavigateBack)
             }
-            is PassengerBookingsAction.OnCancelBookingClick -> cancelBooking(action.bookingId)
+
+            is PassengerBookingsAction.OnTabSelected ->
+                _state.update { it.copy(selectedTab = action.tab) }
+
+            is PassengerBookingsAction.OnCancelBookingClick ->
+                _state.update { it.copy(showCancelConfirmFor = action.bookingId) }
+
+            is PassengerBookingsAction.OnConfirmCancel -> {
+                _state.update { it.copy(showCancelConfirmFor = null, cancellingBookingId = action.bookingId) }
+                cancelBooking(action.bookingId)
+            }
+
+            PassengerBookingsAction.OnDismissCancelDialog ->
+                _state.update { it.copy(showCancelConfirmFor = null) }
+
+            PassengerBookingsAction.OnDismissError ->
+                _state.update { it.copy(error = null) }
+
+            PassengerBookingsAction.OnDismissSuccess ->
+                _state.update { it.copy(successMessage = null) }
         }
     }
 
     private fun cancelBooking(bookingId: String) {
         viewModelScope.launch {
-            cancelBookingUseCase(bookingId).onFailure { throwable ->
-                _state.update { it.copy(error = throwable.toBookingError()) }
-            }
+            cancelBookingUseCase(bookingId)
+                .onSuccess { _state.update { it.copy(cancellingBookingId = null) } }
+                .onFailure { throwable ->
+                    _state.update { it.copy(cancellingBookingId = null, error = throwable.toBookingError()) }
+                }
         }
     }
 }

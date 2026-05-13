@@ -36,7 +36,7 @@ fun UserAvatar(
         name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
     }
     val background = remember(name) {
-        avatarColors[Math.abs(name.hashCode()) % avatarColors.size]
+        avatarColors[kotlin.math.abs(name.hashCode()) % avatarColors.size]
     }
 
     Box(

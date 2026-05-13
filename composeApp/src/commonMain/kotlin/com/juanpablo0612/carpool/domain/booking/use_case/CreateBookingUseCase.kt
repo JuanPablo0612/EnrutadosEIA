@@ -19,7 +19,8 @@ class CreateBookingUseCase(
         originName: String,
         destinationName: String,
         departureTime: Long,
-        totalSeats: Int
+        totalSeats: Int,
+        passengerMessage: String? = null
     ): Result<Unit> {
         val user = authRepository.getCurrentUser().getOrElse {
             return Result.failure(AppException.BookingException.NotAuthenticated)

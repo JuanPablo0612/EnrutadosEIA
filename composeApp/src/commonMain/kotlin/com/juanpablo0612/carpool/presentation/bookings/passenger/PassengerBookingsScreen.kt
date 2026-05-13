@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.presentation.bookings.passenger
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,30 +10,46 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
-import com.juanpablo0612.carpool.presentation.bookings.asStringResource
-import com.juanpablo0612.carpool.presentation.bookings.passenger.components.BookingCard
+import com.juanpablo0612.carpool.presentation.bookings.passenger.components.BookingDateGroup
+import com.juanpablo0612.carpool.presentation.bookings.passenger.components.BookingDateGroupHeader
+import com.juanpablo0612.carpool.presentation.bookings.passenger.components.EnrichedBookingCard
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.bookings_past_empty_subtitle
+import enrutadoseia.composeapp.generated.resources.bookings_past_empty_title
+import enrutadoseia.composeapp.generated.resources.bookings_tab_past
+import enrutadoseia.composeapp.generated.resources.bookings_tab_upcoming
+import enrutadoseia.composeapp.generated.resources.bookings_upcoming_empty_subtitle
+import enrutadoseia.composeapp.generated.resources.bookings_upcoming_empty_title
 import enrutadoseia.composeapp.generated.resources.bookmarks_24px
-import enrutadoseia.composeapp.generated.resources.bookings_empty_subtitle
-import enrutadoseia.composeapp.generated.resources.bookings_empty_title
+import enrutadoseia.composeapp.generated.resources.cancel_confirm_body
+import enrutadoseia.composeapp.generated.resources.cancel_confirm_button
+import enrutadoseia.composeapp.generated.resources.cancel_confirm_title
 import enrutadoseia.composeapp.generated.resources.passenger_bookings_title
+import kotlin.time.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -62,6 +78,18 @@ fun PassengerBookingsContent(
     state: PassengerBookingsUiState,
     onAction: (PassengerBookingsAction) -> Unit
 ) {
+    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+    val upcomingBookings = remember(state.bookings, nowMs) {
+        state.bookings.filter { b ->
+            b.departureTime > nowMs || b.status is BookingStatus.Confirmed
+        }.sortedBy { it.departureTime }
+    }
+    val pastBookings = remember(state.bookings, nowMs) {
+        state.bookings.filter { b ->
+            b.departureTime <= nowMs && b.status !is BookingStatus.Confirmed
+        }.sortedByDescending { it.departureTime }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,45 +105,140 @@ fun PassengerBookingsContent(
             )
         }
     ) { padding ->
-        when {
-            state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
-            state.bookings.isEmpty() -> EmptyState(
-                icon = vectorResource(Res.drawable.bookmarks_24px),
-                title = stringResource(Res.string.bookings_empty_title),
-                description = stringResource(Res.string.bookings_empty_subtitle),
-                modifier = Modifier.fillMaxSize().padding(padding)
-            )
-            else -> {
-                androidx.compose.foundation.layout.Column(
-                    modifier = Modifier.fillMaxSize().padding(padding)
-                ) {
-                    if (state.error != null) {
-                        Text(
-                            text = stringResource(state.error.asStringResource()),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-                        )
-                    }
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(Spacing.lg),
-                        verticalArrangement = Arrangement.spacedBy(Spacing.md)
-                    ) {
-                        items(state.bookings, key = { it.id }) { booking ->
-                            BookingCard(
-                                booking = booking,
-                                onCancelClick = { onAction(PassengerBookingsAction.OnCancelBookingClick(it)) }
-                            )
-                        }
-                    }
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            SecondaryTabRow(selectedTabIndex = state.selectedTab.ordinal) {
+                Tab(
+                    selected = state.selectedTab == BookingTab.UPCOMING,
+                    onClick = { onAction(PassengerBookingsAction.OnTabSelected(BookingTab.UPCOMING)) },
+                    text = { Text(stringResource(Res.string.bookings_tab_upcoming)) }
+                )
+                Tab(
+                    selected = state.selectedTab == BookingTab.PAST,
+                    onClick = { onAction(PassengerBookingsAction.OnTabSelected(BookingTab.PAST)) },
+                    text = { Text(stringResource(Res.string.bookings_tab_past)) }
+                )
+            }
+
+            when {
+                state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
+                else -> when (state.selectedTab) {
+                    BookingTab.UPCOMING -> UpcomingContent(
+                        bookings = upcomingBookings,
+                        nowMs = nowMs,
+                        cancellingId = state.cancellingBookingId,
+                        onAction = onAction
+                    )
+                    BookingTab.PAST -> PastContent(
+                        bookings = pastBookings,
+                        onAction = onAction
+                    )
                 }
             }
         }
     }
+
+    state.showCancelConfirmFor?.let { bookingId ->
+        ConfirmDialog(
+            title = stringResource(Res.string.cancel_confirm_title),
+            description = stringResource(Res.string.cancel_confirm_body),
+            confirmText = stringResource(Res.string.cancel_confirm_button),
+            onConfirm = { onAction(PassengerBookingsAction.OnConfirmCancel(bookingId)) },
+            onDismiss = { onAction(PassengerBookingsAction.OnDismissCancelDialog) },
+            isDestructive = true
+        )
+    }
+}
+
+@Composable
+private fun UpcomingContent(
+    bookings: List<Booking>,
+    nowMs: Long,
+    cancellingId: String?,
+    onAction: (PassengerBookingsAction) -> Unit
+) {
+    if (bookings.isEmpty()) {
+        EmptyState(
+            icon = vectorResource(Res.drawable.bookmarks_24px),
+            title = stringResource(Res.string.bookings_upcoming_empty_title),
+            description = stringResource(Res.string.bookings_upcoming_empty_subtitle),
+            modifier = Modifier.fillMaxSize()
+        )
+        return
+    }
+
+    val grouped = groupByRelativeDate(bookings, nowMs)
+
+    LazyColumn(
+        contentPadding = PaddingValues(bottom = Spacing.lg)
+    ) {
+        grouped.forEach { (group, items) ->
+            stickyHeader(key = group.name) {
+                BookingDateGroupHeader(
+                    group = group,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            items(items, key = { it.id }) { booking ->
+                EnrichedBookingCard(
+                    booking = booking,
+                    onCancelClick = { onAction(PassengerBookingsAction.OnCancelBookingClick(it)) },
+                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PastContent(
+    bookings: List<Booking>,
+    onAction: (PassengerBookingsAction) -> Unit
+) {
+    if (bookings.isEmpty()) {
+        EmptyState(
+            icon = vectorResource(Res.drawable.bookmarks_24px),
+            title = stringResource(Res.string.bookings_past_empty_title),
+            description = stringResource(Res.string.bookings_past_empty_subtitle),
+            modifier = Modifier.fillMaxSize()
+        )
+        return
+    }
+
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.sm)
+    ) {
+        items(bookings, key = { it.id }) { booking ->
+            EnrichedBookingCard(
+                booking = booking,
+                onCancelClick = {},
+                modifier = Modifier.padding(vertical = Spacing.xs)
+            )
+        }
+    }
+}
+
+private fun groupByRelativeDate(
+    bookings: List<Booking>,
+    nowMs: Long
+): List<Pair<BookingDateGroup, List<Booking>>> {
+    val tz = TimeZone.currentSystemDefault()
+    val nowDate = kotlin.time.Instant.fromEpochMilliseconds(nowMs).toLocalDateTime(tz).date
+    val tomorrow = nowDate.plus(1, DateTimeUnit.DAY)
+    val nextWeek = nowDate.plus(7, DateTimeUnit.DAY)
+
+    val groups = LinkedHashMap<BookingDateGroup, MutableList<Booking>>()
+    bookings.forEach { booking ->
+        val date = kotlin.time.Instant.fromEpochMilliseconds(booking.departureTime)
+            .toLocalDateTime(tz).date
+        val group = when {
+            date == nowDate -> BookingDateGroup.TODAY
+            date == tomorrow -> BookingDateGroup.TOMORROW
+            date < nextWeek -> BookingDateGroup.THIS_WEEK
+            else -> BookingDateGroup.LATER
+        }
+        groups.getOrPut(group) { mutableListOf() }.add(booking)
+    }
+    return groups.entries.map { (k, v) -> k to v }
 }
 
 @Preview
@@ -141,8 +264,17 @@ private fun PassengerBookingsWithDataPreview() {
                         id = "b1", tripId = "t1", passengerId = "p1", driverId = "d1",
                         passengerName = "Juan Pablo", passengerEmail = "juan@eia.edu.co",
                         originName = "Casa", destinationName = "Universidad EIA",
-                        departureTime = 1746360000000L, status = BookingStatus.Confirmed,
-                        createdAt = 1746300000000L
+                        departureTime = Clock.System.now().toEpochMilliseconds() + 3_600_000L,
+                        status = BookingStatus.Confirmed,
+                        createdAt = Clock.System.now().toEpochMilliseconds()
+                    ),
+                    Booking(
+                        id = "b2", tripId = "t2", passengerId = "p1", driverId = "d1",
+                        passengerName = "Juan Pablo", passengerEmail = "juan@eia.edu.co",
+                        originName = "EIA", destinationName = "Casa",
+                        departureTime = Clock.System.now().toEpochMilliseconds() - 3_600_000L,
+                        status = BookingStatus.Cancelled,
+                        createdAt = Clock.System.now().toEpochMilliseconds() - 7_200_000L
                     )
                 )
             ),
