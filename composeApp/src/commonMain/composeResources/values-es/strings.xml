@@ -410,6 +410,53 @@
     <string name="trip_cancel_confirm_body">Se notificará a los pasajeros confirmados.</string>
     <string name="trip_cancel_confirm_button">Cancelar viaje</string>
 
+    <!-- Pestañas de solicitudes -->
+    <string name="booking_requests_tab_pending">Pendientes</string>
+    <string name="booking_requests_tab_confirmed">Confirmadas</string>
+    <string name="booking_requests_tab_history">Historial</string>
+
+    <!-- Tarjeta de solicitud -->
+    <string name="booking_request_trip_context">Para tu viaje %1$s</string>
+    <string name="booking_request_accept_button">✓ Aceptar</string>
+    <string name="booking_request_view_profile">Ver perfil de %1$s →</string>
+    <string name="booking_request_eia_verified">✓ EIA</string>
+    <string name="booking_request_trips_count">%1$d viajes</string>
+
+    <!-- Marcas de tiempo relativas (para creación de reserva) -->
+    <string name="relative_just_now">Justo ahora</string>
+    <string name="relative_minutes_ago">hace %1$d min</string>
+    <string name="relative_hours_ago">hace %1$d h</string>
+    <string name="relative_days_ago">hace %1$d días</string>
+
+    <!-- Hoja de rechazo -->
+    <string name="reject_sheet_title">¿Por qué rechazas esta solicitud?</string>
+    <string name="reject_sheet_subtitle">Esto nos ayuda a mejorar; el pasajero ve un mensaje genérico.</string>
+    <string name="reject_reason_trip_full">Cupo lleno</string>
+    <string name="reject_reason_trip_cancelled">Voy a cancelar el viaje</string>
+    <string name="reject_reason_pickup_not_possible">No puedo recoger en ese punto</string>
+    <string name="reject_reason_other">Otro motivo</string>
+    <string name="reject_comment_placeholder">Cuéntanos más (opcional)</string>
+    <string name="reject_confirm_button">Rechazar solicitud</string>
+
+    <!-- Snackbars de acción -->
+    <string name="booking_accepted_message">Solicitud aceptada</string>
+    <string name="booking_trip_now_full">Tu viaje ya está lleno. Otras solicitudes para este viaje se rechazarán automáticamente.</string>
+
+    <!-- Tarjeta de confirmadas -->
+    <string name="confirmed_booking_message_button">Mensaje</string>
+    <string name="confirmed_booking_cancel_button">Cancelar</string>
+    <string name="confirmed_cancel_dialog_title">¿Cancelar reserva?</string>
+    <string name="confirmed_cancel_dialog_body">El pasajero será notificado.</string>
+    <string name="confirmed_cancel_dialog_button">Cancelar reserva</string>
+
+    <!-- Estados vacíos por pestaña -->
+    <string name="pending_empty_title">Todo al día</string>
+    <string name="pending_empty_subtitle">No tienes solicitudes pendientes. Te avisaremos cuando alguien quiera reservar un cupo.</string>
+    <string name="confirmed_empty_title">Aún no tienes pasajeros confirmados</string>
+    <string name="confirmed_empty_subtitle">Cuando aceptes una solicitud, aparecerá aquí.</string>
+    <string name="history_empty_title">Tu historial está vacío</string>
+    <string name="history_empty_subtitle">Verás aquí los viajes con pasajeros pasados.</string>
+
     <!-- VehiclesList - encabezado y FAB -->
     <string name="vehicles_list_subtitle">Vehículos que usas para ofrecer cupos</string>
     <string name="vehicles_add_fab">Agregar vehículo</string>

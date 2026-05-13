@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.data.booking.repository
 import com.juanpablo0612.carpool.data.booking.model.BookingDto
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +44,16 @@ class BookingRepositoryImpl(
             }
     }
 
+    override fun getAllDriverBookings(driverId: String): Flow<List<Booking>> {
+        return firestore.collection(COLLECTION_NAME)
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents
+                    .map { it.data(BookingDto.serializer()).toDomain() }
+                    .filter { it.driverId == driverId }
+            }
+    }
+
     override fun getBookingsForTrip(tripId: String): Flow<List<Booking>> {
         return firestore.collection(COLLECTION_NAME)
             .snapshots
@@ -63,6 +74,30 @@ class BookingRepositoryImpl(
             }
             firestore.collection(COLLECTION_NAME).document(bookingId)
                 .update("status" to statusString)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun rejectBookingWithReason(
+        bookingId: String,
+        reason: RejectReason,
+        comment: String?,
+    ): Result<Unit> {
+        return try {
+            val reasonString = when (reason) {
+                RejectReason.TripFull -> "TRIP_FULL"
+                RejectReason.TripCancelled -> "TRIP_CANCELLED"
+                RejectReason.PickupNotPossible -> "PICKUP_NOT_POSSIBLE"
+                RejectReason.Other -> "OTHER"
+            }
+            val updates = buildMap {
+                put("status", "REJECTED")
+                put("rejectReason", reasonString)
+                if (comment != null) put("rejectComment", comment)
+            }
+            firestore.collection(COLLECTION_NAME).document(bookingId).update(updates)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

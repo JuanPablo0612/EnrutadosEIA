@@ -499,4 +499,51 @@
     <string name="trip_cancel_confirm_title">Cancel trip?</string>
     <string name="trip_cancel_confirm_body">Confirmed passengers will be notified.</string>
     <string name="trip_cancel_confirm_button">Cancel trip</string>
+
+    <!-- BookingRequests tabs -->
+    <string name="booking_requests_tab_pending">Pending</string>
+    <string name="booking_requests_tab_confirmed">Confirmed</string>
+    <string name="booking_requests_tab_history">History</string>
+
+    <!-- BookingRequests card -->
+    <string name="booking_request_trip_context">For your trip %1$s</string>
+    <string name="booking_request_accept_button">Accept</string>
+    <string name="booking_request_view_profile">View %1$s\'s profile →</string>
+    <string name="booking_request_eia_verified">✓ EIA</string>
+    <string name="booking_request_trips_count">%1$d trips</string>
+
+    <!-- Relative timestamps (for booking creation) -->
+    <string name="relative_just_now">Just now</string>
+    <string name="relative_minutes_ago">%1$d min ago</string>
+    <string name="relative_hours_ago">%1$d h ago</string>
+    <string name="relative_days_ago">%1$d d ago</string>
+
+    <!-- Reject sheet -->
+    <string name="reject_sheet_title">Why are you rejecting this request?</string>
+    <string name="reject_sheet_subtitle">This helps us improve; the passenger sees a generic message.</string>
+    <string name="reject_reason_trip_full">Trip is full</string>
+    <string name="reject_reason_trip_cancelled">I\'m going to cancel the trip</string>
+    <string name="reject_reason_pickup_not_possible">Can\'t pick up at that location</string>
+    <string name="reject_reason_other">Other reason</string>
+    <string name="reject_comment_placeholder">Tell us more (optional)</string>
+    <string name="reject_confirm_button">Reject request</string>
+
+    <!-- Accept/action snackbars -->
+    <string name="booking_accepted_message">Request accepted</string>
+    <string name="booking_trip_now_full">Your trip is now full. Other pending requests will be rejected automatically.</string>
+
+    <!-- Confirmed tab card -->
+    <string name="confirmed_booking_message_button">Message</string>
+    <string name="confirmed_booking_cancel_button">Cancel</string>
+    <string name="confirmed_cancel_dialog_title">Cancel booking?</string>
+    <string name="confirmed_cancel_dialog_body">The passenger will be notified.</string>
+    <string name="confirmed_cancel_dialog_button">Cancel booking</string>
+
+    <!-- Empty states per tab -->
+    <string name="pending_empty_title">All caught up</string>
+    <string name="pending_empty_subtitle">You have no pending requests. We\'ll notify you when someone wants to book a seat.</string>
+    <string name="confirmed_empty_title">No confirmed passengers yet</string>
+    <string name="confirmed_empty_subtitle">When you accept a request, it will appear here.</string>
+    <string name="history_empty_title">Your history is empty</string>
+    <string name="history_empty_subtitle">Past trips with passengers will appear here.</string>
 </resources>
