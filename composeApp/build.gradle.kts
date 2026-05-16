@@ -38,10 +38,10 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
-            implementation("com.google.maps.android:maps-compose:6.2.1")
-            implementation("com.google.android.libraries.places:places:4.1.0")
-            implementation("com.google.android.gms:play-services-location:21.3.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
+            implementation(libs.google.maps.compose)
+            implementation(libs.google.places)
+            implementation(libs.google.play.services.location)
+            implementation(libs.kotlinx.coroutines.play.services)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -68,7 +68,7 @@ kotlin {
             implementation(libs.filekit.dialogs.compose)
             implementation(libs.filekit.coil)
             implementation(libs.coil.compose)
-            implementation(libs.coil.nletwork.ktor3)
+            implementation(libs.coil.network.ktor3)
             implementation(libs.ktor.client.core)
             implementation(libs.datastore.preferences.core)
         }
