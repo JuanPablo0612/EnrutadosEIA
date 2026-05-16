@@ -18,4 +18,6 @@ interface AuthRemoteDataSource {
     suspend fun sendPasswordResetEmail(email: String)
     fun getCurrentUserId(): String?
     suspend fun getCurrentUser(): UserDto
+    suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): UserDto
+    suspend fun deleteAccount()
 }

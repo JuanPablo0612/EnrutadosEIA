@@ -8,4 +8,11 @@ sealed class PassengerBookingsAction {
     data object OnDismissCancelDialog : PassengerBookingsAction()
     data object OnDismissError : PassengerBookingsAction()
     data object OnDismissSuccess : PassengerBookingsAction()
+    data class OnTrackTrip(val tripId: String) : PassengerBookingsAction()
+    data class OnRateBooking(
+        val bookingId: String,
+        val tripId: String,
+        val rateeId: String,
+        val rateeName: String
+    ) : PassengerBookingsAction()
 }

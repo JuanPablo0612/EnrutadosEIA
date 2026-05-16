@@ -22,6 +22,8 @@ fun NavGraphBuilder.passengerNavGraph(
     onNavigateToProfile: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToPassengerBookings: () -> Unit,
+    onNavigateToTripTracking: (String) -> Unit,
+    onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     composable<Route.PassengerHome> {
@@ -55,7 +57,9 @@ fun NavGraphBuilder.passengerNavGraph(
         val viewModel: PassengerBookingsViewModel = koinViewModel()
         PassengerBookingsScreen(
             viewModel = viewModel,
-            onBackClick = onNavigateBack
+            onBackClick = onNavigateBack,
+            onNavigateToTripTracking = onNavigateToTripTracking,
+            onNavigateToRating = onNavigateToRating
         )
     }
 }

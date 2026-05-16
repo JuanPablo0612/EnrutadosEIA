@@ -12,7 +12,8 @@ data class UserDto(
     val isPassenger: Boolean,
     val isDriver: Boolean,
     val phone: String? = null,
-    val photoUrl: String? = null
+    val photoUrl: String? = null,
+    val bio: String? = null
 ) {
     fun toDomain(): User = User(
         id = id,
@@ -22,6 +23,7 @@ data class UserDto(
         isPassenger = isPassenger,
         isDriver = isDriver,
         phone = phone,
-        photoUrl = photoUrl
+        photoUrl = photoUrl,
+        bio = bio
     )
 }

@@ -15,6 +15,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 fun SplashScreen(
     viewModel: SplashViewModel,
     onNavigateToAuth: () -> Unit,
+    onNavigateToOnboarding: () -> Unit,
     onNavigateToDriver: (User) -> Unit,
     onNavigateToPassenger: (User) -> Unit,
     onNavigateToRoleSelector: (User) -> Unit
@@ -22,6 +23,7 @@ fun SplashScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             SplashEvent.NavigateToAuth -> onNavigateToAuth()
+            SplashEvent.NavigateToOnboarding -> onNavigateToOnboarding()
             is SplashEvent.NavigateToDriver -> onNavigateToDriver(event.user)
             is SplashEvent.NavigateToPassenger -> onNavigateToPassenger(event.user)
             is SplashEvent.NavigateToRoleSelector -> onNavigateToRoleSelector(event.user)

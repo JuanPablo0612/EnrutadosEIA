@@ -6,6 +6,7 @@ import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
+import com.juanpablo0612.carpool.domain.preferences.use_case.GetOnboardingSeenUseCase
 import com.juanpablo0612.carpool.domain.preferences.use_case.GetRolePreferenceUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 class SplashViewModel(
     private val authRepository: AuthRepository,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getRolePreferenceUseCase: GetRolePreferenceUseCase
+    private val getRolePreferenceUseCase: GetRolePreferenceUseCase,
+    private val getOnboardingSeenUseCase: GetOnboardingSeenUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SplashUiState())
@@ -33,6 +35,10 @@ class SplashViewModel(
         viewModelScope.launch {
             if (authRepository.getCurrentUserId() == null) {
                 _events.emit(SplashEvent.NavigateToAuth)
+                return@launch
+            }
+            if (!getOnboardingSeenUseCase()) {
+                _events.emit(SplashEvent.NavigateToOnboarding)
                 return@launch
             }
             getCurrentUserUseCase()

@@ -56,13 +56,19 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun PassengerBookingsScreen(
     viewModel: PassengerBookingsViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onNavigateToTripTracking: (String) -> Unit = {},
+    onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit = { _, _, _, _ -> }
 ) {
     val state by viewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             PassengerBookingsEvent.NavigateBack -> onBackClick()
+            is PassengerBookingsEvent.NavigateToTripTracking -> onNavigateToTripTracking(event.tripId)
+            is PassengerBookingsEvent.NavigateToRating -> onNavigateToRating(
+                event.bookingId, event.tripId, event.rateeId, event.rateeName
+            )
         }
     }
 
@@ -126,11 +132,14 @@ fun PassengerBookingsContent(
                         bookings = upcomingBookings,
                         nowMs = nowMs,
                         cancellingId = state.cancellingBookingId,
-                        onAction = onAction
+                        onAction = onAction,
+                        showTrackButton = true
                     )
                     BookingTab.PAST -> PastContent(
                         bookings = pastBookings,
-                        onAction = onAction
+                        nowMs = nowMs,
+                        onAction = onAction,
+                        showRateButton = true
                     )
                 }
             }
@@ -154,7 +163,8 @@ private fun UpcomingContent(
     bookings: List<Booking>,
     nowMs: Long,
     cancellingId: String?,
-    onAction: (PassengerBookingsAction) -> Unit
+    onAction: (PassengerBookingsAction) -> Unit,
+    showTrackButton: Boolean = false
 ) {
     if (bookings.isEmpty()) {
         EmptyState(
@@ -181,7 +191,11 @@ private fun UpcomingContent(
             items(items, key = { it.id }) { booking ->
                 EnrichedBookingCard(
                     booking = booking,
+                    nowMs = nowMs,
                     onCancelClick = { onAction(PassengerBookingsAction.OnCancelBookingClick(it)) },
+                    onTrackTrip = if (showTrackButton) {
+                        { tripId -> onAction(PassengerBookingsAction.OnTrackTrip(tripId)) }
+                    } else null,
                     modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)
                 )
             }
@@ -192,7 +206,9 @@ private fun UpcomingContent(
 @Composable
 private fun PastContent(
     bookings: List<Booking>,
-    onAction: (PassengerBookingsAction) -> Unit
+    nowMs: Long,
+    onAction: (PassengerBookingsAction) -> Unit,
+    showRateButton: Boolean = false
 ) {
     if (bookings.isEmpty()) {
         EmptyState(
@@ -210,7 +226,13 @@ private fun PastContent(
         items(bookings, key = { it.id }) { booking ->
             EnrichedBookingCard(
                 booking = booking,
+                nowMs = nowMs,
                 onCancelClick = {},
+                onRateBooking = if (showRateButton) {
+                    { bookingId, tripId, rateeId, rateeName ->
+                        onAction(PassengerBookingsAction.OnRateBooking(bookingId, tripId, rateeId, rateeName))
+                    }
+                } else null,
                 modifier = Modifier.padding(vertical = Spacing.xs)
             )
         }

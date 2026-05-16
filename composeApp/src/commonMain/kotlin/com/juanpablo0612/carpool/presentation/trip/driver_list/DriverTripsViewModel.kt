@@ -119,6 +119,9 @@ class DriverTripsViewModel(
             is DriverTripsAction.OpenPassengers -> viewModelScope.launch {
                 _events.emit(DriverTripsEvent.NavigateToPassengers(action.tripId))
             }
+            is DriverTripsAction.TrackTrip -> viewModelScope.launch {
+                _events.emit(DriverTripsEvent.NavigateToTripTracking(action.tripId))
+            }
             DriverTripsAction.PublishTrip -> viewModelScope.launch {
                 _events.emit(DriverTripsEvent.NavigateToRoutesList)
             }

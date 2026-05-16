@@ -66,4 +66,31 @@ sealed interface Route {
 
     @Serializable
     data object Profile : Route
+
+    @Serializable
+    data object Onboarding : Route
+
+    @Serializable
+    data object Notifications : Route
+
+    @Serializable
+    data object Safety : Route
+
+    @Serializable
+    data object EditProfile : Route
+
+    @Serializable
+    data class TripTracking(val tripId: String) : Route
+
+    @Serializable
+    data class Chat(val bookingId: String) : Route
+
+    @Serializable
+    data class PostTripRating(
+        val bookingId: String,
+        val tripId: String,
+        val rateeId: String,
+        val rateeName: String,
+        val isDriver: Boolean
+    ) : Route
 }

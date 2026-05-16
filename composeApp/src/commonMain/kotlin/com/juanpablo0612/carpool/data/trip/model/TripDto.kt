@@ -18,7 +18,10 @@ data class TripDto(
     val seatCount: Int = 1,
     val contributionPerPassenger: Int? = null,
     val messageToPassengers: String = "",
-    val status: String = "ACTIVE"
+    val status: String = "ACTIVE",
+    val driverLatitude: Double? = null,
+    val driverLongitude: Double? = null,
+    val passengerStatuses: Map<String, String> = emptyMap()
 ) {
     fun toDomain(): Trip = Trip(
         id = id,
@@ -37,7 +40,10 @@ data class TripDto(
             "COMPLETED" -> TripStatus.Completed
             "CANCELLED" -> TripStatus.Cancelled
             else -> TripStatus.Active
-        }
+        },
+        driverLatitude = driverLatitude,
+        driverLongitude = driverLongitude,
+        passengerStatuses = passengerStatuses
     )
 
     companion object {
@@ -58,7 +64,10 @@ data class TripDto(
                 is TripStatus.InProgress -> "IN_PROGRESS"
                 is TripStatus.Completed -> "COMPLETED"
                 is TripStatus.Cancelled -> "CANCELLED"
-            }
+            },
+            driverLatitude = trip.driverLatitude,
+            driverLongitude = trip.driverLongitude,
+            passengerStatuses = trip.passengerStatuses
         )
     }
 }

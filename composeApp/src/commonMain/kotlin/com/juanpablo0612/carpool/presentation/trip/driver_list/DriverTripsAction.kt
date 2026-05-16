@@ -4,6 +4,7 @@ sealed class DriverTripsAction {
     data class SelectTab(val tab: TripsTab) : DriverTripsAction()
     data class StartTrip(val tripId: String) : DriverTripsAction()
     data class FinishTrip(val tripId: String) : DriverTripsAction()
+    data class TrackTrip(val tripId: String) : DriverTripsAction()
     data class CancelTrip(val tripId: String) : DriverTripsAction()
     data class ConfirmCancel(val tripId: String) : DriverTripsAction()
     data object DismissCancel : DriverTripsAction()

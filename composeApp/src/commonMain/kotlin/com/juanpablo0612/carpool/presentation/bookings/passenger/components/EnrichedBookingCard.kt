@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,11 +25,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
+import enrutadoseia.composeapp.generated.resources.booking_action_rate
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_cancelled
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_confirmed
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_pending
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_rejected
 import enrutadoseia.composeapp.generated.resources.cancel_booking_button
+import enrutadoseia.composeapp.generated.resources.trip_action_track
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -41,6 +44,9 @@ import org.jetbrains.compose.resources.vectorResource
 fun EnrichedBookingCard(
     booking: Booking,
     onCancelClick: (String) -> Unit,
+    onTrackTrip: ((tripId: String) -> Unit)? = null,
+    onRateBooking: ((bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit)? = null,
+    nowMs: Long = kotlin.time.Clock.System.now().toEpochMilliseconds(),
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
@@ -92,8 +98,29 @@ fun EnrichedBookingCard(
                 )
             }
 
-            if (booking.status is BookingStatus.Pending || booking.status is BookingStatus.Confirmed) {
+            val isConfirmed = booking.status is BookingStatus.Confirmed
+            val isPast = booking.departureTime <= nowMs
+
+            if (isConfirmed || booking.status is BookingStatus.Pending) {
                 Spacer(modifier = Modifier.height(Spacing.md))
+                if (isConfirmed && onTrackTrip != null) {
+                    Button(
+                        onClick = { onTrackTrip(booking.tripId) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = stringResource(Res.string.trip_action_track))
+                    }
+                    Spacer(modifier = Modifier.height(Spacing.xs))
+                }
+                if (isConfirmed && isPast && onRateBooking != null) {
+                    Button(
+                        onClick = { onRateBooking(booking.id, booking.tripId, booking.driverId, "") },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = stringResource(Res.string.booking_action_rate))
+                    }
+                    Spacer(modifier = Modifier.height(Spacing.xs))
+                }
                 OutlinedButton(
                     onClick = { onCancelClick(booking.id) },
                     modifier = Modifier.fillMaxWidth()

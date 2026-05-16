@@ -13,6 +13,8 @@ import com.juanpablo0612.carpool.domain.booking.use_case.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetAllDriverBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.RejectBookingUseCase
+import com.juanpablo0612.carpool.domain.notification.model.NotificationType
+import com.juanpablo0612.carpool.domain.notification.use_case.CreateNotificationUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
 import com.juanpablo0612.carpool.presentation.bookings.toBookingError
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +36,7 @@ class BookingRequestsViewModel(
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val authRepository: AuthRepository,
+    private val createNotificationUseCase: CreateNotificationUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookingRequestsUiState())
@@ -124,11 +127,20 @@ class BookingRequestsViewModel(
     }
 
     private fun acceptBooking(bookingId: String, tripId: String) {
+        val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
             confirmBookingUseCase(bookingId)
                 .onSuccess {
                     checkTripFull(tripId)
+                    if (passengerId != null) {
+                        createNotificationUseCase(
+                            userId = passengerId,
+                            type = NotificationType.BookingAccepted,
+                            title = "Reserva confirmada",
+                            body = "El conductor aceptó tu reserva. ¡Que tengas buen viaje!"
+                        )
+                    }
                 }
                 .onFailure { error ->
                     _state.update {
@@ -141,14 +153,30 @@ class BookingRequestsViewModel(
     }
 
     private fun rejectBooking(bookingId: String, reason: com.juanpablo0612.carpool.domain.booking.model.RejectReason, comment: String?) {
+        val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
             rejectBookingUseCase(bookingId, reason, comment)
+                .onSuccess {
+                    if (passengerId != null) {
+                        createNotificationUseCase(
+                            userId = passengerId,
+                            type = NotificationType.BookingRejected,
+                            title = "Reserva rechazada",
+                            body = "El conductor no pudo aceptar tu reserva."
+                        )
+                    }
+                }
                 .onFailure { error ->
                     _state.update { it.copy(snackbarMessage = error.message) }
                 }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
+    }
+
+    private fun findBookingPassengerId(bookingId: String): String? {
+        val all = _state.value.pending + _state.value.confirmed + _state.value.history
+        return all.firstOrNull { it.booking.id == bookingId }?.booking?.passengerId
     }
 
     private fun cancelBooking(bookingId: String) {

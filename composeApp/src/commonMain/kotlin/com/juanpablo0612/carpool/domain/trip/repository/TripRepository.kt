@@ -9,5 +9,8 @@ interface TripRepository {
     fun getDriverTrips(driverId: String): Flow<List<Trip>>
     fun getAvailableTrips(): Flow<List<Trip>>
     suspend fun getTripById(id: String): Result<Trip>
+    fun getTripByIdFlow(id: String): Flow<Trip?>
     suspend fun updateTripStatus(tripId: String, status: TripStatus): Result<Unit>
+    suspend fun updateDriverLocation(tripId: String, latitude: Double, longitude: Double): Result<Unit>
+    suspend fun updatePassengerStatus(tripId: String, passengerId: String, status: String): Result<Unit>
 }

@@ -67,6 +67,34 @@ class TripRepositoryImpl(
         }
     }
 
+    override fun getTripByIdFlow(id: String): Flow<Trip?> {
+        return firestore.collection(COLLECTION_NAME).document(id)
+            .snapshots
+            .map { snapshot ->
+                runCatching { snapshot.data(TripDto.serializer()).toDomain() }.getOrNull()
+            }
+    }
+
+    override suspend fun updateDriverLocation(tripId: String, latitude: Double, longitude: Double): Result<Unit> {
+        return try {
+            firestore.collection(COLLECTION_NAME).document(tripId)
+                .update("driverLatitude" to latitude, "driverLongitude" to longitude)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updatePassengerStatus(tripId: String, passengerId: String, status: String): Result<Unit> {
+        return try {
+            firestore.collection(COLLECTION_NAME).document(tripId)
+                .update("passengerStatuses.$passengerId" to status)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     companion object {
         private const val COLLECTION_NAME = "trips"
     }

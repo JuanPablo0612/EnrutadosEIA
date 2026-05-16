@@ -14,5 +14,8 @@ data class Trip(
     val seatCount: Int = 1,
     val contributionPerPassenger: Int? = null,
     val messageToPassengers: String = "",
-    val status: TripStatus
+    val status: TripStatus,
+    val driverLatitude: Double? = null,
+    val driverLongitude: Double? = null,
+    val passengerStatuses: Map<String, String> = emptyMap()
 )

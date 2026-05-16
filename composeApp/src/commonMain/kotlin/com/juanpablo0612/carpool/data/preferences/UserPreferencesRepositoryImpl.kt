@@ -19,6 +19,12 @@ class UserPreferencesRepositoryImpl(
         dataSource.clearRole()
     }
 
+    override suspend fun setOnboardingSeen() {
+        dataSource.setOnboardingSeen()
+    }
+
+    override suspend fun hasSeenOnboarding(): Boolean = dataSource.hasSeenOnboarding()
+
     private fun UserRole.toKey(): String = when (this) {
         UserRole.Driver -> "driver"
         UserRole.Passenger -> "passenger"

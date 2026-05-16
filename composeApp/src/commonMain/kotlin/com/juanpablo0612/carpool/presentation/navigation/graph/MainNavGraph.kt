@@ -48,6 +48,7 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToPassengerBookings: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripDetailPassenger: (String) -> Unit,
+    onNavigateToTripTracking: (String) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     composable<Route.Home> {
@@ -119,7 +120,8 @@ fun NavGraphBuilder.mainNavGraph(
             onBackClick = onNavigateBack,
             onNavigateToRoutesList = onNavigateToRoutesList,
             onNavigateToTripDetail = onNavigateToTripDetail,
-            onNavigateToPassengers = { /* TODO: wire when passenger management screen exists */ }
+            onNavigateToPassengers = { /* TODO: wire when passenger management screen exists */ },
+            onNavigateToTripTracking = onNavigateToTripTracking
         )
     }
 

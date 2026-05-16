@@ -82,6 +82,24 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): Result<User> {
+        return try {
+            val dto = remoteDataSource.updateProfile(name, phone, bio, photoUrl)
+            Result.success(dto.toDomain())
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return try {
+            remoteDataSource.deleteAccount()
+            Result.success(Unit)
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
     private fun FirebaseAuthException.toAppException(): AppException.AuthException {
         return when (this) {
             is FirebaseAuthInvalidCredentialsException -> AppException.AuthException.InvalidCredentials

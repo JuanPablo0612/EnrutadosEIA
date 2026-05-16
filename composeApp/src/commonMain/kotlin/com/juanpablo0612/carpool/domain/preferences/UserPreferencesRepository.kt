@@ -6,4 +6,6 @@ interface UserPreferencesRepository {
     suspend fun saveRolePreference(role: UserRole)
     suspend fun getRolePreference(): UserRole?
     suspend fun clearRolePreference()
+    suspend fun setOnboardingSeen()
+    suspend fun hasSeenOnboarding(): Boolean
 }

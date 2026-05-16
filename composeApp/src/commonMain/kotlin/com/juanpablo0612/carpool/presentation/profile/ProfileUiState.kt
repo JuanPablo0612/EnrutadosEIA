@@ -7,5 +7,10 @@ data class ProfileUiState(
     val user: User? = null,
     val activeRole: UserRole? = null,
     val isLoading: Boolean = true,
-    val showLogoutDialog: Boolean = false
+    val showLogoutDialog: Boolean = false,
+    val showActiveRolesDialog: Boolean = false,
+    val showDeleteAccountDialog: Boolean = false,
+    val deleteAccountNameInput: String = "",
+    val blockedRoleToggleMessage: String? = null,
+    val isDeleting: Boolean = false
 )

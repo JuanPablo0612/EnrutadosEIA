@@ -71,6 +71,21 @@ class PassengerBookingsViewModel(
 
             PassengerBookingsAction.OnDismissSuccess ->
                 _state.update { it.copy(successMessage = null) }
+
+            is PassengerBookingsAction.OnTrackTrip -> viewModelScope.launch {
+                _events.emit(PassengerBookingsEvent.NavigateToTripTracking(action.tripId))
+            }
+
+            is PassengerBookingsAction.OnRateBooking -> viewModelScope.launch {
+                _events.emit(
+                    PassengerBookingsEvent.NavigateToRating(
+                        bookingId = action.bookingId,
+                        tripId = action.tripId,
+                        rateeId = action.rateeId,
+                        rateeName = action.rateeName
+                    )
+                )
+            }
         }
     }
 

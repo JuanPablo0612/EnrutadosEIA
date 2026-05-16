@@ -80,4 +80,23 @@ class FirebaseAuthRemoteDataSource(
         val snapshot = firestore.collection("users").document(userId).get()
         return snapshot.data(UserDto.serializer())
     }
+
+    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): UserDto {
+        val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
+        val updates = mutableMapOf<String, Any?>(
+            "name" to name,
+            "phone" to phone,
+            "bio" to bio
+        )
+        if (photoUrl != null) updates["photoUrl"] = photoUrl
+        firestore.collection("users").document(userId).update(updates)
+        val snapshot = firestore.collection("users").document(userId).get()
+        return snapshot.data(UserDto.serializer())
+    }
+
+    override suspend fun deleteAccount() {
+        val user = checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
+        firestore.collection("users").document(user.uid).delete()
+        user.delete()
+    }
 }

@@ -66,6 +66,7 @@ import enrutadoseia.composeapp.generated.resources.tab_past
 import enrutadoseia.composeapp.generated.resources.tab_upcoming
 import enrutadoseia.composeapp.generated.resources.trip_action_finish
 import enrutadoseia.composeapp.generated.resources.trip_action_start
+import enrutadoseia.composeapp.generated.resources.trip_action_track
 import enrutadoseia.composeapp.generated.resources.trip_action_view_passengers
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_body
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_button
@@ -88,6 +89,7 @@ fun DriverTripsScreen(
     onNavigateToRoutesList: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
+    onNavigateToTripTracking: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -97,6 +99,7 @@ fun DriverTripsScreen(
             DriverTripsEvent.NavigateToRoutesList -> onNavigateToRoutesList()
             is DriverTripsEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
             is DriverTripsEvent.NavigateToPassengers -> onNavigateToPassengers(event.tripId)
+            is DriverTripsEvent.NavigateToTripTracking -> onNavigateToTripTracking(event.tripId)
         }
     }
 
@@ -220,6 +223,7 @@ fun DriverTripsContent(
                                         tripWithStats = ts,
                                         onStartTrip = { onAction(DriverTripsAction.StartTrip(ts.trip.id)) },
                                         onFinishTrip = { onAction(DriverTripsAction.FinishTrip(ts.trip.id)) },
+                                        onTrackTrip = { onAction(DriverTripsAction.TrackTrip(ts.trip.id)) },
                                         onCancelTrip = { onAction(DriverTripsAction.CancelTrip(ts.trip.id)) },
                                         onViewPassengers = { onAction(DriverTripsAction.OpenPassengers(ts.trip.id)) },
                                         onCardClick = { onAction(DriverTripsAction.OpenTrip(ts.trip.id)) }
@@ -232,6 +236,7 @@ fun DriverTripsContent(
                                     tripWithStats = ts,
                                     onStartTrip = { onAction(DriverTripsAction.StartTrip(ts.trip.id)) },
                                     onFinishTrip = { onAction(DriverTripsAction.FinishTrip(ts.trip.id)) },
+                                    onTrackTrip = { onAction(DriverTripsAction.TrackTrip(ts.trip.id)) },
                                     onCancelTrip = { onAction(DriverTripsAction.CancelTrip(ts.trip.id)) },
                                     onViewPassengers = { onAction(DriverTripsAction.OpenPassengers(ts.trip.id)) },
                                     onCardClick = { onAction(DriverTripsAction.OpenTrip(ts.trip.id)) }
@@ -250,6 +255,7 @@ private fun DriverTripCard(
     tripWithStats: TripWithStats,
     onStartTrip: () -> Unit,
     onFinishTrip: () -> Unit,
+    onTrackTrip: () -> Unit,
     onCancelTrip: () -> Unit,
     onViewPassengers: () -> Unit,
     onCardClick: () -> Unit,
@@ -333,11 +339,11 @@ private fun DriverTripCard(
                         )
                     }
                     TripStatus.InProgress -> Button(
-                        onClick = onFinishTrip,
+                        onClick = onTrackTrip,
                         modifier = Modifier.height(36.dp)
                     ) {
                         Text(
-                            text = stringResource(Res.string.trip_action_finish),
+                            text = stringResource(Res.string.trip_action_track),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
@@ -374,7 +380,7 @@ private fun dateGroupLabel(key: DateGroupKey): String = when (key) {
 private fun DriverTripsEmptyPreview() {
     CarpoolTheme {
         DriverTripsContent(
-            state = DriverTripsUiState(isLoading = false, trips = emptyList()),
+            state = DriverTripsUiState(isLoading = false),
             onAction = {}
         )
     }
