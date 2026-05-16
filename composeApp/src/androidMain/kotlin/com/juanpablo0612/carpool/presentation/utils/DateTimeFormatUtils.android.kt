@@ -1,20 +1,20 @@
 package com.juanpablo0612.carpool.presentation.utils
 
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 actual fun formatShortTime(hour: Int, minute: Int): String {
-    val time = LocalTime.of(hour, minute)
-    val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-        .withLocale(Locale.getDefault())
-    return time.format(formatter)
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+    }
+    return SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.time)
 }
 
 actual fun formatLongDate(year: Int, month: Int, day: Int): String {
-    val date = LocalDate.of(year, month, day)
-    val formatter = DateTimeFormatter.ofPattern("EEE d 'de' MMMM", Locale("es"))
-    return date.format(formatter)
+    val calendar = Calendar.getInstance().apply {
+        set(year, month - 1, day)
+    }
+    return SimpleDateFormat("EEE d 'de' MMMM", Locale.forLanguageTag("es")).format(calendar.time)
 }

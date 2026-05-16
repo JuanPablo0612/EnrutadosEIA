@@ -132,14 +132,12 @@ fun PassengerBookingsContent(
                         bookings = upcomingBookings,
                         nowMs = nowMs,
                         cancellingId = state.cancellingBookingId,
-                        onAction = onAction,
-                        showTrackButton = true
+                        onAction = onAction
                     )
                     BookingTab.PAST -> PastContent(
                         bookings = pastBookings,
                         nowMs = nowMs,
-                        onAction = onAction,
-                        showRateButton = true
+                        onAction = onAction
                     )
                 }
             }
@@ -163,8 +161,7 @@ private fun UpcomingContent(
     bookings: List<Booking>,
     nowMs: Long,
     cancellingId: String?,
-    onAction: (PassengerBookingsAction) -> Unit,
-    showTrackButton: Boolean = false
+    onAction: (PassengerBookingsAction) -> Unit
 ) {
     if (bookings.isEmpty()) {
         EmptyState(
@@ -193,9 +190,7 @@ private fun UpcomingContent(
                     booking = booking,
                     nowMs = nowMs,
                     onCancelClick = { onAction(PassengerBookingsAction.OnCancelBookingClick(it)) },
-                    onTrackTrip = if (showTrackButton) {
-                        { tripId -> onAction(PassengerBookingsAction.OnTrackTrip(tripId)) }
-                    } else null,
+                    onTrackTrip = { tripId -> onAction(PassengerBookingsAction.OnTrackTrip(tripId)) },
                     modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)
                 )
             }
@@ -207,8 +202,7 @@ private fun UpcomingContent(
 private fun PastContent(
     bookings: List<Booking>,
     nowMs: Long,
-    onAction: (PassengerBookingsAction) -> Unit,
-    showRateButton: Boolean = false
+    onAction: (PassengerBookingsAction) -> Unit
 ) {
     if (bookings.isEmpty()) {
         EmptyState(
@@ -228,11 +222,9 @@ private fun PastContent(
                 booking = booking,
                 nowMs = nowMs,
                 onCancelClick = {},
-                onRateBooking = if (showRateButton) {
-                    { bookingId, tripId, rateeId, rateeName ->
-                        onAction(PassengerBookingsAction.OnRateBooking(bookingId, tripId, rateeId, rateeName))
-                    }
-                } else null,
+                onRateBooking = { bookingId, tripId, rateeId, rateeName ->
+                    onAction(PassengerBookingsAction.OnRateBooking(bookingId, tripId, rateeId, rateeName))
+                },
                 modifier = Modifier.padding(vertical = Spacing.xs)
             )
         }

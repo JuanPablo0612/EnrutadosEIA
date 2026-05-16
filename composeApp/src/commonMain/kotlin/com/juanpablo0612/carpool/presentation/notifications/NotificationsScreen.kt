@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
-import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res

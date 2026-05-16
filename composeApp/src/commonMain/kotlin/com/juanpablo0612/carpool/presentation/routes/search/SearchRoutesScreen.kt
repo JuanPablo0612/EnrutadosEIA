@@ -37,15 +37,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
-import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.search.components.TripResultCard
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar

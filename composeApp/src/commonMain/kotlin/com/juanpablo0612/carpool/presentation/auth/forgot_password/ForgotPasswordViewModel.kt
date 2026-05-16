@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.use_case.SendPasswordResetEmailUseCase
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
-import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow

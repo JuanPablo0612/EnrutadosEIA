@@ -24,7 +24,6 @@ import enrutadoseia.composeapp.generated.resources.booking_status_cancelled
 import enrutadoseia.composeapp.generated.resources.booking_status_confirmed
 import enrutadoseia.composeapp.generated.resources.booking_status_pending
 import enrutadoseia.composeapp.generated.resources.booking_status_rejected
-import enrutadoseia.composeapp.generated.resources.trip_status_active
 import enrutadoseia.composeapp.generated.resources.trip_status_cancelled
 import enrutadoseia.composeapp.generated.resources.trip_status_completed
 import enrutadoseia.composeapp.generated.resources.trip_status_in_progress

@@ -92,7 +92,6 @@ import enrutadoseia.composeapp.generated.resources.trip_when_section
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus

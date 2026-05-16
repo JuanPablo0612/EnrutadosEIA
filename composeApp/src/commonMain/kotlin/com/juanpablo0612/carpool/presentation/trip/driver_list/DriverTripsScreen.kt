@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -64,7 +63,6 @@ import enrutadoseia.composeapp.generated.resources.relative_date_today
 import enrutadoseia.composeapp.generated.resources.relative_date_tomorrow
 import enrutadoseia.composeapp.generated.resources.tab_past
 import enrutadoseia.composeapp.generated.resources.tab_upcoming
-import enrutadoseia.composeapp.generated.resources.trip_action_finish
 import enrutadoseia.composeapp.generated.resources.trip_action_start
 import enrutadoseia.composeapp.generated.resources.trip_action_track
 import enrutadoseia.composeapp.generated.resources.trip_action_view_passengers

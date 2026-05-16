@@ -18,11 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.routes.model.Route
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
-import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteAction
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteUiState
 import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem

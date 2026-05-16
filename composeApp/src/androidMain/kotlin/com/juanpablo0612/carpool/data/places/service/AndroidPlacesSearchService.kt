@@ -43,10 +43,10 @@ class AndroidPlacesSearchService(private val context: Context) : PlacesSearchSer
 
     override suspend fun getCoordinates(placeId: String): Coordinates? {
         return try {
-            val fields = listOf(GmsPlace.Field.LAT_LNG)
+            val fields = listOf(GmsPlace.Field.LOCATION)
             val request = FetchPlaceRequest.newInstance(placeId, fields)
             val response = client.fetchPlace(request).await()
-            response.place.latLng?.let { Coordinates(it.latitude, it.longitude) }
+            response.place.location?.let { Coordinates(it.latitude, it.longitude) }
         } catch (e: Exception) {
             null
         }

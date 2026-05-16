@@ -58,7 +58,7 @@ fun PendingRequestsSection(
                 }
             }
         }
-        if (requests.size > 0) {
+        if (requests.isNotEmpty()) {
             TextButton(
                 onClick = onSeeAll,
                 modifier = Modifier.align(Alignment.End),

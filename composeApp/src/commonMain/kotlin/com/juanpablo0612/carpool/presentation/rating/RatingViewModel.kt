@@ -3,7 +3,6 @@ package com.juanpablo0612.carpool.presentation.rating
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.rating.model.RatingChip
 import com.juanpablo0612.carpool.domain.rating.use_case.CreateRatingUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
