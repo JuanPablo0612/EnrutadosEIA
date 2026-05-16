@@ -94,6 +94,15 @@ class FirebaseAuthRemoteDataSource(
         return snapshot.data(UserDto.serializer())
     }
 
+    override suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): UserDto {
+        val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
+        firestore.collection("users").document(userId).update(
+            mapOf("isDriver" to isDriver, "isPassenger" to isPassenger)
+        )
+        val snapshot = firestore.collection("users").document(userId).get()
+        return snapshot.data(UserDto.serializer())
+    }
+
     override suspend fun deleteAccount() {
         val user = checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
         firestore.collection("users").document(user.uid).delete()

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.use_case.DeleteAccountUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.UpdateUserRolesUseCase
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val userSession: UserSession,
-    private val deleteAccountUseCase: DeleteAccountUseCase
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val updateUserRolesUseCase: UpdateUserRolesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -84,7 +86,19 @@ class ProfileViewModel(
     }
 
     private fun handleRoleToggle(role: UserRole, enabled: Boolean) {
+        val user = _state.value.user ?: return
+        val newIsDriver = if (role == UserRole.Driver) enabled else user.isDriver
+        val newIsPassenger = if (role == UserRole.Passenger) enabled else user.isPassenger
+        if (!newIsDriver && !newIsPassenger) {
+            _state.update { it.copy(blockedRoleToggleMessage = "Debes tener al menos un rol activo.") }
+            return
+        }
         _state.update { it.copy(blockedRoleToggleMessage = null) }
+        viewModelScope.launch {
+            updateUserRolesUseCase(newIsDriver, newIsPassenger).onSuccess { updatedUser ->
+                userSession.setUser(updatedUser)
+            }
+        }
     }
 
     private fun deleteAccount() {

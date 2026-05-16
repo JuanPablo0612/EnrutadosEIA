@@ -23,6 +23,7 @@ import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.SendEmailVerificationUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.SendPasswordResetEmailUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.UpdateProfileUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.UpdateUserRolesUseCase
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.use_case.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUseCase
@@ -143,6 +144,7 @@ val authModule = module {
     factoryOf(::SendEmailVerificationUseCase)
     factoryOf(::GetCurrentUserUseCase)
     factoryOf(::UpdateProfileUseCase)
+    factoryOf(::UpdateUserRolesUseCase)
     factoryOf(::DeleteAccountUseCase)
 
     viewModel { LoginViewModel(get(), get()) }
@@ -150,7 +152,7 @@ val authModule = module {
     viewModel { ForgotPasswordViewModel(get()) }
     viewModel { EmailVerificationViewModel(get(), get()) }
     viewModel { SplashViewModel(get(), get(), get(), get()) }
-    viewModel { ProfileViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { EditProfileViewModel(get(), get()) }
 }
 

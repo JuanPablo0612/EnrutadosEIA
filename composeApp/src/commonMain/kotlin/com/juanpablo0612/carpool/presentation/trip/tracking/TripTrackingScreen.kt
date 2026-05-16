@@ -38,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.active_roles_close
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
+import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.pickup_status_dropped_off
 import enrutadoseia.composeapp.generated.resources.pickup_status_picked_up
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
@@ -318,7 +320,7 @@ private fun CompleteTripDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(Res.string.cancel_button))
             }
         }
     )
@@ -337,7 +339,7 @@ private fun SosDialog(onDismiss: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Cerrar") }
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.active_roles_close)) }
         }
     )
 }

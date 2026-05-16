@@ -71,6 +71,7 @@ import enrutadoseia.composeapp.generated.resources.profile_language
 import enrutadoseia.composeapp.generated.resources.profile_language_value
 import enrutadoseia.composeapp.generated.resources.profile_my_account_section
 import enrutadoseia.composeapp.generated.resources.profile_notifications_settings
+import enrutadoseia.composeapp.generated.resources.profile_safety
 import enrutadoseia.composeapp.generated.resources.profile_privacy
 import enrutadoseia.composeapp.generated.resources.profile_privacy_policy
 import enrutadoseia.composeapp.generated.resources.profile_saved_places
@@ -216,6 +217,11 @@ fun ProfileContent(
                     title = stringResource(Res.string.profile_notifications_settings),
                     icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
                     onClick = { onAction(ProfileAction.OnNotificationsClick) }
+                )
+                ProfileListItem(
+                    title = stringResource(Res.string.profile_safety),
+                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
+                    onClick = { onAction(ProfileAction.OnSafetyClick) }
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(Res.string.profile_language)) },

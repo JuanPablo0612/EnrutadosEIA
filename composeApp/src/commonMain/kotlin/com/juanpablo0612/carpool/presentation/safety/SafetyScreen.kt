@@ -42,6 +42,7 @@ import com.juanpablo0612.carpool.domain.safety.model.EmergencyContact
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
+import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.safety_add_contact
 import enrutadoseia.composeapp.generated.resources.safety_add_contact_title
@@ -270,7 +271,7 @@ private fun AddContactDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancelar") }
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel_button)) }
         }
     )
 }

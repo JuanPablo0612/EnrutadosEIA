@@ -91,6 +91,15 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): Result<User> {
+        return try {
+            val dto = remoteDataSource.updateRoles(isDriver, isPassenger)
+            Result.success(dto.toDomain())
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
     override suspend fun deleteAccount(): Result<Unit> {
         return try {
             remoteDataSource.deleteAccount()

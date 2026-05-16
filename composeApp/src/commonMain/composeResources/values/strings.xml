@@ -638,6 +638,7 @@
     <string name="profile_saved_places">Mis lugares guardados</string>
     <string name="profile_active_roles">Roles activos</string>
     <string name="profile_notifications_settings">Notificaciones</string>
+    <string name="profile_safety">Seguridad</string>
     <string name="profile_language">Idioma</string>
     <string name="profile_language_value">Español</string>
     <string name="profile_theme">Tema</string>
@@ -665,6 +666,7 @@
     <string name="active_roles_passenger">Pasajero</string>
     <string name="active_roles_blocked_driver">Tienes %1$d viaje(s) programado(s) como conductor. Cancélalos o complétalos antes de desactivar este rol.</string>
     <string name="active_roles_blocked_passenger">Tienes reservas pendientes como pasajero. Cancélalas o complétalas antes de desactivar este rol.</string>
+    <string name="active_roles_min_one">You must have at least one active role.</string>
     <string name="active_roles_close">Cerrar</string>
 
     <!-- Edit profile -->
