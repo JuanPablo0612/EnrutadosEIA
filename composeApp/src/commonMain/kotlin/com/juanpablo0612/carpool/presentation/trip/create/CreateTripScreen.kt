@@ -68,6 +68,11 @@ import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.cancel
 import enrutadoseia.composeapp.generated.resources.confirm
+import enrutadoseia.composeapp.generated.resources.date_of_connector
+import enrutadoseia.composeapp.generated.resources.day_names_short
+import enrutadoseia.composeapp.generated.resources.month_names
+import enrutadoseia.composeapp.generated.resources.time_am
+import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.create_trip_title
 import enrutadoseia.composeapp.generated.resources.date_other
 import enrutadoseia.composeapp.generated.resources.date_today
@@ -97,6 +102,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -202,12 +208,20 @@ fun CreateTripContent(
         else -> DateChip.Other
     }
 
+    val dayNamesShort = stringArrayResource(Res.array.day_names_short)
+    val monthNames = stringArrayResource(Res.array.month_names)
+    val dateConnector = stringResource(Res.string.date_of_connector)
+    val amMarker = stringResource(Res.string.time_am)
+    val pmMarker = stringResource(Res.string.time_pm)
     val formattedDate = formatLongDate(
         state.departureDate.year,
         state.departureDate.monthNumber,
-        state.departureDate.dayOfMonth
+        state.departureDate.dayOfMonth,
+        dayNamesShort.toList(),
+        monthNames.toList(),
+        dateConnector
     )
-    val formattedTime = formatShortTime(state.departureTime.hour, state.departureTime.minute)
+    val formattedTime = formatShortTime(state.departureTime.hour, state.departureTime.minute, amMarker, pmMarker)
 
     val contributionText = state.contributionPerPassenger?.let {
         formatPesos(it)

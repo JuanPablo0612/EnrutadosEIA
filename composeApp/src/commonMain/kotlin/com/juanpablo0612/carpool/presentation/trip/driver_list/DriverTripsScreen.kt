@@ -57,7 +57,12 @@ import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_s
 import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_title
 import enrutadoseia.composeapp.generated.resources.nav_my_trips
 import enrutadoseia.composeapp.generated.resources.publish_trip_fab
+import enrutadoseia.composeapp.generated.resources.date_of_connector
+import enrutadoseia.composeapp.generated.resources.day_names_short
+import enrutadoseia.composeapp.generated.resources.month_names
 import enrutadoseia.composeapp.generated.resources.relative_date_later
+import enrutadoseia.composeapp.generated.resources.time_am
+import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.relative_date_this_week
 import enrutadoseia.composeapp.generated.resources.relative_date_today
 import enrutadoseia.composeapp.generated.resources.relative_date_tomorrow
@@ -77,6 +82,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -262,8 +268,13 @@ private fun DriverTripCard(
     val trip = tripWithStats.trip
     val local = Instant.fromEpochMilliseconds(trip.departureTime)
         .toLocalDateTime(TimeZone.currentSystemDefault())
-    val timeStr = formatShortTime(local.hour, local.minute)
-    val dateStr = formatLongDate(local.year, local.monthNumber, local.dayOfMonth)
+    val dayNamesShort = stringArrayResource(Res.array.day_names_short)
+    val monthNames = stringArrayResource(Res.array.month_names)
+    val dateConnector = stringResource(Res.string.date_of_connector)
+    val amMarker = stringResource(Res.string.time_am)
+    val pmMarker = stringResource(Res.string.time_pm)
+    val timeStr = formatShortTime(local.hour, local.minute, amMarker, pmMarker)
+    val dateStr = formatLongDate(local.year, local.monthNumber, local.dayOfMonth, dayNamesShort.toList(), monthNames.toList(), dateConnector)
 
     Card(
         modifier = modifier

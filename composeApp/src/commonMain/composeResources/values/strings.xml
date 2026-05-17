@@ -772,4 +772,32 @@
     <string name="safety_error_phone_empty">El teléfono no puede estar vacío</string>
     <string name="safety_error_phone_invalid">Ingresa un número de celular colombiano válido</string>
     <string name="safety_add_contact_title">Agregar contacto de emergencia</string>
+
+    <!-- DateTime formatting -->
+    <string-array name="day_names_short">
+        <item>Mon.</item>
+        <item>Tue.</item>
+        <item>Wed.</item>
+        <item>Thu.</item>
+        <item>Fri.</item>
+        <item>Sat.</item>
+        <item>Sun.</item>
+    </string-array>
+    <string-array name="month_names">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string name="time_am">AM</string>
+    <string name="time_pm">PM</string>
+    <string name="date_of_connector">of</string>
 </resources>

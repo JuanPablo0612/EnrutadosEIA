@@ -735,4 +735,32 @@
     <string name="vehicle_tecno_label">Tecnomecánica</string>
     <string name="vehicle_save_button">Registrar vehículo</string>
     <string name="vehicle_update_button">Guardar cambios</string>
+
+    <!-- Formato de fecha y hora -->
+    <string-array name="day_names_short">
+        <item>lun.</item>
+        <item>mar.</item>
+        <item>mié.</item>
+        <item>jue.</item>
+        <item>vie.</item>
+        <item>sáb.</item>
+        <item>dom.</item>
+    </string-array>
+    <string-array name="month_names">
+        <item>enero</item>
+        <item>febrero</item>
+        <item>marzo</item>
+        <item>abril</item>
+        <item>mayo</item>
+        <item>junio</item>
+        <item>julio</item>
+        <item>agosto</item>
+        <item>septiembre</item>
+        <item>octubre</item>
+        <item>noviembre</item>
+        <item>diciembre</item>
+    </string-array>
+    <string name="time_am">a. m.</string>
+    <string name="time_pm">p. m.</string>
+    <string name="date_of_connector">de</string>
 </resources>
