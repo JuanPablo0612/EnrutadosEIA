@@ -173,6 +173,13 @@
     <string name="place_type_other">Other</string>
 
     <!-- Place Selector -->
+    <string name="place_selector_no_results">No results found</string>
+    <string name="delete_place_confirm_title">Delete place</string>
+    <string name="delete_place_confirm_body">Remove &quot;%1$s&quot; from your saved places?</string>
+    <string name="add_place_pick_on_map">Pick location on map</string>
+    <string name="map_picker_title">Choose location</string>
+    <string name="map_picker_confirm">Confirm location</string>
+    <string name="map_picker_my_location">My location</string>
     <string name="place_selector_title_origin">Select origin</string>
     <string name="place_selector_title_destination">Select destination</string>
     <string name="place_selector_title_waypoint">Select a stop</string>

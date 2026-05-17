@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -31,9 +32,14 @@ import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
+import enrutadoseia.composeapp.generated.resources.cancel_button
+import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.delete_place_confirm_body
+import enrutadoseia.composeapp.generated.resources.delete_place_confirm_title
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.place_selector_allow_location
 import enrutadoseia.composeapp.generated.resources.place_selector_current_location
+import enrutadoseia.composeapp.generated.resources.place_selector_no_results
 import enrutadoseia.composeapp.generated.resources.place_selector_resolving_location
 import enrutadoseia.composeapp.generated.resources.place_selector_search_hint
 import enrutadoseia.composeapp.generated.resources.place_selector_section_eia
@@ -43,6 +49,7 @@ import enrutadoseia.composeapp.generated.resources.place_selector_title_destinat
 import enrutadoseia.composeapp.generated.resources.place_selector_title_my_places
 import enrutadoseia.composeapp.generated.resources.place_selector_title_origin
 import enrutadoseia.composeapp.generated.resources.place_selector_title_waypoint
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_button
 import enrutadoseia.composeapp.generated.resources.search_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -120,7 +127,7 @@ fun PlaceSelectorContent(
             )
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                // Current location row
+                // Current location row — always visible
                 item {
                     when {
                         state.isResolvingLocation -> {
@@ -154,64 +161,106 @@ fun PlaceSelectorContent(
                     HorizontalDivider()
                 }
 
-                // My places section
-                item {
-                    SectionHeader(
-                        title = stringResource(Res.string.place_selector_section_my_places),
-                        action = {
-                            IconButton(onClick = onNavigateToAddPlace) {
-                                Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
+                // My places and EIA sections — hidden while searching
+                if (state.searchQuery.isBlank()) {
+                    item {
+                        SectionHeader(
+                            title = stringResource(Res.string.place_selector_section_my_places),
+                            action = {
+                                IconButton(onClick = onNavigateToAddPlace) {
+                                    Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
+                                }
                             }
-                        }
-                    )
-                }
-                items(state.savedPlaces, key = { it.id }) { place ->
-                    PlaceRow(
-                        icon = vectorResource(Res.drawable.location_on_24px),
-                        name = place.name,
-                        address = place.address,
-                        onClick = { onPlaceSelected(place) },
-                    )
-                    HorizontalDivider()
+                        )
+                    }
+                    items(state.savedPlaces, key = { it.id }) { place ->
+                        PlaceRow(
+                            icon = vectorResource(Res.drawable.location_on_24px),
+                            name = place.name,
+                            address = place.address,
+                            trailing = {
+                                IconButton(onClick = { onAction(PlaceSelectorAction.OnDeletePlace(place)) }) {
+                                    Icon(
+                                        vectorResource(Res.drawable.delete_24px),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            },
+                            onClick = { onPlaceSelected(place) },
+                        )
+                        HorizontalDivider()
+                    }
+
+                    item {
+                        SectionHeader(title = stringResource(Res.string.place_selector_section_eia))
+                    }
+                    items(state.campusPlaces, key = { it.id }) { place ->
+                        PlaceRow(
+                            icon = vectorResource(Res.drawable.location_on_24px),
+                            name = place.name,
+                            address = place.address,
+                            onClick = { onPlaceSelected(place) },
+                        )
+                        HorizontalDivider()
+                    }
                 }
 
-                // EIA campus section
-                item {
-                    SectionHeader(title = stringResource(Res.string.place_selector_section_eia))
-                }
-                items(state.campusPlaces, key = { it.id }) { place ->
-                    PlaceRow(
-                        icon = vectorResource(Res.drawable.location_on_24px),
-                        name = place.name,
-                        address = place.address,
-                        onClick = { onPlaceSelected(place) },
-                    )
-                    HorizontalDivider()
-                }
-
-                // Search results section (only when query is not blank)
+                // Search results section
                 if (state.searchQuery.isNotBlank()) {
                     item {
                         SectionHeader(title = stringResource(Res.string.place_selector_section_results))
                     }
-                    if (state.isSearching) {
-                        item {
-                            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                    when {
+                        state.isSearching -> {
+                            item {
+                                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                            }
                         }
-                    } else {
-                        items(state.searchResults, key = { "${it.latitude}_${it.longitude}" }) { suggestion ->
-                            PlaceRow(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                name = suggestion.primaryText,
-                                address = suggestion.secondaryText,
-                                onClick = { onAction(PlaceSelectorAction.OnSuggestionSelected(suggestion)) },
-                            )
-                            HorizontalDivider()
+                        state.searchResults.isEmpty() -> {
+                            item {
+                                Text(
+                                    text = stringResource(Res.string.place_selector_no_results),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                )
+                            }
+                        }
+                        else -> {
+                            items(state.searchResults, key = { "${it.latitude}_${it.longitude}" }) { suggestion ->
+                                PlaceRow(
+                                    icon = vectorResource(Res.drawable.location_on_24px),
+                                    name = suggestion.primaryText,
+                                    address = suggestion.fullAddress,
+                                    onClick = { onAction(PlaceSelectorAction.OnSuggestionSelected(suggestion)) },
+                                )
+                                HorizontalDivider()
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    // Delete confirmation dialog
+    state.isConfirmingDelete?.let { place ->
+        AlertDialog(
+            onDismissRequest = { onAction(PlaceSelectorAction.OnCancelDelete) },
+            title = { Text(stringResource(Res.string.delete_place_confirm_title)) },
+            text = { Text(stringResource(Res.string.delete_place_confirm_body, place.name)) },
+            confirmButton = {
+                TextButton(onClick = { onAction(PlaceSelectorAction.OnConfirmDelete) }) {
+                    Text(stringResource(Res.string.route_delete_confirm_button))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onAction(PlaceSelectorAction.OnCancelDelete) }) {
+                    Text(stringResource(Res.string.cancel_button))
+                }
+            },
+        )
     }
 }
 

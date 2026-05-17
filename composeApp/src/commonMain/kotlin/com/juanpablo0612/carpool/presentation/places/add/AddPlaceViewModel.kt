@@ -42,6 +42,12 @@ class AddPlaceViewModel(
             AddPlaceAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(AddPlaceEvent.NavigateBack)
             }
+            AddPlaceAction.PickOnMap -> viewModelScope.launch {
+                _events.emit(AddPlaceEvent.NavigateToMapPicker)
+            }
+            is AddPlaceAction.OnMapPickResult -> dragPin(
+                com.juanpablo0612.carpool.domain.places.model.Coordinates(action.latitude, action.longitude)
+            )
         }
     }
 
@@ -73,11 +79,12 @@ class AddPlaceViewModel(
         if (text.length >= 2) {
             searchJob = viewModelScope.launch {
                 delay(300)
+                _state.update { it.copy(isSearchingAddress = true) }
                 val suggestions = placesSearchService.search(text)
-                _state.update { it.copy(autocompleteSuggestions = suggestions) }
+                _state.update { it.copy(autocompleteSuggestions = suggestions, isSearchingAddress = false) }
             }
         } else {
-            _state.update { it.copy(autocompleteSuggestions = emptyList()) }
+            _state.update { it.copy(autocompleteSuggestions = emptyList(), isSearchingAddress = false) }
         }
     }
 

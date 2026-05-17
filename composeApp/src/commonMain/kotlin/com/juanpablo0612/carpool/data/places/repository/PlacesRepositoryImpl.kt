@@ -11,6 +11,15 @@ class PlacesRepositoryImpl(
     private val firestore: FirebaseFirestore
 ) : PlacesRepository {
 
+    override suspend fun deletePlace(placeId: String): Result<Unit> {
+        return try {
+            firestore.collection(COLLECTION_NAME).document(placeId).delete()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     @OptIn(kotlin.uuid.ExperimentalUuidApi::class)
     override suspend fun createPlace(place: Place): Result<Unit> {
         return try {

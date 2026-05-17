@@ -93,4 +93,10 @@ sealed interface Route {
         val rateeName: String,
         val isDriver: Boolean
     ) : Route
+
+    @Serializable
+    data class MapPicker(
+        val initialLatitude: Double = 6.1633,
+        val initialLongitude: Double = -75.4913,
+    ) : Route
 }

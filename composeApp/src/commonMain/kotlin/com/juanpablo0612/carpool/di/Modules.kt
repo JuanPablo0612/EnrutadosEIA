@@ -51,6 +51,7 @@ import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
 import com.juanpablo0612.carpool.domain.places.service.LocationService
 import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
+import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
@@ -103,6 +104,7 @@ import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.notifications.NotificationsViewModel
 import com.juanpablo0612.carpool.presentation.onboarding.OnboardingViewModel
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
+import com.juanpablo0612.carpool.presentation.places.picker.MapPickerViewModel
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
 import com.juanpablo0612.carpool.presentation.profile.edit.EditProfileViewModel
@@ -212,8 +214,10 @@ val placeModule = module {
     factoryOf(::GetSavedPlacesUseCase)
     factoryOf(::SearchPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
-    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get()) }
+    factoryOf(::DeletePlaceUseCase)
+    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get()) }
     viewModel { AddPlaceViewModel(get(), get()) }
+    viewModel { (lat: Double, lon: Double) -> MapPickerViewModel(lat, lon, get()) }
 }
 
 val vehicleModule = module {

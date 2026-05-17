@@ -9,4 +9,5 @@ expect fun MapPreview(
     coordinates: Coordinates?,
     onPinDragged: (Coordinates) -> Unit,
     modifier: Modifier = Modifier,
+    isMyLocationEnabled: Boolean = false,
 )

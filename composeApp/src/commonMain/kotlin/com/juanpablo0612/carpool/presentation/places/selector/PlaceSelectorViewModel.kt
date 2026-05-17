@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.places.service.LocationService
 import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
+import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,6 +30,7 @@ class PlaceSelectorViewModel(
     private val getSavedPlacesUseCase: GetSavedPlacesUseCase,
     private val locationService: LocationService,
     private val placesSearchService: PlacesSearchService,
+    private val deletePlaceUseCase: DeletePlaceUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -75,6 +77,19 @@ class PlaceSelectorViewModel(
                 _state.update { it.copy(searchQuery = "", searchResults = emptyList()) }
                 _events.emit(PlaceSelectorEvent.Dismiss)
             }
+            is PlaceSelectorAction.OnDeletePlace ->
+                _state.update { it.copy(isConfirmingDelete = action.place) }
+            PlaceSelectorAction.OnCancelDelete ->
+                _state.update { it.copy(isConfirmingDelete = null) }
+            PlaceSelectorAction.OnConfirmDelete -> deleteCurrentPlace()
+        }
+    }
+
+    private fun deleteCurrentPlace() {
+        val place = _state.value.isConfirmingDelete ?: return
+        _state.update { it.copy(isConfirmingDelete = null) }
+        viewModelScope.launch {
+            deletePlaceUseCase(place.id)
         }
     }
 

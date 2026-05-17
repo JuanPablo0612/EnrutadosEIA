@@ -44,6 +44,13 @@
     <string name="place_type_other">Otro</string>
 
     <!-- Place Selector -->
+    <string name="place_selector_no_results">Sin resultados</string>
+    <string name="delete_place_confirm_title">Eliminar lugar</string>
+    <string name="delete_place_confirm_body">¿Eliminar &quot;%1$s&quot; de tus lugares guardados?</string>
+    <string name="add_place_pick_on_map">Elegir en el mapa</string>
+    <string name="map_picker_title">Elige la ubicación</string>
+    <string name="map_picker_confirm">Confirmar ubicación</string>
+    <string name="map_picker_my_location">Mi ubicación</string>
     <string name="place_selector_title_origin">Selecciona el origen</string>
     <string name="place_selector_title_destination">Selecciona el destino</string>
     <string name="place_selector_title_waypoint">Selecciona una parada</string>

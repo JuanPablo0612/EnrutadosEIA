@@ -11,4 +11,7 @@ sealed class PlaceSelectorAction {
     data class OnPlaceSelected(val place: Place) : PlaceSelectorAction()
     data object OnAddPlace : PlaceSelectorAction()
     data object OnDismiss : PlaceSelectorAction()
+    data class OnDeletePlace(val place: Place) : PlaceSelectorAction()
+    data object OnConfirmDelete : PlaceSelectorAction()
+    data object OnCancelDelete : PlaceSelectorAction()
 }

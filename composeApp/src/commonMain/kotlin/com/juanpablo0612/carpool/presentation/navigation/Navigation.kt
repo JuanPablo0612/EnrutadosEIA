@@ -16,8 +16,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
+import androidx.compose.runtime.LaunchedEffect
 import com.juanpablo0612.carpool.presentation.chat.ChatScreen
 import com.juanpablo0612.carpool.presentation.chat.ChatViewModel
+import com.juanpablo0612.carpool.presentation.places.add.AddPlaceAction
+import com.juanpablo0612.carpool.presentation.places.add.AddPlaceScreen
+import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
+import com.juanpablo0612.carpool.presentation.places.picker.MapPickerScreen
+import com.juanpablo0612.carpool.presentation.places.picker.MapPickerViewModel
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.mainNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
@@ -45,6 +51,8 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+private const val MAP_PICK_RESULT_KEY = "map_pick_result"
 
 @Composable
 fun AppNavigation(
@@ -271,6 +279,49 @@ fun AppNavigation(
                     },
                     onNavigateBack = { navController.popBackStack() }
                 )
+
+                composable<Route.AddPlace> { backStackEntry ->
+                    val viewModel: AddPlaceViewModel = koinViewModel()
+                    val mapPickResult by backStackEntry.savedStateHandle
+                        .getStateFlow<String?>(MAP_PICK_RESULT_KEY, null)
+                        .collectAsState()
+
+                    LaunchedEffect(mapPickResult) {
+                        mapPickResult?.let { raw ->
+                            val parts = raw.split(",")
+                            viewModel.onAction(
+                                AddPlaceAction.OnMapPickResult(parts[0].toDouble(), parts[1].toDouble())
+                            )
+                            backStackEntry.savedStateHandle.remove<String>(MAP_PICK_RESULT_KEY)
+                        }
+                    }
+
+                    AddPlaceScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
+                        onPlaceSaved = { navController.popBackStack() },
+                        onNavigateToMapPicker = { lat, lon ->
+                            navController.navigate(Route.MapPicker(lat ?: 6.1633, lon ?: -75.4913))
+                        }
+                    )
+                }
+
+                composable<Route.MapPicker> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Route.MapPicker>()
+                    val viewModel: MapPickerViewModel = koinViewModel {
+                        parametersOf(args.initialLatitude, args.initialLongitude)
+                    }
+                    MapPickerScreen(
+                        viewModel = viewModel,
+                        onCoordinatesPicked = { lat, lon ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set(MAP_PICK_RESULT_KEY, "$lat,$lon")
+                            navController.popBackStack()
+                        },
+                        onBack = { navController.popBackStack() },
+                    )
+                }
 
                 composable<Route.Profile> {
                     val viewModel: ProfileViewModel = koinViewModel()

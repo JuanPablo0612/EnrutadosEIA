@@ -1,7 +1,8 @@
 package com.juanpablo0612.carpool.presentation.places.add
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -10,13 +11,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +47,9 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_new_place_title
 import enrutadoseia.composeapp.generated.resources.add_place_address_hint
 import enrutadoseia.composeapp.generated.resources.add_place_map_tip
+import enrutadoseia.composeapp.generated.resources.add_place_pick_on_map
 import enrutadoseia.composeapp.generated.resources.add_place_type_label
+import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.place_name_label
 import enrutadoseia.composeapp.generated.resources.place_type_gym
 import enrutadoseia.composeapp.generated.resources.place_type_home
@@ -48,12 +58,14 @@ import enrutadoseia.composeapp.generated.resources.place_type_university
 import enrutadoseia.composeapp.generated.resources.place_type_work
 import enrutadoseia.composeapp.generated.resources.save_button
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun AddPlaceScreen(
     viewModel: AddPlaceViewModel,
     onBack: () -> Unit,
-    onPlaceSaved: () -> Unit
+    onPlaceSaved: () -> Unit,
+    onNavigateToMapPicker: (Double?, Double?) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -61,6 +73,10 @@ fun AddPlaceScreen(
         when (event) {
             AddPlaceEvent.PlaceSaved -> onPlaceSaved()
             AddPlaceEvent.NavigateBack -> onBack()
+            AddPlaceEvent.NavigateToMapPicker -> onNavigateToMapPicker(
+                state.coordinates?.latitude,
+                state.coordinates?.longitude,
+            )
         }
     }
 
@@ -129,34 +145,66 @@ fun AddPlaceContent(
                 errorMessage = state.nameError?.asStringResource()?.let { stringResource(it) }
             )
 
-            Box {
-                AuthTextField(
-                    value = state.address,
-                    onValueChange = { onAction(AddPlaceAction.OnAddressChanged(it)) },
-                    label = stringResource(Res.string.add_place_address_hint),
-                    placeholder = stringResource(Res.string.add_place_address_hint),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        imeAction = ImeAction.Done
-                    ),
-                    errorMessage = null,
-                )
-                DropdownMenu(
-                    expanded = state.autocompleteSuggestions.isNotEmpty(),
-                    onDismissRequest = {},
+            // Address field with loading spinner
+            AuthTextField(
+                value = state.address,
+                onValueChange = { onAction(AddPlaceAction.OnAddressChanged(it)) },
+                label = stringResource(Res.string.add_place_address_hint),
+                placeholder = stringResource(Res.string.add_place_address_hint),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Done
+                ),
+                trailingIcon = if (state.isSearchingAddress) {
+                    { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) }
+                } else null,
+                errorMessage = null,
+            )
+
+            // Inline autocomplete suggestions
+            AnimatedVisibility(visible = state.autocompleteSuggestions.isNotEmpty()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                ) {
+                    Column {
+                        state.autocompleteSuggestions.forEachIndexed { index, suggestion ->
+                            ListItem(
+                                headlineContent = {
+                                    Text(suggestion.primaryText, style = MaterialTheme.typography.bodyMedium)
+                                },
+                                supportingContent = {
+                                    Text(
+                                        suggestion.fullAddress,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                },
+                                modifier = Modifier.clickable {
+                                    onAction(AddPlaceAction.SelectSuggestion(suggestion))
+                                },
+                            )
+                            if (index < state.autocompleteSuggestions.lastIndex) {
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
+            }
+
+            // "Pick on map" button — visible when no suggestions are showing
+            if (state.autocompleteSuggestions.isEmpty()) {
+                OutlinedButton(
+                    onClick = { onAction(AddPlaceAction.PickOnMap) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    state.autocompleteSuggestions.forEach { suggestion ->
-                        DropdownMenuItem(
-                            text = {
-                                Column {
-                                    Text(suggestion.primaryText, style = MaterialTheme.typography.bodyMedium)
-                                    Text(suggestion.secondaryText, style = MaterialTheme.typography.bodySmall)
-                                }
-                            },
-                            onClick = { onAction(AddPlaceAction.SelectSuggestion(suggestion)) },
-                        )
-                    }
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.location_on_24px),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(Res.string.add_place_pick_on_map))
                 }
             }
 

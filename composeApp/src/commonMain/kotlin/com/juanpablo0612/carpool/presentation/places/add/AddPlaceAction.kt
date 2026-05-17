@@ -12,4 +12,6 @@ sealed class AddPlaceAction {
     data class DragPin(val to: Coordinates) : AddPlaceAction()
     data object OnSaveClick : AddPlaceAction()
     data object OnBackClick : AddPlaceAction()
+    data object PickOnMap : AddPlaceAction()
+    data class OnMapPickResult(val latitude: Double, val longitude: Double) : AddPlaceAction()
 }

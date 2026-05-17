@@ -10,6 +10,7 @@ actual fun MapPreview(
     coordinates: Coordinates?,
     onPinDragged: (Coordinates) -> Unit,
     modifier: Modifier,
+    isMyLocationEnabled: Boolean,
 ) {
     Box(modifier = modifier)
 }
