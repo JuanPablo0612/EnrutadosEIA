@@ -82,10 +82,16 @@ class AddPlaceViewModel(
     }
 
     private fun selectSuggestion(suggestion: com.juanpablo0612.carpool.domain.places.model.AutocompleteSuggestion) {
-        viewModelScope.launch {
-            _state.update { it.copy(address = suggestion.fullAddress, autocompleteSuggestions = emptyList(), isGeocoding = true) }
-            val coords = placesSearchService.getCoordinates(suggestion.placeId)
-            _state.update { it.copy(coordinates = coords, isGeocoding = false) }
+        val coords = com.juanpablo0612.carpool.domain.places.model.Coordinates(
+            suggestion.latitude,
+            suggestion.longitude,
+        )
+        _state.update {
+            it.copy(
+                address = suggestion.fullAddress,
+                autocompleteSuggestions = emptyList(),
+                coordinates = coords,
+            )
         }
     }
 

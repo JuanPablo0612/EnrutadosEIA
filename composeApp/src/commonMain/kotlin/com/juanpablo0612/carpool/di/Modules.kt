@@ -7,6 +7,8 @@ import com.juanpablo0612.carpool.data.booking.repository.BookingRepositoryImpl
 import com.juanpablo0612.carpool.data.chat.ChatRepositoryImpl
 import com.juanpablo0612.carpool.data.notification.NotificationRepositoryImpl
 import com.juanpablo0612.carpool.data.places.repository.PlacesRepositoryImpl
+import com.juanpablo0612.carpool.data.places.service.CompassLocationService
+import com.juanpablo0612.carpool.data.places.service.CompassPlacesSearchService
 import com.juanpablo0612.carpool.data.preferences.UserPreferencesDataSource
 import com.juanpablo0612.carpool.data.preferences.UserPreferencesRepositoryImpl
 import com.juanpablo0612.carpool.data.rating.RatingRepositoryImpl
@@ -46,6 +48,8 @@ import com.juanpablo0612.carpool.domain.notification.use_case.DeleteNotification
 import com.juanpablo0612.carpool.domain.notification.use_case.GetNotificationsUseCase
 import com.juanpablo0612.carpool.domain.notification.use_case.MarkNotificationReadUseCase
 import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
+import com.juanpablo0612.carpool.domain.places.service.LocationService
+import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
@@ -202,6 +206,8 @@ val tripModule = module {
 }
 
 val placeModule = module {
+    singleOf(::CompassLocationService) bind LocationService::class
+    singleOf(::CompassPlacesSearchService) bind PlacesSearchService::class
     singleOf(::PlacesRepositoryImpl) bind PlacesRepository::class
     factoryOf(::GetSavedPlacesUseCase)
     factoryOf(::SearchPlacesUseCase)

@@ -116,13 +116,12 @@ class PlaceSelectorViewModel(
 
     private fun selectSuggestion(suggestion: com.juanpablo0612.carpool.domain.places.model.AutocompleteSuggestion) {
         viewModelScope.launch {
-            val coords = placesSearchService.getCoordinates(suggestion.placeId) ?: return@launch
             val place = Place(
-                id = suggestion.placeId,
+                id = "${suggestion.latitude}_${suggestion.longitude}",
                 name = suggestion.primaryText,
                 address = suggestion.fullAddress,
-                latitude = coords.latitude,
-                longitude = coords.longitude,
+                latitude = suggestion.latitude,
+                longitude = suggestion.longitude,
             )
             _events.emit(PlaceSelectorEvent.PlaceSelected(place))
         }

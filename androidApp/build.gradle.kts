@@ -35,12 +35,12 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            localProperties.load(localPropertiesFile.inputStream())
+        val secretsProperties = Properties()
+        val secretsPropertiesFile = rootProject.file("secrets.properties")
+        if (secretsPropertiesFile.exists()) {
+            secretsProperties.load(secretsPropertiesFile.inputStream())
         }
-        manifestPlaceholders["MAPS_API_KEY"] = localProperties["MAPS_API_KEY"] ?: ""
+        manifestPlaceholders["MAPS_API_KEY"] = secretsProperties["MAPS_API_KEY"] ?: ""
     }
     packaging {
         resources {

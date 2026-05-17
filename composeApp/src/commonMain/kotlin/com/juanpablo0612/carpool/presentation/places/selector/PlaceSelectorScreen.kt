@@ -199,7 +199,7 @@ fun PlaceSelectorContent(
                             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                         }
                     } else {
-                        items(state.searchResults, key = { it.placeId }) { suggestion ->
+                        items(state.searchResults, key = { "${it.latitude}_${it.longitude}" }) { suggestion ->
                             PlaceRow(
                                 icon = vectorResource(Res.drawable.location_on_24px),
                                 name = suggestion.primaryText,

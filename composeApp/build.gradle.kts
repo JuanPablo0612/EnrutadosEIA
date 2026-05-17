@@ -35,15 +35,21 @@ kotlin {
     sourceSets {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.compass.geolocation.mobile)
+            implementation(libs.compass.geocoder.mobile)
+            implementation(libs.compass.autocomplete.mobile)
         }
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.google.maps.compose)
-            implementation(libs.google.places)
-            implementation(libs.google.play.services.location)
-            implementation(libs.kotlinx.coroutines.play.services)
+            implementation(libs.compass.geolocation.mobile)
+            implementation(libs.compass.geocoder.mobile)
+            implementation(libs.compass.autocomplete.mobile)
         }
         commonMain.dependencies {
+            implementation(libs.compass.geolocation)
+            implementation(libs.compass.geocoder)
+            implementation(libs.compass.autocomplete)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
