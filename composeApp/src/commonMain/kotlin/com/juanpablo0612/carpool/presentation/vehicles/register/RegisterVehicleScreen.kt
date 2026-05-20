@@ -20,8 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -35,7 +33,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -75,10 +72,6 @@ import enrutadoseia.composeapp.generated.resources.vehicle_color_other
 import enrutadoseia.composeapp.generated.resources.vehicle_color_red
 import enrutadoseia.composeapp.generated.resources.vehicle_color_silver
 import enrutadoseia.composeapp.generated.resources.vehicle_color_white
-import enrutadoseia.composeapp.generated.resources.vehicle_docs_description
-import enrutadoseia.composeapp.generated.resources.vehicle_docs_hide
-import enrutadoseia.composeapp.generated.resources.vehicle_docs_section
-import enrutadoseia.composeapp.generated.resources.vehicle_docs_show
 import enrutadoseia.composeapp.generated.resources.vehicle_model_label
 import enrutadoseia.composeapp.generated.resources.vehicle_model_placeholder
 import enrutadoseia.composeapp.generated.resources.vehicle_photo_choose_gallery
@@ -91,8 +84,6 @@ import enrutadoseia.composeapp.generated.resources.vehicle_plate_label
 import enrutadoseia.composeapp.generated.resources.vehicle_save_button
 import enrutadoseia.composeapp.generated.resources.vehicle_seats_helper
 import enrutadoseia.composeapp.generated.resources.vehicle_seats_label
-import enrutadoseia.composeapp.generated.resources.vehicle_soat_label
-import enrutadoseia.composeapp.generated.resources.vehicle_tecno_label
 import enrutadoseia.composeapp.generated.resources.vehicle_type_hatchback
 import enrutadoseia.composeapp.generated.resources.vehicle_type_label
 import enrutadoseia.composeapp.generated.resources.vehicle_type_other
@@ -105,7 +96,6 @@ import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import kotlin.time.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
@@ -143,55 +133,6 @@ fun RegisterVehicleContent(
     }
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         if (file != null) onAction(RegisterVehicleAction.OnPhotoSelected(file))
-    }
-
-    // Date pickers
-    if (state.showSoatDatePicker) {
-        val pickerState = rememberDatePickerState()
-        DatePickerDialog(
-            onDismissRequest = { onAction(RegisterVehicleAction.OnDismissSoatDatePicker) },
-            confirmButton = {
-                TextButton(onClick = {
-                    val ms = pickerState.selectedDateMillis
-                    if (ms != null) {
-                        val date = Instant.fromEpochMilliseconds(ms)
-                            .toLocalDateTime(TimeZone.UTC).date
-                        onAction(RegisterVehicleAction.OnSoatDateSelected(date))
-                    } else {
-                        onAction(RegisterVehicleAction.OnDismissSoatDatePicker)
-                    }
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { onAction(RegisterVehicleAction.OnDismissSoatDatePicker) }) {
-                    Text("Cancelar")
-                }
-            }
-        ) { DatePicker(state = pickerState) }
-    }
-
-    if (state.showTecnoDatePicker) {
-        val pickerState = rememberDatePickerState()
-        DatePickerDialog(
-            onDismissRequest = { onAction(RegisterVehicleAction.OnDismissTecnoDatePicker) },
-            confirmButton = {
-                TextButton(onClick = {
-                    val ms = pickerState.selectedDateMillis
-                    if (ms != null) {
-                        val date = Instant.fromEpochMilliseconds(ms)
-                            .toLocalDateTime(TimeZone.UTC).date
-                        onAction(RegisterVehicleAction.OnTecnoDateSelected(date))
-                    } else {
-                        onAction(RegisterVehicleAction.OnDismissTecnoDatePicker)
-                    }
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { onAction(RegisterVehicleAction.OnDismissTecnoDatePicker) }) {
-                    Text("Cancelar")
-                }
-            }
-        ) { DatePicker(state = pickerState) }
     }
 
     // Photo source bottom sheet
@@ -576,74 +517,6 @@ fun RegisterVehicleContent(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-            }
-
-            // 9. Documents (collapsible)
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onAction(RegisterVehicleAction.OnToggleDocuments) }
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(Res.string.vehicle_docs_section),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = if (state.showDocuments)
-                            stringResource(Res.string.vehicle_docs_hide)
-                        else
-                            stringResource(Res.string.vehicle_docs_show),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                if (state.showDocuments) {
-                    Text(
-                        text = stringResource(Res.string.vehicle_docs_description),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    // SOAT
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.vehicle_soat_label),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        TextButton(onClick = { onAction(RegisterVehicleAction.OnShowSoatDatePicker) }) {
-                            Text(
-                                text = state.soatDate?.toString()
-                                    ?: stringResource(Res.string.vehicle_docs_show)
-                            )
-                        }
-                    }
-                    // Tecnomecánica
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.vehicle_tecno_label),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        TextButton(onClick = { onAction(RegisterVehicleAction.OnShowTecnoDatePicker) }) {
-                            Text(
-                                text = state.tecnomecanicaDate?.toString()
-                                    ?: stringResource(Res.string.vehicle_docs_show)
-                            )
-                        }
-                    }
-                }
-                Spacer(Modifier.height(8.dp))
             }
 
             // General error

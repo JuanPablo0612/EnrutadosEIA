@@ -41,10 +41,6 @@ import enrutadoseia.composeapp.generated.resources.vehicle_action_delete
 import enrutadoseia.composeapp.generated.resources.vehicle_action_edit
 import enrutadoseia.composeapp.generated.resources.vehicle_action_set_primary
 import enrutadoseia.composeapp.generated.resources.vehicle_primary_indicator
-import enrutadoseia.composeapp.generated.resources.vehicle_verified
-import kotlin.time.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -60,9 +56,6 @@ fun VehicleCard(
     modifier: Modifier = Modifier,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val isVerified = vehicle.soatExpiresOn != null && vehicle.tecnomecanicaExpiresOn != null
-            && vehicle.soatExpiresOn > today && vehicle.tecnomecanicaExpiresOn > today
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -108,14 +101,6 @@ fun VehicleCard(
                         text = "● ${stringResource(Res.string.vehicle_primary_indicator)}",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                if (isVerified) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "✓ ${stringResource(Res.string.vehicle_verified)}",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
             }

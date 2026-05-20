@@ -101,7 +101,7 @@ fun RouteDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RouteDetailReadContent(
+internal fun RouteDetailReadContent(
     state: RouteDetailUiState,
     onAction: (RouteDetailAction) -> Unit
 ) {
@@ -301,7 +301,7 @@ private fun RouteDetailReadContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RouteDetailEditContent(
+internal fun RouteDetailEditContent(
     draft: CreateRouteUiState,
     isSaving: Boolean,
     onAction: (RouteDetailAction) -> Unit

@@ -58,9 +58,6 @@ class RegisterVehicleViewModel(
                         year = vehicle.year,
                         seatCount = vehicle.seatsAvailable,
                         type = vehicle.type,
-                        soatDate = vehicle.soatExpiresOn,
-                        tecnomecanicaDate = vehicle.tecnomecanicaExpiresOn,
-                        showDocuments = vehicle.soatExpiresOn != null || vehicle.tecnomecanicaExpiresOn != null,
                     )
                 }
             }
@@ -121,32 +118,11 @@ class RegisterVehicleViewModel(
             is RegisterVehicleAction.OnTypeSelected ->
                 _state.update { it.copy(type = if (it.type == action.type) null else action.type) }
 
-            is RegisterVehicleAction.OnSoatDateSelected ->
-                _state.update { it.copy(soatDate = action.date, showSoatDatePicker = false) }
-
-            is RegisterVehicleAction.OnTecnoDateSelected ->
-                _state.update { it.copy(tecnomecanicaDate = action.date, showTecnoDatePicker = false) }
-
-            RegisterVehicleAction.OnToggleDocuments ->
-                _state.update { it.copy(showDocuments = !it.showDocuments) }
-
             RegisterVehicleAction.OnShowPhotoSheet ->
                 _state.update { it.copy(showPhotoSheet = true) }
 
             RegisterVehicleAction.OnDismissPhotoSheet ->
                 _state.update { it.copy(showPhotoSheet = false) }
-
-            RegisterVehicleAction.OnShowSoatDatePicker ->
-                _state.update { it.copy(showSoatDatePicker = true) }
-
-            RegisterVehicleAction.OnDismissSoatDatePicker ->
-                _state.update { it.copy(showSoatDatePicker = false) }
-
-            RegisterVehicleAction.OnShowTecnoDatePicker ->
-                _state.update { it.copy(showTecnoDatePicker = true) }
-
-            RegisterVehicleAction.OnDismissTecnoDatePicker ->
-                _state.update { it.copy(showTecnoDatePicker = false) }
 
             RegisterVehicleAction.OnSaveClick -> saveVehicle()
 
@@ -198,8 +174,6 @@ class RegisterVehicleViewModel(
                 seatsAvailable = s.seatCount,
                 photoUrl = s.existingPhotoUrl ?: "",
                 type = s.type,
-                soatExpiresOn = s.soatDate,
-                tecnomecanicaExpiresOn = s.tecnomecanicaDate,
             )
 
             val photoBytes = s.photoFile?.readBytes()

@@ -2,9 +2,9 @@ package com.juanpablo0612.carpool.presentation.routes.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.use_case.GetAvailableTripsUseCase
-import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,10 +103,14 @@ class SearchRoutesViewModel(
         viewModelScope.launch {
             val filtered = allTrips.value.filter { trip ->
                 val originMatch = state.origin == null ||
-                    trip.origin.name.contains(state.origin.name, ignoreCase = true) ||
-                    trip.origin.address.contains(state.origin.address, ignoreCase = true)
+                        trip.origin.name.contains(state.origin.name, ignoreCase = true) ||
+                        trip.origin.address.contains(state.origin.address, ignoreCase = true)
                 val destMatch = state.destination == null ||
-                    trip.destination.name.contains(state.destination.name, ignoreCase = true)
+                        trip.destination.name.contains(state.destination.name, ignoreCase = true) ||
+                        trip.destination.address.contains(
+                            state.destination.address,
+                            ignoreCase = true
+                        )
 
                 val timeMatch = if (state.selectedEpochMs != null) {
                     val toleranceMs = state.toleranceMinutes * 60_000L
@@ -126,11 +130,6 @@ class SearchRoutesViewModel(
                 if (maxContrib != null) {
                     val contrib = trip.contributionPerPassenger ?: 0
                     if (contrib > maxContrib) return@mapNotNull null
-                }
-
-                if (state.filters.verifiedOnly) {
-                    val isVerified = vehicle?.soatExpiresOn != null && vehicle.tecnomecanicaExpiresOn != null
-                    if (!isVerified) return@mapNotNull null
                 }
 
                 TripResult(trip = trip, vehicle = vehicle, availableSeats = availableSeats)

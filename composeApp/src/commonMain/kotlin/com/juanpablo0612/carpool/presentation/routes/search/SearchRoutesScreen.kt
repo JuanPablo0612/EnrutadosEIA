@@ -64,7 +64,6 @@ import enrutadoseia.composeapp.generated.resources.search_empty_title
 import enrutadoseia.composeapp.generated.resources.search_filter_female_driver
 import enrutadoseia.composeapp.generated.resources.search_filter_female_driver_coming_soon
 import enrutadoseia.composeapp.generated.resources.search_filter_max_contribution
-import enrutadoseia.composeapp.generated.resources.search_filter_verified_only
 import enrutadoseia.composeapp.generated.resources.search_filters_button
 import enrutadoseia.composeapp.generated.resources.search_filters_title
 import enrutadoseia.composeapp.generated.resources.search_origin_placeholder
@@ -332,7 +331,6 @@ private fun FiltersBottomSheet(
     onDismiss: () -> Unit
 ) {
     var maxContrib by remember { mutableStateOf(filters.maxContribution?.toString() ?: "") }
-    var verifiedOnly by remember { mutableStateOf(filters.verifiedOnly) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -364,15 +362,6 @@ private fun FiltersBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(Res.string.search_filter_verified_only), style = MaterialTheme.typography.bodyMedium)
-                Switch(checked = verifiedOnly, onCheckedChange = { verifiedOnly = it })
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 Column {
                     Text(stringResource(Res.string.search_filter_female_driver), style = MaterialTheme.typography.bodyMedium)
                     Text(
@@ -388,8 +377,7 @@ private fun FiltersBottomSheet(
                 onClick = {
                     onApply(
                         SearchFilters(
-                            maxContribution = maxContrib.toIntOrNull(),
-                            verifiedOnly = verifiedOnly
+                            maxContribution = maxContrib.toIntOrNull()
                         )
                     )
                 },

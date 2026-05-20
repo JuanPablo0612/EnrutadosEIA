@@ -2,7 +2,6 @@ package com.juanpablo0612.carpool.data.vehicles.model
 
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.domain.vehicles.model.VehicleType
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,8 +17,6 @@ data class VehicleDto(
     val photoUrl: String = "",
     val isPrimary: Boolean = false,
     val type: String = "",
-    val soatExpiresOn: String = "",
-    val tecnomecanicaExpiresOn: String = "",
 ) {
     fun toDomain(): Vehicle = Vehicle(
         id = id,
@@ -33,8 +30,6 @@ data class VehicleDto(
         photoUrl = photoUrl,
         isPrimary = isPrimary,
         type = type.toVehicleType(),
-        soatExpiresOn = soatExpiresOn.toLocalDateOrNull(),
-        tecnomecanicaExpiresOn = tecnomecanicaExpiresOn.toLocalDateOrNull(),
     )
 
     companion object {
@@ -50,8 +45,6 @@ data class VehicleDto(
             photoUrl = vehicle.photoUrl,
             isPrimary = vehicle.isPrimary,
             type = vehicle.type.toTypeString(),
-            soatExpiresOn = vehicle.soatExpiresOn?.toString() ?: "",
-            tecnomecanicaExpiresOn = vehicle.tecnomecanicaExpiresOn?.toString() ?: "",
         )
     }
 }
@@ -74,5 +67,3 @@ private fun VehicleType?.toTypeString(): String = when (this) {
     null -> ""
 }
 
-private fun String.toLocalDateOrNull(): LocalDate? =
-    if (isBlank()) null else runCatching { LocalDate.parse(this) }.getOrNull()

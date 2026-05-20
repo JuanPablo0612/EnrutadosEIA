@@ -1,5 +1,5 @@
 <resources>
-    <string name="login_title">CampusRide</string>
+    <string name="login_title">Enrutados EIA</string>
     <string name="login_welcome_back">Welcome Back</string>
     <string name="login_subtitle">Login to your campus account</string>
     <string name="email_label">Email</string>
@@ -13,12 +13,12 @@
     <string name="signup_button">Sign up</string>
 
     <string name="register_title">Sign Up</string>
-    <string name="register_join_title">Join CampusRide</string>
+    <string name="register_join_title">Join Enrutados EIA</string>
     <string name="register_subtitle">Start saving on your daily commute to campus.</string>
     <string name="full_name_label">Full Name</string>
     <string name="full_name_placeholder">Jane Doe</string>
     <string name="confirm_password_label">Confirm password</string>
-    <string name="user_type_prompt">I want to use CampusRide as:</string>
+    <string name="user_type_prompt">I want to use Enrutados EIA as:</string>
     <string name="passenger_option">I am a passenger</string>
     <string name="driver_option">I am a driver</string>
     <string name="create_account_button">Create account</string>
@@ -147,8 +147,8 @@
     <string name="vehicles_empty_title">No vehicles yet</string>
     <string name="vehicles_empty_subtitle">Register your first vehicle to start offering rides</string>
     <plurals name="vehicle_seats_count">
-        <item quantity="one">%d cupo para pasajero</item>
-        <item quantity="other">%d cupos para pasajeros</item>
+        <item quantity="one">%1$d cupo para pasajero</item>
+        <item quantity="other">%1$d cupos para pasajeros</item>
     </plurals>
     <string name="routes_list_title">My Routes</string>
     <string name="routes_empty_title">No routes yet</string>
@@ -194,7 +194,7 @@
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">Hello, %1$s!</string>
-    <string name="role_selector_subtitle">How would you like to use CampusRide today?</string>
+    <string name="role_selector_subtitle">How would you like to use Enrutados EIA today?</string>
     <string name="role_selector_driver_title">Drive</string>
     <string name="role_selector_driver_subtitle">Offer rides and earn money on your commute</string>
     <string name="role_selector_passenger_title">Ride</string>
@@ -480,7 +480,6 @@
     <string name="search_filters_button">Filters</string>
     <string name="search_filters_title">Filters</string>
     <string name="search_filter_max_contribution">Max contribution</string>
-    <string name="search_filter_verified_only">Verified only</string>
     <string name="search_filter_female_driver">Female driver</string>
     <string name="search_filter_female_driver_coming_soon">Coming soon</string>
     <string name="search_tolerance_label">Tolerance</string>
@@ -520,7 +519,6 @@
 
     <!-- VehicleCard - indicators -->
     <string name="vehicle_primary_indicator">Vehículo principal</string>
-    <string name="vehicle_verified">Verificado</string>
 
     <!-- VehicleCard - action menu -->
     <string name="vehicle_action_edit">Editar</string>
@@ -558,12 +556,6 @@
     <string name="vehicle_type_suv">SUV</string>
     <string name="vehicle_type_pickup">Pickup</string>
     <string name="vehicle_type_other">Otro</string>
-    <string name="vehicle_docs_section">Documentos (opcional)</string>
-    <string name="vehicle_docs_description">Permite que verifiquemos tu vehículo y muestre el sello "Verificado".</string>
-    <string name="vehicle_docs_show">Mostrar</string>
-    <string name="vehicle_docs_hide">Ocultar</string>
-    <string name="vehicle_soat_label">SOAT</string>
-    <string name="vehicle_tecno_label">Tecnomecánica</string>
     <string name="vehicle_save_button">Registrar vehículo</string>
     <string name="vehicle_update_button">Guardar cambios</string>
 
@@ -628,7 +620,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_slide1_title">Comparte el camino</string>
-    <string name="onboarding_slide1_body">CampusRide conecta a estudiantes y profesores que viajan en la misma dirección.</string>
+    <string name="onboarding_slide1_body">Enrutados EIA conecta a estudiantes y profesores que viajan en la misma dirección.</string>
     <string name="onboarding_slide2_title">Crea rutas, publica viajes</string>
     <string name="onboarding_slide2_body">Como conductor, crea una ruta y publica viajes en fechas específicas. Acepta solicitudes de pasajeros con perfiles verificados.</string>
     <string name="onboarding_slide3_title">Encuentra y reserva</string>

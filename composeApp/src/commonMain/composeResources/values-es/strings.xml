@@ -1,5 +1,5 @@
 <resources>
-    <string name="login_title">CampusRide</string>
+    <string name="login_title">Enrutados EIA</string>
     <string name="login_welcome_back">Bienvenido de nuevo</string>
     <string name="login_subtitle">Inicia sesión en tu cuenta universitaria</string>
     <string name="email_label">Correo electrónico</string>
@@ -13,12 +13,12 @@
     <string name="signup_button">Regístrate</string>
 
     <string name="register_title">Regístrate</string>
-    <string name="register_join_title">Únete a CampusRide</string>
+    <string name="register_join_title">Únete a Enrutados EIA</string>
     <string name="register_subtitle">Empieza a ahorrar en tu trayecto diario al campus.</string>
     <string name="full_name_label">Nombre completo</string>
     <string name="full_name_placeholder">Juan Pérez</string>
     <string name="confirm_password_label">Confirmar contraseña</string>
-    <string name="user_type_prompt">Quiero usar CampusRide como:</string>
+    <string name="user_type_prompt">Quiero usar Enrutados EIA como:</string>
     <string name="passenger_option">Soy pasajero</string>
     <string name="driver_option">Soy conductor</string>
     <string name="create_account_button">Crear cuenta</string>
@@ -178,8 +178,8 @@
     <string name="vehicles_empty_title">Sin vehículos aún</string>
     <string name="vehicles_empty_subtitle">Registra tu primer vehículo para ofrecer viajes</string>
     <plurals name="vehicle_seats_count">
-        <item quantity="one">%d cupo para pasajero</item>
-        <item quantity="other">%d cupos para pasajeros</item>
+        <item quantity="one">%1$d cupo para pasajero</item>
+        <item quantity="other">%1$d cupos para pasajeros</item>
     </plurals>
     <string name="routes_list_title">Mis Rutas</string>
     <string name="routes_empty_title">Sin rutas aún</string>
@@ -194,7 +194,7 @@
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">¡Hola, %1$s!</string>
-    <string name="role_selector_subtitle">¿Cómo quieres usar CampusRide hoy?</string>
+    <string name="role_selector_subtitle">¿Cómo quieres usar Enrutados EIA hoy?</string>
     <string name="role_selector_driver_title">Conducir</string>
     <string name="role_selector_driver_subtitle">Ofrece viajes y ahorra en tu trayecto</string>
     <string name="role_selector_passenger_title">Viajar</string>
@@ -284,6 +284,43 @@
     <string name="my_trips_empty_subtitle">Los viajes que publiques aparecerán aquí</string>
     <string name="search_empty_title">Sin viajes disponibles</string>
     <string name="search_empty_subtitle">Intenta otra búsqueda o vuelve más tarde</string>
+
+    <!-- Home Dashboard -->
+    <string name="home_title">Inicio</string>
+    <string name="home_greeting_subtitle">¿Listo para tu viaje de hoy?</string>
+    <string name="home_next_trip_title">Próximo viaje</string>
+    <string name="home_next_booking_title">Tu próximo viaje</string>
+    <string name="home_pending_requests_title">Solicitudes pendientes (%1$d)</string>
+    <string name="home_quick_actions_title">Acciones rápidas</string>
+    <string name="home_stats_title">Este mes</string>
+    <string name="home_stats_trips">Viajes</string>
+    <string name="home_stats_passengers">Pasajeros</string>
+    <string name="home_see_all_requests">Ver todas las solicitudes</string>
+
+    <!-- Home acciones rápidas -->
+    <string name="home_action_publish_trip">Publicar viaje</string>
+    <string name="home_action_create_route">Crear ruta</string>
+    <string name="home_action_my_routes">Mis rutas</string>
+    <string name="home_action_my_trips">Mis viajes</string>
+    <string name="home_action_search_trip">Buscar viaje</string>
+    <string name="home_action_my_places">Mis lugares</string>
+    <string name="home_action_my_bookings">Mis reservas</string>
+    <string name="home_action_history">Historial</string>
+
+    <!-- Home banners de incorporación -->
+    <string name="home_no_vehicle_title">Registra un vehículo</string>
+    <string name="home_no_vehicle_subtitle">Para publicar viajes, primero necesitas registrar un vehículo.</string>
+    <string name="home_no_route_title">Crea una ruta</string>
+    <string name="home_no_route_subtitle">Define tu ruta recurrente y empieza a publicar viajes.</string>
+    <string name="home_register_vehicle_cta">Registrar vehículo</string>
+    <string name="home_create_route_cta">Crear ruta</string>
+    <string name="home_search_trip_cta">Buscar viaje</string>
+
+    <!-- Home estados vacíos -->
+    <string name="home_driver_empty_title">¡Bienvenido, conductor!</string>
+    <string name="home_driver_empty_subtitle">Registra tu vehículo y crea una ruta para comenzar a ofrecer viajes.</string>
+    <string name="home_passenger_empty_title">¡Encuentra tu primer viaje!</string>
+    <string name="home_passenger_empty_subtitle">Busca rutas disponibles y reserva tu cupo fácilmente.</string>
 
     <!-- Login rediseño -->
     <string name="login_terms_footer">Al iniciar sesión aceptas nuestros Términos de Servicio</string>
@@ -492,7 +529,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_slide1_title">Comparte el camino</string>
-    <string name="onboarding_slide1_body">CampusRide conecta a estudiantes y profesores que viajan en la misma dirección.</string>
+    <string name="onboarding_slide1_body">Enrutados EIA conecta a estudiantes y profesores que viajan en la misma dirección.</string>
     <string name="onboarding_slide2_title">Crea rutas, publica viajes</string>
     <string name="onboarding_slide2_body">Como conductor, crea una ruta y publica viajes en fechas específicas. Acepta solicitudes de pasajeros con perfiles verificados.</string>
     <string name="onboarding_slide3_title">Encuentra y reserva</string>
@@ -652,7 +689,6 @@
     <string name="search_filters_button">Filtros</string>
     <string name="search_filters_title">Filtros</string>
     <string name="search_filter_max_contribution">Aporte máximo</string>
-    <string name="search_filter_verified_only">Solo verificados</string>
     <string name="search_filter_female_driver">Conductora</string>
     <string name="search_filter_female_driver_coming_soon">Próximamente</string>
     <string name="search_tolerance_label">Tolerancia</string>
@@ -696,7 +732,6 @@
 
     <!-- VehicleCard - indicadores -->
     <string name="vehicle_primary_indicator">Vehículo principal</string>
-    <string name="vehicle_verified">Verificado</string>
 
     <!-- VehicleCard - menú de acciones -->
     <string name="vehicle_action_edit">Editar</string>
@@ -734,12 +769,6 @@
     <string name="vehicle_type_suv">SUV</string>
     <string name="vehicle_type_pickup">Pickup</string>
     <string name="vehicle_type_other">Otro</string>
-    <string name="vehicle_docs_section">Documentos (opcional)</string>
-    <string name="vehicle_docs_description">Permite que verifiquemos tu vehículo y muestre el sello "Verificado".</string>
-    <string name="vehicle_docs_show">Mostrar</string>
-    <string name="vehicle_docs_hide">Ocultar</string>
-    <string name="vehicle_soat_label">SOAT</string>
-    <string name="vehicle_tecno_label">Tecnomecánica</string>
     <string name="vehicle_save_button">Registrar vehículo</string>
     <string name="vehicle_update_button">Guardar cambios</string>
 

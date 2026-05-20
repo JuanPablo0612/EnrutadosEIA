@@ -3,7 +3,6 @@ package com.juanpablo0612.carpool.presentation.vehicles.register
 import com.juanpablo0612.carpool.domain.vehicles.model.VehicleType
 import io.github.vinceglb.filekit.PlatformFile
 import kotlin.time.Clock
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -22,14 +21,9 @@ data class RegisterVehicleUiState(
     val year: Int = currentYear(),
     val seatCount: Int = 3,
     val type: VehicleType? = null,
-    val soatDate: LocalDate? = null,
-    val tecnomecanicaDate: LocalDate? = null,
-    val showDocuments: Boolean = false,
     val showBrandDropdown: Boolean = false,
     val showYearDropdown: Boolean = false,
     val showPhotoSheet: Boolean = false,
-    val showSoatDatePicker: Boolean = false,
-    val showTecnoDatePicker: Boolean = false,
     val isSaving: Boolean = false,
     val brandError: Boolean = false,
     val modelError: Boolean = false,
