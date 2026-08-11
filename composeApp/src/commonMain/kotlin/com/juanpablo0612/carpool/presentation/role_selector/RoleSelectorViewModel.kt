@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.booking.use_case.GetDriverBookingRequestsUseCase
+import com.juanpablo0612.carpool.domain.preferences.use_case.ClearRolePreferenceUseCase
 import com.juanpablo0612.carpool.domain.preferences.use_case.GetRolePreferenceUseCase
 import com.juanpablo0612.carpool.domain.preferences.use_case.SaveRolePreferenceUseCase
 import com.juanpablo0612.carpool.presentation.session.UserSession
@@ -19,7 +20,8 @@ class RoleSelectorViewModel(
     private val userSession: UserSession,
     private val getDriverBookingRequestsUseCase: GetDriverBookingRequestsUseCase,
     private val getRolePreferenceUseCase: GetRolePreferenceUseCase,
-    private val saveRolePreferenceUseCase: SaveRolePreferenceUseCase
+    private val saveRolePreferenceUseCase: SaveRolePreferenceUseCase,
+    private val clearRolePreferenceUseCase: ClearRolePreferenceUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoleSelectorUiState())
@@ -55,6 +57,10 @@ class RoleSelectorViewModel(
         viewModelScope.launch {
             if (_uiState.value.rememberChoice) {
                 saveRolePreferenceUseCase(role)
+            } else {
+                // A later un-ticked choice must overwrite a previously remembered one, otherwise
+                // the stale preference keeps routing the next launch to the old role (3.9).
+                clearRolePreferenceUseCase()
             }
             val event = when (role) {
                 UserRole.Driver -> RoleSelectorEvent.NavigateToDriver

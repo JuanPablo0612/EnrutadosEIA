@@ -338,6 +338,15 @@ fun AppNavigation(
                             navController.navigate(Route.Login) {
                                 popUpTo(0) { inclusive = true }
                             }
+                        },
+                        onRoleSwitched = { role ->
+                            // ProfileViewModel already flipped userSession.activeRole — just move
+                            // the nav graph so it agrees (3.9).
+                            val destination =
+                                if (role == UserRole.Driver) Route.Home else Route.PassengerHome
+                            navController.navigate(destination) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     )
                 }

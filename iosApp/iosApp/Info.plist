@@ -4,5 +4,7 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>EnrutadosEIA usa tu ubicación para sugerir puntos de partida cercanos y mostrar la posición del conductor durante un viaje en curso.</string>
 </dict>
 </plist>

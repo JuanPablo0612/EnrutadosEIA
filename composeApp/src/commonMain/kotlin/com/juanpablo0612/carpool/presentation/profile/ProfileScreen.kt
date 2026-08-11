@@ -95,7 +95,8 @@ fun ProfileScreen(
     onNavigateToNotifications: () -> Unit,
     onNavigateToSafety: () -> Unit,
     onLogout: () -> Unit,
-    onDeleteAccountSuccess: () -> Unit
+    onDeleteAccountSuccess: () -> Unit,
+    onRoleSwitched: (UserRole) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -109,6 +110,7 @@ fun ProfileScreen(
             ProfileEvent.NavigateToNotifications -> onNavigateToNotifications()
             ProfileEvent.NavigateToSafety -> onNavigateToSafety()
             ProfileEvent.DeleteAccountSuccess -> onDeleteAccountSuccess()
+            is ProfileEvent.RoleSwitched -> onRoleSwitched(event.role)
         }
     }
 

@@ -97,6 +97,17 @@ class ProfileViewModel(
         viewModelScope.launch {
             updateUserRolesUseCase(newIsDriver, newIsPassenger).onSuccess { updatedUser ->
                 userSession.setUser(updatedUser)
+                // Disabling the role you're currently in would otherwise leave the driver
+                // Home/bottom bar showing for a user who just turned Driver off (3.9) — switch to
+                // whichever role is still enabled and navigate there.
+                val activeRole = _state.value.activeRole
+                val disabledActiveRole = (activeRole == UserRole.Driver && !newIsDriver) ||
+                    (activeRole == UserRole.Passenger && !newIsPassenger)
+                if (disabledActiveRole) {
+                    val remainingRole = if (newIsDriver) UserRole.Driver else UserRole.Passenger
+                    userSession.setActiveRole(remainingRole)
+                    _events.emit(ProfileEvent.RoleSwitched(remainingRole))
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.domain.places.service.LocationService
 import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
+import com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,10 +32,15 @@ class PlaceSelectorViewModel(
     private val locationService: LocationService,
     private val placesSearchService: PlacesSearchService,
     private val deletePlaceUseCase: DeletePlaceUseCase,
+    private val locationPermissionRequester: LocationPermissionRequester,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        PlaceSelectorUiState(mode = PlaceSelectorMode.fromString(mode))
+        PlaceSelectorUiState(
+            mode = PlaceSelectorMode.fromString(mode),
+            // Reflect the real OS grant instead of assuming it (3.12).
+            locationPermissionGranted = locationPermissionRequester.hasPermission(),
+        )
     )
     val state = _state.asStateFlow()
 
@@ -63,8 +69,9 @@ class PlaceSelectorViewModel(
         when (action) {
             is PlaceSelectorAction.OnQueryChange -> handleQueryChange(action.query)
             PlaceSelectorAction.UseCurrentLocation -> resolveCurrentLocation()
-            PlaceSelectorAction.RequestLocationPermission -> {
-                _state.update { it.copy(locationPermissionGranted = false) }
+            PlaceSelectorAction.RequestLocationPermission -> viewModelScope.launch {
+                val granted = locationPermissionRequester.requestPermission()
+                _state.update { it.copy(locationPermissionGranted = granted) }
             }
             is PlaceSelectorAction.OnSuggestionSelected -> selectSuggestion(action.suggestion)
             is PlaceSelectorAction.OnPlaceSelected -> viewModelScope.launch {

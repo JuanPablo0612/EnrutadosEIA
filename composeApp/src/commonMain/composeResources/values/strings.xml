@@ -227,6 +227,7 @@
     <string name="error_no_seats_available">No seats available on this vehicle</string>
     <string name="error_already_booked">You already have a booking on this route</string>
     <string name="error_booking_not_found">Booking not found</string>
+    <string name="error_booking_vehicle_not_found">Vehicle not found for this trip</string>
 
     <!-- Route Detail Passenger -->
     <string name="route_detail_passenger_title">Route Details</string>
@@ -264,6 +265,7 @@
     <string name="my_trips_empty">No trips published yet</string>
     <string name="error_trip_not_found">Trip not found</string>
     <string name="error_no_vehicle_selected">Please select a vehicle</string>
+    <string name="error_trip_departure_in_past">Departure time must be in the future</string>
 
     <!-- Common dialog actions -->
     <string name="confirm">Confirm</string>

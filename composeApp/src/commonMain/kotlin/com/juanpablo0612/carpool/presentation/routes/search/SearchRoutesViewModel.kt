@@ -102,15 +102,19 @@ class SearchRoutesViewModel(
         _uiState.update { it.copy(isSearching = true) }
         viewModelScope.launch {
             val filtered = allTrips.value.filter { trip ->
+                // An empty selected address must never match — trip.origin.address.contains("")
+                // is true for every trip, which used to make this filter a no-op (3.11).
                 val originMatch = state.origin == null ||
                         trip.origin.name.contains(state.origin.name, ignoreCase = true) ||
-                        trip.origin.address.contains(state.origin.address, ignoreCase = true)
+                        (state.origin.address.isNotBlank() &&
+                                trip.origin.address.contains(state.origin.address, ignoreCase = true))
                 val destMatch = state.destination == null ||
                         trip.destination.name.contains(state.destination.name, ignoreCase = true) ||
-                        trip.destination.address.contains(
-                            state.destination.address,
-                            ignoreCase = true
-                        )
+                        (state.destination.address.isNotBlank() &&
+                                trip.destination.address.contains(
+                                    state.destination.address,
+                                    ignoreCase = true
+                                ))
 
                 val timeMatch = if (state.selectedEpochMs != null) {
                     val toleranceMs = state.toleranceMinutes * 60_000L

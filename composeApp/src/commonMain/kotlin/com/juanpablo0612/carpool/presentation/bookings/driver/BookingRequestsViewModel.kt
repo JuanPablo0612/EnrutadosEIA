@@ -17,6 +17,7 @@ import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.domain.notification.use_case.CreateNotificationUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
 import com.juanpablo0612.carpool.presentation.bookings.toBookingError
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -45,16 +46,21 @@ class BookingRequestsViewModel(
     private val _events = MutableSharedFlow<BookingRequestsEvent>()
     val events: SharedFlow<BookingRequestsEvent> = _events.asSharedFlow()
 
+    private var bookingsJob: Job? = null
+
     init {
         loadBookings()
     }
 
     private fun loadBookings() {
+        // Cancel any previous collector first — Refresh calls this again, and each collector is a
+        // live Firestore listener that would otherwise leak (3.8).
+        bookingsJob?.cancel()
         val driverId = authRepository.getCurrentUserId() ?: run {
             _state.update { it.copy(isLoading = false) }
             return
         }
-        viewModelScope.launch {
+        bookingsJob = viewModelScope.launch {
             getAllDriverBookingsUseCase(driverId)
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect { bookings ->

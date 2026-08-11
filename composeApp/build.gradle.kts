@@ -38,6 +38,7 @@ kotlin {
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.compass.geocoder.mobile)
             implementation(libs.compass.autocomplete.mobile)
+            implementation(libs.compass.permissions.mobile)
         }
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
@@ -45,6 +46,7 @@ kotlin {
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.compass.geocoder.mobile)
             implementation(libs.compass.autocomplete.mobile)
+            implementation(libs.compass.permissions.mobile)
         }
         commonMain.dependencies {
             implementation(libs.compass.geolocation)

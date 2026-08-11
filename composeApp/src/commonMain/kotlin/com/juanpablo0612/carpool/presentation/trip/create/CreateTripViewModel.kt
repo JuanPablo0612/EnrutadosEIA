@@ -149,6 +149,11 @@ class CreateTripViewModel(
             .toInstant(TimeZone.currentSystemDefault())
             .toEpochMilliseconds()
 
+        if (departureMs <= Clock.System.now().toEpochMilliseconds()) {
+            _state.update { it.copy(error = TripError.DepartureInPast) }
+            return
+        }
+
         _state.update { it.copy(isPublishing = true, error = null) }
         viewModelScope.launch {
             val trip = Trip(

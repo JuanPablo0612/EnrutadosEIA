@@ -14,6 +14,7 @@ import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdFlowUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdateDriverLocationUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdatePassengerStatusUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
+import com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -40,6 +41,7 @@ class TripTrackingViewModel(
     private val authRepository: AuthRepository,
     private val updateDriverLocationUseCase: UpdateDriverLocationUseCase,
     private val locationService: LocationService,
+    private val locationPermissionRequester: LocationPermissionRequester,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TripTrackingUiState())
@@ -145,14 +147,17 @@ class TripTrackingViewModel(
     }
 
     // Polls the device's location and pushes it to the trip document while this user is driving
-    // an in-progress trip; stops as soon as either condition stops holding. getCurrentCoordinates()
-    // returning null (e.g. permission not yet granted — see Phase 3.12) is treated as "nothing to
-    // report this tick" rather than an error, so the screen just keeps showing the last known fix.
+    // an in-progress trip; stops as soon as either condition stops holding. Requests the OS
+    // permission once up front (3.12) so the driver is prompted as soon as the trip starts rather
+    // than silently polling nothing; getCurrentCoordinates() returning null afterward (permission
+    // still denied, GPS off, no fix yet) is treated as "nothing to report this tick" rather than an
+    // error, so the screen just keeps showing the last known fix.
     private fun updateLocationPolling(isDriver: Boolean, status: TripStatus?) {
         val shouldPoll = isDriver && status is TripStatus.InProgress
         if (shouldPoll) {
             if (locationPollingJob == null) {
                 locationPollingJob = viewModelScope.launch {
+                    locationPermissionRequester.requestPermission()
                     while (true) {
                         val coordinates = locationService.getCurrentCoordinates()
                         if (coordinates != null) {

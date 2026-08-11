@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.routes.passenger_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.booking.model.BookingError
 import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
@@ -97,7 +98,13 @@ class RouteDetailPassengerViewModel(
 
     private fun book() {
         val trip = _state.value.trip ?: return
-        _state.value.vehicle ?: return
+        if (_state.value.vehicle == null) {
+            // The vehicle is only used for display here (seats come from trip.seatCount, 3.1),
+            // but a missing vehicle still means the trip's data is incomplete — surface it instead
+            // of leaving the confirm button silently doing nothing (3.7).
+            _state.update { it.copy(error = BookingError.VehicleNotFound) }
+            return
+        }
         _state.update { it.copy(isBooking = true, error = null, showConfirmSheet = false) }
         viewModelScope.launch {
             createBookingUseCase(

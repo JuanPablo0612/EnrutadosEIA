@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.places.model.Coordinates
 import com.juanpablo0612.carpool.domain.places.service.LocationService
+import com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +15,7 @@ class MapPickerViewModel(
     initialLatitude: Double,
     initialLongitude: Double,
     private val locationService: LocationService,
+    private val locationPermissionRequester: LocationPermissionRequester,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -28,6 +30,14 @@ class MapPickerViewModel(
     fun onMyLocationClick() {
         viewModelScope.launch {
             _state.update { it.copy(isLoadingLocation = true) }
+            // Request the OS permission explicitly so isMyLocationEnabled only ever reflects a
+            // real grant, never an assumption (3.12) — GoogleMap throws a SecurityException
+            // otherwise.
+            val granted = locationPermissionRequester.requestPermission()
+            if (!granted) {
+                _state.update { it.copy(isLoadingLocation = false, isMyLocationEnabled = false) }
+                return@launch
+            }
             val coords = locationService.getCurrentCoordinates()
             if (coords != null) {
                 _state.update {
