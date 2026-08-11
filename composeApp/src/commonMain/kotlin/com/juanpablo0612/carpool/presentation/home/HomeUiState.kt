@@ -19,5 +19,5 @@ data class HomeUiState(
     val hasRoutes: Boolean = false,
     val tripsThisMonth: Int = 0,
     val passengersThisMonth: Int = 0,
-    val error: String? = null,
+    val error: HomeError? = null,
 )

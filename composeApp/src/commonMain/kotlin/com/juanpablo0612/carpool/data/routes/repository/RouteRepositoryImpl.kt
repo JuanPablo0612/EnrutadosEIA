@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.routes.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.routes.model.RouteDto
 import com.juanpablo0612.carpool.domain.routes.model.Route
 import com.juanpablo0612.carpool.domain.routes.repository.RouteRepository
@@ -18,7 +19,7 @@ class RouteRepositoryImpl(
             docRef.set(RouteDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RouteException.Unknown)
         }
     }
 
@@ -37,7 +38,7 @@ class RouteRepositoryImpl(
             val route = snapshot.data(RouteDto.serializer()).toDomain()
             Result.success(route)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RouteException.Unknown)
         }
     }
 
@@ -47,16 +48,8 @@ class RouteRepositoryImpl(
             firestore.collection(COLLECTION_NAME).document(route.id).set(RouteDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RouteException.Unknown)
         }
-    }
-
-    override fun getAvailableRoutes(): Flow<List<Route>> {
-        return firestore.collection(COLLECTION_NAME)
-            .snapshots
-            .map { snapshot ->
-                snapshot.documents.map { it.data(RouteDto.serializer()).toDomain() }
-            }
     }
 
     override suspend fun deleteRoute(id: String): Result<Unit> {
@@ -64,7 +57,7 @@ class RouteRepositoryImpl(
             firestore.collection(COLLECTION_NAME).document(id).delete()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RouteException.Unknown)
         }
     }
 

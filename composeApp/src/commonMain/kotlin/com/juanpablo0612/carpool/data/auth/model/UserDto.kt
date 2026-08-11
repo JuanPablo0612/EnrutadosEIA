@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserDto(
-    val id: String,
-    val email: String,
-    val name: String?,
-    val isEmailVerified: Boolean,
-    val isPassenger: Boolean,
-    val isDriver: Boolean,
+    val id: String = "",
+    val email: String = "",
+    val name: String? = null,
+    val isEmailVerified: Boolean = false,
+    val isPassenger: Boolean = false,
+    val isDriver: Boolean = false,
     val phone: String? = null,
     val photoUrl: String? = null,
     val bio: String? = null

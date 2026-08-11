@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.chat
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.chat.model.Message
 import com.juanpablo0612.carpool.domain.chat.repository.ChatRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -30,7 +31,7 @@ class ChatRepositoryImpl(private val firestore: FirebaseFirestore) : ChatReposit
                 .set(MessageDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.ChatException.Unknown)
         }
     }
 
@@ -52,7 +53,7 @@ class ChatRepositoryImpl(private val firestore: FirebaseFirestore) : ChatReposit
             }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.ChatException.Unknown)
         }
     }
 

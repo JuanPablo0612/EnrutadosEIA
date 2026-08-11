@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.trip.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.trip.model.TripDto
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -20,7 +21,7 @@ class TripRepositoryImpl(
             docRef.set(TripDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -54,7 +55,7 @@ class TripRepositoryImpl(
             val trip = snapshot.data(TripDto.serializer()).toDomain()
             Result.success(trip)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -70,7 +71,7 @@ class TripRepositoryImpl(
                 .update("status" to statusString)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -88,7 +89,7 @@ class TripRepositoryImpl(
                 .update("driverLatitude" to latitude, "driverLongitude" to longitude)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -98,7 +99,7 @@ class TripRepositoryImpl(
                 .update("passengerStatuses.$passengerId" to status)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 

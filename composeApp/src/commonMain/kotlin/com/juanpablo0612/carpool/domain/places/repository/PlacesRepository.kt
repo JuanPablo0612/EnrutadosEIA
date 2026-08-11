@@ -7,5 +7,4 @@ interface PlacesRepository {
     suspend fun createPlace(place: Place): Result<Unit>
     suspend fun deletePlace(placeId: String): Result<Unit>
     fun getSavedPlaces(ownerId: String): Flow<List<Place>>
-    suspend fun searchPlaces(ownerId: String, query: String): Result<List<Place>>
 }

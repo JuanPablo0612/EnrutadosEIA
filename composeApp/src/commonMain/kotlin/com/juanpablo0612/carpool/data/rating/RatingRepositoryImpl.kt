@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.rating
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.rating.model.Rating
 import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import dev.gitlive.firebase.firestore.Direction
@@ -13,7 +14,7 @@ class RatingRepositoryImpl(private val firestore: FirebaseFirestore) : RatingRep
             firestore.collection(COLLECTION).document(rating.id).set(RatingDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RatingException.Unknown)
         }
     }
 
@@ -23,7 +24,7 @@ class RatingRepositoryImpl(private val firestore: FirebaseFirestore) : RatingRep
             val doc = firestore.collection(COLLECTION).document(id).get()
             Result.success(doc.exists)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RatingException.Unknown)
         }
     }
 
@@ -38,7 +39,7 @@ class RatingRepositoryImpl(private val firestore: FirebaseFirestore) : RatingRep
             val avg = if (ratings.isEmpty()) null else ratings.map { it.stars }.average()
             Result.success(avg)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RatingException.Unknown)
         }
     }
 
@@ -49,7 +50,7 @@ class RatingRepositoryImpl(private val firestore: FirebaseFirestore) : RatingRep
                 .get()
             Result.success(snapshot.documents.size)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.RatingException.Unknown)
         }
     }
 

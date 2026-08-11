@@ -113,7 +113,11 @@ class FirebaseAuthRemoteDataSource(
 
     override suspend fun deleteAccount() {
         val user = checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
-        firestore.collection("users").document(user.uid).delete()
+        // user.delete() requires a recent sign-in and commonly fails with a stale session. Delete
+        // the auth user first so a failure here leaves the profile document intact (recoverable);
+        // deleting the document first would leave an authenticated user with no profile, which
+        // UserDto's now-defaulted fields decode without throwing but is still a broken state (4.3).
         user.delete()
+        firestore.collection("users").document(user.uid).delete()
     }
 }

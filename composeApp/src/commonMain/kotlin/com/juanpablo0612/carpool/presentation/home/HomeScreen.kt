@@ -112,7 +112,7 @@ internal fun HomeContent(
                 }
                 state.error != null -> {
                     ErrorState(
-                        description = state.error,
+                        description = stringResource(state.error.asStringResource()),
                         onRetry = { onAction(HomeAction.Refresh) },
                         modifier = Modifier.fillMaxSize(),
                     )

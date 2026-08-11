@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.safety
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.safety.model.EmergencyContact
 import com.juanpablo0612.carpool.domain.safety.model.SafetySettings
 import com.juanpablo0612.carpool.domain.safety.repository.SafetyRepository
@@ -16,7 +17,7 @@ class SafetyRepositoryImpl(private val firestore: FirebaseFirestore) : SafetyRep
             val contacts = snapshot.documents.map { it.data(EmergencyContactDto.serializer()).toDomain() }
             Result.success(contacts)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.SafetyException.Unknown)
         }
     }
 
@@ -30,7 +31,7 @@ class SafetyRepositoryImpl(private val firestore: FirebaseFirestore) : SafetyRep
                 .set(EmergencyContactDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.SafetyException.Unknown)
         }
     }
 
@@ -43,7 +44,7 @@ class SafetyRepositoryImpl(private val firestore: FirebaseFirestore) : SafetyRep
                 .delete()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.SafetyException.Unknown)
         }
     }
 
@@ -64,7 +65,7 @@ class SafetyRepositoryImpl(private val firestore: FirebaseFirestore) : SafetyRep
                 .update("autoShareTrip" to settings.autoShareTrip, "vibrateSos" to settings.vibrateSos)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.SafetyException.Unknown)
         }
     }
 

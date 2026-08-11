@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.places.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.places.model.PlaceDto
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
@@ -16,7 +17,7 @@ class PlacesRepositoryImpl(
             firestore.collection(COLLECTION_NAME).document(placeId).delete()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.PlaceException.Unknown)
         }
     }
 
@@ -29,7 +30,7 @@ class PlacesRepositoryImpl(
             docRef.set(PlaceDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.PlaceException.Unknown)
         }
     }
 
@@ -42,25 +43,6 @@ class PlacesRepositoryImpl(
                     doc.data(PlaceDto.serializer()).toDomain()
                 }
             }
-    }
-
-    // Firestore cannot do substring matching, so the name/address text match still happens
-    // client-side; only the ownerId scoping (required by firestore.rules) runs server-side.
-    override suspend fun searchPlaces(ownerId: String, query: String): Result<List<Place>> {
-        return try {
-            val snapshot = firestore.collection(COLLECTION_NAME)
-                .where { "ownerId" equalTo ownerId }
-                .get()
-            val filtered = snapshot.documents
-                .map { it.data(PlaceDto.serializer()).toDomain() }
-                .filter {
-                    it.name.contains(query, ignoreCase = true) ||
-                    it.address.contains(query, ignoreCase = true)
-                }
-            Result.success(filtered)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
     }
 
     companion object {

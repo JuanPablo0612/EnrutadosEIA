@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.vehicles.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.vehicles.model.VehicleDto
 import com.juanpablo0612.carpool.data.vehicles.upload
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
@@ -43,7 +44,7 @@ class VehicleRepositoryImpl(
             docRef.set(VehicleDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -53,7 +54,7 @@ class VehicleRepositoryImpl(
             val vehicle = doc.data(VehicleDto.serializer()).toDomain()
             Result.success(vehicle)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -75,7 +76,7 @@ class VehicleRepositoryImpl(
             firestore.collection(COLLECTION_NAME).document(vehicle.id).set(VehicleDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -86,7 +87,7 @@ class VehicleRepositoryImpl(
             try { photoRef.delete() } catch (_: Exception) { /* ignore if photo not found */ }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -101,7 +102,7 @@ class VehicleRepositoryImpl(
             batch.commit()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 

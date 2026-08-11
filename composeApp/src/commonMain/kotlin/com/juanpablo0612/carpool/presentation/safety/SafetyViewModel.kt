@@ -77,11 +77,11 @@ class SafetyViewModel(
         val phone = state.newContactPhone.trim()
         var hasError = false
         if (name.isBlank()) {
-            _state.update { it.copy(newContactNameError = "El nombre no puede estar vacío") }
+            _state.update { it.copy(newContactNameError = SafetyContactFieldError.NameEmpty) }
             hasError = true
         }
         if (phone.isBlank()) {
-            _state.update { it.copy(newContactPhoneError = "El teléfono no puede estar vacío") }
+            _state.update { it.copy(newContactPhoneError = SafetyContactFieldError.PhoneEmpty) }
             hasError = true
         }
         if (hasError) return

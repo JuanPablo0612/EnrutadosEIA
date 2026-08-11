@@ -15,5 +15,6 @@ sealed class BookingRequestsAction {
     data class CancelConfirmed(val bookingId: String) : BookingRequestsAction()
     data class OpenPassengerProfile(val passengerId: String) : BookingRequestsAction()
     data object Refresh : BookingRequestsAction()
-    data object DismissSnackbar : BookingRequestsAction()
+    data object DismissError : BookingRequestsAction()
+    data object DismissTripFilledNotice : BookingRequestsAction()
 }

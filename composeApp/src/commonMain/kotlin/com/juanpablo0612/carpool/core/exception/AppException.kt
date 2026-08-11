@@ -22,4 +22,39 @@ sealed class AppException : Exception() {
         data object Unauthorized : BookingException()
         data object Unknown : BookingException()
     }
+
+    sealed class TripException : AppException() {
+        data object Unknown : TripException()
+    }
+
+    sealed class RouteException : AppException() {
+        data object Unknown : RouteException()
+    }
+
+    sealed class VehicleException : AppException() {
+        data object Unknown : VehicleException()
+    }
+
+    sealed class PlaceException : AppException() {
+        data object NotAuthenticated : PlaceException()
+        data object Unauthorized : PlaceException()
+        data object Unknown : PlaceException()
+    }
+
+    sealed class ChatException : AppException() {
+        data object Unknown : ChatException()
+    }
+
+    sealed class RatingException : AppException() {
+        data object Unknown : RatingException()
+    }
+
+    sealed class NotificationException : AppException() {
+        data object Unknown : NotificationException()
+    }
+
+    sealed class SafetyException : AppException() {
+        data object MaxContactsReached : SafetyException()
+        data object Unknown : SafetyException()
+    }
 }

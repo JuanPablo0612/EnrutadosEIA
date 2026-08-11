@@ -53,7 +53,6 @@ import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
-import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
 import com.juanpablo0612.carpool.domain.preferences.use_case.ClearRolePreferenceUseCase
 import com.juanpablo0612.carpool.domain.preferences.use_case.GetOnboardingSeenUseCase
@@ -213,7 +212,6 @@ val placeModule = module {
     singleOf(::PlacesRepositoryImpl) bind PlacesRepository::class
     single { createLocationPermissionRequester() }
     factoryOf(::GetSavedPlacesUseCase)
-    factoryOf(::SearchPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
     factoryOf(::DeletePlaceUseCase)
     viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get(), get()) }

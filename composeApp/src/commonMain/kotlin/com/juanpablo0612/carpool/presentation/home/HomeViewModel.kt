@@ -13,6 +13,7 @@ import com.juanpablo0612.carpool.domain.routes.use_case.GetUserRoutesUseCase
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.use_case.GetDriverTripsUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.presentation.bookings.toBookingError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -113,7 +114,7 @@ class HomeViewModel(
                 )
             }
         }
-            .catch { e -> _state.update { it.copy(isLoading = false, isRefreshing = false, error = e.message) } }
+            .catch { _state.update { it.copy(isLoading = false, isRefreshing = false, error = HomeError.LoadFailed) } }
             .collect {}
     }
 
@@ -132,7 +133,7 @@ class HomeViewModel(
                     )
                 }
             }
-            .catch { e -> _state.update { it.copy(isLoading = false, isRefreshing = false, error = e.message) } }
+            .catch { _state.update { it.copy(isLoading = false, isRefreshing = false, error = HomeError.LoadFailed) } }
             .collect {}
     }
 
@@ -167,7 +168,7 @@ class HomeViewModel(
     private fun confirmBooking(bookingId: String) {
         viewModelScope.launch {
             confirmBookingUseCase(bookingId).onFailure { e ->
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
             }
         }
     }
@@ -175,7 +176,7 @@ class HomeViewModel(
     private fun rejectBooking(bookingId: String) {
         viewModelScope.launch {
             rejectBookingUseCase(bookingId).onFailure { e ->
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
             }
         }
     }

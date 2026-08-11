@@ -17,6 +17,11 @@ import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.domain.notification.use_case.CreateNotificationUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
 import com.juanpablo0612.carpool.presentation.bookings.toBookingError
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.notification_booking_accepted_body
+import enrutadoseia.composeapp.generated.resources.notification_booking_accepted_title
+import enrutadoseia.composeapp.generated.resources.notification_booking_rejected_body
+import enrutadoseia.composeapp.generated.resources.notification_booking_rejected_title
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +33,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class BookingRequestsViewModel(
     private val getAllDriverBookingsUseCase: GetAllDriverBookingsUseCase,
@@ -126,9 +132,8 @@ class BookingRequestsViewModel(
                 _events.emit(BookingRequestsEvent.NavigateToPassengerProfile(action.passengerId))
             }
             is BookingRequestsAction.Refresh -> loadBookings()
-            is BookingRequestsAction.DismissSnackbar -> _state.update {
-                it.copy(snackbarMessage = null)
-            }
+            BookingRequestsAction.DismissError -> _state.update { it.copy(error = null) }
+            BookingRequestsAction.DismissTripFilledNotice -> _state.update { it.copy(tripJustFilled = false) }
         }
     }
 
@@ -143,16 +148,13 @@ class BookingRequestsViewModel(
                         createNotificationUseCase(
                             userId = passengerId,
                             type = NotificationType.BookingAccepted,
-                            title = "Reserva confirmada",
-                            body = "El conductor aceptó tu reserva. ¡Que tengas buen viaje!"
+                            title = getString(Res.string.notification_booking_accepted_title),
+                            body = getString(Res.string.notification_booking_accepted_body)
                         )
                     }
                 }
                 .onFailure { error ->
-                    _state.update {
-                        it.copy(snackbarMessage = error.message)
-                    }
-                    error.toBookingError()
+                    _state.update { it.copy(error = error.toBookingError()) }
                 }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
@@ -168,13 +170,13 @@ class BookingRequestsViewModel(
                         createNotificationUseCase(
                             userId = passengerId,
                             type = NotificationType.BookingRejected,
-                            title = "Reserva rechazada",
-                            body = "El conductor no pudo aceptar tu reserva."
+                            title = getString(Res.string.notification_booking_rejected_title),
+                            body = getString(Res.string.notification_booking_rejected_body)
                         )
                     }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(snackbarMessage = error.message) }
+                    _state.update { it.copy(error = error.toBookingError()) }
                 }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
@@ -190,7 +192,7 @@ class BookingRequestsViewModel(
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
             cancelBookingUseCase(bookingId)
                 .onFailure { error ->
-                    _state.update { it.copy(snackbarMessage = error.message) }
+                    _state.update { it.copy(error = error.toBookingError()) }
                 }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
@@ -201,13 +203,9 @@ class BookingRequestsViewModel(
             getTripByIdUseCase(tripId).getOrNull() ?: return@launch
             val available = getTripAvailableSeatsUseCase(tripId).first()
             if (available == 0) {
-                _state.update { it.copy(snackbarMessage = TRIP_FULL_SIGNAL) }
+                _state.update { it.copy(tripJustFilled = true) }
             }
         }
-    }
-
-    companion object {
-        const val TRIP_FULL_SIGNAL = "TRIP_FULL"
     }
 }
 

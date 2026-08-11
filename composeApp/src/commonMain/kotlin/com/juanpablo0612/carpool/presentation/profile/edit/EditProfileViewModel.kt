@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.profile.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.use_case.UpdateProfileUseCase
+import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,7 @@ class EditProfileViewModel(
             is EditProfileAction.OnPhoneChange -> _state.update { it.copy(phone = action.phone) }
             is EditProfileAction.OnBioChange -> {
                 val bio = action.bio
-                val error = if (bio.length > 200) "Máximo 200 caracteres" else null
+                val error = if (bio.length > 200) EditProfileFieldError.BioTooLong else null
                 _state.update { it.copy(bio = bio, bioError = error) }
             }
             EditProfileAction.OnSaveClick -> save()
@@ -57,7 +58,7 @@ class EditProfileViewModel(
     private fun save() {
         val state = _state.value
         if (state.name.isBlank()) {
-            _state.update { it.copy(nameError = "El nombre no puede estar vacío") }
+            _state.update { it.copy(nameError = EditProfileFieldError.NameEmpty) }
             return
         }
         viewModelScope.launch {
@@ -73,7 +74,7 @@ class EditProfileViewModel(
                     _events.emit(EditProfileEvent.SaveSuccess)
                 },
                 onFailure = { throwable ->
-                    _state.update { it.copy(isSaving = false, error = throwable.message) }
+                    _state.update { it.copy(isSaving = false, error = throwable.toAuthError()) }
                 }
             )
         }

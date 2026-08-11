@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.notification
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -30,7 +31,7 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
                 .set(NotificationDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 
@@ -43,7 +44,7 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
                 .update("isRead" to true)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 
@@ -56,7 +57,7 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
                 .delete()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 
@@ -69,7 +70,7 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
             snapshot.documents.forEach { it.reference.delete() }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 

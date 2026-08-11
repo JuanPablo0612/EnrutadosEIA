@@ -8,6 +8,8 @@ import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.place_selector_current_location_name
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 sealed class PlaceSelectorEvent {
     data class PlaceSelected(val place: Place) : PlaceSelectorEvent()
@@ -126,7 +129,7 @@ class PlaceSelectorViewModel(
             val address = placesSearchService.reverseGeocode(coords) ?: ""
             val place = Place(
                 id = "current_location",
-                name = "Mi ubicación actual",
+                name = getString(Res.string.place_selector_current_location_name),
                 address = address,
                 latitude = coords.latitude,
                 longitude = coords.longitude,

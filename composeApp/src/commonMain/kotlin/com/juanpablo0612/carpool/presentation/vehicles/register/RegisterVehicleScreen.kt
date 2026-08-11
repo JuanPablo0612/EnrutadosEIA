@@ -58,6 +58,8 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
+import enrutadoseia.composeapp.generated.resources.error_vehicle_brand_required
+import enrutadoseia.composeapp.generated.resources.error_vehicle_color_required
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_vehicle_title
 import enrutadoseia.composeapp.generated.resources.vehicle_brand_label
@@ -81,6 +83,7 @@ import enrutadoseia.composeapp.generated.resources.vehicle_photo_take_photo
 import enrutadoseia.composeapp.generated.resources.vehicle_photo_tap_to_add
 import enrutadoseia.composeapp.generated.resources.vehicle_plate_error_format
 import enrutadoseia.composeapp.generated.resources.vehicle_plate_label
+import enrutadoseia.composeapp.generated.resources.vehicle_plate_placeholder
 import enrutadoseia.composeapp.generated.resources.vehicle_save_button
 import enrutadoseia.composeapp.generated.resources.vehicle_seats_helper
 import enrutadoseia.composeapp.generated.resources.vehicle_seats_label
@@ -339,7 +342,7 @@ fun RegisterVehicleContent(
                 }
                 if (state.brandError) {
                     Text(
-                        text = stringResource(Res.string.vehicle_brand_label) + " es obligatorio",
+                        text = stringResource(Res.string.error_vehicle_brand_required),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(start = 4.dp, top = 4.dp)
@@ -444,7 +447,7 @@ fun RegisterVehicleContent(
                 }
                 if (state.colorError) {
                     Text(
-                        text = stringResource(Res.string.vehicle_color_label) + " es obligatorio",
+                        text = stringResource(Res.string.error_vehicle_color_required),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(start = 4.dp, top = 4.dp)
@@ -459,7 +462,7 @@ fun RegisterVehicleContent(
                     value = state.plate,
                     onValueChange = { onAction(RegisterVehicleAction.OnPlateChanged(it)) },
                     label = stringResource(Res.string.vehicle_plate_label),
-                    placeholder = "ABC123",
+                    placeholder = stringResource(Res.string.vehicle_plate_placeholder),
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Characters,
                         autoCorrectEnabled = false,

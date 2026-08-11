@@ -46,6 +46,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.active_roles_close
 import enrutadoseia.composeapp.generated.resources.active_roles_driver
+import enrutadoseia.composeapp.generated.resources.active_roles_min_one
 import enrutadoseia.composeapp.generated.resources.active_roles_passenger
 import enrutadoseia.composeapp.generated.resources.active_roles_title
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
@@ -137,7 +138,7 @@ fun ProfileContent(
     if (state.showActiveRolesDialog) {
         ActiveRolesDialog(
             user = state.user,
-            blockedMessage = state.blockedRoleToggleMessage,
+            blocked = state.blockedRoleToggle,
             onToggleRole = { role, enabled -> onAction(ProfileAction.OnToggleRole(role, enabled)) },
             onDismiss = { onAction(ProfileAction.OnActiveRolesDismissed) }
         )
@@ -366,7 +367,7 @@ private fun ProfileListItem(title: String, icon: @Composable () -> Unit, onClick
 @Composable
 private fun ActiveRolesDialog(
     user: User?,
-    blockedMessage: String?,
+    blocked: Boolean,
     onToggleRole: (UserRole, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -375,9 +376,9 @@ private fun ActiveRolesDialog(
         title = { Text(stringResource(Res.string.active_roles_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (blockedMessage != null) {
+                if (blocked) {
                     Text(
-                        text = blockedMessage,
+                        text = stringResource(Res.string.active_roles_min_one),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )

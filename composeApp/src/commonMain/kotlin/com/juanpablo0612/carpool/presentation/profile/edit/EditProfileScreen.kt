@@ -33,7 +33,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_counter
@@ -110,7 +112,7 @@ fun EditProfileContent(
                     onValueChange = { onAction(EditProfileAction.OnNameChange(it)) },
                     label = { Text(stringResource(Res.string.edit_profile_name_label)) },
                     isError = state.nameError != null,
-                    supportingText = state.nameError?.let { { Text(it) } },
+                    supportingText = state.nameError?.let { { Text(stringResource(it.asStringResource())) } },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
                         imeAction = ImeAction.Next
@@ -140,7 +142,8 @@ fun EditProfileContent(
                     isError = state.bioError != null,
                     supportingText = {
                         Text(
-                            text = state.bioError ?: stringResource(Res.string.edit_profile_bio_counter, state.bio.length),
+                            text = state.bioError?.let { stringResource(it.asStringResource()) }
+                                ?: stringResource(Res.string.edit_profile_bio_counter, state.bio.length),
                             color = if (state.bioError != null) MaterialTheme.colorScheme.error
                             else MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -152,6 +155,10 @@ fun EditProfileContent(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                state.error?.let {
+                    ErrorMessage(message = stringResource(it.asStringResource()))
+                }
 
                 Button(
                     onClick = { onAction(EditProfileAction.OnSaveClick) },
