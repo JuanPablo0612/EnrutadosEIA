@@ -11,7 +11,6 @@ class SearchPlacesUseCase(
     suspend operator fun invoke(query: String): Result<List<Place>> {
         val currentUserId = authRepository.getCurrentUserId()
             ?: return Result.success(emptyList())
-        return repository.searchPlaces(query)
-            .map { places -> places.filter { it.ownerId == currentUserId } }
+        return repository.searchPlaces(currentUserId, query)
     }
 }

@@ -105,25 +105,12 @@ class VehicleRepositoryImpl(
         }
     }
 
-    // Fetches all vehicles and filters by driverId client-side.
-    // Suitable for small per-driver datasets (typically 1–3 vehicles).
     override fun getUserVehicles(userId: String): Flow<List<Vehicle>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "driverId" equalTo userId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(VehicleDto.serializer()).toDomain() }
-                    .filter { it.driverId == userId }
-            }
-    }
-
-    override fun getDriverVehicles(driverId: String): Flow<List<Vehicle>> {
-        return firestore.collection(COLLECTION_NAME)
-            .snapshots
-            .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(VehicleDto.serializer()).toDomain() }
-                    .filter { it.driverId == driverId }
+                snapshot.documents.map { it.data(VehicleDto.serializer()).toDomain() }
             }
     }
 

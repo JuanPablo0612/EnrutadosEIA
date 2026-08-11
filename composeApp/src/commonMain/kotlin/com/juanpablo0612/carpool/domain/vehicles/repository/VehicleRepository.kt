@@ -10,5 +10,4 @@ interface VehicleRepository {
     suspend fun deleteVehicle(vehicleId: String, driverId: String): Result<Unit>
     suspend fun setPrimaryVehicle(userId: String, vehicleId: String): Result<Unit>
     fun getUserVehicles(userId: String): Flow<List<Vehicle>>
-    fun getDriverVehicles(driverId: String): Flow<List<Vehicle>>
 }

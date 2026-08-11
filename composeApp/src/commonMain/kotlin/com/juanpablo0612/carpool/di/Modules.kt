@@ -88,7 +88,6 @@ import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.DeleteVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetVehicleByIdUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.SetPrimaryVehicleUseCase
@@ -227,7 +226,6 @@ val vehicleModule = module {
     factoryOf(::DeleteVehicleUseCase)
     factoryOf(::SetPrimaryVehicleUseCase)
     factoryOf(::GetUserVehiclesUseCase)
-    factoryOf(::GetDriverVehiclesUseCase)
     factoryOf(::GetVehicleByIdUseCase)
     viewModel { (vehicleId: String?) ->
         RegisterVehicleViewModel(vehicleId, get(), get(), get(), get())

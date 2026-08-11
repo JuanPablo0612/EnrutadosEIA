@@ -24,11 +24,10 @@ class RouteRepositoryImpl(
 
     override fun getUserRoutes(userId: String): Flow<List<Route>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "driverId" equalTo userId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(RouteDto.serializer()).toDomain() }
-                    .filter { it.driverId == userId }
+                snapshot.documents.map { it.data(RouteDto.serializer()).toDomain() }
             }
     }
 

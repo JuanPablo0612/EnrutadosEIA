@@ -33,8 +33,9 @@ class PlacesRepositoryImpl(
         }
     }
 
-    override fun getSavedPlaces(): Flow<List<Place>> {
+    override fun getSavedPlaces(ownerId: String): Flow<List<Place>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "ownerId" equalTo ownerId }
             .snapshots
             .map { snapshot ->
                 snapshot.documents.map { doc ->
@@ -43,10 +44,13 @@ class PlacesRepositoryImpl(
             }
     }
 
-    // Fetches all places and filters locally; suitable for small datasets
-    override suspend fun searchPlaces(query: String): Result<List<Place>> {
+    // Firestore cannot do substring matching, so the name/address text match still happens
+    // client-side; only the ownerId scoping (required by firestore.rules) runs server-side.
+    override suspend fun searchPlaces(ownerId: String, query: String): Result<List<Place>> {
         return try {
-            val snapshot = firestore.collection(COLLECTION_NAME).get()
+            val snapshot = firestore.collection(COLLECTION_NAME)
+                .where { "ownerId" equalTo ownerId }
+                .get()
             val filtered = snapshot.documents
                 .map { it.data(PlaceDto.serializer()).toDomain() }
                 .filter {

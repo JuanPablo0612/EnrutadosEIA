@@ -26,41 +26,51 @@ class BookingRepositoryImpl(
 
     override fun getPassengerBookings(passengerId: String): Flow<List<Booking>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "passengerId" equalTo passengerId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(BookingDto.serializer()).toDomain() }
-                    .filter { it.passengerId == passengerId }
+                snapshot.documents.map { it.data(BookingDto.serializer()).toDomain() }
             }
     }
 
     override fun getDriverBookingRequests(driverId: String): Flow<List<Booking>> {
         return firestore.collection(COLLECTION_NAME)
+            .where {
+                all(
+                    "driverId" equalTo driverId,
+                    "status" equalTo "PENDING",
+                )
+            }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(BookingDto.serializer()).toDomain() }
-                    .filter { it.driverId == driverId && it.status is BookingStatus.Pending }
+                snapshot.documents.map { it.data(BookingDto.serializer()).toDomain() }
             }
     }
 
     override fun getAllDriverBookings(driverId: String): Flow<List<Booking>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "driverId" equalTo driverId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(BookingDto.serializer()).toDomain() }
-                    .filter { it.driverId == driverId }
+                snapshot.documents.map { it.data(BookingDto.serializer()).toDomain() }
             }
     }
 
+    // Only CONFIRMED bookings occupy a seat or ride along on an active trip, which is all that
+    // GetTripAvailableSeatsUseCase / TripTrackingViewModel ever read from this flow. Scoping the
+    // status here (instead of client-side) keeps the query self-contained for callers who are not
+    // yet a party to any booking on this trip (e.g. a passenger still browsing).
     override fun getBookingsForTrip(tripId: String): Flow<List<Booking>> {
         return firestore.collection(COLLECTION_NAME)
+            .where {
+                all(
+                    "tripId" equalTo tripId,
+                    "status" equalTo "CONFIRMED",
+                )
+            }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(BookingDto.serializer()).toDomain() }
-                    .filter { it.tripId == tripId }
+                snapshot.documents.map { it.data(BookingDto.serializer()).toDomain() }
             }
     }
 
@@ -106,15 +116,16 @@ class BookingRepositoryImpl(
 
     override suspend fun hasActiveBooking(passengerId: String, tripId: String): Result<Boolean> {
         return try {
-            val snapshot = firestore.collection(COLLECTION_NAME).get()
-            val hasActive = snapshot.documents
-                .map { it.data(BookingDto.serializer()).toDomain() }
-                .any { booking ->
-                    booking.passengerId == passengerId &&
-                        booking.tripId == tripId &&
-                        (booking.status is BookingStatus.Pending || booking.status is BookingStatus.Confirmed)
+            val snapshot = firestore.collection(COLLECTION_NAME)
+                .where {
+                    all(
+                        "passengerId" equalTo passengerId,
+                        "tripId" equalTo tripId,
+                        "status" inArray listOf("PENDING", "CONFIRMED"),
+                    )
                 }
-            Result.success(hasActive)
+                .get()
+            Result.success(snapshot.documents.isNotEmpty())
         } catch (e: Exception) {
             Result.failure(e)
         }

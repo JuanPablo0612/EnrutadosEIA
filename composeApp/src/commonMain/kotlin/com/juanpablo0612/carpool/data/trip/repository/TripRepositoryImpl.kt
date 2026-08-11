@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
 
 class TripRepositoryImpl(
     private val firestore: FirebaseFirestore
@@ -25,16 +26,22 @@ class TripRepositoryImpl(
 
     override fun getDriverTrips(driverId: String): Flow<List<Trip>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "driverId" equalTo driverId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(TripDto.serializer()).toDomain() }
-                    .filter { it.driverId == driverId }
+                snapshot.documents.map { it.data(TripDto.serializer()).toDomain() }
             }
     }
 
     override fun getAvailableTrips(): Flow<List<Trip>> {
+        val now = Clock.System.now().toEpochMilliseconds()
         return firestore.collection(COLLECTION_NAME)
+            .where {
+                all(
+                    "status" equalTo "ACTIVE",
+                    "departureTime" greaterThanOrEqualTo now,
+                )
+            }
             .snapshots
             .map { snapshot ->
                 snapshot.documents.map { it.data(TripDto.serializer()).toDomain() }

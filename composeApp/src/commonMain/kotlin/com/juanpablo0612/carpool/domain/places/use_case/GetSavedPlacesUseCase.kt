@@ -5,7 +5,6 @@ import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 
 class GetSavedPlacesUseCase(
     private val repository: PlacesRepository,
@@ -14,7 +13,6 @@ class GetSavedPlacesUseCase(
     operator fun invoke(): Flow<List<Place>> {
         val currentUserId = authRepository.getCurrentUserId()
             ?: return flowOf(emptyList())
-        return repository.getSavedPlaces()
-            .map { places -> places.filter { it.ownerId == currentUserId } }
+        return repository.getSavedPlaces(currentUserId)
     }
 }

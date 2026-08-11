@@ -40,15 +40,16 @@ class ChatRepositoryImpl(private val firestore: FirebaseFirestore) : ChatReposit
                 .document(bookingId)
                 .collection(MESSAGES_COLLECTION)
                 .get()
-            snapshot.documents
-                .filter { !it.data(MessageDto.serializer()).isRead && it.data(MessageDto.serializer()).senderId != userId }
-                .forEach { doc ->
-                    firestore.collection(CHATS_COLLECTION)
-                        .document(bookingId)
-                        .collection(MESSAGES_COLLECTION)
-                        .document(doc.id)
-                        .update("isRead" to true)
+            val unreadFromOtherParty = snapshot.documents
+                .map { it.reference to it.data(MessageDto.serializer()) }
+                .filter { (_, message) -> !message.isRead && message.senderId != userId }
+            if (unreadFromOtherParty.isNotEmpty()) {
+                val batch = firestore.batch()
+                unreadFromOtherParty.forEach { (ref, _) ->
+                    batch.update(ref, mapOf("isRead" to true))
                 }
+                batch.commit()
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

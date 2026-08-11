@@ -6,7 +6,7 @@ import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUse
 import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import com.juanpablo0612.carpool.presentation.bookings.toBookingError
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 class RouteDetailPassengerViewModel(
     private val tripId: String,
     private val getTripByIdUseCase: GetTripByIdUseCase,
-    private val getDriverVehiclesUseCase: GetDriverVehiclesUseCase,
+    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase
@@ -54,7 +54,7 @@ class RouteDetailPassengerViewModel(
     }
 
     private fun observeVehicleAndSeats(driverId: String, vehicleId: String, tripId: String) {
-        getDriverVehiclesUseCase(driverId)
+        getUserVehiclesUseCase(driverId)
             .onEach { vehicles ->
                 val vehicle = vehicles.find { it.id == vehicleId }
                 _state.update { it.copy(vehicle = vehicle) }

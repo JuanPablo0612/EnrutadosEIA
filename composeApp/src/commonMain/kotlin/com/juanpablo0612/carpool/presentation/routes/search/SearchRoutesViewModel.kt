@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.use_case.GetAvailableTripsUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class SearchRoutesViewModel(
     getAvailableTripsUseCase: GetAvailableTripsUseCase,
-    private val getDriverVehiclesUseCase: GetDriverVehiclesUseCase,
+    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase
 ) : ViewModel() {
 
@@ -121,7 +121,7 @@ class SearchRoutesViewModel(
             }
 
             val results = filtered.mapNotNull { trip ->
-                val vehicles = getDriverVehiclesUseCase(trip.driverId).first()
+                val vehicles = getUserVehiclesUseCase(trip.driverId).first()
                 val vehicle = vehicles.find { it.id == trip.vehicleId }
                 val totalSeats = vehicle?.seatsAvailable ?: trip.seatCount
                 val availableSeats = getTripAvailableSeatsUseCase(trip.id, totalSeats).first()
