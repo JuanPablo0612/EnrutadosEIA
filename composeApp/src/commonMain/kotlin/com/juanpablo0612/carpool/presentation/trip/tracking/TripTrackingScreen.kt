@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.utils.formatCoordinates
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.active_roles_close
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
@@ -216,8 +217,10 @@ private fun PassengerTrackingContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
-                val locationText = if (state.driverLatitude != null && state.driverLongitude != null) {
-                    "%.5f, %.5f".format(state.driverLatitude, state.driverLongitude)
+                val driverLatitude = state.driverLatitude
+                val driverLongitude = state.driverLongitude
+                val locationText = if (driverLatitude != null && driverLongitude != null) {
+                    formatCoordinates(driverLatitude, driverLongitude)
                 } else {
                     stringResource(Res.string.trip_tracking_no_location)
                 }

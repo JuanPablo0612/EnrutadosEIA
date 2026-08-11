@@ -34,40 +34,26 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
         }
     }
 
-    override suspend fun markRead(notificationId: String): Result<Unit> {
+    override suspend fun markRead(userId: String, notificationId: String): Result<Unit> {
         return try {
-            val snapshot = firestore.collection(COLLECTION).get()
-            snapshot.documents.forEach { userDoc ->
-                val itemRef = firestore.collection(COLLECTION)
-                    .document(userDoc.id)
-                    .collection(ITEMS_COLLECTION)
-                    .document(notificationId)
-                val item = runCatching { itemRef.get() }.getOrNull()
-                if (item?.exists == true) {
-                    itemRef.update("isRead" to true)
-                    return Result.success(Unit)
-                }
-            }
+            firestore.collection(COLLECTION)
+                .document(userId)
+                .collection(ITEMS_COLLECTION)
+                .document(notificationId)
+                .update("isRead" to true)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun delete(notificationId: String): Result<Unit> {
+    override suspend fun delete(userId: String, notificationId: String): Result<Unit> {
         return try {
-            val snapshot = firestore.collection(COLLECTION).get()
-            snapshot.documents.forEach { userDoc ->
-                val itemRef = firestore.collection(COLLECTION)
-                    .document(userDoc.id)
-                    .collection(ITEMS_COLLECTION)
-                    .document(notificationId)
-                val item = runCatching { itemRef.get() }.getOrNull()
-                if (item?.exists == true) {
-                    itemRef.delete()
-                    return Result.success(Unit)
-                }
-            }
+            firestore.collection(COLLECTION)
+                .document(userId)
+                .collection(ITEMS_COLLECTION)
+                .document(notificationId)
+                .delete()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -172,7 +172,7 @@ fun AppNavigation(
                     OnboardingScreen(
                         viewModel = viewModel,
                         onNavigateToApp = {
-                            navController.navigate(Route.Login) {
+                            navController.navigate(Route.Splash) {
                                 popUpTo<Route.Onboarding> { inclusive = true }
                             }
                         }

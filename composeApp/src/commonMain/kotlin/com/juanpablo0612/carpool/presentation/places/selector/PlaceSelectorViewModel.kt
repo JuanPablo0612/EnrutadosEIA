@@ -89,7 +89,7 @@ class PlaceSelectorViewModel(
         val place = _state.value.isConfirmingDelete ?: return
         _state.update { it.copy(isConfirmingDelete = null) }
         viewModelScope.launch {
-            deletePlaceUseCase(place.id)
+            deletePlaceUseCase(place)
         }
     }
 

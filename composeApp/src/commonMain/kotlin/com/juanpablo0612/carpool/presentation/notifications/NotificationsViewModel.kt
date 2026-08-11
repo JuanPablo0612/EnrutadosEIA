@@ -53,7 +53,7 @@ class NotificationsViewModel(
         when (action) {
             is NotificationsAction.OnNotificationClick -> {
                 viewModelScope.launch {
-                    markNotificationReadUseCase(action.notification.id)
+                    markNotificationReadUseCase(userId, action.notification.id)
                     val deepLink = action.notification.deepLink
                     if (!deepLink.isNullOrBlank()) {
                         _events.emit(NotificationsEvent.NavigateTo(deepLink))
@@ -61,7 +61,7 @@ class NotificationsViewModel(
                 }
             }
             is NotificationsAction.OnDismiss -> {
-                viewModelScope.launch { deleteNotificationUseCase(action.id) }
+                viewModelScope.launch { deleteNotificationUseCase(userId, action.id) }
             }
             NotificationsAction.OnClearAll -> {
                 viewModelScope.launch { clearAllNotificationsUseCase(userId) }

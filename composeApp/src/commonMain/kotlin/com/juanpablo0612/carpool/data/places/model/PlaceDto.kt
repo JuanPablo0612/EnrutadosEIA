@@ -13,6 +13,7 @@ data class PlaceDto(
     val longitude: Double = 0.0,
     val type: String = "OTHER",
     val isCampusPreset: Boolean = false,
+    val ownerId: String = "",
 ) {
     fun toDomain() = Place(
         id = id,
@@ -28,6 +29,7 @@ data class PlaceDto(
             else -> PlaceType.Other
         },
         isCampusPreset = isCampusPreset,
+        ownerId = ownerId,
     )
 
     companion object {
@@ -45,6 +47,7 @@ data class PlaceDto(
                 else -> "OTHER"
             },
             isCampusPreset = p.isCampusPreset,
+            ownerId = p.ownerId,
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.rating
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -77,8 +76,6 @@ fun RatingContent(
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    BackHandler { /* Intercept back — non-dismissible */ }
 
     ModalBottomSheet(
         onDismissRequest = { /* Non-dismissible — user must tap skip or submit */ },
