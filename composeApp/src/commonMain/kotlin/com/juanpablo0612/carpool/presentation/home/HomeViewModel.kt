@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.use_case.ConfirmBookingUseCase
+import com.juanpablo0612.carpool.domain.booking.use_case.GetAllDriverBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetDriverBookingRequestsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetPassengerBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.RejectBookingUseCase
@@ -31,6 +32,7 @@ class HomeViewModel(
     private val userSession: UserSession,
     private val getDriverTripsUseCase: GetDriverTripsUseCase,
     private val getDriverBookingRequestsUseCase: GetDriverBookingRequestsUseCase,
+    private val getAllDriverBookingsUseCase: GetAllDriverBookingsUseCase,
     private val getPassengerBookingsUseCase: GetPassengerBookingsUseCase,
     private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
     private val getUserRoutesUseCase: GetUserRoutesUseCase,
@@ -79,18 +81,22 @@ class HomeViewModel(
         combine(
             getDriverTripsUseCase(userId),
             getDriverBookingRequestsUseCase(userId),
+            getAllDriverBookingsUseCase(userId),
             getUserVehiclesUseCase(userId),
             getUserRoutesUseCase(userId),
-        ) { trips, bookings, vehicles, routes ->
+        ) { trips, pendingBookings, allBookings, vehicles, routes ->
             val monthStart = startOfCurrentMonth(now)
             val nextTrip = trips
                 .filter { it.status == TripStatus.Active && it.departureTime > now }
                 .minByOrNull { it.departureTime }
-            val pendingRequests = bookings.filter { it.status == BookingStatus.Pending }
+            val pendingRequests = pendingBookings.filter { it.status == BookingStatus.Pending }
             val tripsThisMonth = trips.count {
                 it.departureTime >= monthStart && it.status != TripStatus.Cancelled
             }
-            val passengersThisMonth = bookings.count {
+            // getDriverBookingRequestsUseCase is already scoped to PENDING, so counting
+            // Confirmed bookings over it is always empty — source this stat from the full
+            // driver booking set instead (3.3).
+            val passengersThisMonth = allBookings.count {
                 it.departureTime >= monthStart && it.status == BookingStatus.Confirmed
             }
             _state.update {

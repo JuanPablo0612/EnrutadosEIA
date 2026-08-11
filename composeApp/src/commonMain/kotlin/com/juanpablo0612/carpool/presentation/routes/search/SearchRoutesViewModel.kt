@@ -123,8 +123,7 @@ class SearchRoutesViewModel(
             val results = filtered.mapNotNull { trip ->
                 val vehicles = getUserVehiclesUseCase(trip.driverId).first()
                 val vehicle = vehicles.find { it.id == trip.vehicleId }
-                val totalSeats = vehicle?.seatsAvailable ?: trip.seatCount
-                val availableSeats = getTripAvailableSeatsUseCase(trip.id, totalSeats).first()
+                val availableSeats = getTripAvailableSeatsUseCase(trip.id).first()
 
                 val maxContrib = state.filters.maxContribution
                 if (maxContrib != null) {

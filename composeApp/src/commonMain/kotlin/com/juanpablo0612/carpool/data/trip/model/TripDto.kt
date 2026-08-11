@@ -21,7 +21,8 @@ data class TripDto(
     val status: String = "ACTIVE",
     val driverLatitude: Double? = null,
     val driverLongitude: Double? = null,
-    val passengerStatuses: Map<String, String> = emptyMap()
+    val passengerStatuses: Map<String, String> = emptyMap(),
+    val confirmedSeats: Int = 0,
 ) {
     fun toDomain(): Trip = Trip(
         id = id,
@@ -43,7 +44,8 @@ data class TripDto(
         },
         driverLatitude = driverLatitude,
         driverLongitude = driverLongitude,
-        passengerStatuses = passengerStatuses
+        passengerStatuses = passengerStatuses,
+        confirmedSeats = confirmedSeats,
     )
 
     companion object {
@@ -67,7 +69,8 @@ data class TripDto(
             },
             driverLatitude = trip.driverLatitude,
             driverLongitude = trip.driverLongitude,
-            passengerStatuses = trip.passengerStatuses
+            passengerStatuses = trip.passengerStatuses,
+            confirmedSeats = trip.confirmedSeats,
         )
     }
 }

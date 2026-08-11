@@ -192,8 +192,8 @@ class BookingRequestsViewModel(
 
     private fun checkTripFull(tripId: String) {
         viewModelScope.launch {
-            val trip = getTripByIdUseCase(tripId).getOrNull() ?: return@launch
-            val available = getTripAvailableSeatsUseCase(tripId, trip.seatCount).first()
+            getTripByIdUseCase(tripId).getOrNull() ?: return@launch
+            val available = getTripAvailableSeatsUseCase(tripId).first()
             if (available == 0) {
                 _state.update { it.copy(snackbarMessage = TRIP_FULL_SIGNAL) }
             }
