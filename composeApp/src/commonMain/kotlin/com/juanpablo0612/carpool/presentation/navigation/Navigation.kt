@@ -172,7 +172,7 @@ fun AppNavigation(
                     OnboardingScreen(
                         viewModel = viewModel,
                         onNavigateToApp = {
-                            navController.navigate(Route.Login) {
+                            navController.navigate(Route.Splash) {
                                 popUpTo<Route.Onboarding> { inclusive = true }
                             }
                         }
@@ -245,8 +245,6 @@ fun AppNavigation(
                     onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
                     onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    onNavigateToPlaceSelector = { mode -> navController.navigate(Route.PlaceSelector(mode)) },
-                    onPlaceSelected = { navController.popBackStack() },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
@@ -336,6 +334,15 @@ fun AppNavigation(
                         onNavigateToSafety = { navController.navigate(Route.Safety) },
                         onDeleteAccountSuccess = {
                             navController.navigate(Route.Login) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
+                        onRoleSwitched = { role ->
+                            // ProfileViewModel already flipped userSession.activeRole — just move
+                            // the nav graph so it agrees (3.9).
+                            val destination =
+                                if (role == UserRole.Driver) Route.Home else Route.PassengerHome
+                            navController.navigate(destination) {
                                 popUpTo(0) { inclusive = true }
                             }
                         }

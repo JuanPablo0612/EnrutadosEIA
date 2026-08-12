@@ -19,7 +19,6 @@ class CreateBookingUseCase(
         originName: String,
         destinationName: String,
         departureTime: Long,
-        totalSeats: Int,
         passengerMessage: String? = null
     ): Result<Unit> {
         val user = authRepository.getCurrentUser().getOrElse {
@@ -32,7 +31,7 @@ class CreateBookingUseCase(
             return Result.failure(AppException.BookingException.AlreadyBooked)
         }
 
-        val availableSeats = getTripAvailableSeatsUseCase(tripId, totalSeats).first()
+        val availableSeats = getTripAvailableSeatsUseCase(tripId).first()
         if (availableSeats <= 0) {
             return Result.failure(AppException.BookingException.NoSeatsAvailable)
         }

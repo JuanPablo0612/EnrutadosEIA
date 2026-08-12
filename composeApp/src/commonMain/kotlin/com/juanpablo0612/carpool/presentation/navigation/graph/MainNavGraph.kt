@@ -8,9 +8,6 @@ import com.juanpablo0612.carpool.presentation.bookings.driver.BookingRequestsVie
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
 import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.navigation.Route
-import com.juanpablo0612.carpool.domain.places.model.Place
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorScreen
-import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteScreen
 import com.juanpablo0612.carpool.presentation.routes.create.CreateRouteViewModel
 import com.juanpablo0612.carpool.presentation.routes.detail.RouteDetailScreen
@@ -37,8 +34,6 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToRouteDetail: (String) -> Unit,
     onNavigateToCreateTrip: (String) -> Unit,
     onNavigateToAddPlace: () -> Unit,
-    onNavigateToPlaceSelector: (String) -> Unit,
-    onPlaceSelected: (Place) -> Unit,
     onNavigateToRoutesList: () -> Unit,
     onNavigateToDriverTrips: () -> Unit,
     onNavigateToDriverBookingRequests: () -> Unit,
@@ -140,17 +135,6 @@ fun NavGraphBuilder.mainNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onVehicleRegistered = onNavigateBack
-        )
-    }
-
-    composable<Route.PlaceSelector> { backStackEntry ->
-        val args = backStackEntry.toRoute<Route.PlaceSelector>()
-        val viewModel: PlaceSelectorViewModel = koinViewModel { parametersOf(args.mode) }
-        PlaceSelectorScreen(
-            viewModel = viewModel,
-            onPlaceSelected = onPlaceSelected,
-            onBack = onNavigateBack,
-            onNavigateToAddPlace = onNavigateToAddPlace,
         )
     }
 

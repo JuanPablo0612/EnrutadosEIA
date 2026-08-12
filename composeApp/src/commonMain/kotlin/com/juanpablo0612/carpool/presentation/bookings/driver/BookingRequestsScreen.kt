@@ -4,29 +4,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.bookings.asStringResource
 import com.juanpablo0612.carpool.presentation.bookings.driver.components.BookingRequestCard
 import com.juanpablo0612.carpool.presentation.bookings.driver.components.ConfirmedBookingCard
 import com.juanpablo0612.carpool.presentation.bookings.driver.components.HistoryBookingCard
@@ -34,11 +36,11 @@ import com.juanpablo0612.carpool.presentation.bookings.driver.components.RejectB
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.booking_accepted_message
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_confirmed
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_history
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_pending
@@ -63,7 +65,6 @@ fun BookingRequestsScreen(
     onNavigateToPassengerProfile: (String) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -72,22 +73,8 @@ fun BookingRequestsScreen(
         }
     }
 
-    val acceptedMsg = stringResource(Res.string.booking_accepted_message)
-    val tripFullMsg = stringResource(Res.string.booking_trip_now_full)
-
-    LaunchedEffect(state.snackbarMessage) {
-        val msg = state.snackbarMessage ?: return@LaunchedEffect
-        val displayMsg = when (msg) {
-            BookingRequestsViewModel.TRIP_FULL_SIGNAL -> tripFullMsg
-            else -> acceptedMsg
-        }
-        snackbarHostState.showSnackbar(displayMsg)
-        viewModel.onAction(BookingRequestsAction.DismissSnackbar)
-    }
-
     BookingRequestsContent(
         state = state,
-        snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
     )
 }
@@ -96,7 +83,6 @@ fun BookingRequestsScreen(
 @Composable
 fun BookingRequestsContent(
     state: BookingRequestsUiState,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onAction: (BookingRequestsAction) -> Unit,
 ) {
     if (state.pendingRejectionFor != null) {
@@ -135,13 +121,31 @@ fun BookingRequestsContent(
                 ),
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
         ) {
+            if (state.tripJustFilled) {
+                TripFilledBanner(
+                    onDismiss = { onAction(BookingRequestsAction.DismissTripFilledNotice) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                )
+            }
+
+            state.error?.let { error ->
+                ErrorMessage(
+                    message = stringResource(error.asStringResource()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                        .clickable { onAction(BookingRequestsAction.DismissError) },
+                )
+            }
+
             val tabs = BookingsTab.entries
             val selectedIndex = tabs.indexOf(state.tab)
 
@@ -215,6 +219,27 @@ fun BookingRequestsContent(
                 }
             }
         }
+    }
+}
+
+// Inline, dismiss-on-tap notice — CLAUDE.md forbids SnackBars, so the "trip is now full" signal
+// (previously smuggled through a snackbar string) is rendered as a real, non-transient banner.
+@Composable
+private fun TripFilledBanner(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier.clickable(onClick = onDismiss),
+    ) {
+        Text(
+            text = stringResource(Res.string.booking_trip_now_full),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(16.dp),
+        )
     }
 }
 

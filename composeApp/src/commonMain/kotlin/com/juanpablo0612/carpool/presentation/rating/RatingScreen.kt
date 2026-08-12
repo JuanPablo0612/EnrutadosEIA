@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.rating
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.juanpablo0612.carpool.domain.rating.model.RatingChip
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.rating_chip_amable
@@ -77,8 +77,6 @@ fun RatingContent(
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    BackHandler { /* Intercept back — non-dismissible */ }
 
     ModalBottomSheet(
         onDismissRequest = { /* Non-dismissible — user must tap skip or submit */ },
@@ -139,6 +137,10 @@ fun RatingContent(
                 maxLines = 4,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            state.error?.let {
+                ErrorMessage(message = stringResource(it.asStringResource()))
+            }
 
             Button(
                 onClick = { onAction(RatingAction.OnSubmit) },

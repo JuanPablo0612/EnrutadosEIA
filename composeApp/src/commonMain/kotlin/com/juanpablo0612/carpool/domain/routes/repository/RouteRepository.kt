@@ -8,6 +8,5 @@ interface RouteRepository {
     fun getUserRoutes(userId: String): Flow<List<Route>>
     suspend fun getRouteById(id: String): Result<Route>
     suspend fun updateRoute(route: Route): Result<Unit>
-    fun getAvailableRoutes(): Flow<List<Route>>
     suspend fun deleteRoute(id: String): Result<Unit>
 }

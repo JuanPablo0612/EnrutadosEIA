@@ -9,8 +9,8 @@ data class SafetyUiState(
     val showAddDialog: Boolean = false,
     val newContactName: String = "",
     val newContactPhone: String = "",
-    val newContactNameError: String? = null,
-    val newContactPhoneError: String? = null,
+    val newContactNameError: SafetyContactFieldError? = null,
+    val newContactPhoneError: SafetyContactFieldError? = null,
     val isLoading: Boolean = true,
     val isSaving: Boolean = false
 ) {

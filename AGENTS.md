@@ -12,14 +12,18 @@ Agents must strictly follow these guidelines when generating, modifying, or refa
 # Build Android debug APK
 ./gradlew :androidApp:assembleDebug
 
-# Run tests
-./gradlew :composeApp:testDebugUnitTest
-
 # Clean build
 ./gradlew clean :androidApp:assembleDebug
+
+# Compile shared code only (no Android SDK required)
+./gradlew :composeApp:compileCommonMainKotlinMetadata
 ```
 
+There is no test command. Android host tests are not enabled and the project has no tests — do not invent or run `./gradlew :composeApp:testDebugUnitTest`; that task does not exist. `composeApp` is a Kotlin Multiplatform **library**, not an application module, so `:composeApp:assembleDebug` is also not a valid task — the installable APK comes from `:androidApp:assembleDebug`.
+
 Gradle configuration cache is enabled. On Windows use `gradlew.bat` instead of `./gradlew`.
+
+A fresh clone needs two gitignored files before `:androidApp:assembleDebug` will succeed: `androidApp/google-services.json` (Firebase config) and a root `secrets.properties` with `MAPS_API_KEY` (copy `secrets.properties.example`). See `README.md` for details.
 
 ------------------------------------------------------------------------
 
@@ -41,15 +45,17 @@ Prioritize simplicity, reliability, and fast interactions.
 
 # 4. Technology Stack
 
-- **Language:** Kotlin 2.3.20
+Versions are tracked in `gradle/libs.versions.toml` — treat that file as the source of truth.
+
+- **Language:** Kotlin 2.3.21
 - **Architecture:** Clean Architecture + MVVM
 - **UI Framework:** Compose Multiplatform 1.10.3, Material3
 - **Platform:** Kotlin Multiplatform (Android active, iOS scaffold exists but inactive)
 - **Backend:** Firebase Auth + Firestore + Analytics (`dev.gitlive:firebase-*` 2.4.0)
-- **DI:** Koin 4.2.0
+- **DI:** Koin 4.2.1 (hand-written DSL modules — no `koin-annotations`/compiler plugin)
 - **Navigation:** AndroidX Navigation Compose 2.9.2 with type-safe routes
-- **Other:** KotlinX Serialization, KotlinX DateTime 0.7.1, FileKit 0.13.0
-- **Android:** compileSdk 36, minSdk 24, targetSdk 36, JVM target 17
+- **Other:** KotlinX Serialization, KotlinX DateTime 0.8.0, FileKit 0.14.1
+- **Android:** compileSdk 37, minSdk 24, targetSdk 37, JVM target 17
 
 ------------------------------------------------------------------------
 
@@ -147,10 +153,10 @@ Represent events from UI to ViewModel. UI calls `viewModel.onAction(Action)`. Us
 
 # 16. Error Handling & UI Patterns
 
-- Errors: Represented by sealed classes in the domain (`AppException`).
-- **NO SNACKBARS:** Do not use `SnackbarHost` for validation or authentication errors.
+- Errors: every repository maps raw SDK/Firebase exceptions to a subclass of `core/exception/AppException.kt` (one nested sealed class per feature — `AuthException`, `BookingException`, `TripException`, `RouteException`, `VehicleException`, `PlaceException`, `ChatException`, `RatingException`, `NotificationException`, `SafetyException`). Never return `Result.failure(e)` with the raw exception.
+- **NO SNACKBARS:** Do not use `SnackbarHost` for validation, authentication, or any other error/status message.
 - **Inline Errors:** Use `errorMessage` properties in text fields and the `ErrorMessage` component for global screen errors.
-- Use `.asStringResource()` extensions to map domain errors to localized strings in the UI.
+- Map errors to localized strings via `.asStringResource()` — either an extension function in a `presentation/{feature}/XxxErrorMapper.kt` (for domain-pure error classes like `AuthError`/`BookingError`/`TripError`) or a member function on a self-contained presentation-layer error class (for screen-local validation errors like `AddPlaceError`/`RegisterVehicleError`). Domain error classes must never import Compose Resources directly — that import belongs in the presentation-layer mapper only.
 
 ------------------------------------------------------------------------
 
@@ -167,7 +173,7 @@ To enable Compose Previews and maintain a clean separation of concerns:
 
 # 18. Localization
 
-No hardcoded strings. Use `Res.string.*` from `composeResources/values/strings.xml` for all UI text. Spanish translations live in `values-es/`.
+No hardcoded strings. Use `Res.string.*` from `composeResources/values/strings.xml` for all UI text. Spanish translations live in `values-es/`, in exact key parity with `values/`. Inside a `@Composable`, resolve with `stringResource(Res.string.x)`. When text must be resolved from a ViewModel — e.g. building a notification title/body that gets persisted as plain text — use the suspend `getString(Res.string.x)` from `org.jetbrains.compose.resources` instead.
 
 ------------------------------------------------------------------------
 

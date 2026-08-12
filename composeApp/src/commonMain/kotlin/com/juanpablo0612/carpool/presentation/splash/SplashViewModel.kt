@@ -33,12 +33,12 @@ class SplashViewModel(
 
     private fun checkAuthState() {
         viewModelScope.launch {
-            if (authRepository.getCurrentUserId() == null) {
-                _events.emit(SplashEvent.NavigateToAuth)
-                return@launch
-            }
             if (!getOnboardingSeenUseCase()) {
                 _events.emit(SplashEvent.NavigateToOnboarding)
+                return@launch
+            }
+            if (authRepository.getCurrentUserId() == null) {
+                _events.emit(SplashEvent.NavigateToAuth)
                 return@launch
             }
             getCurrentUserUseCase()

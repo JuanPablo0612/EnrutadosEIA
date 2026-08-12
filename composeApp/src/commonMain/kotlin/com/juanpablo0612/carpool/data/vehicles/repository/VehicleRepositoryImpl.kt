@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.vehicles.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.vehicles.model.VehicleDto
 import com.juanpablo0612.carpool.data.vehicles.upload
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
@@ -43,7 +44,7 @@ class VehicleRepositoryImpl(
             docRef.set(VehicleDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -53,7 +54,7 @@ class VehicleRepositoryImpl(
             val vehicle = doc.data(VehicleDto.serializer()).toDomain()
             Result.success(vehicle)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -75,7 +76,7 @@ class VehicleRepositoryImpl(
             firestore.collection(COLLECTION_NAME).document(vehicle.id).set(VehicleDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -86,7 +87,7 @@ class VehicleRepositoryImpl(
             try { photoRef.delete() } catch (_: Exception) { /* ignore if photo not found */ }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
@@ -101,29 +102,16 @@ class VehicleRepositoryImpl(
             batch.commit()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.VehicleException.Unknown)
         }
     }
 
-    // Fetches all vehicles and filters by driverId client-side.
-    // Suitable for small per-driver datasets (typically 1–3 vehicles).
     override fun getUserVehicles(userId: String): Flow<List<Vehicle>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "driverId" equalTo userId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(VehicleDto.serializer()).toDomain() }
-                    .filter { it.driverId == userId }
-            }
-    }
-
-    override fun getDriverVehicles(driverId: String): Flow<List<Vehicle>> {
-        return firestore.collection(COLLECTION_NAME)
-            .snapshots
-            .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(VehicleDto.serializer()).toDomain() }
-                    .filter { it.driverId == driverId }
+                snapshot.documents.map { it.data(VehicleDto.serializer()).toDomain() }
             }
     }
 

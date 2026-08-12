@@ -7,6 +7,9 @@ import com.juanpablo0612.carpool.domain.places.service.LocationService
 import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
+import com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.place_selector_current_location_name
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 sealed class PlaceSelectorEvent {
     data class PlaceSelected(val place: Place) : PlaceSelectorEvent()
@@ -31,10 +35,15 @@ class PlaceSelectorViewModel(
     private val locationService: LocationService,
     private val placesSearchService: PlacesSearchService,
     private val deletePlaceUseCase: DeletePlaceUseCase,
+    private val locationPermissionRequester: LocationPermissionRequester,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        PlaceSelectorUiState(mode = PlaceSelectorMode.fromString(mode))
+        PlaceSelectorUiState(
+            mode = PlaceSelectorMode.fromString(mode),
+            // Reflect the real OS grant instead of assuming it (3.12).
+            locationPermissionGranted = locationPermissionRequester.hasPermission(),
+        )
     )
     val state = _state.asStateFlow()
 
@@ -63,8 +72,9 @@ class PlaceSelectorViewModel(
         when (action) {
             is PlaceSelectorAction.OnQueryChange -> handleQueryChange(action.query)
             PlaceSelectorAction.UseCurrentLocation -> resolveCurrentLocation()
-            PlaceSelectorAction.RequestLocationPermission -> {
-                _state.update { it.copy(locationPermissionGranted = false) }
+            PlaceSelectorAction.RequestLocationPermission -> viewModelScope.launch {
+                val granted = locationPermissionRequester.requestPermission()
+                _state.update { it.copy(locationPermissionGranted = granted) }
             }
             is PlaceSelectorAction.OnSuggestionSelected -> selectSuggestion(action.suggestion)
             is PlaceSelectorAction.OnPlaceSelected -> viewModelScope.launch {
@@ -89,7 +99,7 @@ class PlaceSelectorViewModel(
         val place = _state.value.isConfirmingDelete ?: return
         _state.update { it.copy(isConfirmingDelete = null) }
         viewModelScope.launch {
-            deletePlaceUseCase(place.id)
+            deletePlaceUseCase(place)
         }
     }
 
@@ -119,7 +129,7 @@ class PlaceSelectorViewModel(
             val address = placesSearchService.reverseGeocode(coords) ?: ""
             val place = Place(
                 id = "current_location",
-                name = "Mi ubicación actual",
+                name = getString(Res.string.place_selector_current_location_name),
                 address = address,
                 latitude = coords.latitude,
                 longitude = coords.longitude,

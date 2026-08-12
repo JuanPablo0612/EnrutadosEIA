@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.presentation.rating
 
 import com.juanpablo0612.carpool.domain.rating.model.RatingChip
+import com.juanpablo0612.carpool.domain.rating.model.RatingError
 
 data class RatingUiState(
     val bookingId: String = "",
@@ -12,7 +13,7 @@ data class RatingUiState(
     val comment: String = "",
     val isLoading: Boolean = false,
     val isSubmitting: Boolean = false,
-    val error: String? = null
+    val error: RatingError? = null
 ) {
     val availableChips: List<RatingChip>
         get() = if (isDriver) RatingChip.driverChips else RatingChip.passengerChips

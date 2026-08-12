@@ -6,6 +6,11 @@ import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.places.model.PlaceType
 import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.place_type_gym
+import enrutadoseia.composeapp.generated.resources.place_type_home
+import enrutadoseia.composeapp.generated.resources.place_type_university
+import enrutadoseia.composeapp.generated.resources.place_type_work
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,6 +21,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class AddPlaceViewModel(
     private val createPlaceUseCase: CreatePlaceUseCase,
@@ -51,26 +57,22 @@ class AddPlaceViewModel(
         }
     }
 
+    private suspend fun defaultNameFor(type: PlaceType): String = when (type) {
+        is PlaceType.Home -> getString(Res.string.place_type_home)
+        is PlaceType.Work -> getString(Res.string.place_type_work)
+        is PlaceType.Gym -> getString(Res.string.place_type_gym)
+        is PlaceType.University -> getString(Res.string.place_type_university)
+        is PlaceType.Other -> ""
+    }
+
     private fun selectType(type: PlaceType) {
-        val defaultName = when (type) {
-            is PlaceType.Home -> "Casa"
-            is PlaceType.Work -> "Trabajo"
-            is PlaceType.Gym -> "Gimnasio"
-            is PlaceType.University -> "Universidad"
-            is PlaceType.Other -> ""
+        viewModelScope.launch {
+            val defaultName = defaultNameFor(type)
+            val currentName = _state.value.name
+            val previousDefault = _state.value.type?.let { defaultNameFor(it) } ?: ""
+            val newName = if (currentName.isBlank() || currentName == previousDefault) defaultName else currentName
+            _state.update { it.copy(type = type, name = newName) }
         }
-        val currentName = _state.value.name
-        val previousDefault = _state.value.type?.let { prevType ->
-            when (prevType) {
-                is PlaceType.Home -> "Casa"
-                is PlaceType.Work -> "Trabajo"
-                is PlaceType.Gym -> "Gimnasio"
-                is PlaceType.University -> "Universidad"
-                else -> ""
-            }
-        } ?: ""
-        val newName = if (currentName.isBlank() || currentName == previousDefault) defaultName else currentName
-        _state.update { it.copy(type = type, name = newName) }
     }
 
     private fun handleAddressChange(text: String) {

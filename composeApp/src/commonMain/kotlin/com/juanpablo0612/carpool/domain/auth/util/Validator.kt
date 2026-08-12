@@ -1,9 +1,14 @@
 package com.juanpablo0612.carpool.domain.auth.util
 
 object Validator {
+    // Basic shape check (local@domain.tld) — deliberately not exhaustive RFC 5322, just enough to
+    // reject obviously malformed input before the EIA-domain-specific check runs.
+    private val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
+
     fun validateEmail(email: String): ValidationResult {
         return when {
             email.isBlank() -> ValidationResult.Error(ValidationError.EmailEmpty)
+            !EMAIL_REGEX.matches(email) -> ValidationResult.Error(ValidationError.EmailInvalid)
             !email.endsWith("@eia.edu.co", ignoreCase = true) -> ValidationResult.Error(ValidationError.EmailNotEia)
             else -> ValidationResult.Success
         }

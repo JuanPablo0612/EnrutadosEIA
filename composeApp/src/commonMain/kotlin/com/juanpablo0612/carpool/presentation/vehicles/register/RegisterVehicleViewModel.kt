@@ -58,6 +58,7 @@ class RegisterVehicleViewModel(
                         year = vehicle.year,
                         seatCount = vehicle.seatsAvailable,
                         type = vehicle.type,
+                        isPrimary = vehicle.isPrimary,
                     )
                 }
             }
@@ -173,6 +174,7 @@ class RegisterVehicleViewModel(
                 year = s.year,
                 seatsAvailable = s.seatCount,
                 photoUrl = s.existingPhotoUrl ?: "",
+                isPrimary = s.isPrimary,
                 type = s.type,
             )
 

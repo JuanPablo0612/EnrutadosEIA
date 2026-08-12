@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.trip.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.trip.model.TripDto
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -7,6 +8,7 @@ import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
 
 class TripRepositoryImpl(
     private val firestore: FirebaseFirestore
@@ -19,22 +21,28 @@ class TripRepositoryImpl(
             docRef.set(TripDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
     override fun getDriverTrips(driverId: String): Flow<List<Trip>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "driverId" equalTo driverId }
             .snapshots
             .map { snapshot ->
-                snapshot.documents
-                    .map { it.data(TripDto.serializer()).toDomain() }
-                    .filter { it.driverId == driverId }
+                snapshot.documents.map { it.data(TripDto.serializer()).toDomain() }
             }
     }
 
     override fun getAvailableTrips(): Flow<List<Trip>> {
+        val now = Clock.System.now().toEpochMilliseconds()
         return firestore.collection(COLLECTION_NAME)
+            .where {
+                all(
+                    "status" equalTo "ACTIVE",
+                    "departureTime" greaterThanOrEqualTo now,
+                )
+            }
             .snapshots
             .map { snapshot ->
                 snapshot.documents.map { it.data(TripDto.serializer()).toDomain() }
@@ -47,7 +55,7 @@ class TripRepositoryImpl(
             val trip = snapshot.data(TripDto.serializer()).toDomain()
             Result.success(trip)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -63,7 +71,7 @@ class TripRepositoryImpl(
                 .update("status" to statusString)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -81,7 +89,7 @@ class TripRepositoryImpl(
                 .update("driverLatitude" to latitude, "driverLongitude" to longitude)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 
@@ -91,7 +99,7 @@ class TripRepositoryImpl(
                 .update("passengerStatuses.$passengerId" to status)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.TripException.Unknown)
         }
     }
 

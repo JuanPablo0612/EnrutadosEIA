@@ -27,6 +27,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.trip_available_seats
+import enrutadoseia.composeapp.generated.resources.trip_result_view_detail
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -108,7 +109,10 @@ fun TripResultCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(onClick = onClick) {
-                    Text("Ver detalle →", style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        stringResource(Res.string.trip_result_view_detail),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
                 }
             }
         }

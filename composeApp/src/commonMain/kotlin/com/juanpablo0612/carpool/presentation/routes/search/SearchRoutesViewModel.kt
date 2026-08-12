@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.use_case.GetAvailableTripsUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class SearchRoutesViewModel(
     getAvailableTripsUseCase: GetAvailableTripsUseCase,
-    private val getDriverVehiclesUseCase: GetDriverVehiclesUseCase,
+    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase
 ) : ViewModel() {
 
@@ -102,15 +102,19 @@ class SearchRoutesViewModel(
         _uiState.update { it.copy(isSearching = true) }
         viewModelScope.launch {
             val filtered = allTrips.value.filter { trip ->
+                // An empty selected address must never match — trip.origin.address.contains("")
+                // is true for every trip, which used to make this filter a no-op (3.11).
                 val originMatch = state.origin == null ||
                         trip.origin.name.contains(state.origin.name, ignoreCase = true) ||
-                        trip.origin.address.contains(state.origin.address, ignoreCase = true)
+                        (state.origin.address.isNotBlank() &&
+                                trip.origin.address.contains(state.origin.address, ignoreCase = true))
                 val destMatch = state.destination == null ||
                         trip.destination.name.contains(state.destination.name, ignoreCase = true) ||
-                        trip.destination.address.contains(
-                            state.destination.address,
-                            ignoreCase = true
-                        )
+                        (state.destination.address.isNotBlank() &&
+                                trip.destination.address.contains(
+                                    state.destination.address,
+                                    ignoreCase = true
+                                ))
 
                 val timeMatch = if (state.selectedEpochMs != null) {
                     val toleranceMs = state.toleranceMinutes * 60_000L
@@ -121,10 +125,9 @@ class SearchRoutesViewModel(
             }
 
             val results = filtered.mapNotNull { trip ->
-                val vehicles = getDriverVehiclesUseCase(trip.driverId).first()
+                val vehicles = getUserVehiclesUseCase(trip.driverId).first()
                 val vehicle = vehicles.find { it.id == trip.vehicleId }
-                val totalSeats = vehicle?.seatsAvailable ?: trip.seatCount
-                val availableSeats = getTripAvailableSeatsUseCase(trip.id, totalSeats).first()
+                val availableSeats = getTripAvailableSeatsUseCase(trip.id).first()
 
                 val maxContrib = state.filters.maxContribution
                 if (maxContrib != null) {

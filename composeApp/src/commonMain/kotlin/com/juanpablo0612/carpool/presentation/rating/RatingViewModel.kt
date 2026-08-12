@@ -70,7 +70,7 @@ class RatingViewModel(
                     _events.emit(RatingEvent.RatingSubmitted)
                 },
                 onFailure = { throwable ->
-                    _state.update { it.copy(isSubmitting = false, error = throwable.message) }
+                    _state.update { it.copy(isSubmitting = false, error = throwable.toRatingError()) }
                 }
             )
         }

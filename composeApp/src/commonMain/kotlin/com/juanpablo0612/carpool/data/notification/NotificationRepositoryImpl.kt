@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.notification
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -30,47 +31,33 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
                 .set(NotificationDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 
-    override suspend fun markRead(notificationId: String): Result<Unit> {
+    override suspend fun markRead(userId: String, notificationId: String): Result<Unit> {
         return try {
-            val snapshot = firestore.collection(COLLECTION).get()
-            snapshot.documents.forEach { userDoc ->
-                val itemRef = firestore.collection(COLLECTION)
-                    .document(userDoc.id)
-                    .collection(ITEMS_COLLECTION)
-                    .document(notificationId)
-                val item = runCatching { itemRef.get() }.getOrNull()
-                if (item?.exists == true) {
-                    itemRef.update("isRead" to true)
-                    return Result.success(Unit)
-                }
-            }
+            firestore.collection(COLLECTION)
+                .document(userId)
+                .collection(ITEMS_COLLECTION)
+                .document(notificationId)
+                .update("isRead" to true)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 
-    override suspend fun delete(notificationId: String): Result<Unit> {
+    override suspend fun delete(userId: String, notificationId: String): Result<Unit> {
         return try {
-            val snapshot = firestore.collection(COLLECTION).get()
-            snapshot.documents.forEach { userDoc ->
-                val itemRef = firestore.collection(COLLECTION)
-                    .document(userDoc.id)
-                    .collection(ITEMS_COLLECTION)
-                    .document(notificationId)
-                val item = runCatching { itemRef.get() }.getOrNull()
-                if (item?.exists == true) {
-                    itemRef.delete()
-                    return Result.success(Unit)
-                }
-            }
+            firestore.collection(COLLECTION)
+                .document(userId)
+                .collection(ITEMS_COLLECTION)
+                .document(notificationId)
+                .delete()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 
@@ -83,7 +70,7 @@ class NotificationRepositoryImpl(private val firestore: FirebaseFirestore) : Not
             snapshot.documents.forEach { it.reference.delete() }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.NotificationException.Unknown)
         }
     }
 

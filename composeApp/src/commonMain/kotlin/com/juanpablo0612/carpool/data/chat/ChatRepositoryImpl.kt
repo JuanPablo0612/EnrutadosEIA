@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.chat
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.chat.model.Message
 import com.juanpablo0612.carpool.domain.chat.repository.ChatRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -30,7 +31,7 @@ class ChatRepositoryImpl(private val firestore: FirebaseFirestore) : ChatReposit
                 .set(MessageDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.ChatException.Unknown)
         }
     }
 
@@ -40,18 +41,19 @@ class ChatRepositoryImpl(private val firestore: FirebaseFirestore) : ChatReposit
                 .document(bookingId)
                 .collection(MESSAGES_COLLECTION)
                 .get()
-            snapshot.documents
-                .filter { !it.data(MessageDto.serializer()).isRead && it.data(MessageDto.serializer()).senderId != userId }
-                .forEach { doc ->
-                    firestore.collection(CHATS_COLLECTION)
-                        .document(bookingId)
-                        .collection(MESSAGES_COLLECTION)
-                        .document(doc.id)
-                        .update("isRead" to true)
+            val unreadFromOtherParty = snapshot.documents
+                .map { it.reference to it.data(MessageDto.serializer()) }
+                .filter { (_, message) -> !message.isRead && message.senderId != userId }
+            if (unreadFromOtherParty.isNotEmpty()) {
+                val batch = firestore.batch()
+                unreadFromOtherParty.forEach { (ref, _) ->
+                    batch.update(ref, mapOf("isRead" to true))
                 }
+                batch.commit()
+            }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.ChatException.Unknown)
         }
     }
 

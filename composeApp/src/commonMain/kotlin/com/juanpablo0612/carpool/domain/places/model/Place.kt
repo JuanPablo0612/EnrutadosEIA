@@ -8,6 +8,7 @@ data class Place(
     val longitude: Double,
     val type: PlaceType = PlaceType.Other,
     val isCampusPreset: Boolean = false,
+    val ownerId: String = "",
 ) {
     companion object {
         val EIA_LAS_PALMAS = Place(

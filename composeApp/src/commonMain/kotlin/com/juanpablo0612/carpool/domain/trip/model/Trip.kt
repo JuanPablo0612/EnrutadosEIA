@@ -17,5 +17,10 @@ data class Trip(
     val status: TripStatus,
     val driverLatitude: Double? = null,
     val driverLongitude: Double? = null,
-    val passengerStatuses: Map<String, String> = emptyMap()
+    val passengerStatuses: Map<String, String> = emptyMap(),
+    // Denormalized count of CONFIRMED bookings for this trip, maintained by BookingRepositoryImpl
+    // whenever a booking transitions into/out of CONFIRMED. Lets any signed-in user compute
+    // available seats from the trip document alone, without reading (PII-carrying) booking
+    // documents they are not a party to. See GetTripAvailableSeatsUseCase.
+    val confirmedSeats: Int = 0,
 )

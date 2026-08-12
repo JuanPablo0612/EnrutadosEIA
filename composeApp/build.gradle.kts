@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.koinCompose)
     alias(libs.plugins.kotlinxSerialization)
 }
 
@@ -38,6 +37,7 @@ kotlin {
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.compass.geocoder.mobile)
             implementation(libs.compass.autocomplete.mobile)
+            implementation(libs.compass.permissions.mobile)
         }
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.compass.geocoder.mobile)
             implementation(libs.compass.autocomplete.mobile)
+            implementation(libs.compass.permissions.mobile)
         }
         commonMain.dependencies {
             implementation(libs.compass.geolocation)
@@ -62,7 +63,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-            implementation(libs.koin.annotations)
             implementation(libs.navigation.compose)
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.auth)

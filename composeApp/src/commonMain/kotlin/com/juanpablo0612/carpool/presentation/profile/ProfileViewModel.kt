@@ -68,7 +68,7 @@ class ProfileViewModel(
 
             ProfileAction.OnActiveRolesClick -> _state.update { it.copy(showActiveRolesDialog = true) }
             ProfileAction.OnActiveRolesDismissed -> _state.update {
-                it.copy(showActiveRolesDialog = false, blockedRoleToggleMessage = null)
+                it.copy(showActiveRolesDialog = false, blockedRoleToggle = false)
             }
             is ProfileAction.OnToggleRole -> handleRoleToggle(action.role, action.enabled)
 
@@ -90,13 +90,24 @@ class ProfileViewModel(
         val newIsDriver = if (role == UserRole.Driver) enabled else user.isDriver
         val newIsPassenger = if (role == UserRole.Passenger) enabled else user.isPassenger
         if (!newIsDriver && !newIsPassenger) {
-            _state.update { it.copy(blockedRoleToggleMessage = "Debes tener al menos un rol activo.") }
+            _state.update { it.copy(blockedRoleToggle = true) }
             return
         }
-        _state.update { it.copy(blockedRoleToggleMessage = null) }
+        _state.update { it.copy(blockedRoleToggle = false) }
         viewModelScope.launch {
             updateUserRolesUseCase(newIsDriver, newIsPassenger).onSuccess { updatedUser ->
                 userSession.setUser(updatedUser)
+                // Disabling the role you're currently in would otherwise leave the driver
+                // Home/bottom bar showing for a user who just turned Driver off (3.9) — switch to
+                // whichever role is still enabled and navigate there.
+                val activeRole = _state.value.activeRole
+                val disabledActiveRole = (activeRole == UserRole.Driver && !newIsDriver) ||
+                    (activeRole == UserRole.Passenger && !newIsPassenger)
+                if (disabledActiveRole) {
+                    val remainingRole = if (newIsDriver) UserRole.Driver else UserRole.Passenger
+                    userSession.setActiveRole(remainingRole)
+                    _events.emit(ProfileEvent.RoleSwitched(remainingRole))
+                }
             }
         }
     }

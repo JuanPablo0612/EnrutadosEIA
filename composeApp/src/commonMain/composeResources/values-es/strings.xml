@@ -57,6 +57,7 @@
     <string name="place_selector_title_my_places">Mis lugares</string>
     <string name="place_selector_search_hint">Busca una dirección o lugar...</string>
     <string name="place_selector_current_location">Usar mi ubicación actual</string>
+    <string name="place_selector_current_location_name">Mi ubicación actual</string>
     <string name="place_selector_resolving_location">Obteniendo ubicación...</string>
     <string name="place_selector_allow_location">Permitir →</string>
     <string name="place_selector_section_my_places">Mis lugares</string>
@@ -95,6 +96,7 @@
     <string name="destination_eia_label">Destino (EIA)</string>
     <string name="add_waypoint_button">+ Agregar parada</string>
     <string name="select_location_placeholder">Seleccionar ubicación</string>
+    <string name="route_stop_remove">Eliminar parada</string>
     <string name="arrival_time_label">Hora de llegada a la EIA</string>
     <string name="departure_time_label">Salida: %1$s</string>
     <string name="departure_date_label">Fecha de salida</string>
@@ -227,6 +229,7 @@
     <string name="error_no_seats_available">No hay asientos disponibles en este vehículo</string>
     <string name="error_already_booked">Ya tienes una reserva en esta ruta</string>
     <string name="error_booking_not_found">Reserva no encontrada</string>
+    <string name="error_booking_vehicle_not_found">No se encontró el vehículo de este viaje</string>
 
     <!-- Detalle de ruta (pasajero) -->
     <string name="route_detail_passenger_title">Detalles de la Ruta</string>
@@ -264,6 +267,7 @@
     <string name="my_trips_empty">Sin viajes publicados aún</string>
     <string name="error_trip_not_found">Viaje no encontrado</string>
     <string name="error_no_vehicle_selected">Por favor selecciona un vehículo</string>
+    <string name="error_trip_departure_in_past">La hora de salida debe ser en el futuro</string>
 
     <!-- Acciones de diálogo -->
     <string name="confirm">Confirmar</string>
@@ -646,10 +650,10 @@
     <string name="notifications_section_today">HOY</string>
     <string name="notifications_section_this_week">ESTA SEMANA</string>
     <string name="notifications_section_earlier">ANTES</string>
-    <string name="notification_booking_accepted_title">Solicitud aceptada</string>
-    <string name="notification_booking_accepted_body">%1$s aceptó tu solicitud para el viaje %2$s</string>
-    <string name="notification_booking_rejected_title">Solicitud rechazada</string>
-    <string name="notification_booking_rejected_body">Tu solicitud para el viaje %1$s fue rechazada</string>
+    <string name="notification_booking_accepted_title">Reserva confirmada</string>
+    <string name="notification_booking_accepted_body">El conductor aceptó tu reserva. ¡Que tengas buen viaje!</string>
+    <string name="notification_booking_rejected_title">Reserva rechazada</string>
+    <string name="notification_booking_rejected_body">El conductor no pudo aceptar tu reserva.</string>
     <string name="notification_new_request_title">Nueva solicitud</string>
     <string name="notification_new_request_body">%1$s quiere un cupo en tu viaje %2$s</string>
     <string name="notification_trip_started_title">Viaje en curso</string>
@@ -696,6 +700,7 @@
     <string name="search_adjust_button">Ajustar búsqueda</string>
     <string name="trip_contribution_free">Gratis</string>
     <string name="trip_available_seats">%1$d cupos</string>
+    <string name="trip_result_view_detail">Ver detalle →</string>
 
     <!-- RouteDetailPassenger rediseño -->
     <string name="trip_driver_section">Conductor</string>
@@ -761,6 +766,7 @@
     <string name="vehicle_color_blue">Azul</string>
     <string name="vehicle_color_other">Otro</string>
     <string name="vehicle_plate_label">Placa</string>
+    <string name="vehicle_plate_placeholder">ABC123</string>
     <string name="vehicle_plate_error_format">Formato inválido. Usa 3 letras y 3 números (ej. ABC123)</string>
     <string name="vehicle_seats_helper">Sin contar el conductor.</string>
     <string name="vehicle_type_label">Tipo de vehículo (opcional)</string>

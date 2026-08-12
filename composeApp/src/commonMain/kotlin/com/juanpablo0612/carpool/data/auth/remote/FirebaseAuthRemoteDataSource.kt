@@ -76,9 +76,17 @@ class FirebaseAuthRemoteDataSource(
     }
 
     override suspend fun getCurrentUser(): UserDto {
-        val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
-        val snapshot = firestore.collection("users").document(userId).get()
-        return snapshot.data(UserDto.serializer())
+        val user = checkNotNull(firebaseAuth.currentUser) { "User not authenticated" }
+        // The Firestore isEmailVerified field is only a copy written once at sign-up; the auth
+        // token is the source of truth, so refresh it before trusting isEmailVerified.
+        user.reload()
+        val isVerified = firebaseAuth.currentUser?.isEmailVerified ?: user.isEmailVerified
+        val snapshot = firestore.collection("users").document(user.uid).get()
+        val dto = snapshot.data(UserDto.serializer())
+        if (isVerified && !dto.isEmailVerified) {
+            firestore.collection("users").document(user.uid).update(mapOf("isEmailVerified" to true))
+        }
+        return dto.copy(isEmailVerified = isVerified)
     }
 
     override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): UserDto {
@@ -105,7 +113,11 @@ class FirebaseAuthRemoteDataSource(
 
     override suspend fun deleteAccount() {
         val user = checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
-        firestore.collection("users").document(user.uid).delete()
+        // user.delete() requires a recent sign-in and commonly fails with a stale session. Delete
+        // the auth user first so a failure here leaves the profile document intact (recoverable);
+        // deleting the document first would leave an authenticated user with no profile, which
+        // UserDto's now-defaulted fields decode without throwing but is still a broken state (4.3).
         user.delete()
+        firestore.collection("users").document(user.uid).delete()
     }
 }

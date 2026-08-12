@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.places.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.places.model.PlaceDto
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.places.repository.PlacesRepository
@@ -16,7 +17,7 @@ class PlacesRepositoryImpl(
             firestore.collection(COLLECTION_NAME).document(placeId).delete()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.PlaceException.Unknown)
         }
     }
 
@@ -29,34 +30,19 @@ class PlacesRepositoryImpl(
             docRef.set(PlaceDto.serializer(), dto)
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(AppException.PlaceException.Unknown)
         }
     }
 
-    override fun getSavedPlaces(): Flow<List<Place>> {
+    override fun getSavedPlaces(ownerId: String): Flow<List<Place>> {
         return firestore.collection(COLLECTION_NAME)
+            .where { "ownerId" equalTo ownerId }
             .snapshots
             .map { snapshot ->
                 snapshot.documents.map { doc ->
                     doc.data(PlaceDto.serializer()).toDomain()
                 }
             }
-    }
-
-    // Fetches all places and filters locally; suitable for small datasets
-    override suspend fun searchPlaces(query: String): Result<List<Place>> {
-        return try {
-            val snapshot = firestore.collection(COLLECTION_NAME).get()
-            val filtered = snapshot.documents
-                .map { it.data(PlaceDto.serializer()).toDomain() }
-                .filter {
-                    it.name.contains(query, ignoreCase = true) ||
-                    it.address.contains(query, ignoreCase = true)
-                }
-            Result.success(filtered)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
     }
 
     companion object {

@@ -53,7 +53,6 @@ import com.juanpablo0612.carpool.domain.places.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.places.use_case.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.places.use_case.GetSavedPlacesUseCase
-import com.juanpablo0612.carpool.domain.places.use_case.SearchPlacesUseCase
 import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
 import com.juanpablo0612.carpool.domain.preferences.use_case.ClearRolePreferenceUseCase
 import com.juanpablo0612.carpool.domain.preferences.use_case.GetOnboardingSeenUseCase
@@ -88,7 +87,6 @@ import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
 import com.juanpablo0612.carpool.domain.vehicles.repository.VehicleRepository
 import com.juanpablo0612.carpool.domain.vehicles.use_case.CreateVehicleUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.DeleteVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.GetVehicleByIdUseCase
 import com.juanpablo0612.carpool.domain.vehicles.use_case.SetPrimaryVehicleUseCase
@@ -104,6 +102,7 @@ import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.notifications.NotificationsViewModel
 import com.juanpablo0612.carpool.presentation.onboarding.OnboardingViewModel
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
+import com.juanpablo0612.carpool.presentation.places.add.components.createLocationPermissionRequester
 import com.juanpablo0612.carpool.presentation.places.picker.MapPickerViewModel
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
@@ -175,7 +174,7 @@ val preferencesModule = module {
 }
 
 val roleSelectorModule = module {
-    viewModel { RoleSelectorViewModel(get(), get(), get(), get()) }
+    viewModel { RoleSelectorViewModel(get(), get(), get(), get(), get()) }
 }
 
 val routeModule = module {
@@ -204,20 +203,20 @@ val tripModule = module {
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get()) }
+    viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val placeModule = module {
     singleOf(::CompassLocationService) bind LocationService::class
     singleOf(::CompassPlacesSearchService) bind PlacesSearchService::class
     singleOf(::PlacesRepositoryImpl) bind PlacesRepository::class
+    single { createLocationPermissionRequester() }
     factoryOf(::GetSavedPlacesUseCase)
-    factoryOf(::SearchPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
     factoryOf(::DeletePlaceUseCase)
-    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get()) }
+    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get(), get()) }
     viewModel { AddPlaceViewModel(get(), get()) }
-    viewModel { (lat: Double, lon: Double) -> MapPickerViewModel(lat, lon, get()) }
+    viewModel { (lat: Double, lon: Double) -> MapPickerViewModel(lat, lon, get(), get()) }
 }
 
 val vehicleModule = module {
@@ -227,7 +226,6 @@ val vehicleModule = module {
     factoryOf(::DeleteVehicleUseCase)
     factoryOf(::SetPrimaryVehicleUseCase)
     factoryOf(::GetUserVehiclesUseCase)
-    factoryOf(::GetDriverVehiclesUseCase)
     factoryOf(::GetVehicleByIdUseCase)
     viewModel { (vehicleId: String?) ->
         RegisterVehicleViewModel(vehicleId, get(), get(), get(), get())
@@ -253,7 +251,7 @@ val bookingModule = module {
 
 val homeModule = module {
     viewModel {
-        HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get())
+        HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get())
     }
 }
 

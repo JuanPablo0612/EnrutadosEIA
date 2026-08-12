@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.route_stop_remove
 import enrutadoseia.composeapp.generated.resources.select_location_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -106,7 +107,7 @@ fun RouteStopItem(
             ) {
                 Icon(
                     imageVector = vectorResource(Res.drawable.delete_24px),
-                    contentDescription = "Remove stop",
+                    contentDescription = stringResource(Res.string.route_stop_remove),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

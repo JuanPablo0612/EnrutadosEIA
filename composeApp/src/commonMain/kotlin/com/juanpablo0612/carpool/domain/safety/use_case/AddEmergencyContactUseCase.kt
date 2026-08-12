@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.domain.safety.use_case
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.safety.model.EmergencyContact
 import com.juanpablo0612.carpool.domain.safety.repository.SafetyRepository
 import kotlin.time.Clock
@@ -11,7 +12,7 @@ class AddEmergencyContactUseCase(private val repository: SafetyRepository) {
         phone: String,
         currentCount: Int
     ): Result<Unit> {
-        if (currentCount >= 2) return Result.failure(IllegalStateException("Maximum 2 contacts allowed"))
+        if (currentCount >= 2) return Result.failure(AppException.SafetyException.MaxContactsReached)
         val contact = EmergencyContact(
             id = "${Clock.System.now().toEpochMilliseconds()}",
             name = name.trim(),

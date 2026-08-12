@@ -65,7 +65,7 @@ class DriverTripsViewModel(
                     } else {
                         combine(
                             trips.map { trip ->
-                                getTripAvailableSeatsUseCase(trip.id, trip.seatCount)
+                                getTripAvailableSeatsUseCase(trip.id)
                                     .map { available ->
                                         TripWithStats(
                                             trip = trip,

@@ -1,0 +1,190 @@
+rules_version = '2';
+
+// EnrutadosEIA — Firestore security rules.
+//
+// These rules are the enforcement counterpart of the server-side `where` queries added in
+// data/*/repository/*RepositoryImpl.kt (Phase 2 of the repair plan). Every `list` query below is
+// only satisfiable by Firestore's rule engine if the query's own `where` clauses can prove the
+// rule holds for every possible result — an unscoped `.collection("x").get()` is rejected
+// outright. See README.md for how to deploy this file.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // users/{uid} — profile is readable by any signed-in user (driver/passenger profile display,
+    // e.g. on a trip result or booking request card) but only the owner may write it. Safety
+    // settings (autoShareTrip, vibrateSos) are stored as plain fields on this same document, so
+    // they inherit the same owner-only write rule.
+    // ---------------------------------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isOwner(uid);
+
+      // users/{uid}/emergency_contacts/** — owner-only, matches SafetyRepositoryImpl.
+      match /emergency_contacts/{contactId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // places/{placeId} — saved addresses (e.g. "Casa") are private to their owner. Both
+    // getSavedPlaces and searchPlaces now issue `where("ownerId", "==", ownerId)`, which this
+    // rule can verify statically.
+    // ---------------------------------------------------------------------------------------
+    match /places/{placeId} {
+      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // trips/{tripId} — trips are the browsable marketplace: any signed-in user may read them
+    // (SearchRoutesViewModel needs to see every driver's active trips), but only the owning
+    // driver may create/update them. getAvailableTrips() now scopes status/departureTime
+    // server-side; getDriverTrips() scopes driverId.
+    //
+    // confirmedSeats carve-out: this field is the denormalized CONFIRMED-booking counter (3.0)
+    // that BookingRepositoryImpl.applyStatusTransition maintains alongside each booking status
+    // write. Every transition that changes it is driver-initiated (accept/reject) except one: a
+    // passenger cancelling their own already-CONFIRMED booking, which decrements the trip they do
+    // not own. That single case is allowed here, narrowly: a non-driver update may touch only
+    // confirmedSeats, and only as an exact decrement-by-one that never goes negative — it can
+    // never be used to inflate a trip's counter or touch any other field. This is a client-only
+    // approximation (there is no server-side function in this project to verify the caller
+    // actually held a CONFIRMED booking on this exact trip); the residual risk is a signed-in user
+    // spamming another trip's counter down one at a time, not a PII leak or an ownership takeover.
+    // ---------------------------------------------------------------------------------------
+    match /trips/{tripId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.driverId == request.auth.uid ||
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['confirmedSeats']) &&
+          request.resource.data.confirmedSeats == resource.data.confirmedSeats - 1 &&
+          request.resource.data.confirmedSeats >= 0
+        )
+      );
+      allow delete: if isSignedIn() && resource.data.driverId == request.auth.uid;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // routes/{routeId} — recurring route templates. Same "browsable, owner-writes" shape as
+    // trips. getUserRoutes() scopes driverId server-side.
+    // ---------------------------------------------------------------------------------------
+    match /routes/{routeId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.driverId == request.auth.uid;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // vehicles/{vehicleId} — a passenger browsing search results reads the *driver's* vehicle
+    // (seats, photo) via getUserVehicles(trip.driverId), so vehicles are readable by any
+    // signed-in user; only the owning driver may write.
+    // ---------------------------------------------------------------------------------------
+    match /vehicles/{vehicleId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.driverId == request.auth.uid;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // bookings/{bookingId} — a request from a passenger to a driver's trip. BookingDto carries
+    // PII (passengerName, passengerEmail, origin/destination, passengerMessage), so reads are
+    // strictly limited to the two parties on the booking.
+    //
+    // Read: allowed only for the two parties (passengerId/driverId == uid). This covers every
+    // remaining query: getPassengerBookings, getDriverBookingRequests, getAllDriverBookings,
+    // hasActiveBooking, and the party-scoped getBookingsForTripAsDriver/AsPassenger used by
+    // TripTrackingViewModel. A seat *count* no longer requires reading bookings at all —
+    // GetTripAvailableSeatsUseCase reads trips/{tripId}.confirmedSeats instead, which is
+    // maintained by BookingRepositoryImpl.applyStatusTransition and carries no PII. There is
+    // therefore no "browsing, not yet a party" carve-out here: a passenger who hasn't booked a
+    // trip cannot read any booking on it, confirmed or otherwise.
+    //
+    // Write: only the driver may set CONFIRMED/REJECTED; either party may set CANCELLED; a
+    // passenger may only create a booking under their own passengerId in PENDING status. No field
+    // other than status/rejectReason/rejectComment may change on an update. The confirmedSeats
+    // counter itself is written as part of the same client update to trips/{tripId} — see the
+    // `trips` rule below, which restricts that field the same way.
+    // ---------------------------------------------------------------------------------------
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn() && (
+        resource.data.passengerId == request.auth.uid ||
+        resource.data.driverId == request.auth.uid
+      );
+
+      allow create: if isSignedIn()
+        && request.resource.data.passengerId == request.auth.uid
+        && request.resource.data.status == 'PENDING';
+
+      allow update: if isSignedIn() && (
+        (
+          resource.data.driverId == request.auth.uid &&
+          request.resource.data.status in ['CONFIRMED', 'REJECTED', 'CANCELLED'] &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'rejectReason', 'rejectComment'])
+        ) ||
+        (
+          resource.data.passengerId == request.auth.uid &&
+          request.resource.data.status == 'CANCELLED' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        )
+      );
+
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // notifications/{uid}/items/{itemId} — strictly owner-only (Phase 1 threaded userId through
+    // markRead/delete precisely so this can be enforced).
+    // ---------------------------------------------------------------------------------------
+    match /notifications/{uid} {
+      match /items/{itemId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // chats/{bookingId}/messages/{messageId} — limited to the two parties on the booking that
+    // shares its ID with the chat document. markMessagesRead only ever flips `isRead`.
+    // ---------------------------------------------------------------------------------------
+    match /chats/{bookingId} {
+      match /messages/{messageId} {
+        function booking() {
+          return get(/databases/$(database)/documents/bookings/$(bookingId)).data;
+        }
+        function isChatParty() {
+          return isSignedIn() &&
+            (request.auth.uid == booking().passengerId || request.auth.uid == booking().driverId);
+        }
+
+        allow read: if isChatParty();
+        allow create: if isChatParty() && request.resource.data.senderId == request.auth.uid;
+        allow update: if isChatParty() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+        allow delete: if false;
+      }
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // ratings/{ratingId} — average rating / trip count are shown on other users' profiles and
+    // trip cards, so ratings are readable by any signed-in user. A rating may only be created by
+    // its own rater and is never editable or deletable once written.
+    // ---------------------------------------------------------------------------------------
+    match /ratings/{ratingId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.raterId == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}

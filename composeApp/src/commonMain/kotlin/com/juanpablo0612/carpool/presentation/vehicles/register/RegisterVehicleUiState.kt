@@ -21,6 +21,7 @@ data class RegisterVehicleUiState(
     val year: Int = currentYear(),
     val seatCount: Int = 3,
     val type: VehicleType? = null,
+    val isPrimary: Boolean = false,
     val showBrandDropdown: Boolean = false,
     val showYearDropdown: Boolean = false,
     val showPhotoSheet: Boolean = false,

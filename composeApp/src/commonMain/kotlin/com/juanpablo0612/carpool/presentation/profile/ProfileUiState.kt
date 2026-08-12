@@ -11,6 +11,6 @@ data class ProfileUiState(
     val showActiveRolesDialog: Boolean = false,
     val showDeleteAccountDialog: Boolean = false,
     val deleteAccountNameInput: String = "",
-    val blockedRoleToggleMessage: String? = null,
+    val blockedRoleToggle: Boolean = false,
     val isDeleting: Boolean = false
 )

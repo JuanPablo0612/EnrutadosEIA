@@ -2,27 +2,32 @@ package com.juanpablo0612.carpool.presentation.routes.passenger_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.booking.model.BookingError
 import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.GetTripByIdUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetDriverVehiclesUseCase
+import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
 import com.juanpablo0612.carpool.presentation.bookings.toBookingError
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RouteDetailPassengerViewModel(
     private val tripId: String,
     private val getTripByIdUseCase: GetTripByIdUseCase,
-    private val getDriverVehiclesUseCase: GetDriverVehiclesUseCase,
+    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase
@@ -53,15 +58,18 @@ class RouteDetailPassengerViewModel(
         }
     }
 
+    // Available seats are driven by trip.seatCount, not the vehicle's capacity (3.1) — the vehicle
+    // flow is only consulted here for display (photo/brand/model). flatMapLatest re-subscribes the
+    // seats flow whenever the vehicle list changes, instead of collecting it nested inside onEach,
+    // which would block this flow from ever processing a later vehicle emission (3.6).
     private fun observeVehicleAndSeats(driverId: String, vehicleId: String, tripId: String) {
-        getDriverVehiclesUseCase(driverId)
-            .onEach { vehicles ->
+        getUserVehiclesUseCase(driverId)
+            .flatMapLatest { vehicles ->
                 val vehicle = vehicles.find { it.id == vehicleId }
-                _state.update { it.copy(vehicle = vehicle) }
-                if (vehicle != null) {
-                    getTripAvailableSeatsUseCase(tripId, vehicle.seatsAvailable)
-                        .collect { seats -> _state.update { it.copy(availableSeats = seats) } }
-                }
+                getTripAvailableSeatsUseCase(tripId).map { seats -> vehicle to seats }
+            }
+            .onEach { (vehicle, seats) ->
+                _state.update { it.copy(vehicle = vehicle, availableSeats = seats) }
             }
             .launchIn(viewModelScope)
     }
@@ -90,7 +98,13 @@ class RouteDetailPassengerViewModel(
 
     private fun book() {
         val trip = _state.value.trip ?: return
-        val vehicle = _state.value.vehicle ?: return
+        if (_state.value.vehicle == null) {
+            // The vehicle is only used for display here (seats come from trip.seatCount, 3.1),
+            // but a missing vehicle still means the trip's data is incomplete — surface it instead
+            // of leaving the confirm button silently doing nothing (3.7).
+            _state.update { it.copy(error = BookingError.VehicleNotFound) }
+            return
+        }
         _state.update { it.copy(isBooking = true, error = null, showConfirmSheet = false) }
         viewModelScope.launch {
             createBookingUseCase(
@@ -99,7 +113,6 @@ class RouteDetailPassengerViewModel(
                 originName = trip.origin.name,
                 destinationName = trip.destination.name,
                 departureTime = trip.departureTime,
-                totalSeats = vehicle.seatsAvailable,
                 passengerMessage = _state.value.passengerMessage.ifBlank { null }
             )
                 .onSuccess {

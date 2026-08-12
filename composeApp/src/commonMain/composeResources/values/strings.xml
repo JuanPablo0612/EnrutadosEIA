@@ -64,6 +64,7 @@
     <string name="destination_eia_label">Destination (EIA)</string>
     <string name="add_waypoint_button">+ Add stop</string>
     <string name="select_location_placeholder">Select location</string>
+    <string name="route_stop_remove">Remove stop</string>
     <string name="arrival_time_label">Arrival time at EIA</string>
     <string name="departure_time_label">Departure: %1$s</string>
     <string name="departure_date_label">Departure Date</string>
@@ -186,6 +187,7 @@
     <string name="place_selector_title_my_places">My places</string>
     <string name="place_selector_search_hint">Search an address or place...</string>
     <string name="place_selector_current_location">Use my current location</string>
+    <string name="place_selector_current_location_name">My current location</string>
     <string name="place_selector_resolving_location">Getting location...</string>
     <string name="place_selector_allow_location">Allow →</string>
     <string name="place_selector_section_my_places">My places</string>
@@ -227,6 +229,7 @@
     <string name="error_no_seats_available">No seats available on this vehicle</string>
     <string name="error_already_booked">You already have a booking on this route</string>
     <string name="error_booking_not_found">Booking not found</string>
+    <string name="error_booking_vehicle_not_found">Vehicle not found for this trip</string>
 
     <!-- Route Detail Passenger -->
     <string name="route_detail_passenger_title">Route Details</string>
@@ -264,6 +267,7 @@
     <string name="my_trips_empty">No trips published yet</string>
     <string name="error_trip_not_found">Trip not found</string>
     <string name="error_no_vehicle_selected">Please select a vehicle</string>
+    <string name="error_trip_departure_in_past">Departure time must be in the future</string>
 
     <!-- Common dialog actions -->
     <string name="confirm">Confirm</string>
@@ -487,6 +491,7 @@
     <string name="search_adjust_button">Adjust search</string>
     <string name="trip_contribution_free">Free</string>
     <string name="trip_available_seats">%1$d seats</string>
+    <string name="trip_result_view_detail">View detail →</string>
 
     <!-- RouteDetailPassenger redesign -->
     <string name="trip_driver_section">Driver</string>
@@ -548,6 +553,7 @@
     <string name="vehicle_color_blue">Azul</string>
     <string name="vehicle_color_other">Otro</string>
     <string name="vehicle_plate_label">Placa</string>
+    <string name="vehicle_plate_placeholder">ABC123</string>
     <string name="vehicle_plate_error_format">Formato inválido. Usa 3 letras y 3 números (ej. ABC123)</string>
     <string name="vehicle_seats_helper">Sin contar el conductor.</string>
     <string name="vehicle_type_label">Tipo de vehículo (opcional)</string>
@@ -678,8 +684,8 @@
     <string name="edit_profile_bio_counter">%1$d / 200</string>
     <string name="edit_profile_save_button">Guardar cambios</string>
     <string name="edit_profile_photo_change">Cambiar foto</string>
-    <string name="edit_profile_error_name_empty">El nombre no puede estar vacío</string>
-    <string name="edit_profile_error_bio_too_long">Máximo 200 caracteres</string>
+    <string name="edit_profile_error_name_empty">Name cannot be empty</string>
+    <string name="edit_profile_error_bio_too_long">Maximum 200 characters</string>
 
     <!-- Rating -->
     <string name="rating_title">¿Cómo estuvo tu viaje con %1$s?</string>
@@ -737,10 +743,10 @@
     <string name="notifications_section_today">HOY</string>
     <string name="notifications_section_this_week">ESTA SEMANA</string>
     <string name="notifications_section_earlier">ANTES</string>
-    <string name="notification_booking_accepted_title">Solicitud aceptada</string>
-    <string name="notification_booking_accepted_body">%1$s aceptó tu solicitud para el viaje %2$s</string>
-    <string name="notification_booking_rejected_title">Solicitud rechazada</string>
-    <string name="notification_booking_rejected_body">Tu solicitud para el viaje %1$s fue rechazada</string>
+    <string name="notification_booking_accepted_title">Booking confirmed</string>
+    <string name="notification_booking_accepted_body">The driver accepted your request. Have a great trip!</string>
+    <string name="notification_booking_rejected_title">Booking rejected</string>
+    <string name="notification_booking_rejected_body">The driver couldn\'t accept your request.</string>
     <string name="notification_new_request_title">Nueva solicitud</string>
     <string name="notification_new_request_body">%1$s quiere un cupo en tu viaje %2$s</string>
     <string name="notification_trip_started_title">Viaje en curso</string>
@@ -767,8 +773,8 @@
     <string name="safety_auto_share_desc">Envía los detalles del viaje a tus contactos cuando empiece</string>
     <string name="safety_vibrate_sos">Vibración del botón SOS</string>
     <string name="safety_vibrate_sos_desc">Activa la vibración al presionar el botón SOS</string>
-    <string name="safety_error_name_empty">El nombre no puede estar vacío</string>
-    <string name="safety_error_phone_empty">El teléfono no puede estar vacío</string>
+    <string name="safety_error_name_empty">Name cannot be empty</string>
+    <string name="safety_error_phone_empty">Phone number cannot be empty</string>
     <string name="safety_error_phone_invalid">Ingresa un número de celular colombiano válido</string>
     <string name="safety_add_contact_title">Agregar contacto de emergencia</string>
 

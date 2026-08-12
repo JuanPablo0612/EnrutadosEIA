@@ -219,8 +219,8 @@ private fun ContactItem(contact: EmergencyContact, onRemove: () -> Unit) {
 private fun AddContactDialog(
     name: String,
     phone: String,
-    nameError: String?,
-    phoneError: String?,
+    nameError: SafetyContactFieldError?,
+    phoneError: SafetyContactFieldError?,
     isSaving: Boolean,
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
@@ -238,7 +238,7 @@ private fun AddContactDialog(
                     label = { Text(stringResource(Res.string.safety_contact_name_label)) },
                     placeholder = { Text(stringResource(Res.string.safety_contact_name_placeholder)) },
                     isError = nameError != null,
-                    supportingText = nameError?.let { { Text(it) } },
+                    supportingText = nameError?.let { { Text(stringResource(it.asStringResource())) } },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
                         imeAction = ImeAction.Next
@@ -252,7 +252,7 @@ private fun AddContactDialog(
                     label = { Text(stringResource(Res.string.safety_contact_phone_label)) },
                     placeholder = { Text(stringResource(Res.string.safety_contact_phone_placeholder)) },
                     isError = phoneError != null,
-                    supportingText = phoneError?.let { { Text(it) } },
+                    supportingText = phoneError?.let { { Text(stringResource(it.asStringResource())) } },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Phone,
                         imeAction = ImeAction.Done
