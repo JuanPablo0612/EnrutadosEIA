@@ -113,10 +113,15 @@ fun AppNavigation(
                         items = currentBottomNavItems,
                         onNavigate = { route ->
                             navController.navigate(route) {
-                                if (activeRole != UserRole.Passenger) {
-                                    popUpTo<Route.Home> { saveState = true }
-                                } else {
+                                // Anchor on the same signal that picked currentBottomNavItems
+                                // (destination-driven), not on activeRole directly — activeRole
+                                // is a separately-updated field that can momentarily disagree
+                                // with which tab set is actually on screen, which would pop the
+                                // back stack to the wrong role's root.
+                                if (currentBottomNavItems === passengerBottomNavItems) {
                                     popUpTo<Route.PassengerHome> { saveState = true }
+                                } else {
+                                    popUpTo<Route.Home> { saveState = true }
                                 }
                                 launchSingleTop = true
                                 restoreState = true
@@ -248,7 +253,10 @@ fun AppNavigation(
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
-                    onNavigateToSearchTrips = { navController.navigate(Route.PassengerHome) },
+                    onNavigateToSearchTrips = {
+                        userSession.setActiveRole(UserRole.Passenger)
+                        navController.navigate(Route.PassengerHome)
+                    },
                     onNavigateToPassengerBookings = { navController.navigate(Route.PassengerBookings) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripDetailPassenger = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
