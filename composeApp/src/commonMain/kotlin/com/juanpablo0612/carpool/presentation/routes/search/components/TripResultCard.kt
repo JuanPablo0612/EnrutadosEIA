@@ -22,19 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.routes.search.TripResult
+import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.trip_available_seats
+import enrutadoseia.composeapp.generated.resources.trip_contribution_free
+import enrutadoseia.composeapp.generated.resources.trip_driver_placeholder
 import enrutadoseia.composeapp.generated.resources.trip_result_view_detail
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-
-// TODO: show driver name once GetUserPublicProfileUseCase is available
 
 @Composable
 fun TripResultCard(
@@ -87,6 +88,19 @@ fun TripResultCard(
                 )
             }
 
+            Spacer(modifier = Modifier.height(Spacing.sm))
+
+            val driverName = result.driver?.name?.takeIf { it.isNotBlank() }
+                ?: stringResource(Res.string.trip_driver_placeholder)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                UserAvatar(name = driverName, photoUrl = result.driver?.photoUrl, size = 28.dp)
+                Spacer(modifier = Modifier.size(Spacing.sm))
+                Text(
+                    text = driverName,
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
+                )
+            }
+
             result.vehicle?.let { vehicle ->
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
@@ -103,8 +117,10 @@ fun TripResultCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val contributionLabel = result.formattedContribution?.let { "$$it" }
+                    ?: stringResource(Res.string.trip_contribution_free)
                 Text(
-                    text = result.contributionLabel,
+                    text = contributionLabel,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

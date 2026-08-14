@@ -19,6 +19,7 @@ import com.juanpablo0612.carpool.data.vehicles.repository.VehicleRepositoryImpl
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.use_case.DeleteAccountUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
+import com.juanpablo0612.carpool.domain.auth.use_case.GetUserPublicProfileUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LoginUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.LogoutUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
@@ -148,12 +149,13 @@ val authModule = module {
     factoryOf(::SendPasswordResetEmailUseCase)
     factoryOf(::SendEmailVerificationUseCase)
     factoryOf(::GetCurrentUserUseCase)
+    factoryOf(::GetUserPublicProfileUseCase)
     factoryOf(::UpdateProfileUseCase)
     factoryOf(::UpdateUserRolesUseCase)
     factoryOf(::DeleteAccountUseCase)
 
     viewModel { LoginViewModel(get(), get()) }
-    viewModel { RegisterViewModel(get()) }
+    viewModel { RegisterViewModel(get(), get()) }
     viewModel { ForgotPasswordViewModel(get()) }
     viewModel { EmailVerificationViewModel(get(), get()) }
     viewModel { SplashViewModel(get(), get(), get(), get()) }
@@ -199,10 +201,10 @@ val tripModule = module {
     factoryOf(::UpdateTripStatusUseCase)
     factoryOf(::UpdateDriverLocationUseCase)
     factoryOf(::UpdatePassengerStatusUseCase)
-    viewModel { SearchRoutesViewModel(get(), get(), get()) }
+    viewModel { SearchRoutesViewModel(get(), get(), get(), get()) }
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get()) }
+    viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 

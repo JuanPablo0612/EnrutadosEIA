@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.data.auth.repository
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
+import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import dev.gitlive.firebase.auth.*
@@ -77,6 +78,15 @@ class AuthRepositoryImpl(
         return try {
             val dto = remoteDataSource.getCurrentUser()
             Result.success(dto.toDomain())
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
+    override suspend fun getPublicProfile(userId: String): Result<PublicProfile> {
+        return try {
+            val dto = remoteDataSource.getPublicProfile(userId)
+            Result.success(dto.toPublicProfile())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }

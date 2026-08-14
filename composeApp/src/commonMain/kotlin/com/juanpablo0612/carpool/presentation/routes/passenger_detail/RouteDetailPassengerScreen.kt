@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -48,6 +49,7 @@ import com.juanpablo0612.carpool.presentation.routes.passenger_detail.components
 import com.juanpablo0612.carpool.presentation.routes.search.formatEpochShort
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -72,8 +74,6 @@ import enrutadoseia.composeapp.generated.resources.trip_message_driver_label
 import enrutadoseia.composeapp.generated.resources.trip_stops_section
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-
-// TODO: show driver name once GetUserPublicProfileUseCase is available
 
 @Composable
 fun RouteDetailPassengerScreen(
@@ -138,6 +138,7 @@ fun RouteDetailPassengerContent(
                     state.trip?.let { trip ->
                         item {
                             DriverAndVehicleSection(
+                                driver = state.driver,
                                 vehicle = state.vehicle,
                                 modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
                             )
@@ -207,9 +208,12 @@ fun RouteDetailPassengerContent(
 
 @Composable
 private fun DriverAndVehicleSection(
+    driver: PublicProfile?,
     vehicle: Vehicle?,
     modifier: Modifier = Modifier
 ) {
+    val driverName = driver?.name?.takeIf { it.isNotBlank() }
+        ?: stringResource(Res.string.trip_driver_placeholder)
     Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.trip_driver_section),
@@ -218,24 +222,28 @@ private fun DriverAndVehicleSection(
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = vectorResource(Res.drawable.directions_car_24px),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
+            UserAvatar(name = driverName, photoUrl = driver?.photoUrl, size = 36.dp)
             Spacer(modifier = Modifier.size(Spacing.sm))
             Column {
                 Text(
-                    text = stringResource(Res.string.trip_driver_placeholder),
+                    text = driverName,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
                 )
                 vehicle?.let { v ->
-                    Text(
-                        text = "${v.brand} ${v.model} · ${v.color} · ${v.year} · ${v.licensePlate}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.directions_car_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.size(4.dp))
+                        Text(
+                            text = "${v.brand} ${v.model} · ${v.color} · ${v.year} · ${v.licensePlate}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -474,6 +482,7 @@ private fun RouteDetailPassengerContentPreview() {
                     id = "v1", driverId = "d1", brand = "Toyota", model = "Corolla",
                     licensePlate = "ABC123", color = "Blanco", year = 2020, seatsAvailable = 3
                 ),
+                driver = PublicProfile(id = "d1", name = "Juan Pablo"),
                 availableSeats = 3
             ),
             onAction = {}

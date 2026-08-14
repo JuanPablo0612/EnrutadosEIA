@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.domain.auth.repository
 
+import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.model.User
 
 interface AuthRepository {
@@ -18,6 +19,7 @@ interface AuthRepository {
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
     fun getCurrentUserId(): String?
     suspend fun getCurrentUser(): Result<User>
+    suspend fun getPublicProfile(userId: String): Result<PublicProfile>
     suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): Result<User>
     suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): Result<User>
     suspend fun deleteAccount(): Result<Unit>

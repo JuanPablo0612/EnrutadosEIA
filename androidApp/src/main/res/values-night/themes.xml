@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dark-mode variant of AppTheme (see values/themes.xml). Parented on the platform dark theme so a
+  dark-mode cold start gets the dark window background instead of the light one.
+-->
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/app_window_background_dark</item>
+    </style>
+</resources>

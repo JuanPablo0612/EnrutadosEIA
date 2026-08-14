@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  App launch theme. Only applied to the window before Compose takes over (see MainActivity /
+  enableEdgeToEdge) — it exists purely to avoid a white/black flash on cold start; all real
+  theming (colors, typography) lives in the Compose theme, not here.
+
+  No AppCompat / Material Components dependency in this project, so this parents on the plain
+  platform theme rather than Theme.MaterialComponents.* or Theme.AppCompat.*.
+-->
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/app_window_background_light</item>
+    </style>
+</resources>

@@ -19,19 +19,22 @@ class VehicleRepositoryImpl(
     private val storage: FirebaseStorage
 ) : VehicleRepository {
 
-    override suspend fun createVehicle(vehicle: Vehicle, photoBytes: ByteArray): Result<Unit> {
+    override suspend fun createVehicle(vehicle: Vehicle, photoBytes: ByteArray?): Result<Unit> {
         return try {
             val docRef = firestore.collection(COLLECTION_NAME).document
             val vehicleId = docRef.id
-            val compressedBytes = FileKit.compressImage(
-                bytes = photoBytes,
-                quality = 80,
-                imageFormat = ImageFormat.JPEG
-            )
+            var photoUrl = ""
+            if (photoBytes != null) {
+                val compressedBytes = FileKit.compressImage(
+                    bytes = photoBytes,
+                    quality = 80,
+                    imageFormat = ImageFormat.JPEG
+                )
 
-            val photoRef = storage.reference.child("$STORAGE_PATH/${vehicle.driverId}/$vehicleId.jpg")
-            photoRef.upload(compressedBytes)
-            val photoUrl = photoRef.getDownloadUrl()
+                val photoRef = storage.reference.child("$STORAGE_PATH/${vehicle.driverId}/$vehicleId.jpg")
+                photoRef.upload(compressedBytes)
+                photoUrl = photoRef.getDownloadUrl()
+            }
 
             val existingCount = getUserVehicles(vehicle.driverId).first().size
             val isPrimary = existingCount == 0

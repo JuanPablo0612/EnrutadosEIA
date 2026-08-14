@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.auth.remote
 
+import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.data.auth.model.UserDto
 import com.juanpablo0612.carpool.data.vehicles.upload
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -55,7 +56,12 @@ class FirebaseAuthRemoteDataSource(
         )
         firestore.collection("users").document(user.uid).set(UserDto.serializer(), userDto)
 
-        user.sendEmailVerification()
+        // Email verification is temporarily bypassed (FeatureFlags.EMAIL_VERIFICATION_REQUIRED)
+        // for frictionless testing sign-ups, so skip sending the verification email to avoid
+        // confusing testers with a stray email they don't need to act on.
+        if (FeatureFlags.EMAIL_VERIFICATION_REQUIRED) {
+            user.sendEmailVerification()
+        }
     }
 
     override suspend fun sendEmailVerification() {
@@ -87,6 +93,11 @@ class FirebaseAuthRemoteDataSource(
             firestore.collection("users").document(user.uid).update(mapOf("isEmailVerified" to true))
         }
         return dto.copy(isEmailVerified = isVerified)
+    }
+
+    override suspend fun getPublicProfile(userId: String): UserDto {
+        val snapshot = firestore.collection("users").document(userId).get()
+        return snapshot.data(UserDto.serializer())
     }
 
     override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): UserDto {

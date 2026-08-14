@@ -1,16 +1,20 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Enrutados EIA
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Enrutados EIA is a carpooling app for Universidad EIA students and staff. Drivers publish
+recurring routes and one-off trips; passengers search those trips and reserve seats. It's built
+with Kotlin Multiplatform and Compose Multiplatform, backed by Firebase (Auth, Firestore, and
+Storage), and follows Clean Architecture with MVVM on the presentation layer.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+The project is two modules:
+
+* [/androidApp](./androidApp/src) — the Android application shell. This is what builds into the
+  installable APK.
+* [/composeApp](./composeApp/src) — the shared Kotlin Multiplatform library holding all app code
+  (UI, domain logic, data layer). [commonMain](./composeApp/src/commonMain/kotlin) is where nearly
+  everything lives today.
+
+An [/iosApp](./iosApp/iosApp) scaffold and an `iosMain` source set exist but are not currently
+active — iOS is not a supported target yet.
 
 ### First-time setup
 
@@ -90,7 +94,3 @@ both before deploying to a database with real data, or accept the loss on a dev/
   before the seat counter existed, which over-reports availability and allows overbooking until a
   booking status change next touches the counter. Backfill it as
   `count(bookings where tripId == trip.id and status == 'CONFIRMED')`.
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…

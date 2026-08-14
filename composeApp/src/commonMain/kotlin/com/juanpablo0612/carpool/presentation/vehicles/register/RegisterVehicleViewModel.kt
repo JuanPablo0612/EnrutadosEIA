@@ -181,10 +181,6 @@ class RegisterVehicleViewModel(
             val photoBytes = s.photoFile?.readBytes()
 
             val result = if (s.mode == RegisterVehicleUiState.Mode.Create) {
-                if (photoBytes == null) {
-                    _state.update { it.copy(isSaving = false, generalError = RegisterVehicleError.PhotoRequired) }
-                    return@launch
-                }
                 createVehicleUseCase(vehicle, photoBytes)
             } else {
                 updateVehicleUseCase(vehicle, photoBytes)
