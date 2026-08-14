@@ -49,38 +49,39 @@ today.
 To build and run the development version of the iOS app, use the run configuration from the run widget
 in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
 
-### Deploying Firestore rules and indexes
+### Deploying Firestore and Storage rules, and Firestore indexes
 
-`firestore.rules` and `firestore.indexes.json` at the repo root define the security rules and
-composite indexes every repository's `where` query relies on. They are **not** applied
-automatically — you deploy them with the [Firebase CLI](https://firebase.google.com/docs/cli):
+`firestore.rules` / `firestore.indexes.json` (Firestore security rules and the composite indexes
+every repository's `where` query relies on) and `storage.rules` (Storage security rules for the
+`users/{uid}/profile.jpg` and `vehicles/{driverId}/{vehicleId}.jpg` paths written by
+`FirebaseAuthRemoteDataSource` and `VehicleRepositoryImpl`) live at the repo root. They are **not**
+applied automatically — deploy them with the [Firebase CLI](https://firebase.google.com/docs/cli):
 
 ```shell
 npm install -g firebase-tools   # once
 firebase login
-firebase deploy --only firestore:rules,firestore:indexes
+firebase use enrutados-eia
+firebase deploy --only firestore:rules,firestore:indexes,storage
 ```
 
-The CLI needs a `firebase.json` associating your project with these two files. If one doesn't
-exist yet, generate it once with `firebase init firestore` (accept the default file names,
-`firestore.rules` and `firestore.indexes.json`, so it points at the files already in this repo),
-or create it by hand:
+(Note `storage` has no `:rules` suffix — unlike Firestore, Storage doesn't split into separate
+rules/indexes deploy targets, so `--only storage:rules` fails with a "could not find rules for
+storage target: rules" error.)
 
-```json
-{
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  }
-}
+`.firebaserc` (project alias → `enrutados-eia`) and `firebase.json` (associating the project with
+these three rules files, plus emulator ports for local dev) are already checked into the repo, so
+no `firebase init` is needed. To run the emulator suite locally instead of hitting production:
+
+```shell
+firebase emulators:start
 ```
 
 Composite indexes can take several minutes to build after deploying; queries that need one will
 fail with `FAILED_PRECONDITION` until the build finishes (the error includes a direct link to
 create the missing index from the Firebase console, if you'd rather do it that way).
 
-**Two fields predate the rules and silently misbehave on existing documents — backfill both before
-deploying to a database with real data, or accept the loss on a dev/test project:**
+**Two Firestore fields predate the rules and silently misbehave on existing documents — backfill
+both before deploying to a database with real data, or accept the loss on a dev/test project:**
 
 - **`places.ownerId`** defaults to `""` on any document written before that field existed, which
   does not match any signed-in user's UID — those places become permanently invisible (not just to

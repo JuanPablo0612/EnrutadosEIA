@@ -30,9 +30,9 @@ A fresh clone is missing two gitignored files the Android build needs:
 1. **`androidApp/google-services.json`** — Firebase config for the `com.juanpablo0612.carpool` app. Download it from the Firebase console (Project settings → your Android app) and place it at that exact path. Without it, the `googleServices` Gradle plugin fails the build.
 2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` and injected into the manifest as a placeholder. Copy `secrets.properties.example` to `secrets.properties` and fill in a real Google Maps API key. Without this file (or with a blank key), the build still succeeds but the key resolves to an empty string and every map screen renders blank.
 
-### Firestore rules, indexes, and data backfills
+### Firestore/Storage rules, indexes, and data backfills
 
-`firestore.rules` and `firestore.indexes.json` at the repo root are deployed with the Firebase CLI (`firebase deploy --only firestore:rules,firestore:indexes`) — see `README.md` for the full setup. Before deploying rules to a database with real data, backfill two fields that predate them and silently misbehave on existing documents:
+`firestore.rules`, `firestore.indexes.json`, and `storage.rules` at the repo root are deployed with the Firebase CLI (`firebase deploy --only firestore:rules,firestore:indexes,storage`) — see `README.md` for the full setup. `.firebaserc` and `firebase.json` are checked in and already point at project `enrutados-eia`, so `firebase use enrutados-eia` is all that's needed before deploying (no `firebase init` required). Storage has no `:rules` sub-target — `--only storage:rules` fails; use plain `--only storage`. Before deploying rules to a database with real data, backfill two Firestore fields that predate them and silently misbehave on existing documents:
 
 - **`places.ownerId`** defaults to `""` on documents written before the owner field existed, which matches no signed-in user's UID — those places become invisible to their own owner once the rules are enforced.
 - **`trips.confirmedSeats`** defaults to `0` on trips that already had confirmed passengers, which over-reports availability and allows overbooking until the counter is next touched by a booking transition. Backfill it as `count(bookings where tripId == trip.id and status == 'CONFIRMED')`.

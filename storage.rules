@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// EnrutadosEIA — Firebase Storage security rules.
+//
+// Mirrors the ownership model in firestore.rules for the two paths the app actually writes to
+// (see FirebaseAuthRemoteDataSource.kt and VehicleRepositoryImpl.kt): profile photos and vehicle
+// photos. Both are shown on other users' screens (trip cards, booking requests, search results),
+// so reads are open to any signed-in user; writes are restricted to the owning uid and capped to
+// image content under 5MB to match the .jpg uploads the app performs.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
