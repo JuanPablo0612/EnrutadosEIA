@@ -2,6 +2,8 @@ package com.juanpablo0612.carpool.presentation.routes.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
+import com.juanpablo0612.carpool.domain.auth.use_case.GetUserPublicProfileUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.use_case.GetAvailableTripsUseCase
@@ -20,7 +22,8 @@ import kotlinx.coroutines.launch
 class SearchRoutesViewModel(
     getAvailableTripsUseCase: GetAvailableTripsUseCase,
     private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
-    private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase
+    private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
+    private val getUserPublicProfileUseCase: GetUserPublicProfileUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchRoutesUiState())
@@ -124,6 +127,14 @@ class SearchRoutesViewModel(
                 originMatch && destMatch && timeMatch
             }
 
+            // One driver publishing several trips must cost one profile read, not one per trip:
+            // fetch each distinct driverId exactly once and hand every trip the cached result.
+            val driverProfiles = mutableMapOf<String, PublicProfile?>()
+            for (driverId in filtered.map { it.driverId }.distinct()) {
+                driverProfiles[driverId] = getUserPublicProfileUseCase(driverId)
+                    .getOrNull() // a failed fetch degrades to null, it must never fail the search
+            }
+
             val results = filtered.mapNotNull { trip ->
                 val vehicles = getUserVehiclesUseCase(trip.driverId).first()
                 val vehicle = vehicles.find { it.id == trip.vehicleId }
@@ -135,7 +146,12 @@ class SearchRoutesViewModel(
                     if (contrib > maxContrib) return@mapNotNull null
                 }
 
-                TripResult(trip = trip, vehicle = vehicle, availableSeats = availableSeats)
+                TripResult(
+                    trip = trip,
+                    vehicle = vehicle,
+                    availableSeats = availableSeats,
+                    driver = driverProfiles[trip.driverId]
+                )
             }
 
             _uiState.update { it.copy(results = results, isSearching = false, hasSearched = true) }

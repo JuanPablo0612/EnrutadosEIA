@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -43,6 +41,7 @@ import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.active_roles_close
 import enrutadoseia.composeapp.generated.resources.active_roles_driver
@@ -313,21 +312,11 @@ private fun UserHeader(user: User?, onEditClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = (user?.name ?: user?.email ?: "?").first().uppercaseChar().toString(),
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
+        UserAvatar(
+            name = user?.name ?: user?.email ?: "?",
+            photoUrl = user?.photoUrl,
+            size = 96.dp,
+        )
         Text(
             text = user?.name ?: user?.email ?: "",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)

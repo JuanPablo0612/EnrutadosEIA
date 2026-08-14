@@ -9,8 +9,49 @@ rules_version = '2';
 // image content under 5MB to match the .jpg uploads the app performs.
 service firebase.storage {
   match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidImageUpload() {
+      return request.resource.contentType.matches('image/.*') &&
+        request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // users/{uid}/profile.jpg — profile photo. Readable by any signed-in user (shown on other
+    // users' trip cards, search results, and booking requests, same as users/{uid} in
+    // firestore.rules); writable only by the owning uid. Create/update must be an image under
+    // 5MB, matching the .jpg upload in FirebaseAuthRemoteDataSource.kt. The app only ever
+    // overwrites this file (no delete call), but delete is allowed for the owner regardless —
+    // request.resource is null on delete, so it can't be put through the same content/size
+    // checks as create/update.
+    // -----------------------------------------------------------------------------------------
+    match /users/{uid}/profile.jpg {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && request.auth.uid == uid && isValidImageUpload();
+      allow delete: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // vehicles/{driverId}/{vehicleId}.jpg — vehicle photo. Readable by any signed-in user (a
+    // passenger browsing search results sees the driver's vehicle photo, same as vehicles/{id}
+    // in firestore.rules); writable only by the owning driverId. Create/update must be an image
+    // under 5MB, matching the .jpg uploads in VehicleRepositoryImpl.kt. As above, the app only
+    // overwrites this file, but delete is left open to the owner since request.resource is null
+    // on delete and can't be validated the same way.
+    // -----------------------------------------------------------------------------------------
+    match /vehicles/{driverId}/{vehicleId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && request.auth.uid == driverId && isValidImageUpload();
+      allow delete: if isSignedIn() && request.auth.uid == driverId;
+    }
+
+    // Everything else: no path in this project writes outside the two prefixes above, so deny by
+    // default rather than falling through to an open catch-all.
     match /{allPaths=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

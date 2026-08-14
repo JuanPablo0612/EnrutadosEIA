@@ -92,8 +92,10 @@ import enrutadoseia.composeapp.generated.resources.trip_message_placeholder
 import enrutadoseia.composeapp.generated.resources.trip_message_section
 import enrutadoseia.composeapp.generated.resources.trip_no_vehicle_title
 import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
+import enrutadoseia.composeapp.generated.resources.trip_available_seats
 import enrutadoseia.composeapp.generated.resources.trip_seats_helper
 import enrutadoseia.composeapp.generated.resources.trip_seats_section
+import enrutadoseia.composeapp.generated.resources.trip_waypoint_count
 import enrutadoseia.composeapp.generated.resources.trip_when_section
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -103,6 +105,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -550,7 +553,11 @@ private fun RouteSummaryCard(
             if (waypointCount > 0) {
                 Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
-                    text = "· $waypointCount parada${if (waypointCount > 1) "s" else ""}",
+                    text = "· " + pluralStringResource(
+                        Res.plurals.trip_waypoint_count,
+                        waypointCount,
+                        waypointCount
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -580,7 +587,8 @@ private fun SingleVehicleCard(
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Text(
-                    text = "${vehicle.color} · ${vehicle.licensePlate} · ${vehicle.seatsAvailable} cupos",
+                    text = "${vehicle.color} · ${vehicle.licensePlate} · " +
+                        stringResource(Res.string.trip_available_seats, vehicle.seatsAvailable),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

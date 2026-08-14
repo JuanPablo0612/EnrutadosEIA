@@ -12,8 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 
 private val avatarColors = listOf(
     Color(0xFF1565C0),
@@ -29,14 +32,29 @@ private val avatarColors = listOf(
 @Composable
 fun UserAvatar(
     name: String,
+    photoUrl: String? = null,
     size: Dp = 48.dp,
     modifier: Modifier = Modifier,
 ) {
+    if (!photoUrl.isNullOrBlank()) {
+        AsyncImage(
+            model = photoUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .size(size)
+                .clip(CircleShape),
+        )
+        return
+    }
+
     val initial = remember(name) {
         name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
     }
     val background = remember(name) {
-        avatarColors[kotlin.math.abs(name.hashCode()) % avatarColors.size]
+        // mod() rather than abs(..) % ..: abs(Int.MIN_VALUE) is still negative, which would
+        // index out of bounds for any palette size that doesn't divide it evenly.
+        avatarColors[name.hashCode().mod(avatarColors.size)]
     }
 
     Box(
@@ -48,7 +66,9 @@ fun UserAvatar(
     ) {
         Text(
             text = initial,
-            style = MaterialTheme.typography.titleMedium,
+            // Scale the initial with the circle so one component works from a 40.dp top-bar
+            // avatar up to the 96.dp profile header without the letter looking lost.
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = (size.value * 0.4f).sp),
             color = Color.White,
         )
     }

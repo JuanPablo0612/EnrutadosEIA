@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.auth.email_verification
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.SendEmailVerificationUseCase
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
@@ -62,7 +63,7 @@ class EmailVerificationViewModel(
             while (true) {
                 delay(5000)
                 getCurrentUserUseCase().onSuccess { user ->
-                    if (user.isEmailVerified) {
+                    if (user.isEmailVerified || !FeatureFlags.EMAIL_VERIFICATION_REQUIRED) {
                         pollingJob?.cancel()
                         _events.emit(EmailVerificationEvent.NavigateToApp(user))
                     }

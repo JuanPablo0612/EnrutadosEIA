@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.routes.passenger_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.auth.use_case.GetUserPublicProfileUseCase
 import com.juanpablo0612.carpool.domain.booking.model.BookingError
 import com.juanpablo0612.carpool.domain.booking.use_case.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.use_case.CreateBookingUseCase
@@ -30,7 +31,8 @@ class RouteDetailPassengerViewModel(
     private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
-    private val checkExistingBookingUseCase: CheckExistingBookingUseCase
+    private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
+    private val getUserPublicProfileUseCase: GetUserPublicProfileUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState())
@@ -51,6 +53,7 @@ class RouteDetailPassengerViewModel(
                     val alreadyRequested = checkExistingBookingUseCase(tripId)
                     _state.update { it.copy(alreadyRequested = alreadyRequested) }
                     observeVehicleAndSeats(trip.driverId, trip.vehicleId, trip.id)
+                    loadDriverProfile(trip.driverId)
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }
@@ -72,6 +75,15 @@ class RouteDetailPassengerViewModel(
                 _state.update { it.copy(vehicle = vehicle, availableSeats = seats) }
             }
             .launchIn(viewModelScope)
+    }
+
+    // A failed profile fetch degrades to null (Driver section falls back to the placeholder
+    // label) — it must never fail the whole trip-detail load.
+    private fun loadDriverProfile(driverId: String) {
+        viewModelScope.launch {
+            val profile = getUserPublicProfileUseCase(driverId).getOrNull()
+            _state.update { it.copy(driver = profile) }
+        }
     }
 
     fun onAction(action: RouteDetailPassengerAction) {

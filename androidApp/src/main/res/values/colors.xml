@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Window-background colors used only for the pre-Compose launch theme (themes.xml /
+  values-night/themes.xml), so the cold-start window matches the app's real background instead of
+  flashing a stock white/black window before Compose draws.
+
+  These must stay in sync with composeApp/src/commonMain/kotlin/com/juanpablo0612/carpool/presentation/ui/theme/Color.kt:
+  backgroundLight (line 21) and backgroundDark (line 129).
+-->
+<resources>
+    <color name="app_window_background_light">#FFF5FAFC</color>
+    <color name="app_window_background_dark">#FF0F1416</color>
+</resources>

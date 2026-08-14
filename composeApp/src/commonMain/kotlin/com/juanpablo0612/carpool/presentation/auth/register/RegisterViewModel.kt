@@ -2,6 +2,8 @@ package com.juanpablo0612.carpool.presentation.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.core.config.FeatureFlags
+import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
@@ -16,7 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -103,12 +106,27 @@ class RegisterViewModel(
                 photoBytes = photoBytes
             )
                 .onSuccess {
-                    _uiState.update { it.copy(isLoading = false) }
-                    _events.emit(AuthEvent.NavigateToEmailVerification)
+                    if (FeatureFlags.EMAIL_VERIFICATION_REQUIRED) {
+                        _uiState.update { it.copy(isLoading = false) }
+                        _events.emit(AuthEvent.NavigateToEmailVerification)
+                    } else {
+                        navigateAfterAuth()
+                    }
                 }
                 .onFailure { throwable ->
                     _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
                 }
         }
+    }
+
+    private suspend fun navigateAfterAuth() {
+        getCurrentUserUseCase()
+            .onSuccess { user ->
+                _uiState.update { it.copy(isLoading = false) }
+                _events.emit(AuthEvent.NavigateAfterAuth(user))
+            }
+            .onFailure { throwable ->
+                _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
+            }
     }
 }

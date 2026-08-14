@@ -12,7 +12,6 @@ sealed class RegisterVehicleError {
     data object YearInvalid : RegisterVehicleError()
     data object SeatsRequired : RegisterVehicleError()
     data object SeatsInvalid : RegisterVehicleError()
-    data object PhotoRequired : RegisterVehicleError()
     data object UserNotAuthenticated : RegisterVehicleError()
     data object Unknown : RegisterVehicleError()
 
@@ -25,7 +24,6 @@ sealed class RegisterVehicleError {
         YearInvalid -> Res.string.error_vehicle_year_invalid
         SeatsRequired -> Res.string.error_vehicle_seats_required
         SeatsInvalid -> Res.string.error_vehicle_seats_invalid
-        PhotoRequired -> Res.string.error_vehicle_photo_required
         UserNotAuthenticated -> Res.string.error_user_not_authenticated
         Unknown -> Res.string.error_unknown
     }

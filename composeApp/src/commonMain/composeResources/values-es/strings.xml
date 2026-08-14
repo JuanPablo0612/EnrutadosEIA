@@ -1,20 +1,16 @@
 <resources>
     <string name="login_title">Enrutados EIA</string>
     <string name="login_welcome_back">Bienvenido de nuevo</string>
-    <string name="login_subtitle">Inicia sesión en tu cuenta universitaria</string>
     <string name="email_label">Correo electrónico</string>
     <string name="email_placeholder">Correo universitario</string>
     <string name="password_label">Contraseña</string>
     <string name="password_placeholder">Contraseña</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_button">Iniciar sesión</string>
-    <string name="or_separator">o</string>
     <string name="dont_have_account_question">¿Aún no tienes una cuenta?</string>
     <string name="signup_button">Regístrate</string>
 
     <string name="register_title">Regístrate</string>
-    <string name="register_join_title">Únete a Enrutados EIA</string>
-    <string name="register_subtitle">Empieza a ahorrar en tu trayecto diario al campus.</string>
     <string name="full_name_label">Nombre completo</string>
     <string name="full_name_placeholder">Juan Pérez</string>
     <string name="confirm_password_label">Confirmar contraseña</string>
@@ -76,79 +72,47 @@
 
     <string name="show_password">Mostrar contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
-    <string name="home_welcome">¡Bienvenido al Inicio!</string>
 
     <string name="forgot_password_title">Restablecer contraseña</string>
     <string name="forgot_password_subtitle">Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.</string>
     <string name="send_reset_link">Enviar enlace</string>
     <string name="back_to_login">Volver al inicio</string>
-    <string name="reset_link_sent_success">¡Enlace enviado! Revisa tu correo electrónico.</string>
     <string name="error_user_not_found">No se encontró una cuenta con este correo.</string>
 
     <!-- Route Creation -->
     <string name="create_route_title">Crear Ruta Recurrente</string>
-    <string name="route_type_to_uni">Hacia la Universidad</string>
-    <string name="route_type_from_uni">Desde la Universidad</string>
     <string name="waypoints_section_title">Paradas</string>
     <string name="origin_label">Origen</string>
     <string name="destination_label">Destino</string>
-    <string name="origin_eia_label">Origen (EIA)</string>
-    <string name="destination_eia_label">Destino (EIA)</string>
     <string name="add_waypoint_button">+ Agregar parada</string>
     <string name="select_location_placeholder">Seleccionar ubicación</string>
     <string name="route_stop_remove">Eliminar parada</string>
-    <string name="arrival_time_label">Hora de llegada a la EIA</string>
     <string name="departure_time_label">Salida: %1$s</string>
-    <string name="departure_date_label">Fecha de salida</string>
     <string name="departure_time_section_label">Hora de salida</string>
-    <string name="days_of_week_title">Días de la semana</string>
     <string name="save_route_button">Guardar Ruta</string>
     <string name="error_origin_destination_required">El origen y el destino son obligatorios</string>
-    <string name="error_at_least_one_waypoint">Se requiere al menos una parada intermedia</string>
-    <string name="error_at_least_one_day">Se debe seleccionar al menos un día</string>
 
     <!-- Days of Week -->
-    <string name="day_mon">Lun</string>
-    <string name="day_tue">Mar</string>
-    <string name="day_wed">Mié</string>
-    <string name="day_thu">Jue</string>
-    <string name="day_fri">Vie</string>
-    <string name="day_sat">Sáb</string>
-    <string name="day_sun">Dom</string>
-    <string name="search_places">Buscar lugares</string>
 
     <string name="add_new_place_title">Agregar Nuevo Lugar</string>
     <string name="place_name_label">Nombre del lugar</string>
-    <string name="place_address_label">Dirección</string>
     <string name="save_button">Guardar</string>
     <string name="cancel_button">Cancelar</string>
-    <string name="no_saved_places">No hay lugares guardados</string>
-    <string name="no_results_found">No se encontraron resultados</string>
     <string name="error_user_not_authenticated">Usuario no autenticado</string>
     <string name="select_time_title">Seleccionar hora</string>
     <string name="ok_button">Aceptar</string>
 
     <!-- Vehicle Registration -->
     <string name="register_vehicle_title">Registrar Vehículo</string>
-    <string name="vehicle_photo_section">Foto del Vehículo</string>
-    <string name="vehicle_add_photo">Toca para agregar foto del vehículo</string>
+    <string name="vehicle_photo_section">Foto del vehículo (opcional)</string>
     <string name="vehicle_change_photo">Toca para cambiar la foto</string>
-    <string name="vehicle_select_photo_title">Seleccionar foto del vehículo</string>
-    <string name="vehicle_select_camera">Cámara</string>
-    <string name="vehicle_select_gallery">Galería</string>
     <string name="vehicle_brand_label">Marca</string>
     <string name="vehicle_brand_placeholder">Toyota, Mazda…</string>
     <string name="vehicle_model_label">Modelo</string>
     <string name="vehicle_model_placeholder">Corolla, CX-5…</string>
-    <string name="vehicle_license_plate_label">Placa</string>
-    <string name="vehicle_license_plate_placeholder">ABC-123</string>
     <string name="vehicle_color_label">Color</string>
-    <string name="vehicle_color_placeholder">Blanco, Negro…</string>
     <string name="vehicle_year_label">Año</string>
-    <string name="vehicle_year_placeholder">2024</string>
     <string name="vehicle_seats_label">Asientos disponibles</string>
-    <string name="vehicle_seats_placeholder">4</string>
-    <string name="register_vehicle_button">Registrar Vehículo</string>
     <string name="error_vehicle_brand_required">La marca es obligatoria</string>
     <string name="error_vehicle_model_required">El modelo es obligatorio</string>
     <string name="error_vehicle_license_plate_required">La placa es obligatoria</string>
@@ -157,23 +121,14 @@
     <string name="error_vehicle_year_invalid">Ingresa un año válido (p.ej. 2024)</string>
     <string name="error_vehicle_seats_required">El número de asientos es obligatorio</string>
     <string name="error_vehicle_seats_invalid">Los asientos deben estar entre 1 y 8</string>
-    <string name="error_vehicle_photo_required">La foto del vehículo es obligatoria</string>
     <!-- Route Detail -->
     <string name="route_detail_title">Detalles de la Ruta</string>
-    <string name="update_route_button">Actualizar Ruta</string>
     <string name="error_route_not_found">Ruta no encontrada</string>
 
     <!-- Vehicle Detail -->
-    <string name="vehicle_detail_title">Detalles del Vehículo</string>
-    <string name="update_vehicle_button">Actualizar Vehículo</string>
-    <string name="error_vehicle_not_found">Vehículo no encontrado</string>
 
     <!-- Navigation -->
     <string name="nav_home">Inicio</string>
-    <string name="nav_create_route">Crear</string>
-    <string name="nav_register_vehicle">Vehículo</string>
-    <string name="nav_my_routes">Rutas</string>
-    <string name="nav_my_vehicles">Vehículos</string>
 
     <!-- Lists -->
     <string name="vehicles_list_title">Mis Vehículos</string>
@@ -185,14 +140,14 @@
     </plurals>
     <string name="routes_list_title">Mis Rutas</string>
     <string name="routes_empty_title">Sin rutas aún</string>
-    <string name="routes_empty_subtitle">Crea tu primera ruta para ofrecer viajes</string>
-    <string name="route_to_university">Hacia la Universidad</string>
-    <string name="route_from_university">Desde la Universidad</string>
     <string name="route_waypoints_count">%1$d paradas</string>
+    <plurals name="trip_waypoint_count">
+        <item quantity="one">%1$d parada</item>
+        <item quantity="other">%1$d paradas</item>
+    </plurals>
 
     <!-- Add Place -->
     <string name="error_place_name_required">El nombre del lugar es obligatorio</string>
-    <string name="error_place_address_required">La dirección es obligatoria</string>
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">¡Hola, %1$s!</string>
@@ -204,19 +159,15 @@
 
     <!-- Driver Home -->
     <string name="driver_home_title">Inicio Conductor</string>
-    <string name="driver_home_welcome">Bienvenido, %1$s</string>
 
     <!-- Passenger Home -->
     <string name="passenger_home_title">Buscar Viaje</string>
-    <string name="search_routes_filter_all">Todos</string>
 
     <!-- Common -->
-    <string name="switch_role">Cambiar rol</string>
     <string name="logout_title">Cerrar sesión</string>
     <string name="nav_search_routes">Buscar</string>
 
     <!-- Reservas -->
-    <string name="book_button">Reservar Asiento</string>
     <string name="cancel_booking_button">Cancelar Reserva</string>
     <string name="confirm_button">Confirmar</string>
     <string name="reject_button">Rechazar</string>
@@ -233,19 +184,12 @@
 
     <!-- Detalle de ruta (pasajero) -->
     <string name="route_detail_passenger_title">Detalles de la Ruta</string>
-    <string name="route_vehicles_section">Vehículos Disponibles</string>
-    <string name="no_vehicles_available">No hay vehículos disponibles para esta ruta</string>
 
     <!-- Reservas del pasajero -->
     <string name="passenger_bookings_title">Mis Reservas</string>
-    <string name="bookings_empty_title">Sin reservas aún</string>
-    <string name="bookings_empty_subtitle">Reserva un asiento en una ruta disponible para comenzar</string>
 
     <!-- Solicitudes del conductor -->
     <string name="booking_requests_title">Solicitudes de Reserva</string>
-    <string name="requests_empty_title">Sin solicitudes pendientes</string>
-    <string name="requests_empty_subtitle">Las solicitudes pendientes de los pasajeros aparecerán aquí</string>
-    <string name="passenger_label">Pasajero</string>
 
     <!-- Navegación -->
     <string name="nav_booking_requests">Solicitudes</string>
@@ -255,16 +199,13 @@
 
     <!-- Perfil -->
     <string name="profile_title">Perfil</string>
-    <string name="profile_driver_section">Opciones de Conductor</string>
 
     <!-- Viaje -->
     <string name="create_trip_title">Publicar Viaje</string>
     <string name="publish_trip">Publicar Viaje</string>
     <string name="select_vehicle_section">Seleccionar Vehículo</string>
-    <string name="trip_status_active">Activo</string>
     <string name="trip_status_cancelled">Cancelado</string>
     <string name="trip_status_completed">Completado</string>
-    <string name="my_trips_empty">Sin viajes publicados aún</string>
     <string name="error_trip_not_found">Viaje no encontrado</string>
     <string name="error_no_vehicle_selected">Por favor selecciona un vehículo</string>
     <string name="error_trip_departure_in_past">La hora de salida debe ser en el futuro</string>
@@ -277,7 +218,6 @@
     <string name="error_state_title">Algo salió mal</string>
     <string name="error_state_retry">Reintentar</string>
     <string name="offline_banner_message">Sin conexión a internet</string>
-    <string name="empty_state_no_data">No hay información</string>
 
     <!-- Diálogo de confirmación de cierre de sesión -->
     <string name="logout_confirm_title">Cerrar sesión</string>
@@ -285,12 +225,10 @@
     <string name="logout_confirm_button">Cerrar sesión</string>
 
     <!-- Subtítulos de estado vacío -->
-    <string name="my_trips_empty_subtitle">Los viajes que publiques aparecerán aquí</string>
     <string name="search_empty_title">Sin viajes disponibles</string>
     <string name="search_empty_subtitle">Intenta otra búsqueda o vuelve más tarde</string>
 
     <!-- Home Dashboard -->
-    <string name="home_title">Inicio</string>
     <string name="home_greeting_subtitle">¿Listo para tu viaje de hoy?</string>
     <string name="home_next_trip_title">Próximo viaje</string>
     <string name="home_next_booking_title">Tu próximo viaje</string>
@@ -335,8 +273,7 @@
     <string name="register_step_2_title">Tu información de contacto</string>
     <string name="register_step_3_title">Tu rol</string>
     <string name="register_step_indicator">Paso %1$d de %2$d</string>
-    <string name="register_photo_placeholder">Agregar foto de perfil</string>
-    <string name="register_photo_tap">Toca para agregar una foto</string>
+    <string name="register_photo_placeholder">Agregar foto de perfil (opcional)</string>
     <string name="register_photo_action_camera">Cámara</string>
     <string name="register_photo_action_gallery">Galería</string>
     <string name="register_phone_label">Número de teléfono</string>
@@ -362,8 +299,6 @@
     <!-- Selector de rol -->
     <string name="role_selector_remember_choice">Recordar mi elección</string>
     <string name="role_selector_driver_pending">%1$d solicitudes pendientes</string>
-    <string name="role_selector_last_used">Último uso: %1$s</string>
-    <string name="role_selector_never_used">Nunca usado</string>
 
     <!-- Nuevos errores de validación -->
     <string name="error_email_not_eia">Usa tu correo @eia.edu.co</string>
@@ -375,7 +310,6 @@
     <string name="password_strength_weak">Débil</string>
     <string name="password_strength_medium">Media</string>
     <string name="password_strength_strong">Fuerte</string>
-    <string name="password_strength_label">Fuerza de contraseña: %1$s</string>
 
     <!-- Rediseño lista de rutas -->
     <string name="routes_list_subtitle">Tus trayectos recurrentes</string>
@@ -388,9 +322,7 @@
     <string name="error_route_name_required">El nombre de la ruta es obligatorio</string>
 
     <!-- Paradas (reemplaza Waypoints) -->
-    <string name="stops_section_title">Paradas</string>
     <string name="stop_number">Parada %1$d</string>
-    <string name="add_stop_button">+ Agregar parada</string>
 
     <!-- Sección de recurrencia -->
     <string name="recurrence_section_title">Recurrencia (opcional)</string>
@@ -467,7 +399,6 @@
     <!-- DriverTrips - tarjeta de viaje -->
     <string name="trip_seats_occupied">%1$d de %2$d cupos ocupados</string>
     <string name="trip_action_start">Iniciar viaje</string>
-    <string name="trip_action_finish">Finalizar viaje</string>
     <string name="trip_action_track">Seguir viaje</string>
     <string name="trip_action_view_passengers">Ver pasajeros</string>
     <string name="booking_action_rate">Calificar</string>
@@ -513,7 +444,6 @@
     <string name="reject_confirm_button">Rechazar solicitud</string>
 
     <!-- Snackbars de acción -->
-    <string name="booking_accepted_message">Solicitud aceptada</string>
     <string name="booking_trip_now_full">Tu viaje ya está lleno. Otras solicitudes para este viaje se rechazarán automáticamente.</string>
 
     <!-- Tarjeta de confirmadas -->
@@ -565,19 +495,11 @@
     <string name="profile_delete_account_confirm_button">Eliminar cuenta</string>
     <string name="profile_delete_account_name_hint">Escribe tu nombre</string>
     <string name="profile_delete_account_name_mismatch">El nombre no coincide</string>
-    <string name="profile_delete_blocked_title">No puedes eliminar tu cuenta</string>
-    <string name="profile_delete_blocked_desc">Tienes viajes activos o reservas pendientes. Cancélalos o complétalos primero.</string>
-    <string name="profile_rating_as_driver">Como conductor</string>
-    <string name="profile_rating_as_passenger">Como pasajero</string>
-    <string name="profile_trips_count">%1$d viajes</string>
-    <string name="profile_no_ratings">Sin calificaciones aún</string>
 
     <!-- Diálogo de roles activos -->
     <string name="active_roles_title">Roles activos</string>
     <string name="active_roles_driver">Conductor</string>
     <string name="active_roles_passenger">Pasajero</string>
-    <string name="active_roles_blocked_driver">Tienes %1$d viaje(s) programado(s) como conductor. Cancélalos o complétalos antes de desactivar este rol.</string>
-    <string name="active_roles_blocked_passenger">Tienes reservas pendientes como pasajero. Cancélalas o complétalas antes de desactivar este rol.</string>
     <string name="active_roles_min_one">Debes tener al menos un rol activo.</string>
     <string name="active_roles_close">Cerrar</string>
 
@@ -590,7 +512,6 @@
     <string name="edit_profile_bio_placeholder">Cuéntales algo a tus compañeros de viaje…</string>
     <string name="edit_profile_bio_counter">%1$d / 200</string>
     <string name="edit_profile_save_button">Guardar cambios</string>
-    <string name="edit_profile_photo_change">Cambiar foto</string>
     <string name="edit_profile_error_name_empty">El nombre no puede estar vacío</string>
     <string name="edit_profile_error_bio_too_long">Máximo 200 caracteres</string>
 
@@ -615,10 +536,6 @@
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
-    <string name="chat_online">En línea</string>
-    <string name="chat_sent_check">Enviado</string>
-    <string name="chat_read_check">Leído</string>
-    <string name="chat_report_conversation">Reportar conversación</string>
 
     <!-- Seguimiento de viaje -->
     <string name="trip_tracking_title">Viaje en curso</string>
@@ -627,10 +544,7 @@
     <string name="trip_tracking_complete_trip">Finalizar viaje</string>
     <string name="trip_tracking_no_location">Sin ubicación aún</string>
     <string name="trip_tracking_sos">SOS</string>
-    <string name="trip_tracking_driver_distance">El conductor está cerca de tu punto de recogida</string>
     <string name="trip_tracking_message_driver">Mensaje</string>
-    <string name="trip_tracking_call_driver">Llamar</string>
-    <string name="pickup_status_waiting">Esperando</string>
     <string name="pickup_status_picked_up">Recogido</string>
     <string name="pickup_status_dropped_off">Bajó</string>
     <string name="trip_tracking_passengers_title">Pasajeros</string>
@@ -647,21 +561,10 @@
     <string name="notifications_empty_title">Sin notificaciones</string>
     <string name="notifications_empty_subtitle">Aquí aparecerán tus notificaciones de viajes y reservas.</string>
     <string name="notifications_clear_all">Borrar todo</string>
-    <string name="notifications_section_today">HOY</string>
-    <string name="notifications_section_this_week">ESTA SEMANA</string>
-    <string name="notifications_section_earlier">ANTES</string>
     <string name="notification_booking_accepted_title">Reserva confirmada</string>
     <string name="notification_booking_accepted_body">El conductor aceptó tu reserva. ¡Que tengas buen viaje!</string>
     <string name="notification_booking_rejected_title">Reserva rechazada</string>
     <string name="notification_booking_rejected_body">El conductor no pudo aceptar tu reserva.</string>
-    <string name="notification_new_request_title">Nueva solicitud</string>
-    <string name="notification_new_request_body">%1$s quiere un cupo en tu viaje %2$s</string>
-    <string name="notification_trip_started_title">Viaje en curso</string>
-    <string name="notification_trip_started_body">Tu viaje %1$s ha comenzado</string>
-    <string name="notification_trip_completed_title">Viaje completado</string>
-    <string name="notification_trip_completed_body">Tu viaje %1$s ha terminado. ¿Cómo te fue?</string>
-    <string name="notification_new_message_title">Nuevo mensaje</string>
-    <string name="notification_new_message_body">%1$s te envió un mensaje</string>
 
     <!-- Seguridad -->
     <string name="safety_title">Seguridad</string>
@@ -669,7 +572,6 @@
     <string name="safety_contacts_section">Mis contactos</string>
     <string name="safety_add_contact">+ Agregar contacto</string>
     <string name="safety_max_contacts_reached">Máximo 2 contactos</string>
-    <string name="safety_remove_contact">Eliminar contacto</string>
     <string name="safety_contact_name_label">Nombre</string>
     <string name="safety_contact_name_placeholder">Mamá, Papá…</string>
     <string name="safety_contact_phone_label">Teléfono</string>
@@ -682,7 +584,6 @@
     <string name="safety_vibrate_sos_desc">Activa la vibración al presionar el botón SOS</string>
     <string name="safety_error_name_empty">El nombre no puede estar vacío</string>
     <string name="safety_error_phone_empty">El teléfono no puede estar vacío</string>
-    <string name="safety_error_phone_invalid">Ingresa un número de celular colombiano válido</string>
     <string name="safety_add_contact_title">Agregar contacto de emergencia</string>
 
     <!-- SearchRoutes rediseño -->
@@ -695,8 +596,6 @@
     <string name="search_filter_max_contribution">Aporte máximo</string>
     <string name="search_filter_female_driver">Conductora</string>
     <string name="search_filter_female_driver_coming_soon">Próximamente</string>
-    <string name="search_tolerance_label">Tolerancia</string>
-    <string name="search_tolerance_format">%1$d min</string>
     <string name="search_adjust_button">Ajustar búsqueda</string>
     <string name="trip_contribution_free">Gratis</string>
     <string name="trip_available_seats">%1$d cupos</string>
@@ -779,6 +678,9 @@
     <string name="vehicle_update_button">Guardar cambios</string>
 
     <!-- Formato de fecha y hora -->
+    <string name="time_am">a. m.</string>
+    <string name="time_pm">p. m.</string>
+    <string name="date_of_connector">de</string>
     <string-array name="day_names_short">
         <item>lun.</item>
         <item>mar.</item>
@@ -802,7 +704,4 @@
         <item>noviembre</item>
         <item>diciembre</item>
     </string-array>
-    <string name="time_am">a. m.</string>
-    <string name="time_pm">p. m.</string>
-    <string name="date_of_connector">de</string>
 </resources>
