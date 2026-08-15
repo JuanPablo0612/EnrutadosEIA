@@ -1,5 +1,8 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -139,6 +142,21 @@ fun AppNavigation(
             NavHost(
                 navController = navController,
                 startDestination = Route.Splash,
+                // Forward and back navigation were visually identical (NavHost's default fade),
+                // so the app gave no directional cue about depth. Declared once here rather than
+                // per-destination.
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeIn()
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeOut()
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeIn()
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeOut()
+                },
                 // consumeWindowInsets, not just padding: Modifier.padding does not mark the
                 // insets as consumed, so each screen's own Scaffold would apply the navigation
                 // bar inset a second time on top of the space the bottom bar already took.
@@ -422,7 +440,7 @@ fun AppNavigation(
                 composable<Route.Chat> { backStackEntry ->
                     val args = backStackEntry.toRoute<Route.Chat>()
                     val viewModel: ChatViewModel = koinViewModel {
-                        parametersOf(args.bookingId, "", false)
+                        parametersOf(args.bookingId, args.otherPartyName, args.isReadOnly)
                     }
                     ChatScreen(
                         viewModel = viewModel,
@@ -436,8 +454,8 @@ fun AppNavigation(
                     TripTrackingScreen(
                         viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
-                        onNavigateToChat = { bookingId ->
-                            navController.navigate(Route.Chat(bookingId))
+                        onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
+                            navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
                         },
                         onTripCompleted = { navController.popBackStack() }
                     )

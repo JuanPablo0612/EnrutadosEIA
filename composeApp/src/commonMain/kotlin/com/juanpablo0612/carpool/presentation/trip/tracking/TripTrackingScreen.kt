@@ -56,6 +56,7 @@ import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_trip
 import enrutadoseia.composeapp.generated.resources.trip_tracking_mark_dropped_off
 import enrutadoseia.composeapp.generated.resources.trip_tracking_mark_picked_up
 import enrutadoseia.composeapp.generated.resources.trip_tracking_message_driver
+import enrutadoseia.composeapp.generated.resources.trip_tracking_message_passenger
 import enrutadoseia.composeapp.generated.resources.trip_tracking_no_location
 import enrutadoseia.composeapp.generated.resources.trip_tracking_passengers_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos
@@ -73,7 +74,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun TripTrackingScreen(
     viewModel: TripTrackingViewModel,
     onBackClick: () -> Unit,
-    onNavigateToChat: (bookingId: String) -> Unit,
+    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onTripCompleted: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -82,7 +83,8 @@ fun TripTrackingScreen(
         when (event) {
             TripTrackingEvent.NavigateBack -> onBackClick()
             TripTrackingEvent.TripCompleted -> onTripCompleted()
-            is TripTrackingEvent.NavigateToChat -> onNavigateToChat(event.bookingId)
+            is TripTrackingEvent.NavigateToChat ->
+                onNavigateToChat(event.bookingId, event.otherPartyName, event.isReadOnly)
         }
     }
 
@@ -183,7 +185,15 @@ private fun DriverTrackingContent(
                 passenger = passenger,
                 isProcessing = passenger.passengerId in state.processingPassengerIds,
                 onMarkPickedUp = { onAction(TripTrackingAction.OnMarkPickedUp(passenger.passengerId)) },
-                onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOff(passenger.passengerId)) }
+                onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOff(passenger.passengerId)) },
+                onMessage = {
+                    onAction(
+                        TripTrackingAction.OnChatClick(
+                            bookingId = passenger.bookingId,
+                            otherPartyName = passenger.passengerName,
+                        )
+                    )
+                }
             )
         }
 
@@ -245,7 +255,14 @@ private fun PassengerTrackingContent(
 
         if (state.currentPassengerBookingId.isNotBlank()) {
             OutlinedButton(
-                onClick = { onAction(TripTrackingAction.OnChatClick(state.currentPassengerBookingId)) },
+                onClick = {
+                    onAction(
+                        TripTrackingAction.OnChatClick(
+                            bookingId = state.currentPassengerBookingId,
+                            otherPartyName = state.driverName,
+                        )
+                    )
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(Res.string.trip_tracking_message_driver))
@@ -259,7 +276,8 @@ private fun PassengerStatusCard(
     passenger: PassengerWithStatus,
     isProcessing: Boolean,
     onMarkPickedUp: () -> Unit,
-    onMarkDroppedOff: () -> Unit
+    onMarkDroppedOff: () -> Unit,
+    onMessage: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -279,6 +297,17 @@ private fun PassengerStatusCard(
             Spacer(Modifier.height(8.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // The driver had no way into a thread at all: the only chat entry point in the
+                // app was the passenger-side button.
+                OutlinedButton(
+                    onClick = onMessage,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.trip_tracking_message_passenger),
+                        maxLines = 1
+                    )
+                }
                 if (passenger.status is PickupStatus.Waiting) {
                     OutlinedButton(
                         onClick = onMarkPickedUp,

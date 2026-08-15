@@ -709,6 +709,8 @@
     <string name="relative_tomorrow">Tomorrow · %1$s</string>
     <string name="relative_day_at_time">%1$s · %2$s</string>
 
+    <string name="trip_tracking_message_passenger">Message</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Close</string>
     <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>

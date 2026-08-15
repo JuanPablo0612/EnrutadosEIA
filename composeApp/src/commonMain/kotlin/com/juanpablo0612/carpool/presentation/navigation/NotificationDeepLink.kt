@@ -10,6 +10,10 @@ package com.juanpablo0612.carpool.presentation.navigation
  *
  * An unrecognised or malformed link resolves to `null` and the tap simply marks the notification
  * read — a notification written by an older or newer build should never crash navigation.
+ *
+ * There is deliberately no `chat` link: [Route.Chat] needs the other party's display name for its
+ * title, which a persisted link cannot carry, and a half-populated route would put the screen back
+ * to showing the literal "Chat". Link to the trip or the booking list instead.
  */
 object NotificationDeepLink {
     private const val SCHEME = "carpool://"
@@ -18,7 +22,6 @@ object NotificationDeepLink {
     fun bookingRequests(): String = "${SCHEME}booking-requests"
     fun trip(tripId: String): String = "${SCHEME}trip/$tripId"
     fun tracking(tripId: String): String = "${SCHEME}tracking/$tripId"
-    fun chat(bookingId: String): String = "${SCHEME}chat/$bookingId"
 
     internal fun parse(link: String): Route? {
         if (!link.startsWith(SCHEME)) return null
@@ -34,7 +37,6 @@ object NotificationDeepLink {
             "booking-requests" -> Route.DriverBookingRequests
             "trip" -> arg?.let { Route.TripDetailPassenger(it) }
             "tracking" -> arg?.let { Route.TripTracking(it) }
-            "chat" -> arg?.let { Route.Chat(it) }
             else -> null
         }
     }

@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.use_case.GetUserPublicProfileUseCase
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.use_case.GetBookingsForTripUseCase
@@ -43,6 +44,7 @@ class TripTrackingViewModel(
     private val updatePassengerStatusUseCase: UpdatePassengerStatusUseCase,
     private val updateTripStatusUseCase: UpdateTripStatusUseCase,
     private val authRepository: AuthRepository,
+    private val getUserPublicProfileUseCase: GetUserPublicProfileUseCase,
     private val updateDriverLocationUseCase: UpdateDriverLocationUseCase,
     private val locationService: LocationService,
     private val locationPermissionRequester: LocationPermissionRequester,
@@ -86,6 +88,18 @@ class TripTrackingViewModel(
         }
     }
 
+    /**
+     * The passenger needs the driver's name for the chat title, and neither Trip nor Booking
+     * carries it — only driverId. Resolved once per driver rather than per snapshot.
+     */
+    private fun resolveDriverName(driverId: String) {
+        if (driverId.isBlank() || _state.value.driverName.isNotBlank()) return
+        viewModelScope.launch {
+            getUserPublicProfileUseCase(driverId)
+                .onSuccess { profile -> _state.update { it.copy(driverName = profile.name) } }
+        }
+    }
+
     private fun loadSafetySettings() {
         if (currentUserId.isBlank()) return
         viewModelScope.launch {
@@ -96,6 +110,7 @@ class TripTrackingViewModel(
 
     private fun applySnapshot(trip: Trip?, bookings: List<Booking>) {
         val isDriver = trip?.driverId == currentUserId
+        if (!isDriver && trip != null) resolveDriverName(trip.driverId)
         val confirmedBookings = bookings.filter { it.status is BookingStatus.Confirmed }
         val passengers = confirmedBookings.map { booking ->
             PassengerWithStatus(
@@ -146,7 +161,15 @@ class TripTrackingViewModel(
             TripTrackingAction.OnBackClick ->
                 viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateBack) }
             is TripTrackingAction.OnChatClick ->
-                viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateToChat(action.bookingId)) }
+                viewModelScope.launch {
+                    _events.emit(
+                        TripTrackingEvent.NavigateToChat(
+                            bookingId = action.bookingId,
+                            otherPartyName = action.otherPartyName,
+                            isReadOnly = _state.value.isChatReadOnly,
+                        )
+                    )
+                }
             TripTrackingAction.OnErrorDismissed ->
                 _state.update { it.copy(error = null) }
         }

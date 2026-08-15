@@ -7,6 +7,8 @@ data class TripTrackingUiState(
     val passengers: List<PassengerWithStatus> = emptyList(),
     val isDriver: Boolean = false,
     val currentPassengerBookingId: String = "",
+    /** The driver's display name, resolved for the passenger-side chat title. */
+    val driverName: String = "",
     val isLoading: Boolean = true,
     val isCompletingTrip: Boolean = false,
     val showCompleteTripDialog: Boolean = false,
@@ -32,4 +34,9 @@ data class TripTrackingUiState(
      * nobody booked, with no way to close it out.
      */
     val canCompleteTrip: Boolean get() = passengers.isEmpty() || allDroppedOff
+
+    /** A finished trip's thread is history: readable, not writable. */
+    val isChatReadOnly: Boolean
+        get() = trip?.status is com.juanpablo0612.carpool.domain.trip.model.TripStatus.Completed ||
+                trip?.status is com.juanpablo0612.carpool.domain.trip.model.TripStatus.Cancelled
 }

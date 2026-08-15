@@ -11,6 +11,6 @@ sealed class TripTrackingAction {
     data object OnSOSCallEmergencyClick : TripTrackingAction()
     data object OnSOSShareLocationClick : TripTrackingAction()
     data object OnBackClick : TripTrackingAction()
-    data class OnChatClick(val bookingId: String) : TripTrackingAction()
+    data class OnChatClick(val bookingId: String, val otherPartyName: String) : TripTrackingAction()
     data object OnErrorDismissed : TripTrackingAction()
 }

@@ -88,7 +88,13 @@ sealed interface Route {
     data class TripTracking(val tripId: String) : Route
 
     @Serializable
-    data class Chat(val bookingId: String) : Route
+    data class Chat(
+        val bookingId: String,
+        /** Shown as the screen title; without it the title fell back to the literal "Chat". */
+        val otherPartyName: String,
+        /** Set once the trip is over, so the thread renders its read-only banner. */
+        val isReadOnly: Boolean,
+    ) : Route
 
     @Serializable
     data class PostTripRating(
