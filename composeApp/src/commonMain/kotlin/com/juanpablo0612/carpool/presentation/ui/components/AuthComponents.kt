@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -302,14 +303,17 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            // heightIn, not height: this is the app's universal CTA, and a fixed height clips
+            // its label at large system font scales.
+            .heightIn(min = 56.dp),
         enabled = enabled && !isLoading,
         shape = shape,
+        // Disabled colours are left to ButtonDefaults, which already applies the spec-correct
+        // 0.12 container / 0.38 content opacities; the previous 0.5f override was less legible
+        // than the default it replaced.
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
-            disabledContainerColor = containerColor.copy(alpha = 0.5f),
-            disabledContentColor = contentColor.copy(alpha = 0.5f)
         )
     ) {
         if (isLoading) {
@@ -350,7 +354,8 @@ fun SecondaryButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            // heightIn so the label survives large font scales; see PrimaryButton.
+            .heightIn(min = 56.dp),
         enabled = enabled,
         shape = shape,
         border = BorderStroke(1.dp, borderColor),
@@ -422,7 +427,9 @@ fun RoleSelectionCard(
 ) {
     Surface(
         onClick = onClick,
-        modifier = modifier.height(56.dp),
+        // heightIn: this row holds an icon, bodyLarge text and a check mark, so a fixed height
+        // clips in both axes once the user scales their font up.
+        modifier = modifier.heightIn(min = 56.dp),
         shape = RoundedCornerShape(12.dp),
         color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
         border = BorderStroke(
