@@ -25,6 +25,7 @@ import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelect
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
@@ -107,33 +108,22 @@ internal fun RouteDetailReadContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = state.route?.name?.takeIf { it.isNotBlank() }
-                            ?: stringResource(Res.string.route_detail_title)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RouteDetailAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
+            CarpoolBackTopBar(
+                title = state.route?.name?.takeIf { it.isNotBlank() }
+                    ?: stringResource(Res.string.route_detail_title),
+                onBack = { onAction(RouteDetailAction.OnBackClick) },
                 actions = {
                     if (state.route != null) {
                         IconButton(onClick = { onAction(RouteDetailAction.OnEditClick) }) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.edit_24px),
-                                contentDescription = null
+                                contentDescription = stringResource(Res.string.cd_edit_route)
                             )
                         }
                         IconButton(onClick = { onAction(RouteDetailAction.OnDeleteClick) }) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.delete_24px),
-                                contentDescription = null,
+                                contentDescription = stringResource(Res.string.cd_delete_route),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -330,16 +320,9 @@ internal fun RouteDetailEditContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.route_edit_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RouteDetailAction.OnCancelEdit) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                }
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.route_edit_title),
+                onBack = { onAction(RouteDetailAction.OnCancelEdit) },
             )
         }
     ) { padding ->

@@ -19,7 +19,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,11 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.presentation.places.selector.components.PlaceRow
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.cancel_button
+import enrutadoseia.composeapp.generated.resources.cd_add_place
+import enrutadoseia.composeapp.generated.resources.cd_delete_place
 import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.delete_place_confirm_body
 import enrutadoseia.composeapp.generated.resources.delete_place_confirm_title
@@ -98,13 +99,9 @@ fun PlaceSelectorContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(vectorResource(Res.drawable.arrow_back_24px), contentDescription = null)
-                    }
-                }
+            CarpoolBackTopBar(
+                title = title,
+                onBack = onBack,
             )
         }
     ) { padding ->
@@ -168,7 +165,10 @@ fun PlaceSelectorContent(
                             title = stringResource(Res.string.place_selector_section_my_places),
                             action = {
                                 IconButton(onClick = onNavigateToAddPlace) {
-                                    Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
+                                    Icon(
+                                        vectorResource(Res.drawable.add_24px),
+                                        contentDescription = stringResource(Res.string.cd_add_place),
+                                    )
                                 }
                             }
                         )
@@ -182,7 +182,7 @@ fun PlaceSelectorContent(
                                 IconButton(onClick = { onAction(PlaceSelectorAction.OnDeletePlace(place)) }) {
                                     Icon(
                                         vectorResource(Res.drawable.delete_24px),
-                                        contentDescription = null,
+                                        contentDescription = stringResource(Res.string.cd_delete_place),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }

@@ -27,7 +27,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,7 +36,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -58,6 +56,7 @@ import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.NumberStepper
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -65,7 +64,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.utils.formatLongDate
 import com.juanpablo0612.carpool.presentation.utils.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.cancel
 import enrutadoseia.composeapp.generated.resources.confirm
@@ -244,16 +242,9 @@ fun CreateTripContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.create_trip_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(CreateTripAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                }
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.create_trip_title),
+                onBack = { onAction(CreateTripAction.OnBackClick) },
             )
         },
         bottomBar = {

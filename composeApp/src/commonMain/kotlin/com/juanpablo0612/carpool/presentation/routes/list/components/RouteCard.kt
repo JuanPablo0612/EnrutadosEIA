@@ -8,13 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
@@ -34,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.routes.create.components.TrajectoryConnector
 import com.juanpablo0612.carpool.presentation.routes.list.RouteWithStats
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_road_24px
 import enrutadoseia.composeapp.generated.resources.day_abbr_fri
@@ -44,6 +41,7 @@ import enrutadoseia.composeapp.generated.resources.day_abbr_thu
 import enrutadoseia.composeapp.generated.resources.day_abbr_tue
 import enrutadoseia.composeapp.generated.resources.day_abbr_wed
 import enrutadoseia.composeapp.generated.resources.departure_time_label
+import enrutadoseia.composeapp.generated.resources.cd_more_options
 import enrutadoseia.composeapp.generated.resources.more_vert_24px
 import enrutadoseia.composeapp.generated.resources.route_menu_delete
 import enrutadoseia.composeapp.generated.resources.route_menu_duplicate
@@ -70,14 +68,10 @@ fun RouteCard(
     val route = routeWithStats.route
     var expanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
+    CarpoolListCard(
+        modifier = modifier,
         onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
             // Header row: name + overflow menu
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -96,7 +90,7 @@ fun RouteCard(
                     ) {
                         Icon(
                             imageVector = vectorResource(Res.drawable.more_vert_24px),
-                            contentDescription = null,
+                            contentDescription = stringResource(Res.string.cd_more_options),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -218,7 +212,6 @@ fun RouteCard(
                     )
                 }
             }
-        }
     }
 }
 

@@ -22,6 +22,7 @@ import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelect
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -117,16 +118,9 @@ fun CreateRouteContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.create_route_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(CreateRouteAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                }
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.create_route_title),
+                onBack = { onAction(CreateRouteAction.OnBackClick) },
             )
         }
     ) { padding ->

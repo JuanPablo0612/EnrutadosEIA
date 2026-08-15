@@ -4,14 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -32,10 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.edit_24px
+import enrutadoseia.composeapp.generated.resources.cd_more_options
 import enrutadoseia.composeapp.generated.resources.more_vert_24px
 import enrutadoseia.composeapp.generated.resources.vehicle_action_delete
 import enrutadoseia.composeapp.generated.resources.vehicle_action_edit
@@ -54,24 +51,20 @@ fun VehicleCard(
     onSetPrimary: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
+    // Nullable: the vehicles list has no per-vehicle detail destination to navigate to. Screens
+    // that gain one later can pass a lambda; until then the call site passes null and the row
+    // stays a non-clickable list item (its overflow menu is the only affordance).
+    onClick: (() -> Unit)? = null,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.Top
-        ) {
+    CarpoolListCard(modifier = modifier, onClick = onClick) {
+        Row(verticalAlignment = Alignment.Top) {
             VehiclePhoto(
                 photoUrl = vehicle.photoUrl,
                 modifier = Modifier
                     .size(width = 120.dp, height = 80.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(MaterialTheme.shapes.small)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -108,7 +101,7 @@ fun VehicleCard(
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(
                         imageVector = vectorResource(Res.drawable.more_vert_24px),
-                        contentDescription = null
+                        contentDescription = stringResource(Res.string.cd_more_options)
                     )
                 }
                 DropdownMenu(
@@ -174,7 +167,7 @@ private fun VehiclePhoto(photoUrl: String, modifier: Modifier = Modifier) {
         Surface(
             modifier = modifier,
             color = MaterialTheme.colorScheme.surfaceVariant,
-            shape = RoundedCornerShape(8.dp)
+            shape = MaterialTheme.shapes.small
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(

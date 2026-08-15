@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -28,8 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,13 +43,13 @@ import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.bookings.asStringResource
 import com.juanpablo0612.carpool.presentation.routes.passenger_detail.components.StopsTimeline
 import com.juanpablo0612.carpool.presentation.routes.search.formatEpochShort
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.available_seats_label
 import enrutadoseia.composeapp.generated.resources.book_request_button
 import enrutadoseia.composeapp.generated.resources.book_request_sent
@@ -107,24 +103,9 @@ fun RouteDetailPassengerContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.route_detail_passenger_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RouteDetailPassengerAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.route_detail_passenger_title),
+                onBack = { onAction(RouteDetailPassengerAction.OnBackClick) },
             )
         }
     ) { padding ->
@@ -287,7 +268,7 @@ private fun SeatsBadge(availableSeats: Int, modifier: Modifier = Modifier) {
         MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
     else
         MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-    Surface(shape = RoundedCornerShape(6.dp), color = bg, modifier = modifier) {
+    Surface(shape = MaterialTheme.shapes.extraSmall, color = bg, modifier = modifier) {
         Text(
             text = stringResource(Res.string.available_seats_label, availableSeats),
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),

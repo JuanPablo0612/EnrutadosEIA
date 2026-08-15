@@ -27,21 +27,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.chat.model.Message
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
+import enrutadoseia.composeapp.generated.resources.cd_send_message
 import enrutadoseia.composeapp.generated.resources.chat_input_hint
 import enrutadoseia.composeapp.generated.resources.chat_quick_reply_en_camino
 import enrutadoseia.composeapp.generated.resources.chat_quick_reply_esperando
@@ -85,19 +83,9 @@ fun ChatContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = state.otherPartyName.ifBlank { "Chat" },
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(ChatAction.OnBackClick) }) {
-                        Icon(vectorResource(Res.drawable.arrow_back_24px), null)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+            CarpoolBackTopBar(
+                title = state.otherPartyName.ifBlank { "Chat" },
+                onBack = { onAction(ChatAction.OnBackClick) },
             )
         }
     ) { padding ->
@@ -247,7 +235,7 @@ private fun ChatInputRow(
             ) {
                 Icon(
                     imageVector = vectorResource(Res.drawable.arrow_forward_24px),
-                    contentDescription = null,
+                    contentDescription = stringResource(Res.string.cd_send_message),
                     tint = if (text.isNotBlank()) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.outlineVariant
                 )

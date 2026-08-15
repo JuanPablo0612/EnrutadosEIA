@@ -67,6 +67,7 @@ import enrutadoseia.composeapp.generated.resources.search_filter_max_contributio
 import enrutadoseia.composeapp.generated.resources.search_filters_button
 import enrutadoseia.composeapp.generated.resources.search_filters_title
 import enrutadoseia.composeapp.generated.resources.search_origin_placeholder
+import enrutadoseia.composeapp.generated.resources.cd_swap_origin_destination
 import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
 import kotlin.time.Instant
@@ -262,7 +263,7 @@ private fun SearchCard(
                 IconButton(onClick = { onAction(SearchRoutesAction.OnSwapPlaces) }) {
                     Icon(
                         imageVector = vectorResource(Res.drawable.swap_horiz_24px),
-                        contentDescription = null,
+                        contentDescription = stringResource(Res.string.cd_swap_origin_destination),
                         modifier = Modifier.rotate(90f)
                     )
                 }
