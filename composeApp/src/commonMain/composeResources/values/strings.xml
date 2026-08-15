@@ -700,6 +700,10 @@
     <string name="cd_rating_stars">Rating: %1$d of 5 stars</string>
     <string name="cd_status">Status: %1$s</string>
 
+    <string name="home_greeting_morning">Good morning, %1$s</string>
+    <string name="home_greeting_afternoon">Good afternoon, %1$s</string>
+    <string name="home_greeting_evening">Good evening, %1$s</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Close</string>
     <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>

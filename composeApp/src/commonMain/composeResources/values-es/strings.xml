@@ -700,6 +700,10 @@
     <string name="cd_rating_stars">Calificación: %1$d de 5 estrellas</string>
     <string name="cd_status">Estado: %1$s</string>
 
+    <string name="home_greeting_morning">Buenos días, %1$s</string>
+    <string name="home_greeting_afternoon">Buenas tardes, %1$s</string>
+    <string name="home_greeting_evening">Buenas noches, %1$s</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Cerrar</string>
     <string name="trip_tracking_sos_no_contacts">Aún no tienes contactos de emergencia. Agrega uno en Perfil → Seguridad.</string>

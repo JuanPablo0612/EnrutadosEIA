@@ -23,7 +23,7 @@ fun GreetingBlock(user: User, modifier: Modifier = Modifier) {
     val firstName = remember(user.name, user.email) {
         (user.name ?: user.email).substringBefore(' ')
     }
-    val greeting = greetingForTime(hour, firstName)
+    val greeting = stringResource(greetingResourceForTime(hour), firstName)
 
     Column(
         modifier = modifier

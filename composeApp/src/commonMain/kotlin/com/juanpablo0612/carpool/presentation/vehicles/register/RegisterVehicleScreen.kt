@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -60,6 +61,7 @@ import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
 import enrutadoseia.composeapp.generated.resources.error_vehicle_brand_required
 import enrutadoseia.composeapp.generated.resources.error_vehicle_color_required
+import enrutadoseia.composeapp.generated.resources.error_vehicle_model_required
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_vehicle_title
 import enrutadoseia.composeapp.generated.resources.vehicle_brand_label
@@ -216,7 +218,7 @@ fun RegisterVehicleContent(
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.fillMaxSize().padding(padding).imePadding(),
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
         ) {
 
@@ -306,6 +308,11 @@ fun RegisterVehicleContent(
                         placeholder = { Text(stringResource(Res.string.vehicle_brand_placeholder)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.showBrandDropdown) },
                         isError = state.brandError,
+                        // Only when the error belongs to the dropdown itself; if the user picked
+                        // "Otro" the message belongs to the custom-brand field below instead.
+                        supportingText = if (state.brandError && !state.isCustomBrand) {
+                            { Text(stringResource(Res.string.error_vehicle_brand_required)) }
+                        } else null,
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
@@ -337,15 +344,14 @@ fun RegisterVehicleContent(
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next
                         ),
-                        errorMessage = if (state.brandError) " " else null
-                    )
-                }
-                if (state.brandError) {
-                    Text(
-                        text = stringResource(Res.string.error_vehicle_brand_required),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                        // The message goes through errorMessage so it lands in the field's
+                        // supportingText and is announced with the field. It used to be a single
+                        // space here — just enough to redden the border — with the real text in a
+                        // detached Text below, which a screen reader never associates with the
+                        // field it describes.
+                        errorMessage = if (state.brandError) {
+                            stringResource(Res.string.error_vehicle_brand_required)
+                        } else null
                     )
                 }
                 Spacer(Modifier.height(16.dp))
@@ -362,7 +368,11 @@ fun RegisterVehicleContent(
                         capitalization = KeyboardCapitalization.Words,
                         imeAction = ImeAction.Next
                     ),
-                    errorMessage = if (state.modelError) " " else null
+                    // Previously a bare space with no message anywhere: the field reddened and
+                    // the reason was given in no modality at all, visual or spoken.
+                    errorMessage = if (state.modelError) {
+                        stringResource(Res.string.error_vehicle_model_required)
+                    } else null
                 )
                 Spacer(Modifier.height(16.dp))
             }
@@ -442,10 +452,15 @@ fun RegisterVehicleContent(
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next
                         ),
-                        errorMessage = if (state.colorError) " " else null
+                        errorMessage = if (state.colorError) {
+                            stringResource(Res.string.error_vehicle_color_required)
+                        } else null
                     )
                 }
-                if (state.colorError) {
+                // Kept as a detached message only for the chip-group case, which has no field and
+                // therefore no supportingText slot to attach to. When the custom-colour field is
+                // showing, the message lives on the field above instead.
+                if (state.colorError && !state.isCustomColor) {
                     Text(
                         text = stringResource(Res.string.error_vehicle_color_required),
                         color = MaterialTheme.colorScheme.error,

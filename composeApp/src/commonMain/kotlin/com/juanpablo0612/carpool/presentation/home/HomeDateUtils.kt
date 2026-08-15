@@ -1,7 +1,12 @@
 package com.juanpablo0612.carpool.presentation.home
 
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.home_greeting_afternoon
+import enrutadoseia.composeapp.generated.resources.home_greeting_evening
+import enrutadoseia.composeapp.generated.resources.home_greeting_morning
 import kotlin.time.Clock
 import kotlin.time.Instant
+import org.jetbrains.compose.resources.StringResource
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDateTime
@@ -10,11 +15,16 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-fun greetingForTime(hour: Int, firstName: String): String = when (hour) {
-    in 0..4 -> "Buenas noches, $firstName"
-    in 5..11 -> "Buenos días, $firstName"
-    in 12..18 -> "Buenas tardes, $firstName"
-    else -> "Buenas noches, $firstName"
+/**
+ * The greeting for a given local hour, as a resource for the caller to resolve with the user's
+ * name. Returns the resource rather than a formatted string so the copy stays in `strings.xml`
+ * and follows the device locale — this greeting is the first thing every user sees, and it used
+ * to be hardcoded Spanish that rendered untranslated in the English locale.
+ */
+fun greetingResourceForTime(hour: Int): StringResource = when (hour) {
+    in 5..11 -> Res.string.home_greeting_morning
+    in 12..18 -> Res.string.home_greeting_afternoon
+    else -> Res.string.home_greeting_evening
 }
 
 fun relativeTime(epochMs: Long, now: Long = Clock.System.now().toEpochMilliseconds()): String {
