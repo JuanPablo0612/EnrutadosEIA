@@ -545,7 +545,7 @@ fun PasswordStrengthIndicator(
     val extendedColors = LocalExtendedColors.current
     val color = when {
         strength < 0.4f -> MaterialTheme.colorScheme.error
-        strength < 0.8f -> Color(0xFFFFA000)
+        strength < 0.8f -> extendedColors.warning
         else -> extendedColors.success
     }
     val label = when {

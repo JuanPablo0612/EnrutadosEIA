@@ -86,11 +86,16 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+// `surfaceTint` and `inversePrimary` both derive from `primary` in the base schemes, and a
+// ColorScheme.copy() does not recompute them. Without overriding them here the passenger theme
+// tints elevated surfaces teal while everything else is amber.
 private val passengerLightScheme = lightScheme.copy(
     primary = passengerPrimaryLight,
     onPrimary = passengerOnPrimaryLight,
     primaryContainer = passengerPrimaryContainerLight,
     onPrimaryContainer = passengerOnPrimaryContainerLight,
+    surfaceTint = passengerPrimaryLight,
+    inversePrimary = passengerPrimaryDark,
 )
 
 private val passengerDarkScheme = darkScheme.copy(
@@ -98,6 +103,8 @@ private val passengerDarkScheme = darkScheme.copy(
     onPrimary = passengerOnPrimaryDark,
     primaryContainer = passengerPrimaryContainerDark,
     onPrimaryContainer = passengerOnPrimaryContainerDark,
+    surfaceTint = passengerPrimaryDark,
+    inversePrimary = passengerPrimaryLight,
 )
 
 data class ExtendedColors(
@@ -135,6 +142,11 @@ fun CarpoolTheme(
         ExtendedColors(successLight, onSuccessLight, warningLight, onWarningLight, infoLight, onInfoLight)
     }
     CompositionLocalProvider(LocalExtendedColors provides extendedColors) {
-        MaterialTheme(colorScheme = colorScheme, typography = AppTypography, content = content)
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            shapes = AppShapes,
+            content = content,
+        )
     }
 }
