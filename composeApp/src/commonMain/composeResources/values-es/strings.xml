@@ -704,6 +704,11 @@
     <string name="home_greeting_afternoon">Buenas tardes, %1$s</string>
     <string name="home_greeting_evening">Buenas noches, %1$s</string>
 
+    <string name="relative_in_minutes">En %1$d min</string>
+    <string name="relative_today">Hoy · %1$s</string>
+    <string name="relative_tomorrow">Mañana · %1$s</string>
+    <string name="relative_day_at_time">%1$s · %2$s</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Cerrar</string>
     <string name="trip_tracking_sos_no_contacts">Aún no tienes contactos de emergencia. Agrega uno en Perfil → Seguridad.</string>
