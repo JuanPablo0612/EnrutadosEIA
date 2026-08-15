@@ -38,8 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.PlaceType
 import com.juanpablo0612.carpool.presentation.places.add.components.MapPreview
-import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
@@ -135,7 +135,7 @@ fun AddPlaceContent(
                 }
             }
 
-            AuthTextField(
+            CarpoolTextField(
                 value = state.name,
                 onValueChange = { onAction(AddPlaceAction.OnNameChanged(it)) },
                 label = stringResource(Res.string.place_name_label),
@@ -148,7 +148,7 @@ fun AddPlaceContent(
             )
 
             // Address field with loading spinner
-            AuthTextField(
+            CarpoolTextField(
                 value = state.address,
                 onValueChange = { onAction(AddPlaceAction.OnAddressChanged(it)) },
                 label = stringResource(Res.string.add_place_address_hint),

@@ -149,7 +149,7 @@ private fun LoginForm(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
-            AuthClickableText(
+            LinkText(
                 text = stringResource(Res.string.forgot_password),
                 onClick = onForgotPasswordClick,
                 modifier = Modifier.padding(vertical = 8.dp)

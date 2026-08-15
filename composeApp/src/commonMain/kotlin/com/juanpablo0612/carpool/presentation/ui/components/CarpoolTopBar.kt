@@ -22,11 +22,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.cd_back
@@ -54,7 +54,7 @@ fun CarpoolTopBar(
             // is unchanged: the extra 8.dp is split 4.dp/4.dp around the 40.dp avatar.
             Box(
                 modifier = Modifier
-                    .padding(start = 4.dp)
+                    .padding(start = Spacing.xs)
                     .size(48.dp)
                     .clip(CircleShape)
                     .clickable(role = Role.Button, onClick = onAvatarClick)
@@ -74,7 +74,7 @@ fun CarpoolTopBar(
                     selected = false,
                     onClick = onRoleToggle,
                     label = { Text(currentRoleLabel) },
-                    modifier = Modifier.padding(end = 4.dp)
+                    modifier = Modifier.padding(end = Spacing.xs)
                 )
             }
             actions()
@@ -105,8 +105,9 @@ fun CarpoolBackTopBar(
         title = {
             Column {
                 Text(
+                    // titleLarge is Bold by default; no .copy() override needed.
                     text = title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleLarge
                 )
                 subtitle?.let {
                     Text(

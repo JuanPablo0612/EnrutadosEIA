@@ -383,7 +383,7 @@ private fun RegisterStep3(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.width(4.dp))
-            AuthClickableText(
+            LinkText(
                 text = stringResource(Res.string.login_link),
                 onClick = onNavigateToLogin
             )

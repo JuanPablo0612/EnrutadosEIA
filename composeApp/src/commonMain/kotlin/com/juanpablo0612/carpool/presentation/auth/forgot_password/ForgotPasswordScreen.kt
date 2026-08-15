@@ -174,7 +174,7 @@ private fun ForgotPasswordSuccess(
             enabled = resendCountdown == 0
         )
 
-        AuthClickableText(
+        LinkText(
             text = stringResource(Res.string.back_to_login),
             onClick = onBack
         )

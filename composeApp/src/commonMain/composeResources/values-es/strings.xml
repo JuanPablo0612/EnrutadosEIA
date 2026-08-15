@@ -711,6 +711,9 @@
 
     <string name="trip_tracking_message_passenger">Mensaje</string>
 
+    <string name="error_route_save_failed">No se pudo guardar la ruta. Inténtalo de nuevo.</string>
+    <string name="error_route_delete_failed">No se pudo eliminar la ruta. Inténtalo de nuevo.</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Cerrar</string>
     <string name="trip_tracking_sos_no_contacts">Aún no tienes contactos de emergencia. Agrega uno en Perfil → Seguridad.</string>

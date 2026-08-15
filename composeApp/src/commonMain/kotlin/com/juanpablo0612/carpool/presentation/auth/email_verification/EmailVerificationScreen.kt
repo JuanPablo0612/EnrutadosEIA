@@ -109,7 +109,7 @@ fun EmailVerificationContent(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            AuthClickableText(
+            LinkText(
                 text = stringResource(Res.string.email_verification_wrong_email),
                 onClick = onBackClick
             )

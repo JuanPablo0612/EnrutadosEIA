@@ -49,8 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.domain.vehicles.model.VehicleType
-import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.NumberStepper
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
@@ -335,7 +335,7 @@ fun RegisterVehicleContent(
                 }
                 if (state.isCustomBrand) {
                     Spacer(Modifier.height(8.dp))
-                    AuthTextField(
+                    CarpoolTextField(
                         value = state.brand,
                         onValueChange = { onAction(RegisterVehicleAction.OnBrandSelected(it)) },
                         label = stringResource(Res.string.vehicle_brand_other),
@@ -359,7 +359,7 @@ fun RegisterVehicleContent(
 
             // 3. Model
             item {
-                AuthTextField(
+                CarpoolTextField(
                     value = state.model,
                     onValueChange = { onAction(RegisterVehicleAction.OnModelChanged(it)) },
                     label = stringResource(Res.string.vehicle_model_label),
@@ -443,7 +443,7 @@ fun RegisterVehicleContent(
                 }
                 if (state.isCustomColor) {
                     Spacer(Modifier.height(8.dp))
-                    AuthTextField(
+                    CarpoolTextField(
                         value = state.customColor,
                         onValueChange = { onAction(RegisterVehicleAction.OnCustomColorChanged(it)) },
                         label = stringResource(Res.string.vehicle_color_other),
@@ -473,7 +473,7 @@ fun RegisterVehicleContent(
 
             // 6. Plate
             item {
-                AuthTextField(
+                CarpoolTextField(
                     value = state.plate,
                     onValueChange = { onAction(RegisterVehicleAction.OnPlateChanged(it)) },
                     label = stringResource(Res.string.vehicle_plate_label),

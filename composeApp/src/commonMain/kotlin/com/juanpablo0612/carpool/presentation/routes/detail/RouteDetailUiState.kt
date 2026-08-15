@@ -14,5 +14,5 @@ data class RouteDetailUiState(
     val isSaving: Boolean = false,
     val isDeleting: Boolean = false,
     val showDeleteConfirm: Boolean = false,
-    val error: String? = null
+    val error: RouteDetailError? = null
 )

@@ -275,11 +275,10 @@ internal fun RouteDetailReadContent(
                 }
             }
 
-            // Error
-            if (state.error != null) {
+            state.error?.let { error ->
                 item {
                     Text(
-                        text = state.error,
+                        text = stringResource(error.asStringResource()),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
                     )

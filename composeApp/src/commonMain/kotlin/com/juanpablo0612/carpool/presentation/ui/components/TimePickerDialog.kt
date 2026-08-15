@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -16,9 +17,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.ok_button
@@ -41,7 +46,7 @@ fun TimePickerDialog(
     ) {
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
-            tonalElevation = 6.dp,
+            tonalElevation = Elevation.overlay,
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .height(IntrinsicSize.Min)
@@ -51,7 +56,7 @@ fun TimePickerDialog(
                 ),
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier = Modifier.padding(Spacing.xl),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -63,8 +68,10 @@ fun TimePickerDialog(
                 )
                 content()
                 Row(
+                    // heightIn, not height: a fixed 40dp row clips the Cancel/OK TextButtons'
+                    // labels at large system font scales.
                     modifier = Modifier
-                        .height(40.dp)
+                        .heightIn(min = 40.dp)
                         .fillMaxWidth()
                 ) {
                     toggle()
@@ -77,6 +84,19 @@ fun TimePickerDialog(
                     ) { Text(stringResource(Res.string.ok_button)) }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TimePickerDialogPreview() {
+    CarpoolTheme {
+        TimePickerDialog(
+            onCancel = {},
+            onConfirm = {},
+        ) {
+            Text("14:30")
         }
     }
 }

@@ -127,7 +127,8 @@ fun CreateRouteContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
+                .padding(padding)
+                .imePadding(),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             // Route name field
