@@ -714,6 +714,14 @@
     <string name="error_route_save_failed">Couldn't save the route. Please try again.</string>
     <string name="error_route_delete_failed">Couldn't delete the route. Please try again.</string>
 
+    <string name="role_switch_to_driver">Switch to driver</string>
+    <string name="role_switch_to_passenger">Switch to passenger</string>
+    <string name="notice_route_created">Route created</string>
+    <string name="notice_trip_published">Trip published</string>
+    <string name="notice_vehicle_saved">Vehicle saved</string>
+    <string name="notice_place_saved">Place saved</string>
+    <string name="notice_profile_saved">Profile updated</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Close</string>
     <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>

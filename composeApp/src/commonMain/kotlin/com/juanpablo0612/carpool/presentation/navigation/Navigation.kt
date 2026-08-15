@@ -101,6 +101,18 @@ fun AppNavigation(
         else -> emptyList()
     }
 
+    // The one way to change active role. Every caller resets the back stack, because leaving the
+    // previous role's destinations underneath is exactly how activeRole ends up disagreeing with
+    // the tab set that is actually on screen — the desync the bottom-bar comment below guards
+    // against, reached from the other direction.
+    val switchActiveRole: (UserRole) -> Unit = { role ->
+        userSession.setActiveRole(role)
+        val destination = if (role == UserRole.Driver) Route.Home else Route.PassengerHome
+        navController.navigate(destination) {
+            popUpTo(0) { inclusive = true }
+        }
+    }
+
     val onLogout: () -> Unit = {
         scope.launch {
             logoutUseCase()
@@ -280,10 +292,7 @@ fun AppNavigation(
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
-                    onNavigateToSearchTrips = {
-                        userSession.setActiveRole(UserRole.Passenger)
-                        navController.navigate(Route.PassengerHome)
-                    },
+                    onNavigateToSearchTrips = { switchActiveRole(UserRole.Passenger) },
                     onNavigateToPassengerBookings = { navController.navigate(Route.PassengerBookings) },
                     onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                     onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
