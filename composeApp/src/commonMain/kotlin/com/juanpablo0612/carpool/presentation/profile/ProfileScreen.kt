@@ -58,6 +58,7 @@ import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.logout_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_button
+import enrutadoseia.composeapp.generated.resources.notifications_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_description
 import enrutadoseia.composeapp.generated.resources.logout_confirm_title
 import enrutadoseia.composeapp.generated.resources.logout_title
@@ -81,6 +82,7 @@ import enrutadoseia.composeapp.generated.resources.profile_theme_value
 import enrutadoseia.composeapp.generated.resources.profile_title
 import enrutadoseia.composeapp.generated.resources.routes_list_title
 import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
+import enrutadoseia.composeapp.generated.resources.shield_24px
 import enrutadoseia.composeapp.generated.resources.vehicles_list_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -215,12 +217,12 @@ fun ProfileContent(
                 SectionHeader(stringResource(Res.string.profile_config_section))
                 ProfileListItem(
                     title = stringResource(Res.string.profile_notifications_settings),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
+                    icon = { Icon(vectorResource(Res.drawable.notifications_24px), null) },
                     onClick = { onAction(ProfileAction.OnNotificationsClick) }
                 )
                 ProfileListItem(
                     title = stringResource(Res.string.profile_safety),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
+                    icon = { Icon(vectorResource(Res.drawable.shield_24px), null) },
                     onClick = { onAction(ProfileAction.OnSafetyClick) }
                 )
                 ListItem(

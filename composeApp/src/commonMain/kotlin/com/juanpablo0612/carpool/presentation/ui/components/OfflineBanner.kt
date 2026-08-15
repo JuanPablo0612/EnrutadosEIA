@@ -15,14 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.error_24px
 import enrutadoseia.composeapp.generated.resources.offline_banner_message
+import enrutadoseia.composeapp.generated.resources.wifi_off_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-// TODO: Replace error_24px with wifi_off_24px once downloaded from Material Symbols
-// (https://fonts.google.com/icons?icon.query=wifi+off) and placed in
-// composeApp/src/commonMain/composeResources/drawable/wifi_off_24px.xml
 @Composable
 fun OfflineBanner(
     isOffline: Boolean,
@@ -38,7 +35,8 @@ fun OfflineBanner(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = vectorResource(Res.drawable.error_24px),
+                    // Decorative: the banner's own message states the offline condition.
+                    imageVector = vectorResource(Res.drawable.wifi_off_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onErrorContainer
                 )
