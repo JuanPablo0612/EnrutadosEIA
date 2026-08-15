@@ -1,6 +1,8 @@
 package com.juanpablo0612.carpool.presentation.role_selector
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -42,52 +44,64 @@ fun RoleSelectorContent(
     onAction: (RoleSelectorAction) -> Unit
 ) {
     Scaffold { padding ->
-        Column(
+        // heightIn(min = maxHeight) rather than a bare verticalScroll: inside a scrollable the
+        // column is measured with unbounded height, so Arrangement.Center would have no slack to
+        // work with and the content would silently jump to the top. Holding the content to at
+        // least one viewport keeps it centred when it fits and lets it scroll when it doesn't —
+        // which is what landscape and large font scales need.
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = stringResource(Res.string.role_selector_greeting, state.userName),
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.role_selector_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(48.dp))
-
-            DriverRoleCard(
-                pendingCount = state.driverPendingCount,
-                onClick = { onAction(RoleSelectorAction.OnSelectDriver) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PassengerRoleCard(
-                onClick = { onAction(RoleSelectorAction.OnSelectPassenger) }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .heightIn(min = maxHeight)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Checkbox(
-                    checked = state.rememberChoice,
-                    onCheckedChange = { onAction(RoleSelectorAction.OnToggleRememberChoice(it)) }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(Res.string.role_selector_remember_choice),
-                    style = MaterialTheme.typography.bodySmall
+                    text = stringResource(Res.string.role_selector_greeting, state.userName),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(Res.string.role_selector_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(48.dp))
+
+                DriverRoleCard(
+                    pendingCount = state.driverPendingCount,
+                    onClick = { onAction(RoleSelectorAction.OnSelectDriver) }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PassengerRoleCard(
+                    onClick = { onAction(RoleSelectorAction.OnSelectPassenger) }
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Checkbox(
+                        checked = state.rememberChoice,
+                        onCheckedChange = { onAction(RoleSelectorAction.OnToggleRememberChoice(it)) }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(Res.string.role_selector_remember_choice),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
     }

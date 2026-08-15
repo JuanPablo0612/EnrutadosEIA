@@ -64,7 +64,14 @@ class SafetyViewModel(
             is SafetyAction.OnContactPhoneChange ->
                 _state.update { it.copy(newContactPhone = action.phone, newContactPhoneError = null) }
             SafetyAction.OnSaveContact -> saveContact()
-            is SafetyAction.OnRemoveContact -> removeContact(action.contactId)
+            is SafetyAction.OnRemoveContact -> _state.update {
+                it.copy(pendingRemoveContactId = action.contactId)
+            }
+            is SafetyAction.OnConfirmRemoveContact -> {
+                _state.update { it.copy(pendingRemoveContactId = null) }
+                removeContact(action.contactId)
+            }
+            SafetyAction.OnDismissRemoveContact -> _state.update { it.copy(pendingRemoveContactId = null) }
             is SafetyAction.OnToggleAutoShare -> updateSettings(autoShare = action.enabled)
             is SafetyAction.OnToggleVibrateSos -> updateSettings(vibrateSos = action.enabled)
             SafetyAction.OnBackClick -> viewModelScope.launch { _events.emit(SafetyEvent.NavigateBack) }

@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.trip.tracking
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -29,19 +31,26 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.utils.formatCoordinates
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.active_roles_close
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
+import enrutadoseia.composeapp.generated.resources.call_24px
 import enrutadoseia.composeapp.generated.resources.cancel_button
+import enrutadoseia.composeapp.generated.resources.cd_back
+import enrutadoseia.composeapp.generated.resources.my_location_24px
 import enrutadoseia.composeapp.generated.resources.pickup_status_dropped_off
 import enrutadoseia.composeapp.generated.resources.pickup_status_picked_up
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
@@ -55,7 +64,9 @@ import enrutadoseia.composeapp.generated.resources.trip_tracking_no_location
 import enrutadoseia.composeapp.generated.resources.trip_tracking_passengers_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_call_emergency
-import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_report_issue
+import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_dismiss
+import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_location_shared
+import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_no_contacts
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_share_location
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_title
@@ -99,7 +110,10 @@ fun TripTrackingContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onAction(TripTrackingAction.OnBackClick) }) {
-                        Icon(vectorResource(Res.drawable.arrow_back_24px), null)
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                            contentDescription = stringResource(Res.string.cd_back)
+                        )
                     }
                 },
                 actions = {
@@ -119,22 +133,28 @@ fun TripTrackingContent(
             )
         }
     ) { padding ->
-        if (state.isLoading) {
-            Box(Modifier.fillMaxSize().padding(padding), Alignment.Center) {
-                CircularProgressIndicator()
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            state.error?.let { error ->
+                ErrorMessage(
+                    message = stringResource(error.asStringResource()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { onAction(TripTrackingAction.OnErrorDismissed) }
+                )
             }
-        } else if (state.isDriver) {
-            DriverTrackingContent(
-                state = state,
-                onAction = onAction,
-                modifier = Modifier.padding(padding)
-            )
-        } else {
-            PassengerTrackingContent(
-                state = state,
-                onAction = onAction,
-                modifier = Modifier.padding(padding)
-            )
+
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                if (state.isLoading) {
+                    Box(Modifier.fillMaxSize(), Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else if (state.isDriver) {
+                    DriverTrackingContent(state = state, onAction = onAction)
+                } else {
+                    PassengerTrackingContent(state = state, onAction = onAction)
+                }
+            }
         }
 
         if (state.showCompleteTripDialog) {
@@ -145,7 +165,14 @@ fun TripTrackingContent(
         }
 
         if (state.showSosDialog) {
-            SosDialog(onDismiss = { onAction(TripTrackingAction.OnSOSDismiss) })
+            SosDialog(
+                vibrateSosEnabled = state.vibrateSosEnabled,
+                noContactsMessageVisible = state.sosNoContacts,
+                locationSharedMessageVisible = state.sosLocationShared,
+                onCallEmergency = { onAction(TripTrackingAction.OnSOSCallEmergencyClick) },
+                onShareLocation = { onAction(TripTrackingAction.OnSOSShareLocationClick) },
+                onDismiss = { onAction(TripTrackingAction.OnSOSDismiss) }
+            )
         }
     }
 }
@@ -171,6 +198,7 @@ private fun DriverTrackingContent(
         items(state.passengers, key = { it.passengerId }) { passenger ->
             PassengerStatusCard(
                 passenger = passenger,
+                isProcessing = passenger.passengerId in state.processingPassengerIds,
                 onMarkPickedUp = { onAction(TripTrackingAction.OnMarkPickedUp(passenger.passengerId)) },
                 onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOff(passenger.passengerId)) }
             )
@@ -180,7 +208,7 @@ private fun DriverTrackingContent(
             Spacer(Modifier.height(8.dp))
             Button(
                 onClick = { onAction(TripTrackingAction.OnCompleteTripClick) },
-                enabled = !state.isCompletingTrip,
+                enabled = !state.isCompletingTrip && state.canCompleteTrip,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (state.isCompletingTrip) {
@@ -246,6 +274,7 @@ private fun PassengerTrackingContent(
 @Composable
 private fun PassengerStatusCard(
     passenger: PassengerWithStatus,
+    isProcessing: Boolean,
     onMarkPickedUp: () -> Unit,
     onMarkDroppedOff: () -> Unit
 ) {
@@ -270,6 +299,7 @@ private fun PassengerStatusCard(
                 if (passenger.status is PickupStatus.Waiting) {
                     OutlinedButton(
                         onClick = onMarkPickedUp,
+                        enabled = !isProcessing,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
@@ -281,6 +311,7 @@ private fun PassengerStatusCard(
                 if (passenger.status is PickupStatus.PickedUp) {
                     Button(
                         onClick = onMarkDroppedOff,
+                        enabled = !isProcessing,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
@@ -330,19 +361,69 @@ private fun CompleteTripDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun SosDialog(onDismiss: () -> Unit) {
+private fun SosDialog(
+    vibrateSosEnabled: Boolean,
+    noContactsMessageVisible: Boolean,
+    locationSharedMessageVisible: Boolean,
+    onCallEmergency: () -> Unit,
+    onShareLocation: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val haptics = LocalHapticFeedback.current
+    LaunchedEffect(Unit) {
+        if (vibrateSosEnabled) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.trip_tracking_sos_title)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(stringResource(Res.string.trip_tracking_sos_call_emergency))
-                Text(stringResource(Res.string.trip_tracking_sos_share_location))
-                Text(stringResource(Res.string.trip_tracking_sos_report_issue))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                SosActionRow(
+                    icon = vectorResource(Res.drawable.call_24px),
+                    label = stringResource(Res.string.trip_tracking_sos_call_emergency),
+                    onClick = onCallEmergency
+                )
+                SosActionRow(
+                    icon = vectorResource(Res.drawable.my_location_24px),
+                    label = stringResource(Res.string.trip_tracking_sos_share_location),
+                    onClick = onShareLocation
+                )
+                if (noContactsMessageVisible) {
+                    Text(
+                        text = stringResource(Res.string.trip_tracking_sos_no_contacts),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
+                if (locationSharedMessageVisible) {
+                    Text(
+                        text = stringResource(Res.string.trip_tracking_sos_location_shared),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.active_roles_close)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.trip_tracking_sos_dismiss)) }
         }
+    )
+}
+
+@Composable
+private fun SosActionRow(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit
+) {
+    ListItem(
+        headlineContent = { Text(label) },
+        leadingContent = {
+            Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+        },
+        modifier = Modifier.clickable(onClick = onClick)
     )
 }

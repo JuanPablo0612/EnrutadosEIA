@@ -681,6 +681,39 @@
     <string name="time_am">AM</string>
     <string name="time_pm">PM</string>
     <string name="date_of_connector">of</string>
+
+    <!-- Content descriptions for icon-only controls -->
+    <string name="cd_back">Go back</string>
+    <string name="cd_open_profile">Open profile</string>
+    <string name="cd_more_options">More options</string>
+    <string name="cd_send_message">Send message</string>
+    <string name="cd_edit_route">Edit route</string>
+    <string name="cd_delete_route">Delete route</string>
+    <string name="cd_add_place">Add place</string>
+    <string name="cd_delete_place">Delete place</string>
+    <string name="cd_swap_origin_destination">Swap origin and destination</string>
+    <string name="cd_remove_contact">Remove contact</string>
+    <string name="cd_delete_notification">Delete notification</string>
+    <string name="cd_decrease">Decrease</string>
+    <string name="cd_increase">Increase</string>
+    <string name="cd_route_line">From %1$s to %2$s</string>
+    <string name="cd_rating_stars">Rating: %1$d of 5 stars</string>
+    <string name="cd_status">Status: %1$s</string>
+
+    <!-- SOS -->
+    <string name="trip_tracking_sos_dismiss">Close</string>
+    <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>
+    <string name="trip_tracking_sos_location_shared">Trip details sent to your emergency contacts.</string>
+
+    <!-- Destructive confirmations -->
+    <string name="safety_remove_contact_title">Remove contact?</string>
+    <string name="safety_remove_contact_body">They will no longer receive your trip details.</string>
+    <string name="safety_remove_contact_confirm">Remove</string>
+    <string name="notifications_clear_all_confirm_title">Clear all notifications?</string>
+    <string name="notifications_clear_all_confirm_body">This cannot be undone.</string>
+
+    <!-- Generic action failure -->
+    <string name="error_action_failed">Something went wrong. Please try again.</string>
     <string-array name="day_names_short">
         <item>Mon.</item>
         <item>Tue.</item>

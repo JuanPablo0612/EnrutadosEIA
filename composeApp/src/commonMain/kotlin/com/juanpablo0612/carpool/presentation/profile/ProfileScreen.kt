@@ -2,7 +2,6 @@ package com.juanpablo0612.carpool.presentation.profile
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,9 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.auth.model.AuthError
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import enrutadoseia.composeapp.generated.resources.Res
@@ -48,6 +51,7 @@ import enrutadoseia.composeapp.generated.resources.active_roles_driver
 import enrutadoseia.composeapp.generated.resources.active_roles_min_one
 import enrutadoseia.composeapp.generated.resources.active_roles_passenger
 import enrutadoseia.composeapp.generated.resources.active_roles_title
+import enrutadoseia.composeapp.generated.resources.add_road_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
@@ -66,21 +70,17 @@ import enrutadoseia.composeapp.generated.resources.profile_delete_account_confir
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_name_hint
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_name_mismatch
 import enrutadoseia.composeapp.generated.resources.profile_edit_button
-import enrutadoseia.composeapp.generated.resources.profile_help
 import enrutadoseia.composeapp.generated.resources.profile_language
 import enrutadoseia.composeapp.generated.resources.profile_language_value
 import enrutadoseia.composeapp.generated.resources.profile_my_account_section
 import enrutadoseia.composeapp.generated.resources.profile_notifications_settings
 import enrutadoseia.composeapp.generated.resources.profile_safety
-import enrutadoseia.composeapp.generated.resources.profile_privacy
-import enrutadoseia.composeapp.generated.resources.profile_privacy_policy
 import enrutadoseia.composeapp.generated.resources.profile_saved_places
-import enrutadoseia.composeapp.generated.resources.profile_support_section
-import enrutadoseia.composeapp.generated.resources.profile_terms
 import enrutadoseia.composeapp.generated.resources.profile_theme
 import enrutadoseia.composeapp.generated.resources.profile_theme_value
 import enrutadoseia.composeapp.generated.resources.profile_title
 import enrutadoseia.composeapp.generated.resources.routes_list_title
+import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
 import enrutadoseia.composeapp.generated.resources.vehicles_list_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -148,6 +148,7 @@ fun ProfileContent(
             nameInput = state.deleteAccountNameInput,
             expectedName = state.user?.name ?: "",
             isLoading = state.isDeleting,
+            error = state.deleteAccountError,
             onNameChange = { onAction(ProfileAction.OnDeleteAccountNameChange(it)) },
             onConfirm = { onAction(ProfileAction.OnDeleteAccountConfirmed) },
             onDismiss = { onAction(ProfileAction.OnDeleteAccountDismissed) }
@@ -170,10 +171,7 @@ fun ProfileContent(
         }
     ) { padding ->
         if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
         } else {
             Column(
                 modifier = Modifier
@@ -197,7 +195,7 @@ fun ProfileContent(
                     )
                     ProfileListItem(
                         title = stringResource(Res.string.routes_list_title),
-                        icon = { Icon(vectorResource(Res.drawable.location_on_24px), null) },
+                        icon = { Icon(vectorResource(Res.drawable.add_road_24px), null) },
                         onClick = { onAction(ProfileAction.OnMyRoutesClick) }
                     )
                 }
@@ -208,7 +206,7 @@ fun ProfileContent(
                 )
                 ProfileListItem(
                     title = stringResource(Res.string.profile_active_roles),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
+                    icon = { Icon(vectorResource(Res.drawable.swap_horiz_24px), null) },
                     onClick = { onAction(ProfileAction.OnActiveRolesClick) }
                 )
 
@@ -244,30 +242,6 @@ fun ProfileContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                )
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_privacy),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
-                    onClick = {}
-                )
-
-                HorizontalDivider()
-
-                SectionHeader(stringResource(Res.string.profile_support_section))
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_help),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
-                    onClick = {}
-                )
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_terms),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
-                    onClick = {}
-                )
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_privacy_policy),
-                    icon = { Icon(vectorResource(Res.drawable.arrow_forward_24px), null) },
-                    onClick = {}
                 )
 
                 HorizontalDivider()
@@ -409,6 +383,7 @@ private fun DeleteAccountDialog(
     nameInput: String,
     expectedName: String,
     isLoading: Boolean,
+    error: AuthError?,
     onNameChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -429,6 +404,9 @@ private fun DeleteAccountDialog(
                     } else null,
                     singleLine = true
                 )
+                if (error != null) {
+                    ErrorMessage(message = stringResource(error.asStringResource()))
+                }
             }
         },
         confirmButton = {

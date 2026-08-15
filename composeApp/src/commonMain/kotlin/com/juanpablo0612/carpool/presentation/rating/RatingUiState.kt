@@ -7,7 +7,7 @@ data class RatingUiState(
     val bookingId: String = "",
     val rateeId: String = "",
     val rateeName: String = "",
-    val isDriver: Boolean = false,
+    val rateeIsDriver: Boolean = false,
     val selectedStars: Int = 0,
     val selectedChips: Set<RatingChip> = emptySet(),
     val comment: String = "",
@@ -16,5 +16,5 @@ data class RatingUiState(
     val error: RatingError? = null
 ) {
     val availableChips: List<RatingChip>
-        get() = if (isDriver) RatingChip.driverChips else RatingChip.passengerChips
+        get() = if (rateeIsDriver) RatingChip.driverChips else RatingChip.passengerChips
 }

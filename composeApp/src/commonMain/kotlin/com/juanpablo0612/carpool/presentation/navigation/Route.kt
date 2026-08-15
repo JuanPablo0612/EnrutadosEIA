@@ -37,6 +37,14 @@ sealed interface Route {
     @Serializable
     data object AddPlace : Route
 
+    /**
+     * The list of places the user has saved, with delete. Distinct from [AddPlace], which is the
+     * creation form — Profile's "saved places" row used to open that form, so there was no way to
+     * review or remove an existing place.
+     */
+    @Serializable
+    data object SavedPlaces : Route
+
     @Serializable
     data class RouteDetail(val routeId: String) : Route
 
@@ -88,7 +96,11 @@ sealed interface Route {
         val tripId: String,
         val rateeId: String,
         val rateeName: String,
-        val isDriver: Boolean
+        /**
+         * Whether the person **being rated** drives — it selects which chip set the rater is
+         * offered, not which role the rater holds. A passenger rating their driver passes `true`.
+         */
+        val rateeIsDriver: Boolean
     ) : Route
 
     @Serializable

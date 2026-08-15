@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.use_case.GetTripAvailableSeatsUseCase
+import com.juanpablo0612.carpool.domain.trip.model.TripError
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.use_case.GetDriverTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
@@ -49,7 +50,7 @@ class DriverTripsViewModel(
     private fun loadTrips() {
         tripsJob?.cancel()
         val userId = authRepository.getCurrentUserId() ?: run {
-            _state.update { it.copy(isLoading = false) }
+            _state.update { it.copy(isLoading = false, error = TripError.UserNotAuthenticated) }
             return
         }
 
@@ -77,7 +78,7 @@ class DriverTripsViewModel(
                         ) { it.toList() }
                     }
                 }
-                .catch { _state.update { it.copy(isLoading = false) } }
+                .catch { _state.update { it.copy(isLoading = false, error = TripError.Unknown) } }
                 .collect { tripStats ->
                     val tab = _state.value.tab
                     val now = Clock.System.now().toEpochMilliseconds()
@@ -104,7 +105,14 @@ class DriverTripsViewModel(
                 loadTrips()
             }
             is DriverTripsAction.StartTrip -> updateStatus(action.tripId, TripStatus.InProgress)
-            is DriverTripsAction.FinishTrip -> updateStatus(action.tripId, TripStatus.Completed)
+            is DriverTripsAction.FinishTrip -> _state.update {
+                it.copy(pendingFinishTripId = action.tripId)
+            }
+            is DriverTripsAction.ConfirmFinish -> {
+                _state.update { it.copy(pendingFinishTripId = null) }
+                updateStatus(action.tripId, TripStatus.Completed)
+            }
+            DriverTripsAction.DismissFinish -> _state.update { it.copy(pendingFinishTripId = null) }
             is DriverTripsAction.CancelTrip -> _state.update {
                 it.copy(pendingCancelTripId = action.tripId)
             }
@@ -113,6 +121,7 @@ class DriverTripsViewModel(
                 updateStatus(action.tripId, TripStatus.Cancelled)
             }
             DriverTripsAction.DismissCancel -> _state.update { it.copy(pendingCancelTripId = null) }
+            DriverTripsAction.DismissError -> _state.update { it.copy(error = null) }
             is DriverTripsAction.OpenTrip -> viewModelScope.launch {
                 _events.emit(DriverTripsEvent.NavigateToTripDetail(action.tripId))
             }
@@ -137,7 +146,9 @@ class DriverTripsViewModel(
 
     private fun updateStatus(tripId: String, status: TripStatus) {
         viewModelScope.launch {
+            _state.update { it.copy(error = null) }
             updateTripStatusUseCase(tripId, status)
+                .onFailure { _state.update { it.copy(error = TripError.Unknown) } }
         }
     }
 }

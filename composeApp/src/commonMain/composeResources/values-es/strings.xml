@@ -681,6 +681,39 @@
     <string name="time_am">a. m.</string>
     <string name="time_pm">p. m.</string>
     <string name="date_of_connector">de</string>
+
+    <!-- Descripciones de contenido para controles solo de icono -->
+    <string name="cd_back">Volver</string>
+    <string name="cd_open_profile">Abrir perfil</string>
+    <string name="cd_more_options">Más opciones</string>
+    <string name="cd_send_message">Enviar mensaje</string>
+    <string name="cd_edit_route">Editar ruta</string>
+    <string name="cd_delete_route">Eliminar ruta</string>
+    <string name="cd_add_place">Agregar lugar</string>
+    <string name="cd_delete_place">Eliminar lugar</string>
+    <string name="cd_swap_origin_destination">Intercambiar origen y destino</string>
+    <string name="cd_remove_contact">Eliminar contacto</string>
+    <string name="cd_delete_notification">Eliminar notificación</string>
+    <string name="cd_decrease">Disminuir</string>
+    <string name="cd_increase">Aumentar</string>
+    <string name="cd_route_line">De %1$s a %2$s</string>
+    <string name="cd_rating_stars">Calificación: %1$d de 5 estrellas</string>
+    <string name="cd_status">Estado: %1$s</string>
+
+    <!-- SOS -->
+    <string name="trip_tracking_sos_dismiss">Cerrar</string>
+    <string name="trip_tracking_sos_no_contacts">Aún no tienes contactos de emergencia. Agrega uno en Perfil → Seguridad.</string>
+    <string name="trip_tracking_sos_location_shared">Detalles del viaje enviados a tus contactos de emergencia.</string>
+
+    <!-- Confirmaciones destructivas -->
+    <string name="safety_remove_contact_title">¿Eliminar contacto?</string>
+    <string name="safety_remove_contact_body">Dejará de recibir los detalles de tus viajes.</string>
+    <string name="safety_remove_contact_confirm">Eliminar</string>
+    <string name="notifications_clear_all_confirm_title">¿Borrar todas las notificaciones?</string>
+    <string name="notifications_clear_all_confirm_body">Esta acción no se puede deshacer.</string>
+
+    <!-- Fallo de acción genérico -->
+    <string name="error_action_failed">Algo salió mal. Inténtalo de nuevo.</string>
     <string-array name="day_names_short">
         <item>lun.</item>
         <item>mar.</item>

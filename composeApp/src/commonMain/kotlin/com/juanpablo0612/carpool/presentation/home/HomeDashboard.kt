@@ -3,6 +3,8 @@ package com.juanpablo0612.carpool.presentation.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -36,45 +38,44 @@ internal fun HomeDashboard(
             }
         }
 
+        // These sections were each wrapped in AnimatedVisibility(visible = true), which can only
+        // ever animate on first composition and never plays an exit — the wrapper cost a
+        // composition layer for no behaviour. The item is already added conditionally, so the
+        // list's own item animation is what actually carries the change.
         if (state.role == UserRole.Driver) {
             state.nextTrip?.let { trip ->
                 item(key = "next_trip") {
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + expandVertically(),
-                    ) {
-                        NextTripCard(
-                            trip = trip,
-                            now = now,
-                            onTap = { onAction(HomeAction.OpenTrip(trip.id)) },
-                            modifier = Modifier.padding(horizontal = Spacing.lg),
-                        )
-                    }
+                    NextTripCard(
+                        trip = trip,
+                        now = now,
+                        onTap = { onAction(HomeAction.OpenTrip(trip.id)) },
+                        modifier = Modifier.padding(horizontal = Spacing.lg),
+                    )
                 }
             }
         } else {
             state.nextBooking?.let { booking ->
                 item(key = "next_booking") {
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + expandVertically(),
-                    ) {
-                        NextBookingCard(
-                            booking = booking,
-                            now = now,
-                            onTap = { onAction(HomeAction.OpenBooking(booking.tripId)) },
-                            modifier = Modifier.padding(horizontal = Spacing.lg),
-                        )
-                    }
+                    NextBookingCard(
+                        booking = booking,
+                        now = now,
+                        onTap = { onAction(HomeAction.OpenBooking(booking.tripId)) },
+                        modifier = Modifier.padding(horizontal = Spacing.lg),
+                    )
                 }
             }
         }
 
-        if (state.role == UserRole.Driver && state.pendingRequests.isNotEmpty()) {
+        // The pending-requests block previously nested AnimatedVisibility(pendingRequests
+        // .isNotEmpty()) inside an `if` testing the same condition, so the outer `if` removed the
+        // node the instant the list emptied and the exit animation was structurally unreachable.
+        // AnimatedVisibility owns the condition now, so the section can actually animate out.
+        if (state.role == UserRole.Driver) {
             item(key = "pending_requests") {
                 AnimatedVisibility(
                     visible = state.pendingRequests.isNotEmpty(),
                     enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
                 ) {
                     PendingRequestsSection(
                         requests = state.pendingRequests,
@@ -97,16 +98,11 @@ internal fun HomeDashboard(
 
         if (state.tripsThisMonth >= 3) {
             item(key = "stats") {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + expandVertically(),
-                ) {
-                    StatsSection(
-                        tripsThisMonth = state.tripsThisMonth,
-                        passengersThisMonth = state.passengersThisMonth,
-                        modifier = Modifier.padding(horizontal = Spacing.lg),
-                    )
-                }
+                StatsSection(
+                    tripsThisMonth = state.tripsThisMonth,
+                    passengersThisMonth = state.passengersThisMonth,
+                    modifier = Modifier.padding(horizontal = Spacing.lg),
+                )
             }
         }
     }

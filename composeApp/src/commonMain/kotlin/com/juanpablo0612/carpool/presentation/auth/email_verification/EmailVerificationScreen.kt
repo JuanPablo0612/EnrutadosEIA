@@ -1,6 +1,8 @@
 package com.juanpablo0612.carpool.presentation.auth.email_verification
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,10 +52,20 @@ fun EmailVerificationContent(
             )
         }
     ) { padding ->
-        Column(
+        // heightIn(min = maxHeight) rather than a bare verticalScroll: inside a scrollable the
+        // column is measured with unbounded height, so Arrangement.Center would have no slack and
+        // the content would silently jump to the top. This keeps it centred when it fits and
+        // scrollable when it doesn't, which is what landscape and large font scales need.
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+        ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight)
+                .fillMaxWidth()
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -101,6 +113,7 @@ fun EmailVerificationContent(
                 text = stringResource(Res.string.email_verification_wrong_email),
                 onClick = onBackClick
             )
+        }
         }
     }
 }

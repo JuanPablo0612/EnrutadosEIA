@@ -7,6 +7,9 @@ import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.use_case.GetBookingsForTripUseCase
 import com.juanpablo0612.carpool.domain.places.service.LocationService
+import com.juanpablo0612.carpool.domain.safety.model.SafetySettings
+import com.juanpablo0612.carpool.domain.safety.use_case.GetEmergencyContactsUseCase
+import com.juanpablo0612.carpool.domain.safety.use_case.GetSafetySettingsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -15,6 +18,7 @@ import com.juanpablo0612.carpool.domain.trip.use_case.UpdateDriverLocationUseCas
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdatePassengerStatusUseCase
 import com.juanpablo0612.carpool.domain.trip.use_case.UpdateTripStatusUseCase
 import com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester
+import com.juanpablo0612.carpool.presentation.utils.formatCoordinates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -42,6 +46,10 @@ class TripTrackingViewModel(
     private val updateDriverLocationUseCase: UpdateDriverLocationUseCase,
     private val locationService: LocationService,
     private val locationPermissionRequester: LocationPermissionRequester,
+    private val getEmergencyContactsUseCase: GetEmergencyContactsUseCase,
+    private val getSafetySettingsUseCase: GetSafetySettingsUseCase,
+    private val emergencyDialer: EmergencyDialer,
+    private val locationSharer: LocationSharer,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TripTrackingUiState())
@@ -56,6 +64,7 @@ class TripTrackingViewModel(
 
     init {
         observeTrip()
+        loadSafetySettings()
     }
 
     private fun observeTrip() {
@@ -74,6 +83,14 @@ class TripTrackingViewModel(
                 .onEach { (trip, bookings) -> applySnapshot(trip, bookings) }
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect {}
+        }
+    }
+
+    private fun loadSafetySettings() {
+        if (currentUserId.isBlank()) return
+        viewModelScope.launch {
+            val settings = getSafetySettingsUseCase(currentUserId).getOrDefault(SafetySettings())
+            _state.update { it.copy(vibrateSosEnabled = settings.vibrateSos) }
         }
     }
 
@@ -121,28 +138,72 @@ class TripTrackingViewModel(
             TripTrackingAction.OnCompleteTripDismiss ->
                 _state.update { it.copy(showCompleteTripDialog = false) }
             TripTrackingAction.OnSOSClick ->
-                _state.update { it.copy(showSosDialog = true) }
+                _state.update { it.copy(showSosDialog = true, sosNoContacts = false, sosLocationShared = false) }
             TripTrackingAction.OnSOSDismiss ->
                 _state.update { it.copy(showSosDialog = false) }
+            TripTrackingAction.OnSOSCallEmergencyClick -> emergencyDialer.dial(EMERGENCY_PHONE_NUMBER)
+            TripTrackingAction.OnSOSShareLocationClick -> shareLocation()
             TripTrackingAction.OnBackClick ->
                 viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateBack) }
             is TripTrackingAction.OnChatClick ->
                 viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateToChat(action.bookingId)) }
+            TripTrackingAction.OnErrorDismissed ->
+                _state.update { it.copy(error = null) }
         }
     }
 
     private fun updatePassengerStatus(passengerId: String, status: PickupStatus) {
+        if (passengerId in _state.value.processingPassengerIds) return
         viewModelScope.launch {
+            _state.update {
+                it.copy(processingPassengerIds = it.processingPassengerIds + passengerId, error = null)
+            }
             updatePassengerStatusUseCase(tripId, passengerId, status)
+                .onFailure { _state.update { it.copy(error = TripTrackingError.ActionFailed) } }
+            _state.update {
+                it.copy(processingPassengerIds = it.processingPassengerIds - passengerId)
+            }
         }
     }
 
     private fun completeTrip() {
         viewModelScope.launch {
-            _state.update { it.copy(isCompletingTrip = true, showCompleteTripDialog = false) }
+            _state.update { it.copy(isCompletingTrip = true, showCompleteTripDialog = false, error = null) }
             updateTripStatusUseCase(tripId, TripStatus.Completed)
                 .onSuccess { _events.emit(TripTrackingEvent.TripCompleted) }
-                .onFailure { _state.update { it.copy(isCompletingTrip = false) } }
+                .onFailure {
+                    _state.update { it.copy(isCompletingTrip = false, error = TripTrackingError.ActionFailed) }
+                }
+        }
+    }
+
+    // "Share live location": looks up the caller's stored emergency contacts and hands their phone
+    // numbers + a trip/coordinates summary to the platform LocationSharer, which opens the SMS
+    // composer pre-filled (see LocationSharer's kdoc for why this — not a silent send — is the
+    // honest implementation given what EmergencyContact and this app's permissions actually allow).
+    private fun shareLocation() {
+        viewModelScope.launch {
+            val contacts = getEmergencyContactsUseCase(currentUserId).getOrDefault(emptyList())
+            if (contacts.isEmpty()) {
+                _state.update { it.copy(sosNoContacts = true, sosLocationShared = false) }
+                return@launch
+            }
+
+            val trip = _state.value.trip
+            val lat = trip?.driverLatitude
+            val lon = trip?.driverLongitude
+            val message = buildString {
+                append(trip?.origin?.name.orEmpty())
+                append(" → ")
+                append(trip?.destination?.name.orEmpty())
+                if (lat != null && lon != null) {
+                    append("\n")
+                    append(formatCoordinates(lat, lon))
+                }
+            }
+
+            locationSharer.share(contacts.map { it.phone }, message)
+            _state.update { it.copy(sosLocationShared = true, sosNoContacts = false) }
         }
     }
 
@@ -180,5 +241,6 @@ class TripTrackingViewModel(
 
     private companion object {
         const val LOCATION_POLL_INTERVAL_MS = 10_000L
+        const val EMERGENCY_PHONE_NUMBER = "123"
     }
 }

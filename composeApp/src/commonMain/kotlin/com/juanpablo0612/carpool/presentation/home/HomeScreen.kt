@@ -35,6 +35,7 @@ fun HomeScreen(
     onNavigateToDriverBookingRequests: () -> Unit,
     onNavigateToSearchTrips: () -> Unit,
     onNavigateToPassengerBookings: () -> Unit,
+    onNavigateToSavedPlaces: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripDetailPassenger: (String) -> Unit,
 ) {
@@ -50,6 +51,7 @@ fun HomeScreen(
             HomeEvent.NavigateToDriverBookingRequests -> onNavigateToDriverBookingRequests()
             HomeEvent.NavigateToSearchTrips -> onNavigateToSearchTrips()
             HomeEvent.NavigateToPassengerBookings -> onNavigateToPassengerBookings()
+            HomeEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
             is HomeEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
             is HomeEvent.NavigateToTripDetailPassenger -> onNavigateToTripDetailPassenger(event.tripId)
         }

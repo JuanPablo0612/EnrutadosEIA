@@ -43,10 +43,14 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun EnrichedBookingCard(
     booking: Booking,
-    onCancelClick: (String) -> Unit,
+    // Nullable like its siblings: the "Past" tab has nothing to cancel, and passing an empty
+    // lambda there rendered a live-looking Cancel button that silently did nothing.
+    onCancelClick: ((String) -> Unit)? = null,
     onTrackTrip: ((tripId: String) -> Unit)? = null,
     onRateBooking: ((bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit)? = null,
-    nowMs: Long = kotlin.time.Clock.System.now().toEpochMilliseconds(),
+    // Passed in rather than defaulted to `now`: a default read during composition makes this
+    // composable non-idempotent and re-reads the clock on every recomposition.
+    nowMs: Long,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
@@ -121,11 +125,13 @@ fun EnrichedBookingCard(
                     }
                     Spacer(modifier = Modifier.height(Spacing.xs))
                 }
-                OutlinedButton(
-                    onClick = { onCancelClick(booking.id) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = stringResource(Res.string.cancel_booking_button))
+                if (onCancelClick != null) {
+                    OutlinedButton(
+                        onClick = { onCancelClick(booking.id) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = stringResource(Res.string.cancel_booking_button))
+                    }
                 }
             }
         }
