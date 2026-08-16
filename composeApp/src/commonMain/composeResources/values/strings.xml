@@ -728,6 +728,8 @@
     </plurals>
     <string name="route_last_used_separator">%1$s · %2$s</string>
 
+    <string name="booking_request_rating">Rating %1$s</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Close</string>
     <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>

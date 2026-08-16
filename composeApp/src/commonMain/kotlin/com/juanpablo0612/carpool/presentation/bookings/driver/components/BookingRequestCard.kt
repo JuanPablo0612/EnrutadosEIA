@@ -30,6 +30,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.booking_request_rating
 import enrutadoseia.composeapp.generated.resources.booking_request_accept_button
 import enrutadoseia.composeapp.generated.resources.booking_request_eia_verified
 import enrutadoseia.composeapp.generated.resources.booking_request_trip_context
@@ -103,7 +104,10 @@ fun BookingRequestCard(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "💬 \"${booking.passengerMessage}\"",
+                    // No emoji prefix: the tinted surface, the italic and the quotes already say
+                    // "quoted message", and an emoji ignores `tint` — it stayed full-colour in
+                    // dark mode while everything around it followed the theme.
+                    text = "\"${booking.passengerMessage}\"",
                     style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(Spacing.sm),
@@ -161,7 +165,10 @@ private fun ReputationLine(passenger: PassengerSummary) {
         if (passenger.averageRating != null) {
             val r = passenger.averageRating
             val formatted = "${r.toInt()}.${((r * 10).toInt() % 10)}"
-            add("⭐ $formatted")
+            // A localized label rather than a ⭐ prefix: the emoji ignored `tint`, rendered
+            // differently per platform, and was the one part of this row that bypassed
+            // stringResource while its two siblings below used it.
+            add(stringResource(Res.string.booking_request_rating, formatted))
         }
         if (passenger.tripsCompleted > 0) add(
             stringResource(Res.string.booking_request_trips_count, passenger.tripsCompleted)
