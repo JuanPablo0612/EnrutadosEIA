@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.route_stop_remove
@@ -39,42 +40,42 @@ fun RouteStopItem(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .clickable(enabled = !isLocked, onClick = onClick)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = Spacing.screenHorizontal),
         verticalAlignment = Alignment.Top
     ) {
-        // Timeline column
+        // Timeline column — 24dp rail width is component-intrinsic, not a spacing value
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(24.dp)
         ) {
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(6.dp)) // centers the dot on the label's first line
             Box(
                 modifier = Modifier
-                    .size(12.dp)
+                    .size(12.dp) // dot-intrinsic size
                     .clip(CircleShape)
                     .background(
-                        if (place != null) MaterialTheme.colorScheme.primary 
+                        if (place != null) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.outlineVariant
                     )
             )
-            
+
             if (showConnector) {
                 Box(
                     modifier = Modifier
-                        .width(2.dp)
+                        .width(2.dp) // hairline connector
                         .fillMaxHeight()
                         .background(MaterialTheme.colorScheme.outlineVariant)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(Spacing.lg))
 
         // Content column
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(bottom = if (showConnector) 16.dp else 0.dp)
+                .padding(bottom = if (showConnector) Spacing.lg else 0.dp)
         ) {
             Text(
                 text = label,

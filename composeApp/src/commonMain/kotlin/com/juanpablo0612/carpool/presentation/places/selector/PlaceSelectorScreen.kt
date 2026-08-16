@@ -24,11 +24,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.presentation.places.selector.components.PlaceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.cancel_button
@@ -115,7 +117,7 @@ fun PlaceSelectorContent(
                 onValueChange = { onAction(PlaceSelectorAction.OnQueryChange(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
                 placeholder = { Text(stringResource(Res.string.place_selector_search_hint)) },
                 leadingIcon = {
                     Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
@@ -130,7 +132,7 @@ fun PlaceSelectorContent(
                         state.isResolvingLocation -> {
                             ListItem(
                                 headlineContent = { Text(stringResource(Res.string.place_selector_resolving_location)) },
-                                leadingContent = { CircularProgressIndicator(modifier = Modifier.padding(4.dp)) },
+                                leadingContent = { CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs)) },
                             )
                         }
                         !state.locationPermissionGranted -> {
@@ -214,7 +216,7 @@ fun PlaceSelectorContent(
                     when {
                         state.isSearching -> {
                             item {
-                                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                                CircularProgressIndicator(modifier = Modifier.padding(Spacing.lg))
                             }
                         }
                         state.searchResults.isEmpty() -> {
@@ -223,7 +225,7 @@ fun PlaceSelectorContent(
                                     text = stringResource(Res.string.place_selector_no_results),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
                                 )
                             }
                         }
@@ -272,7 +274,7 @@ private fun SectionHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -282,5 +284,24 @@ private fun SectionHeader(
             modifier = Modifier.weight(1f),
         )
         action?.invoke()
+    }
+}
+
+@Preview
+@Composable
+private fun PlaceSelectorContentPreview() {
+    CarpoolTheme {
+        PlaceSelectorContent(
+            state = PlaceSelectorUiState(
+                mode = PlaceSelectorMode.Origin,
+                savedPlaces = listOf(
+                    Place(id = "1", name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6)
+                ),
+                locationPermissionGranted = true,
+                currentLocation = Place(name = "Ubicación actual", address = "Cra 43A", latitude = 6.2, longitude = -75.6)
+            ),
+            onAction = {},
+            onBack = {},
+        )
     }
 }

@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +40,12 @@ fun CarpoolTopBar(
     title: String,
     user: User,
     isDualRole: Boolean,
-    currentRoleLabel: String = "",
+    /**
+     * Labels the action, not the state: "Switch to passenger" while you are a driver. The chip
+     * used to show the role you were already in, styled as an *unselected* filter, which read as
+     * "filter by driver" rather than "you are a driver, tap to switch".
+     */
+    switchRoleLabel: String = "",
     onAvatarClick: () -> Unit,
     onRoleToggle: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
@@ -70,10 +75,9 @@ fun CarpoolTopBar(
         },
         actions = {
             if (isDualRole && onRoleToggle != null) {
-                FilterChip(
-                    selected = false,
+                AssistChip(
                     onClick = onRoleToggle,
-                    label = { Text(currentRoleLabel) },
+                    label = { Text(switchRoleLabel) },
                     modifier = Modifier.padding(end = Spacing.xs)
                 )
             }

@@ -8,11 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
@@ -66,13 +66,13 @@ fun EmailVerificationContent(
                 .verticalScroll(rememberScrollState())
                 .heightIn(min = maxHeight)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = Spacing.screenHorizontalForm),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             CompactAuthHeader(screenTitle = stringResource(Res.string.email_verification_title))
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
             Text(
                 text = stringResource(Res.string.email_verification_subtitle, state.obfuscatedEmail),
@@ -81,14 +81,14 @@ fun EmailVerificationContent(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(Spacing.xxl))
 
             PrimaryButton(
                 text = stringResource(Res.string.email_verification_open_gmail),
                 onClick = { onAction(EmailVerificationAction.OnOpenGmail) }
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             val resendText = if (state.resendCountdown > 0) {
                 stringResource(Res.string.email_verification_resend_countdown, state.resendCountdown)
@@ -102,11 +102,11 @@ fun EmailVerificationContent(
                 enabled = state.resendCountdown == 0 && !state.isLoading
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
 
             state.error?.let {
                 ErrorMessage(message = stringResource(it.asStringResource()))
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
             }
 
             LinkText(

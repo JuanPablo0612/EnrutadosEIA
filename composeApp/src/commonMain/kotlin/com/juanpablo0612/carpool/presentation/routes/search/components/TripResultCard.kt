@@ -22,7 +22,10 @@ import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.utils.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.time_am
+import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.trip_available_seats
 import enrutadoseia.composeapp.generated.resources.trip_contribution_free
 import enrutadoseia.composeapp.generated.resources.trip_driver_placeholder
@@ -65,7 +68,7 @@ fun TripResultCard(
         val driverName = result.driver?.name?.takeIf { it.isNotBlank() }
             ?: stringResource(Res.string.trip_driver_placeholder)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            UserAvatar(name = driverName, photoUrl = result.driver?.photoUrl, size = 28.dp)
+            UserAvatar(name = driverName, photoUrl = result.driver?.photoUrl, size = 28.dp) // avatar-intrinsic size
             Spacer(modifier = Modifier.size(Spacing.sm))
             Text(
                 text = driverName,
@@ -122,19 +125,26 @@ private fun SeatsChip(availableSeats: Int) {
             text = stringResource(Res.string.trip_available_seats, availableSeats),
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
             color = fg,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+            // vertical inset is a fine visual tweak below the 4dp scale step, kept as a literal
+            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = 3.dp)
         )
     }
 }
 
+@Composable
 private fun formatDeparture(epochMs: Long): String {
     val local = Instant.fromEpochMilliseconds(epochMs)
         .toLocalDateTime(TimeZone.currentSystemDefault())
-    val hour = local.hour.toString().padStart(2, '0')
-    val minute = local.minute.toString().padStart(2, '0')
     @Suppress("DEPRECATION")
     val day = local.dayOfMonth.toString().padStart(2, '0')
     @Suppress("DEPRECATION")
     val month = local.monthNumber.toString().padStart(2, '0')
-    return "$day/$month · $hour:$minute"
+    // Shared formatter rather than a sixth private copy; the hand-rolled version dropped AM/PM.
+    val time = formatShortTime(
+        hour = local.hour,
+        minute = local.minute,
+        amMarker = stringResource(Res.string.time_am),
+        pmMarker = stringResource(Res.string.time_pm),
+    )
+    return "$day/$month · $time"
 }

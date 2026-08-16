@@ -25,6 +25,7 @@ import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
@@ -85,16 +86,16 @@ fun RegisterContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = Spacing.screenHorizontalForm)
                 .verticalScroll(rememberScrollState())
                 .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
             CompactAuthHeader(screenTitle = stepTitle)
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             StepIndicator(
                 current = state.currentStep,
@@ -108,10 +109,10 @@ fun RegisterContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .padding(top = 4.dp)
+                    .padding(top = Spacing.xs)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(Spacing.xl))
 
             AnimatedContent(targetState = state.currentStep) { step ->
                 when (step) {
@@ -125,7 +126,7 @@ fun RegisterContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(Spacing.xl))
         }
     }
 }
@@ -146,7 +147,7 @@ private fun RegisterStep1(
             imeAction = ImeAction.Next
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         EmailTextField(
             value = state.email,
@@ -157,7 +158,7 @@ private fun RegisterStep1(
             imeAction = ImeAction.Next
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         PasswordTextField(
             value = state.password,
@@ -171,11 +172,11 @@ private fun RegisterStep1(
         )
 
         if (state.password.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             PasswordStrengthIndicator(password = state.password)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         PasswordTextField(
             value = state.confirmPassword,
@@ -189,7 +190,7 @@ private fun RegisterStep1(
             keyboardActions = KeyboardActions(onDone = { onAction(RegisterAction.OnNextStep) })
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         PrimaryButton(
             text = stringResource(Res.string.register_continue_button),
@@ -220,6 +221,7 @@ private fun RegisterStep2(
     ) {
         Box(
             modifier = Modifier
+                // Component-intrinsic avatar diameter, not a spacing step.
                 .size(100.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -238,12 +240,13 @@ private fun RegisterStep2(
                     imageVector = vectorResource(Res.drawable.photo_camera_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    // Component-intrinsic icon size, not a spacing step.
                     modifier = Modifier.size(36.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         TextButton(onClick = { showImageSourceSheet = true }) {
             Text(
@@ -254,7 +257,7 @@ private fun RegisterStep2(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         PhoneTextField(
             value = state.phone,
@@ -266,7 +269,7 @@ private fun RegisterStep2(
             keyboardActions = KeyboardActions(onDone = { onAction(RegisterAction.OnNextStep) })
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         PrimaryButton(
             text = stringResource(Res.string.register_continue_button),
@@ -276,12 +279,12 @@ private fun RegisterStep2(
 
     if (showImageSourceSheet) {
         ModalBottomSheet(onDismissRequest = { showImageSourceSheet = false }) {
-            Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+            Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg)) {
                 Text(
                     text = stringResource(Res.string.register_photo_placeholder),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
                 TextButton(
                     onClick = {
                         cameraLauncher.launch()
@@ -306,7 +309,7 @@ private fun RegisterStep2(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
             }
         }
     }
@@ -328,7 +331,7 @@ private fun RegisterStep3(
             errorMessage = state.roleError?.asStringResource()?.let { stringResource(it) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -338,7 +341,7 @@ private fun RegisterStep3(
                 checked = state.hasAcceptedTerms,
                 onCheckedChange = { onAction(RegisterAction.OnTermsChanged(it)) }
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.sm))
             Text(
                 text = stringResource(Res.string.register_terms_checkbox),
                 style = MaterialTheme.typography.bodySmall,
@@ -352,16 +355,16 @@ private fun RegisterStep3(
                 text = stringResource(Res.string.error_terms_not_accepted),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = Spacing.lg)
             )
         }
 
         state.error?.let {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
             ErrorMessage(message = stringResource(it.asStringResource()))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         PrimaryButton(
             text = stringResource(Res.string.create_account_button),
@@ -370,7 +373,7 @@ private fun RegisterStep3(
             trailingIcon = vectorResource(Res.drawable.arrow_forward_24px)
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -382,21 +385,21 @@ private fun RegisterStep3(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(Spacing.xs))
             LinkText(
                 text = stringResource(Res.string.login_link),
                 onClick = onNavigateToLogin
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         Text(
             text = stringResource(Res.string.terms_and_privacy),
             style = MaterialTheme.typography.labelSmall.copy(lineHeight = 16.sp),
             color = MaterialTheme.colorScheme.outline,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = Spacing.lg)
         )
     }
 }
@@ -414,11 +417,11 @@ private fun RoleSelectionSection(
         Text(
             text = stringResource(Res.string.user_type_prompt),
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = Spacing.md)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
             RoleSelectionCard(
                 title = stringResource(Res.string.passenger_option),
@@ -434,7 +437,7 @@ private fun RoleSelectionSection(
             )
         }
         if (errorMessage != null) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             ErrorMessage(message = errorMessage)
         }
     }

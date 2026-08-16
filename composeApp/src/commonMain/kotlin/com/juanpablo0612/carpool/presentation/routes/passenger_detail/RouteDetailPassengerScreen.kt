@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
@@ -203,7 +204,7 @@ private fun DriverAndVehicleSection(
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            UserAvatar(name = driverName, photoUrl = driver?.photoUrl, size = 36.dp)
+            UserAvatar(name = driverName, photoUrl = driver?.photoUrl, size = 36.dp) // avatar-intrinsic size
             Spacer(modifier = Modifier.size(Spacing.sm))
             Column {
                 Text(
@@ -216,9 +217,9 @@ private fun DriverAndVehicleSection(
                             imageVector = vectorResource(Res.drawable.directions_car_24px),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(14.dp) // icon-intrinsic size
                         )
-                        Spacer(modifier = Modifier.size(4.dp))
+                        Spacer(modifier = Modifier.size(Spacing.xs))
                         Text(
                             text = "${v.brand} ${v.model} · ${v.color} · ${v.year} · ${v.licensePlate}",
                             style = MaterialTheme.typography.bodySmall,
@@ -273,7 +274,8 @@ private fun SeatsBadge(availableSeats: Int, modifier: Modifier = Modifier) {
             text = stringResource(Res.string.available_seats_label, availableSeats),
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
             color = fg,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+            // vertical inset is a fine visual tweak below the 4dp scale step, kept as a literal
+            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = 3.dp)
         )
     }
 }
@@ -405,6 +407,9 @@ private fun ConfirmRequestSheetContent(
             label = { Text(stringResource(Res.string.passenger_message_label)) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 2,
+            // OutlinedTextField's maxLines has no overflow parameter (Text-only API); typed input
+            // naturally wraps rather than clipping mid-glyph, so this maxLines is unaffected by
+            // Task 2's Ellipsis fix.
             maxLines = 4,
             supportingText = {
                 Text(

@@ -37,12 +37,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.places.model.Coordinates
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
+import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripStatus
+import com.juanpablo0612.carpool.presentation.places.add.components.MapPreview
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
-import com.juanpablo0612.carpool.presentation.utils.formatCoordinates
+import com.juanpablo0612.carpool.presentation.ui.theme.Alpha
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.call_24px
 import enrutadoseia.composeapp.generated.resources.cancel_button
@@ -124,7 +132,7 @@ fun TripTrackingContent(
                     message = stringResource(error.asStringResource()),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
                         .clickable { onAction(TripTrackingAction.OnErrorDismissed) }
                 )
             }
@@ -170,8 +178,8 @@ private fun DriverTrackingContent(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md)
     ) {
         item {
             Text(
@@ -198,14 +206,14 @@ private fun DriverTrackingContent(
         }
 
         item {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(Spacing.sm))
             Button(
                 onClick = { onAction(TripTrackingAction.OnCompleteTripClick) },
                 enabled = !state.isCompletingTrip && state.canCompleteTrip,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (state.isCompletingTrip) {
-                    CircularProgressIndicator(modifier = Modifier.padding(4.dp))
+                    CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs))
                 } else {
                     Text(stringResource(Res.string.trip_tracking_complete_trip))
                 }
@@ -223,11 +231,11 @@ private fun PassengerTrackingContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg)
     ) {
         Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(Spacing.lg)) {
                 Text(
                     text = state.trip?.origin?.name ?: "",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
@@ -237,19 +245,26 @@ private fun PassengerTrackingContent(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(Spacing.sm))
                 val driverLatitude = state.driverLatitude
                 val driverLongitude = state.driverLongitude
-                val locationText = if (driverLatitude != null && driverLongitude != null) {
-                    formatCoordinates(driverLatitude, driverLongitude)
+                if (driverLatitude != null && driverLongitude != null) {
+                    MapPreview(
+                        coordinates = Coordinates(driverLatitude, driverLongitude),
+                        // Read-only: the passenger only observes the driver's position, so a
+                        // dragged pin is discarded rather than fed back into any action.
+                        onPinDragged = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp), // component-intrinsic: matches the map preview used elsewhere (AddPlace, MapPicker)
+                    )
                 } else {
-                    stringResource(Res.string.trip_tracking_no_location)
+                    Text(
+                        text = stringResource(Res.string.trip_tracking_no_location),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Text(
-                    text = locationText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
 
@@ -280,7 +295,7 @@ private fun PassengerStatusCard(
     onMessage: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -294,9 +309,9 @@ private fun PassengerStatusCard(
                 PickupStatusChip(status = passenger.status)
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(Spacing.sm))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 // The driver had no way into a thread at all: the only chat entry point in the
                 // app was the passenger-side button.
                 OutlinedButton(
@@ -305,7 +320,8 @@ private fun PassengerStatusCard(
                 ) {
                     Text(
                         text = stringResource(Res.string.trip_tracking_message_passenger),
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 if (passenger.status is PickupStatus.Waiting) {
@@ -316,7 +332,8 @@ private fun PassengerStatusCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.trip_tracking_mark_picked_up),
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -328,7 +345,8 @@ private fun PassengerStatusCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.trip_tracking_mark_dropped_off),
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -348,7 +366,7 @@ private fun PickupStatusChip(status: PickupStatus) {
         SuggestionChip(
             onClick = {},
             label = { Text(label) },
-            colors = SuggestionChipDefaults.suggestionChipColors(containerColor = color.copy(alpha = 0.15f))
+            colors = SuggestionChipDefaults.suggestionChipColors(containerColor = color.copy(alpha = Alpha.BADGE_CONTAINER))
         )
     }
 }
@@ -390,7 +408,7 @@ private fun SosDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.trip_tracking_sos_title)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 SosActionRow(
                     icon = vectorResource(Res.drawable.call_24px),
                     label = stringResource(Res.string.trip_tracking_sos_call_emergency),
@@ -406,7 +424,7 @@ private fun SosDialog(
                         text = stringResource(Res.string.trip_tracking_sos_no_contacts),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)
                     )
                 }
                 if (locationSharedMessageVisible) {
@@ -414,7 +432,7 @@ private fun SosDialog(
                         text = stringResource(Res.string.trip_tracking_sos_location_shared),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)
                     )
                 }
             }
@@ -438,4 +456,75 @@ private fun SosActionRow(
         },
         modifier = Modifier.clickable(onClick = onClick)
     )
+}
+
+private val previewTrip = Trip(
+    id = "t1",
+    routeId = "r1",
+    driverId = "d1",
+    vehicleId = "v1",
+    origin = com.juanpablo0612.carpool.domain.places.model.Place(
+        name = "Casa",
+        address = "Calle 10 #20-30",
+        latitude = 6.2,
+        longitude = -75.6
+    ),
+    destination = com.juanpablo0612.carpool.domain.places.model.Place.UNIVERSITY_EIA,
+    waypoints = emptyList(),
+    departureTime = 0L,
+    status = TripStatus.InProgress,
+    driverLatitude = 6.1633,
+    driverLongitude = -75.4913,
+)
+
+@Preview
+@Composable
+private fun DriverTrackingContentPreview() {
+    CarpoolTheme {
+        DriverTrackingContent(
+            state = TripTrackingUiState(
+                trip = previewTrip,
+                isDriver = true,
+                isLoading = false,
+                passengers = listOf(
+                    PassengerWithStatus(
+                        passengerId = "p1",
+                        passengerName = "María López",
+                        bookingId = "b1",
+                        status = PickupStatus.Waiting
+                    ),
+                    PassengerWithStatus(
+                        passengerId = "p2",
+                        passengerName = "Juan Pérez",
+                        bookingId = "b2",
+                        status = PickupStatus.PickedUp
+                    ),
+                    PassengerWithStatus(
+                        passengerId = "p3",
+                        passengerName = "Ana Gómez",
+                        bookingId = "b3",
+                        status = PickupStatus.DroppedOff
+                    ),
+                )
+            ),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PassengerTrackingContentPreview() {
+    CarpoolTheme {
+        PassengerTrackingContent(
+            state = TripTrackingUiState(
+                trip = previewTrip,
+                isDriver = false,
+                isLoading = false,
+                currentPassengerBookingId = "b1",
+                driverName = "Carlos Ruiz",
+            ),
+            onAction = {}
+        )
+    }
 }

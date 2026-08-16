@@ -16,8 +16,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.confirm_button
@@ -42,7 +42,7 @@ fun PendingRequestsSection(
         Spacer(modifier = Modifier.height(Spacing.sm))
         Surface(
             shape = MaterialTheme.shapes.medium,
-            tonalElevation = 1.dp,
+            tonalElevation = Elevation.card,
         ) {
             Column {
                 requests.take(3).forEachIndexed { index, booking ->

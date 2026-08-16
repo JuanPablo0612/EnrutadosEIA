@@ -277,11 +277,9 @@ fun AppNavigation(
                 )
 
                 mainNavGraph(
-                    onSwitchRole = {
-                        navController.navigate(Route.RoleSelector) {
-                            popUpTo(0) { inclusive = false }
-                        }
-                    },
+                    // A direct toggle: RoleSelector stays for first run and the explicit
+                    // "remember my choice" flow, not for flipping a binary you already know.
+                    onSwitchRole = { switchActiveRole(UserRole.Passenger) },
                     onNavigateToProfile = { navController.navigate(Route.Profile) },
                     onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
@@ -303,11 +301,7 @@ fun AppNavigation(
                 )
 
                 passengerNavGraph(
-                    onSwitchRole = {
-                        navController.navigate(Route.RoleSelector) {
-                            popUpTo(0) { inclusive = false }
-                        }
-                    },
+                    onSwitchRole = { switchActiveRole(UserRole.Driver) },
                     onNavigateToProfile = { navController.navigate(Route.Profile) },
                     onNavigateToTripDetail = { tripId ->
                         navController.navigate(Route.TripDetailPassenger(tripId))

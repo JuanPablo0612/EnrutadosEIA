@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -55,7 +54,9 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.NumberStepper
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.theme.Alpha
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
@@ -150,23 +151,25 @@ fun RegisterVehicleContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 48.dp)
+                    .padding(horizontal = Spacing.screenHorizontalForm)
+                    // Bottom-sheet safe-area padding: 48dp isn't on the spacing scale, so it's
+                    // expressed as two xl steps rather than approximated to a single token.
+                    .padding(bottom = Spacing.xl + Spacing.xl)
             ) {
                 Text(
                     text = stringResource(Res.string.vehicle_photo_section),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = Spacing.xl)
                 )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable {
                             onAction(RegisterVehicleAction.OnDismissPhotoSheet)
                             cameraLauncher.launch()
                         }
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = Spacing.lg),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -174,7 +177,7 @@ fun RegisterVehicleContent(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(Spacing.lg))
                     Text(
                         stringResource(Res.string.vehicle_photo_take_photo),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
@@ -183,12 +186,12 @@ fun RegisterVehicleContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable {
                             onAction(RegisterVehicleAction.OnDismissPhotoSheet)
                             photoPicker.launch()
                         }
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = Spacing.lg),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -196,7 +199,7 @@ fun RegisterVehicleContent(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(Spacing.lg))
                     Text(
                         stringResource(Res.string.vehicle_photo_choose_gallery),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
@@ -219,7 +222,7 @@ fun RegisterVehicleContent(
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding).imePadding(),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg),
         ) {
 
             // 1. Photo
@@ -227,13 +230,13 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_photo_section),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm)
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .height(180.dp) // component-intrinsic: fixed photo-preview height, not a spacing value
+                        .clip(MaterialTheme.shapes.medium)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                         .clickable { onAction(RegisterVehicleAction.OnShowPhotoSheet) },
                     contentAlignment = Alignment.Center
@@ -250,8 +253,8 @@ fun RegisterVehicleContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
-                                .background(Color.Black.copy(alpha = 0.55f))
-                                .padding(vertical = 8.dp),
+                                .background(Color.Black.copy(alpha = Alpha.SCRIM))
+                                .padding(vertical = Spacing.sm),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -263,21 +266,21 @@ fun RegisterVehicleContent(
                     } else {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(Spacing.lg)
                         ) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.photo_camera_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(36.dp),
+                                modifier = Modifier.size(36.dp), // component-intrinsic icon size
                                 tint = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(Spacing.sm))
                             Text(
                                 text = stringResource(Res.string.vehicle_photo_tap_to_add),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Spacer(Modifier.height(4.dp))
+                            Spacer(Modifier.height(Spacing.xs))
                             Text(
                                 text = stringResource(Res.string.vehicle_photo_hint),
                                 style = MaterialTheme.typography.bodySmall,
@@ -286,7 +289,7 @@ fun RegisterVehicleContent(
                         }
                     }
                 }
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(Spacing.xl))
             }
 
             // 2. Brand dropdown
@@ -294,7 +297,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_brand_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = Spacing.xs)
                 )
                 ExposedDropdownMenuBox(
                     expanded = state.showBrandDropdown,
@@ -334,7 +337,7 @@ fun RegisterVehicleContent(
                     }
                 }
                 if (state.isCustomBrand) {
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(Spacing.sm))
                     CarpoolTextField(
                         value = state.brand,
                         onValueChange = { onAction(RegisterVehicleAction.OnBrandSelected(it)) },
@@ -354,7 +357,7 @@ fun RegisterVehicleContent(
                         } else null
                     )
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 3. Model
@@ -374,7 +377,7 @@ fun RegisterVehicleContent(
                         stringResource(Res.string.error_vehicle_model_required)
                     } else null
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 4. Year dropdown
@@ -382,7 +385,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_year_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = Spacing.xs)
                 )
                 val currentYear = Clock.System.now()
                     .toLocalDateTime(TimeZone.currentSystemDefault()).date.year
@@ -413,7 +416,7 @@ fun RegisterVehicleContent(
                         }
                     }
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 5. Color chips
@@ -421,7 +424,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_color_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = Spacing.sm)
                 )
                 val colorLabels = listOf(
                     "Blanco" to stringResource(Res.string.vehicle_color_white),
@@ -432,7 +435,7 @@ fun RegisterVehicleContent(
                     "Azul" to stringResource(Res.string.vehicle_color_blue),
                     "Otro" to stringResource(Res.string.vehicle_color_other),
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     colorLabels.forEach { (value, label) ->
                         FilterChip(
                             selected = state.color == value,
@@ -442,7 +445,7 @@ fun RegisterVehicleContent(
                     }
                 }
                 if (state.isCustomColor) {
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(Spacing.sm))
                     CarpoolTextField(
                         value = state.customColor,
                         onValueChange = { onAction(RegisterVehicleAction.OnCustomColorChanged(it)) },
@@ -465,10 +468,10 @@ fun RegisterVehicleContent(
                         text = stringResource(Res.string.error_vehicle_color_required),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                        modifier = Modifier.padding(start = Spacing.xs, top = Spacing.xs)
                     )
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 6. Plate
@@ -486,7 +489,7 @@ fun RegisterVehicleContent(
                     visualTransformation = ColombianPlateVisualTransformation(),
                     errorMessage = if (state.plateError) stringResource(Res.string.vehicle_plate_error_format) else null
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 7. Seat count stepper
@@ -494,7 +497,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_seats_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = Spacing.xs)
                 )
                 NumberStepper(
                     value = state.seatCount,
@@ -506,9 +509,9 @@ fun RegisterVehicleContent(
                     text = stringResource(Res.string.vehicle_seats_helper),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = Spacing.xs)
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 8. Vehicle type (optional)
@@ -516,7 +519,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_type_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = Spacing.sm)
                 )
                 val typeEntries = listOf(
                     VehicleType.Sedan to stringResource(Res.string.vehicle_type_sedan),
@@ -525,7 +528,7 @@ fun RegisterVehicleContent(
                     VehicleType.Pickup to stringResource(Res.string.vehicle_type_pickup),
                     VehicleType.Other to stringResource(Res.string.vehicle_type_other),
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     typeEntries.forEach { (type, label) ->
                         FilterChip(
                             selected = state.type == type,
@@ -534,20 +537,20 @@ fun RegisterVehicleContent(
                         )
                     }
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // General error
             item {
                 if (state.generalError != null) {
                     ErrorMessage(message = stringResource(state.generalError.asStringResource()))
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(Spacing.lg))
                 }
             }
 
             // Save button
             item {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(Spacing.sm))
                 PrimaryButton(
                     text = if (state.mode == RegisterVehicleUiState.Mode.Edit)
                         stringResource(Res.string.vehicle_update_button)
@@ -557,7 +560,7 @@ fun RegisterVehicleContent(
                     enabled = state.isValid,
                     isLoading = state.isSaving
                 )
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(Spacing.xl))
             }
         }
     }

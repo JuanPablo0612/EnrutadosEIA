@@ -3,7 +3,6 @@ package com.juanpablo0612.carpool.presentation.role_selector
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -59,7 +59,7 @@ fun RoleSelectorContent(
                     .verticalScroll(rememberScrollState())
                     .heightIn(min = maxHeight)
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
+                    .padding(horizontal = Spacing.screenHorizontalForm),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -67,12 +67,14 @@ fun RoleSelectorContent(
                     text = stringResource(Res.string.role_selector_greeting, state.userName),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
                 Text(
                     text = stringResource(Res.string.role_selector_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                // 48.dp falls outside the xl(24)/xxl(32) scale; kept literal rather than
+                // altering this screen's hero spacing.
                 Spacer(modifier = Modifier.height(48.dp))
 
                 DriverRoleCard(
@@ -80,13 +82,13 @@ fun RoleSelectorContent(
                     onClick = { onAction(RoleSelectorAction.OnSelectDriver) }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 PassengerRoleCard(
                     onClick = { onAction(RoleSelectorAction.OnSelectPassenger) }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(Spacing.xl))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -96,7 +98,7 @@ fun RoleSelectorContent(
                         checked = state.rememberChoice,
                         onCheckedChange = { onAction(RoleSelectorAction.OnToggleRememberChoice(it)) }
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.sm))
                     Text(
                         text = stringResource(Res.string.role_selector_remember_choice),
                         style = MaterialTheme.typography.bodySmall
@@ -116,10 +118,12 @@ private fun DriverRoleCard(
     Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
+            // 20.dp falls outside the lg(16)/xl(24) scale; kept literal rather than nudging
+            // this card's inset and altering its layout.
             modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -129,7 +133,7 @@ private fun DriverRoleCard(
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(32.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.lg))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(Res.string.role_selector_driver_title),
@@ -142,7 +146,7 @@ private fun DriverRoleCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
                 if (pendingCount > 0) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
                         text = stringResource(Res.string.role_selector_driver_pending, pendingCount),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
@@ -162,10 +166,12 @@ private fun PassengerRoleCard(
     Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Row(
+            // 20.dp falls outside the lg(16)/xl(24) scale; kept literal rather than nudging
+            // this card's inset and altering its layout.
             modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -175,7 +181,7 @@ private fun PassengerRoleCard(
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(32.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.lg))
             Column {
                 Text(
                     text = stringResource(Res.string.role_selector_passenger_title),

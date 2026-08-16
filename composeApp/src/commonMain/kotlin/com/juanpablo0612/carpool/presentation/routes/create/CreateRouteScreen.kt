@@ -26,6 +26,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
@@ -129,7 +130,7 @@ fun CreateRouteContent(
                 .fillMaxSize()
                 .padding(padding)
                 .imePadding(),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
             // Route name field
             item {
@@ -140,7 +141,7 @@ fun CreateRouteContent(
                     placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
                     singleLine = true,
                     isError = state.error is CreateRouteError.NameRequired
                 )
@@ -175,10 +176,12 @@ fun CreateRouteContent(
             item {
                 TextButton(
                     onClick = { onAction(CreateRouteAction.OnAddWaypointClick) },
+                    // 40dp aligns the label under RouteStopItem's content column (24dp timeline +
+                    // 16dp spacer), not a spacing-scale value.
                     modifier = Modifier.padding(horizontal = 40.dp)
                 ) {
                     Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(Spacing.sm))
                     Text(stringResource(Res.string.add_waypoint_button))
                 }
             }
@@ -203,7 +206,7 @@ fun CreateRouteContent(
                 DaySelector(
                     selectedDays = state.recurringDays,
                     onToggleDay = { onAction(CreateRouteAction.OnToggleRecurringDay(it)) },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
                 )
             }
 
@@ -216,7 +219,7 @@ fun CreateRouteContent(
                 } ?: stringResource(Res.string.departure_time_not_set)
                 TextButton(
                     onClick = { showTimePicker = true },
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.sm)
                 ) {
                     Text(timeLabel)
                 }
@@ -228,7 +231,7 @@ fun CreateRouteContent(
                     Text(
                         text = stringResource(state.error.asStringResource()),
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(Spacing.lg)
                     )
                 }
             }
@@ -239,7 +242,7 @@ fun CreateRouteContent(
                     onClick = { onAction(CreateRouteAction.OnSaveClick) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(Spacing.lg),
                     enabled = state.isValid && !state.isLoading
                 ) {
                     if (state.isLoading) {

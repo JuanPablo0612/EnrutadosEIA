@@ -10,17 +10,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.places.model.Place
+import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.driver_home_title
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
-import enrutadoseia.composeapp.generated.resources.role_selector_driver_title
-import enrutadoseia.composeapp.generated.resources.role_selector_passenger_title
+import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
+import enrutadoseia.composeapp.generated.resources.role_switch_to_passenger
+import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -83,9 +92,9 @@ internal fun HomeContent(
                     ),
                     user = user,
                     isDualRole = state.isDualRole,
-                    currentRoleLabel = stringResource(
-                        if (state.role == UserRole.Driver) Res.string.role_selector_driver_title
-                        else Res.string.role_selector_passenger_title,
+                    switchRoleLabel = stringResource(
+                        if (state.role == UserRole.Driver) Res.string.role_switch_to_passenger
+                        else Res.string.role_switch_to_driver,
                     ),
                     onAvatarClick = onNavigateToProfile,
                     onRoleToggle = if (state.isDualRole) {
@@ -134,3 +143,110 @@ private fun isOnboardingEmpty(state: HomeUiState): Boolean =
     state.role == UserRole.Driver &&
             !state.hasVehicles && !state.hasRoutes &&
             state.nextTrip == null && state.pendingRequests.isEmpty()
+
+private val previewUser = User(
+    id = "u1",
+    email = "juan.perez@eia.edu.co",
+    name = "Juan Pérez",
+    isEmailVerified = true,
+    isPassenger = true,
+    isDriver = true,
+)
+
+private val previewTrip = Trip(
+    id = "t1",
+    routeId = "r1",
+    driverId = "u1",
+    vehicleId = "v1",
+    origin = Place.UNIVERSITY_EIA,
+    destination = Place(name = "Centro Comercial Santafé", address = "Cra 43A, Medellín", latitude = 6.22, longitude = -75.57),
+    waypoints = emptyList(),
+    departureTime = Clock.System.now().toEpochMilliseconds() + 3_600_000L,
+    seatCount = 3,
+    status = TripStatus.Active,
+)
+
+private val previewPendingRequests = listOf(
+    Booking(
+        id = "b1",
+        tripId = "t1",
+        passengerId = "p1",
+        driverId = "u1",
+        passengerName = "Laura Gómez",
+        passengerEmail = "laura.gomez@eia.edu.co",
+        originName = "EIA — Sede Las Palmas",
+        destinationName = "Centro Comercial Santafé",
+        departureTime = Clock.System.now().toEpochMilliseconds() + 3_600_000L,
+        status = BookingStatus.Pending,
+        createdAt = Clock.System.now().toEpochMilliseconds(),
+    ),
+)
+
+@Preview
+@Composable
+private fun HomeContentLoadingPreview() {
+    CarpoolTheme {
+        HomeContent(
+            state = HomeUiState(user = previewUser, isLoading = true),
+            onNavigateToProfile = {},
+            onAction = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeContentDriverEmptyPreview() {
+    CarpoolTheme {
+        HomeContent(
+            state = HomeUiState(
+                user = previewUser,
+                role = UserRole.Driver,
+                isLoading = false,
+                hasVehicles = false,
+                hasRoutes = false,
+            ),
+            onNavigateToProfile = {},
+            onAction = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeContentDriverPopulatedPreview() {
+    CarpoolTheme {
+        HomeContent(
+            state = HomeUiState(
+                user = previewUser,
+                role = UserRole.Driver,
+                isDualRole = true,
+                isLoading = false,
+                hasVehicles = true,
+                hasRoutes = true,
+                nextTrip = previewTrip,
+                pendingRequests = previewPendingRequests,
+                tripsThisMonth = 5,
+                passengersThisMonth = 12,
+            ),
+            onNavigateToProfile = {},
+            onAction = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeContentErrorPreview() {
+    CarpoolTheme {
+        HomeContent(
+            state = HomeUiState(
+                user = previewUser,
+                isLoading = false,
+                error = HomeError.LoadFailed,
+            ),
+            onNavigateToProfile = {},
+            onAction = {},
+        )
+    }
+}

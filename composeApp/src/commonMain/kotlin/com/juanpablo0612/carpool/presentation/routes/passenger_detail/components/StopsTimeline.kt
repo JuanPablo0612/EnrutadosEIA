@@ -38,7 +38,7 @@ fun StopsTimeline(
             StopRow(place = place)
             if (!isLast) {
                 Row {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing.sm))
                     Box(
                         modifier = Modifier
                             .width(2.dp)
@@ -59,8 +59,8 @@ private fun StopRow(place: Place, modifier: Modifier = Modifier) {
     ) {
         Box(
             modifier = Modifier
-                .padding(top = 4.dp)
-                .size(8.dp)
+                .padding(top = Spacing.xs)
+                .size(8.dp) // dot-intrinsic size
                 .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
         )
         Spacer(modifier = Modifier.width(Spacing.sm))

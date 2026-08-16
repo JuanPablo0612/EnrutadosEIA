@@ -63,7 +63,7 @@ fun BookingRequestCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            UserAvatar(name = passenger.name, size = 48.dp)
+            UserAvatar(name = passenger.name, size = 48.dp) // component-intrinsic avatar diameter
             Spacer(modifier = Modifier.width(Spacing.md))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -91,7 +91,7 @@ fun BookingRequestCard(
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
         )
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(2.dp)) // below the 4dp spacing floor; a hairline-level text gap
         RouteLineRow(origin = booking.originName, destination = booking.destinationName)
 
         // Optional passenger message

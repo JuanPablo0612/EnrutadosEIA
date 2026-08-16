@@ -722,6 +722,12 @@
     <string name="notice_place_saved">Place saved</string>
     <string name="notice_profile_saved">Profile updated</string>
 
+    <plurals name="route_trips_count">
+        <item quantity="one">%1$d trip</item>
+        <item quantity="other">%1$d trips</item>
+    </plurals>
+    <string name="route_last_used_separator">%1$s · %2$s</string>
+
     <!-- SOS -->
     <string name="trip_tracking_sos_dismiss">Close</string>
     <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>

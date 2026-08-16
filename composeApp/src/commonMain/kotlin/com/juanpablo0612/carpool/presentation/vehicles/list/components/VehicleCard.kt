@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
@@ -63,22 +64,22 @@ fun VehicleCard(
             VehiclePhoto(
                 photoUrl = vehicle.photoUrl,
                 modifier = Modifier
-                    .size(width = 120.dp, height = 80.dp)
+                    .size(width = 120.dp, height = 80.dp) // component-intrinsic photo thumbnail size
                     .clip(MaterialTheme.shapes.small)
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(Spacing.md))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${vehicle.brand} ${vehicle.model} ${vehicle.year}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(2.dp)) // below the 4dp spacing floor; a hairline-level text gap
                 Text(
                     text = "${vehicle.color} · ${vehicle.licensePlate}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = pluralStringResource(
                         Res.plurals.vehicle_seats_count,
@@ -89,7 +90,7 @@ fun VehicleCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (vehicle.isPrimary && totalVehicleCount > 1) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
                         text = "● ${stringResource(Res.string.vehicle_primary_indicator)}",
                         style = MaterialTheme.typography.labelMedium,
@@ -174,7 +175,7 @@ private fun VehiclePhoto(photoUrl: String, modifier: Modifier = Modifier) {
                     imageVector = vectorResource(Res.drawable.directions_car_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(32.dp) // component-intrinsic icon size
                 )
             }
         }
