@@ -7,7 +7,7 @@ Dos premisas:
 
 - **Casi nadie va a llegar sabiendo las herramientas del proyecto.** No se ven en clase. Los roles
   están definidos para que eso no sea un problema.
-- **El equipo va a ser pequeño.** Entre seis y nueve personas es un buen tamaño; con cuatro ya se
+- **El equipo va a ser pequeño.** Entre cinco y ocho personas es un buen tamaño; con cuatro ya se
   puede arrancar.
 
 La app ya existe y funciona: viajes, reservas, chat, calificaciones, vehículos y contactos de
@@ -29,14 +29,18 @@ Construir las pantallas y la lógica detrás de ellas. Es donde más manos se ne
   herramientas de este proyecto se aprenden aquí.
 - **Primer aporte real:** una o dos semanas.
 
-### Datos y Firebase · 1–2 cupos
+### Datos y Firebase · 1 cupo
 
 La base de datos y, sobre todo, los permisos: que cada persona solo pueda ver lo suyo. Es el rol
-más técnico y el que más cuidado exige, porque un error aquí significa que alguien lee el chat o
-los contactos de emergencia de otro.
+más técnico, porque un error aquí no se ve como un error — se ve como que alguien lee el chat o los
+contactos de emergencia de otro.
+
+Escribir esas reglas ya no es el trabajo difícil; comprobar que hacen lo que uno cree, sí. Por eso
+este rol no necesita una segunda persona, sino dos costumbres: **todo cambio de permisos lo reviso
+yo**, y cada regla queda cubierta por una prueba contra el emulador de Firebase, que ya está
+configurado en el proyecto. La prueba dice, en una línea, que un pasajero no puede leer lo de otro.
 
 - **Necesitas:** haber tocado alguna base de datos. Firebase se enseña.
-- **Nunca lo hace una sola persona sola:** los cambios de permisos se revisan entre dos.
 
 ### Diseño y contenido · 1 cupo
 
