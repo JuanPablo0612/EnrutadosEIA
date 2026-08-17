@@ -18,7 +18,7 @@ class RatingViewModel(
     private val tripId: String,
     private val rateeId: String,
     private val rateeName: String,
-    private val isDriver: Boolean,
+    private val rateeIsDriver: Boolean,
     private val createRatingUseCase: CreateRatingUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -28,7 +28,7 @@ class RatingViewModel(
             bookingId = bookingId,
             rateeId = rateeId,
             rateeName = rateeName,
-            isDriver = isDriver
+            rateeIsDriver = rateeIsDriver
         )
     )
     val state: StateFlow<RatingUiState> = _state.asStateFlow()

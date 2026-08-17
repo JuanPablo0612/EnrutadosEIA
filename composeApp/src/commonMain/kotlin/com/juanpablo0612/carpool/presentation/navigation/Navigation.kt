@@ -1,6 +1,10 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,6 +28,9 @@ import com.juanpablo0612.carpool.presentation.places.add.AddPlaceScreen
 import com.juanpablo0612.carpool.presentation.places.add.AddPlaceViewModel
 import com.juanpablo0612.carpool.presentation.places.picker.MapPickerScreen
 import com.juanpablo0612.carpool.presentation.places.picker.MapPickerViewModel
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorMode
+import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.mainNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
@@ -94,6 +101,18 @@ fun AppNavigation(
         else -> emptyList()
     }
 
+    // The one way to change active role. Every caller resets the back stack, because leaving the
+    // previous role's destinations underneath is exactly how activeRole ends up disagreeing with
+    // the tab set that is actually on screen — the desync the bottom-bar comment below guards
+    // against, reached from the other direction.
+    val switchActiveRole: (UserRole) -> Unit = { role ->
+        userSession.setActiveRole(role)
+        val destination = if (role == UserRole.Driver) Route.Home else Route.PassengerHome
+        navController.navigate(destination) {
+            popUpTo(0) { inclusive = true }
+        }
+    }
+
     val onLogout: () -> Unit = {
         scope.launch {
             logoutUseCase()
@@ -135,7 +154,27 @@ fun AppNavigation(
             NavHost(
                 navController = navController,
                 startDestination = Route.Splash,
-                modifier = modifier.padding(innerPadding)
+                // Forward and back navigation were visually identical (NavHost's default fade),
+                // so the app gave no directional cue about depth. Declared once here rather than
+                // per-destination.
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeIn()
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeOut()
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeIn()
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeOut()
+                },
+                // consumeWindowInsets, not just padding: Modifier.padding does not mark the
+                // insets as consumed, so each screen's own Scaffold would apply the navigation
+                // bar inset a second time on top of the space the bottom bar already took.
+                modifier = modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
             ) {
                 composable<Route.Splash> {
                     val viewModel: SplashViewModel = koinViewModel()
@@ -238,11 +277,9 @@ fun AppNavigation(
                 )
 
                 mainNavGraph(
-                    onSwitchRole = {
-                        navController.navigate(Route.RoleSelector) {
-                            popUpTo(0) { inclusive = false }
-                        }
-                    },
+                    // A direct toggle: RoleSelector stays for first run and the explicit
+                    // "remember my choice" flow, not for flipping a binary you already know.
+                    onSwitchRole = { switchActiveRole(UserRole.Passenger) },
                     onNavigateToProfile = { navController.navigate(Route.Profile) },
                     onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
@@ -253,11 +290,10 @@ fun AppNavigation(
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
-                    onNavigateToSearchTrips = {
-                        userSession.setActiveRole(UserRole.Passenger)
-                        navController.navigate(Route.PassengerHome)
-                    },
+                    onNavigateToSearchTrips = { switchActiveRole(UserRole.Passenger) },
                     onNavigateToPassengerBookings = { navController.navigate(Route.PassengerBookings) },
+                    onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
+                    onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripDetailPassenger = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
@@ -265,11 +301,7 @@ fun AppNavigation(
                 )
 
                 passengerNavGraph(
-                    onSwitchRole = {
-                        navController.navigate(Route.RoleSelector) {
-                            popUpTo(0) { inclusive = false }
-                        }
-                    },
+                    onSwitchRole = { switchActiveRole(UserRole.Driver) },
                     onNavigateToProfile = { navController.navigate(Route.Profile) },
                     onNavigateToTripDetail = { tripId ->
                         navController.navigate(Route.TripDetailPassenger(tripId))
@@ -281,7 +313,11 @@ fun AppNavigation(
                         navController.navigate(Route.TripTracking(tripId))
                     },
                     onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
-                        navController.navigate(Route.PostTripRating(bookingId, tripId, rateeId, rateeName, false))
+                        // This graph is the passenger side, so the ratee is always the driver —
+                        // which is what selects the "clean car / safe driving" chip set.
+                        navController.navigate(
+                            Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = true)
+                        )
                     },
                     onNavigateBack = { navController.popBackStack() }
                 )
@@ -312,6 +348,22 @@ fun AppNavigation(
                     )
                 }
 
+                composable<Route.SavedPlaces> {
+                    val viewModel: PlaceSelectorViewModel = koinViewModel {
+                        parametersOf(PlaceSelectorMode.MY_PLACES_KEY)
+                    }
+                    val state by viewModel.state.collectAsState()
+                    // Reuses the browse-and-delete surface that already existed but was never
+                    // registered as a destination; only the selection callback is dropped, since
+                    // here the list is the destination rather than a picker.
+                    PlaceSelectorContent(
+                        state = state,
+                        onAction = viewModel::onAction,
+                        onBack = { navController.popBackStack() },
+                        onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                    )
+                }
+
                 composable<Route.MapPicker> { backStackEntry ->
                     val args = backStackEntry.toRoute<Route.MapPicker>()
                     val viewModel: MapPickerViewModel = koinViewModel {
@@ -337,7 +389,8 @@ fun AppNavigation(
                         onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
                         onLogout = onLogout,
                         onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
-                        onNavigateToSavedPlaces = { navController.navigate(Route.AddPlace) },
+                        // The list, not the creation form — the row is labelled "saved places".
+                        onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                         onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                         onNavigateToSafety = { navController.navigate(Route.Safety) },
                         onDeleteAccountSuccess = {
@@ -370,7 +423,12 @@ fun AppNavigation(
                     val viewModel: NotificationsViewModel = koinViewModel()
                     NotificationsScreen(
                         viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() }
+                        onBackClick = { navController.popBackStack() },
+                        // The ViewModel already parses a deep link off each notification; without
+                        // this the parsed destination was dropped and tapping only marked it read.
+                        onNavigateTo = { deepLink ->
+                            deepLink.toRouteOrNull()?.let { navController.navigate(it) }
+                        }
                     )
                 }
 
@@ -385,7 +443,7 @@ fun AppNavigation(
                 composable<Route.Chat> { backStackEntry ->
                     val args = backStackEntry.toRoute<Route.Chat>()
                     val viewModel: ChatViewModel = koinViewModel {
-                        parametersOf(args.bookingId, "", false)
+                        parametersOf(args.bookingId, args.otherPartyName, args.isReadOnly)
                     }
                     ChatScreen(
                         viewModel = viewModel,
@@ -399,8 +457,8 @@ fun AppNavigation(
                     TripTrackingScreen(
                         viewModel = viewModel,
                         onBackClick = { navController.popBackStack() },
-                        onNavigateToChat = { bookingId ->
-                            navController.navigate(Route.Chat(bookingId))
+                        onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
+                            navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
                         },
                         onTripCompleted = { navController.popBackStack() }
                     )
@@ -409,7 +467,7 @@ fun AppNavigation(
                 composable<Route.PostTripRating> { backStackEntry ->
                     val args = backStackEntry.toRoute<Route.PostTripRating>()
                     val viewModel: RatingViewModel = koinViewModel {
-                        parametersOf(args.bookingId, args.tripId, args.rateeId, args.rateeName, args.isDriver)
+                        parametersOf(args.bookingId, args.tripId, args.rateeId, args.rateeName, args.rateeIsDriver)
                     }
                     RatingScreen(
                         viewModel = viewModel,

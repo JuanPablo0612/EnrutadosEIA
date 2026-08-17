@@ -13,16 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.error_24px
 import enrutadoseia.composeapp.generated.resources.offline_banner_message
+import enrutadoseia.composeapp.generated.resources.wifi_off_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-// TODO: Replace error_24px with wifi_off_24px once downloaded from Material Symbols
-// (https://fonts.google.com/icons?icon.query=wifi+off) and placed in
-// composeApp/src/commonMain/composeResources/drawable/wifi_off_24px.xml
 @Composable
 fun OfflineBanner(
     isOffline: Boolean,
@@ -34,15 +33,16 @@ fun OfflineBanner(
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = vectorResource(Res.drawable.error_24px),
+                    // Decorative: the banner's own message states the offline condition.
+                    imageVector = vectorResource(Res.drawable.wifi_off_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onErrorContainer
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(Spacing.sm))
                 Text(
                     text = stringResource(Res.string.offline_banner_message),
                     style = MaterialTheme.typography.labelMedium,
@@ -50,5 +50,13 @@ fun OfflineBanner(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun OfflineBannerPreview() {
+    CarpoolTheme {
+        OfflineBanner(isOffline = true)
     }
 }

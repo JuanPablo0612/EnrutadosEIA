@@ -195,6 +195,7 @@ private fun QuickActionCard(
     }
 
     Card(
+        // Fixed grid-tile height, not a spacing step.
         modifier = modifier
             .height(96.dp)
             .clickable(onClick = onClick),
@@ -210,6 +211,7 @@ private fun QuickActionCard(
                 imageVector = icon,
                 contentDescription = null,
                 tint = contentColor,
+                // Icon size is component-intrinsic, not a spacing step.
                 modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.weight(1f))

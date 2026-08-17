@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.bookings.passenger
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +21,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.presentation.bookings.asStringResource
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.bookings.passenger.components.BookingDateGroup
 import com.juanpablo0612.carpool.presentation.bookings.passenger.components.BookingDateGroupHeader
 import com.juanpablo0612.carpool.presentation.bookings.passenger.components.EnrichedBookingCard
@@ -85,15 +87,19 @@ fun PassengerBookingsContent(
     onAction: (PassengerBookingsAction) -> Unit
 ) {
     val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+    // A booking belongs to "Past" once its departure has gone by, or as soon as it reaches a
+    // terminal status. The previous split kept every Confirmed booking in "Upcoming" regardless
+    // of date, which meant a departed-and-confirmed booking never reached the tab that offers
+    // the rate action — the whole post-trip rating flow was unreachable because of it.
     val upcomingBookings = remember(state.bookings, nowMs) {
-        state.bookings.filter { b ->
-            b.departureTime > nowMs || b.status is BookingStatus.Confirmed
-        }.sortedBy { it.departureTime }
+        state.bookings
+            .filter { it.departureTime > nowMs && !it.status.isTerminal }
+            .sortedBy { it.departureTime }
     }
     val pastBookings = remember(state.bookings, nowMs) {
-        state.bookings.filter { b ->
-            b.departureTime <= nowMs && b.status !is BookingStatus.Confirmed
-        }.sortedByDescending { it.departureTime }
+        state.bookings
+            .filter { it.departureTime <= nowMs || it.status.isTerminal }
+            .sortedByDescending { it.departureTime }
     }
 
     Scaffold(
@@ -102,7 +108,7 @@ fun PassengerBookingsContent(
                 title = {
                     Text(
                         text = stringResource(Res.string.passenger_bookings_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -112,6 +118,19 @@ fun PassengerBookingsContent(
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // The ViewModel has always recorded cancel failures here; nothing rendered them, so
+            // a failed cancel was indistinguishable from a successful one. Tap to dismiss,
+            // matching BookingRequestsScreen.
+            state.error?.let { error ->
+                ErrorMessage(
+                    message = stringResource(error.asStringResource()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                        .clickable { onAction(PassengerBookingsAction.OnDismissError) },
+                )
+            }
+
             SecondaryTabRow(selectedTabIndex = state.selectedTab.ordinal) {
                 Tab(
                     selected = state.selectedTab == BookingTab.UPCOMING,
@@ -221,7 +240,6 @@ private fun PastContent(
             EnrichedBookingCard(
                 booking = booking,
                 nowMs = nowMs,
-                onCancelClick = {},
                 onRateBooking = { bookingId, tripId, rateeId, rateeName ->
                     onAction(PassengerBookingsAction.OnRateBooking(bookingId, tripId, rateeId, rateeName))
                 },
@@ -230,6 +248,10 @@ private fun PastContent(
         }
     }
 }
+
+/** A booking that can no longer become active, whatever its departure time says. */
+private val BookingStatus.isTerminal: Boolean
+    get() = this is BookingStatus.Cancelled || this is BookingStatus.Rejected
 
 private fun groupByRelativeDate(
     bookings: List<Booking>,

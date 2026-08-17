@@ -11,13 +11,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -48,18 +48,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.domain.vehicles.model.VehicleType
-import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.NumberStepper
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.theme.Alpha
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
 import enrutadoseia.composeapp.generated.resources.error_vehicle_brand_required
 import enrutadoseia.composeapp.generated.resources.error_vehicle_color_required
+import enrutadoseia.composeapp.generated.resources.error_vehicle_model_required
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_vehicle_title
 import enrutadoseia.composeapp.generated.resources.vehicle_brand_label
@@ -148,23 +151,25 @@ fun RegisterVehicleContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 48.dp)
+                    .padding(horizontal = Spacing.screenHorizontalForm)
+                    // Bottom-sheet safe-area padding: 48dp isn't on the spacing scale, so it's
+                    // expressed as two xl steps rather than approximated to a single token.
+                    .padding(bottom = Spacing.xl + Spacing.xl)
             ) {
                 Text(
                     text = stringResource(Res.string.vehicle_photo_section),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = Spacing.xl)
                 )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable {
                             onAction(RegisterVehicleAction.OnDismissPhotoSheet)
                             cameraLauncher.launch()
                         }
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = Spacing.lg),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -172,7 +177,7 @@ fun RegisterVehicleContent(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(Spacing.lg))
                     Text(
                         stringResource(Res.string.vehicle_photo_take_photo),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
@@ -181,12 +186,12 @@ fun RegisterVehicleContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(MaterialTheme.shapes.medium)
                         .clickable {
                             onAction(RegisterVehicleAction.OnDismissPhotoSheet)
                             photoPicker.launch()
                         }
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = Spacing.lg),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -194,7 +199,7 @@ fun RegisterVehicleContent(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(Spacing.lg))
                     Text(
                         stringResource(Res.string.vehicle_photo_choose_gallery),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
@@ -216,8 +221,8 @@ fun RegisterVehicleContent(
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+            modifier = Modifier.fillMaxSize().padding(padding).imePadding(),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg),
         ) {
 
             // 1. Photo
@@ -225,13 +230,13 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_photo_section),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm)
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .height(180.dp) // component-intrinsic: fixed photo-preview height, not a spacing value
+                        .clip(MaterialTheme.shapes.medium)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                         .clickable { onAction(RegisterVehicleAction.OnShowPhotoSheet) },
                     contentAlignment = Alignment.Center
@@ -248,8 +253,8 @@ fun RegisterVehicleContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
-                                .background(Color.Black.copy(alpha = 0.55f))
-                                .padding(vertical = 8.dp),
+                                .background(Color.Black.copy(alpha = Alpha.SCRIM))
+                                .padding(vertical = Spacing.sm),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -261,21 +266,21 @@ fun RegisterVehicleContent(
                     } else {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(Spacing.lg)
                         ) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.photo_camera_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(36.dp),
+                                modifier = Modifier.size(36.dp), // component-intrinsic icon size
                                 tint = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(Spacing.sm))
                             Text(
                                 text = stringResource(Res.string.vehicle_photo_tap_to_add),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Spacer(Modifier.height(4.dp))
+                            Spacer(Modifier.height(Spacing.xs))
                             Text(
                                 text = stringResource(Res.string.vehicle_photo_hint),
                                 style = MaterialTheme.typography.bodySmall,
@@ -284,7 +289,7 @@ fun RegisterVehicleContent(
                         }
                     }
                 }
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(Spacing.xl))
             }
 
             // 2. Brand dropdown
@@ -292,7 +297,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_brand_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = Spacing.xs)
                 )
                 ExposedDropdownMenuBox(
                     expanded = state.showBrandDropdown,
@@ -306,6 +311,11 @@ fun RegisterVehicleContent(
                         placeholder = { Text(stringResource(Res.string.vehicle_brand_placeholder)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.showBrandDropdown) },
                         isError = state.brandError,
+                        // Only when the error belongs to the dropdown itself; if the user picked
+                        // "Otro" the message belongs to the custom-brand field below instead.
+                        supportingText = if (state.brandError && !state.isCustomBrand) {
+                            { Text(stringResource(Res.string.error_vehicle_brand_required)) }
+                        } else null,
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
@@ -327,8 +337,8 @@ fun RegisterVehicleContent(
                     }
                 }
                 if (state.isCustomBrand) {
-                    Spacer(Modifier.height(8.dp))
-                    AuthTextField(
+                    Spacer(Modifier.height(Spacing.sm))
+                    CarpoolTextField(
                         value = state.brand,
                         onValueChange = { onAction(RegisterVehicleAction.OnBrandSelected(it)) },
                         label = stringResource(Res.string.vehicle_brand_other),
@@ -337,23 +347,22 @@ fun RegisterVehicleContent(
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next
                         ),
-                        errorMessage = if (state.brandError) " " else null
+                        // The message goes through errorMessage so it lands in the field's
+                        // supportingText and is announced with the field. It used to be a single
+                        // space here — just enough to redden the border — with the real text in a
+                        // detached Text below, which a screen reader never associates with the
+                        // field it describes.
+                        errorMessage = if (state.brandError) {
+                            stringResource(Res.string.error_vehicle_brand_required)
+                        } else null
                     )
                 }
-                if (state.brandError) {
-                    Text(
-                        text = stringResource(Res.string.error_vehicle_brand_required),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-                    )
-                }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 3. Model
             item {
-                AuthTextField(
+                CarpoolTextField(
                     value = state.model,
                     onValueChange = { onAction(RegisterVehicleAction.OnModelChanged(it)) },
                     label = stringResource(Res.string.vehicle_model_label),
@@ -362,9 +371,13 @@ fun RegisterVehicleContent(
                         capitalization = KeyboardCapitalization.Words,
                         imeAction = ImeAction.Next
                     ),
-                    errorMessage = if (state.modelError) " " else null
+                    // Previously a bare space with no message anywhere: the field reddened and
+                    // the reason was given in no modality at all, visual or spoken.
+                    errorMessage = if (state.modelError) {
+                        stringResource(Res.string.error_vehicle_model_required)
+                    } else null
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 4. Year dropdown
@@ -372,7 +385,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_year_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = Spacing.xs)
                 )
                 val currentYear = Clock.System.now()
                     .toLocalDateTime(TimeZone.currentSystemDefault()).date.year
@@ -403,7 +416,7 @@ fun RegisterVehicleContent(
                         }
                     }
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 5. Color chips
@@ -411,7 +424,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_color_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = Spacing.sm)
                 )
                 val colorLabels = listOf(
                     "Blanco" to stringResource(Res.string.vehicle_color_white),
@@ -422,7 +435,7 @@ fun RegisterVehicleContent(
                     "Azul" to stringResource(Res.string.vehicle_color_blue),
                     "Otro" to stringResource(Res.string.vehicle_color_other),
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     colorLabels.forEach { (value, label) ->
                         FilterChip(
                             selected = state.color == value,
@@ -432,8 +445,8 @@ fun RegisterVehicleContent(
                     }
                 }
                 if (state.isCustomColor) {
-                    Spacer(Modifier.height(8.dp))
-                    AuthTextField(
+                    Spacer(Modifier.height(Spacing.sm))
+                    CarpoolTextField(
                         value = state.customColor,
                         onValueChange = { onAction(RegisterVehicleAction.OnCustomColorChanged(it)) },
                         label = stringResource(Res.string.vehicle_color_other),
@@ -442,23 +455,28 @@ fun RegisterVehicleContent(
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next
                         ),
-                        errorMessage = if (state.colorError) " " else null
+                        errorMessage = if (state.colorError) {
+                            stringResource(Res.string.error_vehicle_color_required)
+                        } else null
                     )
                 }
-                if (state.colorError) {
+                // Kept as a detached message only for the chip-group case, which has no field and
+                // therefore no supportingText slot to attach to. When the custom-colour field is
+                // showing, the message lives on the field above instead.
+                if (state.colorError && !state.isCustomColor) {
                     Text(
                         text = stringResource(Res.string.error_vehicle_color_required),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                        modifier = Modifier.padding(start = Spacing.xs, top = Spacing.xs)
                     )
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 6. Plate
             item {
-                AuthTextField(
+                CarpoolTextField(
                     value = state.plate,
                     onValueChange = { onAction(RegisterVehicleAction.OnPlateChanged(it)) },
                     label = stringResource(Res.string.vehicle_plate_label),
@@ -471,7 +489,7 @@ fun RegisterVehicleContent(
                     visualTransformation = ColombianPlateVisualTransformation(),
                     errorMessage = if (state.plateError) stringResource(Res.string.vehicle_plate_error_format) else null
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 7. Seat count stepper
@@ -479,7 +497,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_seats_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = Spacing.xs)
                 )
                 NumberStepper(
                     value = state.seatCount,
@@ -491,9 +509,9 @@ fun RegisterVehicleContent(
                     text = stringResource(Res.string.vehicle_seats_helper),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = Spacing.xs)
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // 8. Vehicle type (optional)
@@ -501,7 +519,7 @@ fun RegisterVehicleContent(
                 Text(
                     text = stringResource(Res.string.vehicle_type_label),
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = Spacing.sm)
                 )
                 val typeEntries = listOf(
                     VehicleType.Sedan to stringResource(Res.string.vehicle_type_sedan),
@@ -510,7 +528,7 @@ fun RegisterVehicleContent(
                     VehicleType.Pickup to stringResource(Res.string.vehicle_type_pickup),
                     VehicleType.Other to stringResource(Res.string.vehicle_type_other),
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     typeEntries.forEach { (type, label) ->
                         FilterChip(
                             selected = state.type == type,
@@ -519,20 +537,20 @@ fun RegisterVehicleContent(
                         )
                     }
                 }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
 
             // General error
             item {
                 if (state.generalError != null) {
                     ErrorMessage(message = stringResource(state.generalError.asStringResource()))
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(Spacing.lg))
                 }
             }
 
             // Save button
             item {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(Spacing.sm))
                 PrimaryButton(
                     text = if (state.mode == RegisterVehicleUiState.Mode.Edit)
                         stringResource(Res.string.vehicle_update_button)
@@ -542,7 +560,7 @@ fun RegisterVehicleContent(
                     enabled = state.isValid,
                     isLoading = state.isSaving
                 )
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(Spacing.xl))
             }
         }
     }

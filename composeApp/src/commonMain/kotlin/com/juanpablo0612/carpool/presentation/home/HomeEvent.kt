@@ -9,6 +9,7 @@ sealed class HomeEvent {
     data object NavigateToDriverBookingRequests : HomeEvent()
     data object NavigateToSearchTrips : HomeEvent()
     data object NavigateToPassengerBookings : HomeEvent()
+    data object NavigateToSavedPlaces : HomeEvent()
     data class NavigateToTripDetail(val tripId: String) : HomeEvent()
     data class NavigateToTripDetailPassenger(val tripId: String) : HomeEvent()
 }

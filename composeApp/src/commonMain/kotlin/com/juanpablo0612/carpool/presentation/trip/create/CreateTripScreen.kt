@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -27,7 +27,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,7 +36,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -47,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
@@ -58,14 +57,15 @@ import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.NumberStepper
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.utils.formatLongDate
 import com.juanpablo0612.carpool.presentation.utils.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.cancel
 import enrutadoseia.composeapp.generated.resources.confirm
@@ -173,13 +173,13 @@ fun CreateTripContent(
             is24Hour = false
         )
         BasicAlertDialog(onDismissRequest = { onAction(CreateTripAction.OnDismissTimePicker) }) {
-            Surface(shape = RoundedCornerShape(16.dp)) {
+            Surface(shape = MaterialTheme.shapes.large) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier.padding(Spacing.xl),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TimePicker(state = timePickerState)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing.lg))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
@@ -187,7 +187,7 @@ fun CreateTripContent(
                         TextButton(onClick = { onAction(CreateTripAction.OnDismissTimePicker) }) {
                             Text(stringResource(Res.string.cancel))
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(Spacing.sm))
                         TextButton(onClick = {
                             onAction(
                                 CreateTripAction.OnTimeSelected(
@@ -244,22 +244,15 @@ fun CreateTripContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.create_trip_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(CreateTripAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                }
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.create_trip_title),
+                onBack = { onAction(CreateTripAction.OnBackClick) },
             )
         },
         bottomBar = {
             if (!state.isLoading) {
                 Surface(
-                    tonalElevation = 3.dp,
+                    tonalElevation = Elevation.raised,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(Spacing.lg)) {
@@ -276,9 +269,9 @@ fun CreateTripContent(
                         ) {
                             if (state.isPublishing) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(20.dp), // component-intrinsic spinner size
                                     color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
+                                    strokeWidth = 2.dp // hairline stroke
                                 )
                             } else {
                                 Text(stringResource(Res.string.publish_trip))
@@ -300,7 +293,7 @@ fun CreateTripContent(
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.fillMaxSize().padding(padding).imePadding(),
             contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
             // Route summary card
@@ -535,19 +528,21 @@ private fun RouteSummaryCard(
                     text = originName,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f),
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Icon(
                     imageVector = vectorResource(Res.drawable.arrow_forward_24px),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = Spacing.sm).size(20.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.sm).size(20.dp) // component-intrinsic icon size
                 )
                 Text(
                     text = destinationName,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f),
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
             if (waypointCount > 0) {
@@ -575,7 +570,7 @@ private fun SingleVehicleCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.card)
     ) {
         Row(
             modifier = Modifier.padding(Spacing.lg),
@@ -620,21 +615,21 @@ private fun VehicleRadioItem(
     Card(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected)
                 MaterialTheme.colorScheme.primaryContainer
             else
                 MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.card)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(selected = isSelected, onClick = onClick)
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.sm))
             Column {
                 Text(
                     text = "${vehicle.brand} ${vehicle.model}",

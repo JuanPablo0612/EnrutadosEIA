@@ -3,7 +3,6 @@ package com.juanpablo0612.carpool.presentation.routes.detail
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,11 +24,13 @@ import com.juanpablo0612.carpool.presentation.routes.create.components.DaySelect
 import com.juanpablo0612.carpool.presentation.routes.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.routes.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.routes.create.components.StopType
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
@@ -107,33 +108,22 @@ internal fun RouteDetailReadContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = state.route?.name?.takeIf { it.isNotBlank() }
-                            ?: stringResource(Res.string.route_detail_title)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RouteDetailAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
+            CarpoolBackTopBar(
+                title = state.route?.name?.takeIf { it.isNotBlank() }
+                    ?: stringResource(Res.string.route_detail_title),
+                onBack = { onAction(RouteDetailAction.OnBackClick) },
                 actions = {
                     if (state.route != null) {
                         IconButton(onClick = { onAction(RouteDetailAction.OnEditClick) }) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.edit_24px),
-                                contentDescription = null
+                                contentDescription = stringResource(Res.string.cd_edit_route)
                             )
                         }
                         IconButton(onClick = { onAction(RouteDetailAction.OnDeleteClick) }) {
                             Icon(
                                 imageVector = vectorResource(Res.drawable.delete_24px),
-                                contentDescription = null,
+                                contentDescription = stringResource(Res.string.cd_delete_route),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -145,9 +135,9 @@ internal fun RouteDetailReadContent(
             if (state.route != null) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                        .padding(horizontal = Spacing.screenHorizontal)
+                        .padding(bottom = Spacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xs)
                 ) {
                     Button(
                         onClick = { onAction(RouteDetailAction.OnPublishTripClick) },
@@ -174,16 +164,16 @@ internal fun RouteDetailReadContent(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
             // Map placeholder
             item {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp),
+                        .height(160.dp) // component-intrinsic preview height, not a spacing value
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                    shape = MaterialTheme.shapes.medium,
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
@@ -196,10 +186,10 @@ internal fun RouteDetailReadContent(
                             Icon(
                                 imageVector = vectorResource(Res.drawable.location_on_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier.size(32.dp), // icon-intrinsic size
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Spacer(Modifier.height(4.dp))
+                            Spacer(Modifier.height(Spacing.xs))
                             Text(
                                 text = stringResource(Res.string.route_map_placeholder),
                                 style = MaterialTheme.typography.bodySmall,
@@ -258,7 +248,7 @@ internal fun RouteDetailReadContent(
             item { SectionHeader(stringResource(Res.string.route_detail_stats_section)) }
 
             item {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
                     if (state.tripsPublished > 0) {
                         Text(
                             text = stringResource(Res.string.route_detail_trips_published, state.tripsPublished),
@@ -285,13 +275,12 @@ internal fun RouteDetailReadContent(
                 }
             }
 
-            // Error
-            if (state.error != null) {
+            state.error?.let { error ->
                 item {
                     Text(
-                        text = state.error,
+                        text = stringResource(error.asStringResource()),
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(Spacing.lg)
                     )
                 }
             }
@@ -330,22 +319,15 @@ internal fun RouteDetailEditContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(Res.string.route_edit_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RouteDetailAction.OnCancelEdit) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                }
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.route_edit_title),
+                onBack = { onAction(RouteDetailAction.OnCancelEdit) },
             )
         }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
             // Name field
             item {
@@ -356,7 +338,7 @@ internal fun RouteDetailEditContent(
                     placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
                     singleLine = true
                 )
             }
@@ -387,10 +369,12 @@ internal fun RouteDetailEditContent(
             item {
                 TextButton(
                     onClick = { onAction(RouteDetailAction.OnAddWaypointClick) },
+                    // 40dp aligns the label under RouteStopItem's content column (24dp timeline +
+                    // 16dp spacer), not a spacing-scale value.
                     modifier = Modifier.padding(horizontal = 40.dp)
                 ) {
                     Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(Spacing.sm))
                     Text(stringResource(Res.string.add_waypoint_button))
                 }
             }
@@ -412,7 +396,7 @@ internal fun RouteDetailEditContent(
                 DaySelector(
                     selectedDays = draft.recurringDays,
                     onToggleDay = { onAction(RouteDetailAction.OnToggleRecurringDay(it)) },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
                 )
             }
 
@@ -425,7 +409,7 @@ internal fun RouteDetailEditContent(
                 } ?: stringResource(Res.string.departure_time_not_set)
                 TextButton(
                     onClick = { showTimePicker = true },
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.sm)
                 ) {
                     Text(timeLabel)
                 }
@@ -436,7 +420,7 @@ internal fun RouteDetailEditContent(
                     onClick = { onAction(RouteDetailAction.OnSaveChangesClick) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(Spacing.lg),
                     enabled = draft.isValid && !isSaving
                 ) {
                     if (isSaving) {
@@ -461,10 +445,10 @@ private fun RecurrenceRow(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
     ) {
         val dayAbbrevs = mapOf(
             DayOfWeek.MONDAY to Res.string.day_abbr_mon,
@@ -513,6 +497,25 @@ private fun RouteDetailReadPreview() {
                 ),
                 tripsPublished = 5
             ),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RouteDetailEditPreview() {
+    CarpoolTheme {
+        RouteDetailEditContent(
+            draft = CreateRouteUiState(
+                name = "Ida a clase",
+                origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
+                destination = Place(name = "EIA", address = "Cl. 49 Sur #50-90", latitude = 6.18, longitude = -75.59),
+                waypoints = listOf(
+                    Place(name = "Parada 1", address = "Carrera 43A", latitude = 6.21, longitude = -75.57)
+                )
+            ),
+            isSaving = false,
             onAction = {}
         )
     }

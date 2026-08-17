@@ -37,9 +37,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.places.selector.PlaceSelectorContent
@@ -52,6 +54,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
 import enrutadoseia.composeapp.generated.resources.filter_list_24px
 import enrutadoseia.composeapp.generated.resources.role_selector_passenger_title
 import enrutadoseia.composeapp.generated.resources.search_24px
@@ -67,6 +70,7 @@ import enrutadoseia.composeapp.generated.resources.search_filter_max_contributio
 import enrutadoseia.composeapp.generated.resources.search_filters_button
 import enrutadoseia.composeapp.generated.resources.search_filters_title
 import enrutadoseia.composeapp.generated.resources.search_origin_placeholder
+import enrutadoseia.composeapp.generated.resources.cd_swap_origin_destination
 import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
 import kotlin.time.Instant
@@ -152,7 +156,7 @@ fun SearchRoutesContent(
                 title = stringResource(Res.string.passenger_home_title),
                 user = user,
                 isDualRole = isDualRole,
-                currentRoleLabel = stringResource(Res.string.role_selector_passenger_title),
+                switchRoleLabel = stringResource(Res.string.role_switch_to_driver),
                 onAvatarClick = onNavigateToProfile,
                 onRoleToggle = if (isDualRole) onSwitchRole else null
             )
@@ -252,17 +256,18 @@ private fun SearchCard(
                 OutlinedTextField(
                     value = state.origin?.name ?: "",
                     onValueChange = {},
-                    enabled = false,
+                    readOnly = true,
                     placeholder = { Text(stringResource(Res.string.search_origin_placeholder)) },
                     modifier = Modifier
                         .weight(1f)
-                        .clickable { onAction(SearchRoutesAction.OnPickOrigin) },
+                        .clickable { onAction(SearchRoutesAction.OnPickOrigin) }
+                        .semantics { role = Role.Button },
                     singleLine = true
                 )
                 IconButton(onClick = { onAction(SearchRoutesAction.OnSwapPlaces) }) {
                     Icon(
                         imageVector = vectorResource(Res.drawable.swap_horiz_24px),
-                        contentDescription = null,
+                        contentDescription = stringResource(Res.string.cd_swap_origin_destination),
                         modifier = Modifier.rotate(90f)
                     )
                 }
@@ -273,11 +278,12 @@ private fun SearchCard(
             OutlinedTextField(
                 value = state.destination?.name ?: "",
                 onValueChange = {},
-                enabled = false,
+                readOnly = true,
                 placeholder = { Text(stringResource(Res.string.search_destination_placeholder)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onAction(SearchRoutesAction.OnPickDestination) },
+                    .clickable { onAction(SearchRoutesAction.OnPickDestination) }
+                    .semantics { role = Role.Button },
                 singleLine = true
             )
 
@@ -286,11 +292,12 @@ private fun SearchCard(
             OutlinedTextField(
                 value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
                 onValueChange = {},
-                enabled = false,
+                readOnly = true,
                 placeholder = { Text(stringResource(Res.string.search_date_placeholder)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onAction(SearchRoutesAction.OnShowDateTimeSheet) },
+                    .clickable { onAction(SearchRoutesAction.OnShowDateTimeSheet) }
+                    .semantics { role = Role.Button },
                 singleLine = true
             )
 

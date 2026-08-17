@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -28,10 +25,12 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.BookingWithPassenger
 import com.juanpablo0612.carpool.domain.booking.model.PassengerSummary
 import com.juanpablo0612.carpool.presentation.home.relativeTime
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
+import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
+import enrutadoseia.composeapp.generated.resources.booking_request_rating
 import enrutadoseia.composeapp.generated.resources.booking_request_accept_button
 import enrutadoseia.composeapp.generated.resources.booking_request_eia_verified
 import enrutadoseia.composeapp.generated.resources.booking_request_trip_context
@@ -44,7 +43,6 @@ import enrutadoseia.composeapp.generated.resources.relative_just_now
 import enrutadoseia.composeapp.generated.resources.relative_minutes_ago
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun BookingRequestCard(
@@ -60,126 +58,102 @@ fun BookingRequestCard(
     val isProcessing = booking.id in processingIds
     val firstName = remember(passenger.name) { passenger.name.split(" ").firstOrNull() ?: passenger.name }
 
-    Card(modifier = modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Spacing.lg),
+    CarpoolListCard(modifier = modifier) {
+        // Header row: avatar + name/reputation + timestamp
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            // Header row: avatar + name/reputation + timestamp
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                UserAvatar(name = passenger.name, size = 48.dp)
-                Spacer(modifier = Modifier.width(Spacing.md))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = passenger.name,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    )
-                    ReputationLine(passenger = passenger)
-                }
-                Spacer(modifier = Modifier.width(Spacing.sm))
+            UserAvatar(name = passenger.name, size = 48.dp) // component-intrinsic avatar diameter
+            Spacer(modifier = Modifier.width(Spacing.md))
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = relativeCreatedAt(booking.createdAt),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = passenger.name,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 )
+                ReputationLine(passenger = passenger)
             }
-
-            Spacer(modifier = Modifier.height(Spacing.md))
-
-            // Trip context
+            Spacer(modifier = Modifier.width(Spacing.sm))
             Text(
-                text = stringResource(
-                    Res.string.booking_request_trip_context,
-                    relativeTime(booking.departureTime),
-                ),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
+                text = relativeCreatedAt(booking.createdAt),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(2.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = booking.originName,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                )
-                Icon(
-                    imageVector = vectorResource(Res.drawable.arrow_forward_24px),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .padding(horizontal = Spacing.xs)
-                        .size(14.dp),
-                )
-                Text(
-                    text = booking.destinationName,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                )
-            }
+        }
 
-            // Optional passenger message
-            if (!booking.passengerMessage.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(Spacing.sm))
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "💬 \"${booking.passengerMessage}\"",
-                        style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(Spacing.sm),
-                    )
-                }
-            }
+        Spacer(modifier = Modifier.height(Spacing.md))
 
-            Spacer(modifier = Modifier.height(Spacing.md))
+        // Trip context
+        Text(
+            text = stringResource(
+                Res.string.booking_request_trip_context,
+                relativeTime(booking.departureTime),
+            ),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.height(2.dp)) // below the 4dp spacing floor; a hairline-level text gap
+        RouteLineRow(origin = booking.originName, destination = booking.destinationName)
 
-            // Action buttons
-            Row(
+        // Optional passenger message
+        if (!booking.passengerMessage.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.small,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
-                Button(
-                    onClick = { onAccept(booking.id, booking.tripId) },
-                    enabled = !isProcessing,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(text = stringResource(Res.string.booking_request_accept_button))
-                }
-                OutlinedButton(
-                    onClick = { onReject(booking.id) },
-                    enabled = !isProcessing,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error),
-                    ),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(text = stringResource(Res.string.reject_button))
-                }
+                Text(
+                    // No emoji prefix: the tinted surface, the italic and the quotes already say
+                    // "quoted message", and an emoji ignores `tint` — it stayed full-colour in
+                    // dark mode while everything around it followed the theme.
+                    text = "\"${booking.passengerMessage}\"",
+                    style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(Spacing.sm),
+                )
             }
+        }
 
-            // View profile link
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+        Spacer(modifier = Modifier.height(Spacing.md))
+
+        // Action buttons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
+            Button(
+                onClick = { onAccept(booking.id, booking.tripId) },
+                enabled = !isProcessing,
+                modifier = Modifier.weight(1f),
             ) {
-                TextButton(onClick = { onViewProfile(booking.passengerId) }) {
-                    Text(
-                        text = stringResource(Res.string.booking_request_view_profile, firstName),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
+                Text(text = stringResource(Res.string.booking_request_accept_button))
+            }
+            OutlinedButton(
+                onClick = { onReject(booking.id) },
+                enabled = !isProcessing,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error,
+                ),
+                border = ButtonDefaults.outlinedButtonBorder.copy(
+                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error),
+                ),
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(text = stringResource(Res.string.reject_button))
+            }
+        }
+
+        // View profile link
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TextButton(onClick = { onViewProfile(booking.passengerId) }) {
+                Text(
+                    text = stringResource(Res.string.booking_request_view_profile, firstName),
+                    style = MaterialTheme.typography.labelMedium,
+                )
             }
         }
     }
@@ -191,7 +165,10 @@ private fun ReputationLine(passenger: PassengerSummary) {
         if (passenger.averageRating != null) {
             val r = passenger.averageRating
             val formatted = "${r.toInt()}.${((r * 10).toInt() % 10)}"
-            add("⭐ $formatted")
+            // A localized label rather than a ⭐ prefix: the emoji ignored `tint`, rendered
+            // differently per platform, and was the one part of this row that bypassed
+            // stringResource while its two siblings below used it.
+            add(stringResource(Res.string.booking_request_rating, formatted))
         }
         if (passenger.tripsCompleted > 0) add(
             stringResource(Res.string.booking_request_trips_count, passenger.tripsCompleted)

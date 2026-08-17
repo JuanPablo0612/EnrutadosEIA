@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.bookings.driver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.model.BookingWithPassenger
@@ -149,7 +150,8 @@ class BookingRequestsViewModel(
                             userId = passengerId,
                             type = NotificationType.BookingAccepted,
                             title = getString(Res.string.notification_booking_accepted_title),
-                            body = getString(Res.string.notification_booking_accepted_body)
+                            body = getString(Res.string.notification_booking_accepted_body),
+                            deepLink = NotificationDeepLink.passengerBookings()
                         )
                     }
                 }
@@ -171,7 +173,8 @@ class BookingRequestsViewModel(
                             userId = passengerId,
                             type = NotificationType.BookingRejected,
                             title = getString(Res.string.notification_booking_rejected_title),
-                            body = getString(Res.string.notification_booking_rejected_body)
+                            body = getString(Res.string.notification_booking_rejected_body),
+                            deepLink = NotificationDeepLink.passengerBookings()
                         )
                     }
                 }

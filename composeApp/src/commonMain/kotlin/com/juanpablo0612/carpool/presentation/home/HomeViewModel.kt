@@ -148,7 +148,7 @@ class HomeViewModel(
             HomeAction.OpenAllRequests -> emit(HomeEvent.NavigateToDriverBookingRequests)
             HomeAction.SearchTrips -> emit(HomeEvent.NavigateToSearchTrips)
             HomeAction.ViewMyBookings -> emit(HomeEvent.NavigateToPassengerBookings)
-            HomeAction.ViewSavedPlaces -> emit(HomeEvent.NavigateToPassengerBookings)
+            HomeAction.ViewSavedPlaces -> emit(HomeEvent.NavigateToSavedPlaces)
             HomeAction.Refresh -> handleRefresh()
             is HomeAction.AcceptRequest -> confirmBooking(action.bookingId)
             is HomeAction.RejectRequest -> rejectBooking(action.bookingId)

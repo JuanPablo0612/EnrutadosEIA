@@ -58,7 +58,7 @@ class RouteDetailViewModel(
                     }
                 }
                 .onFailure {
-                    _state.update { it.copy(isLoading = false, error = "Ruta no encontrada") }
+                    _state.update { it.copy(isLoading = false, error = RouteDetailError.NotFound) }
                 }
         }
     }
@@ -139,7 +139,7 @@ class RouteDetailViewModel(
                     _state.update { it.copy(isSaving = false, isEditing = false, draft = null, route = updatedRoute) }
                 }
                 .onFailure {
-                    _state.update { it.copy(isSaving = false, error = "No se pudo guardar") }
+                    _state.update { it.copy(isSaving = false, error = RouteDetailError.SaveFailed) }
                 }
         }
     }
@@ -153,7 +153,7 @@ class RouteDetailViewModel(
                     _events.emit(RouteDetailEvent.NavigateBack)
                 }
                 .onFailure {
-                    _state.update { it.copy(isDeleting = false, error = "No se pudo eliminar la ruta") }
+                    _state.update { it.copy(isDeleting = false, error = RouteDetailError.DeleteFailed) }
                 }
         }
     }

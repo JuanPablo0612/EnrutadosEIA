@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +22,8 @@ fun SplashScreen(
     onNavigateToPassenger: (User) -> Unit,
     onNavigateToRoleSelector: (User) -> Unit
 ) {
+    val state by viewModel.uiState.collectAsState()
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             SplashEvent.NavigateToAuth -> onNavigateToAuth()
@@ -30,6 +34,11 @@ fun SplashScreen(
         }
     }
 
+    SplashContent(state = state)
+}
+
+@Composable
+fun SplashContent(state: SplashUiState) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
@@ -39,8 +48,6 @@ fun SplashScreen(
 @Composable
 private fun SplashScreenPreview() {
     CarpoolTheme {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        SplashContent(state = SplashUiState())
     }
 }

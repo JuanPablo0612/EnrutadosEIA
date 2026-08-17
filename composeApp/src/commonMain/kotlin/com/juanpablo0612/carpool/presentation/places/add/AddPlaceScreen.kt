@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,12 +38,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.PlaceType
 import com.juanpablo0612.carpool.presentation.places.add.components.MapPreview
-import com.juanpablo0612.carpool.presentation.ui.components.AuthTextField
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_new_place_title
 import enrutadoseia.composeapp.generated.resources.add_place_address_hint
@@ -112,18 +115,19 @@ fun AddPlaceContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = Spacing.screenHorizontalForm)
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
+            verticalArrangement = Arrangement.spacedBy(Spacing.lg)
         ) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(Spacing.sm))
 
             Text(
                 text = stringResource(Res.string.add_place_type_label),
                 style = MaterialTheme.typography.labelLarge,
             )
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 placeTypes.forEach { (type, label) ->
                     FilterChip(
                         selected = state.type == type,
@@ -133,7 +137,7 @@ fun AddPlaceContent(
                 }
             }
 
-            AuthTextField(
+            CarpoolTextField(
                 value = state.name,
                 onValueChange = { onAction(AddPlaceAction.OnNameChanged(it)) },
                 label = stringResource(Res.string.place_name_label),
@@ -146,7 +150,7 @@ fun AddPlaceContent(
             )
 
             // Address field with loading spinner
-            AuthTextField(
+            CarpoolTextField(
                 value = state.address,
                 onValueChange = { onAction(AddPlaceAction.OnAddressChanged(it)) },
                 label = stringResource(Res.string.add_place_address_hint),
@@ -165,7 +169,7 @@ fun AddPlaceContent(
             AnimatedVisibility(visible = state.autocompleteSuggestions.isNotEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = Elevation.raised),
                 ) {
                     Column {
                         state.autocompleteSuggestions.forEachIndexed { index, suggestion ->
@@ -201,9 +205,9 @@ fun AddPlaceContent(
                     Icon(
                         imageVector = vectorResource(Res.drawable.location_on_24px),
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(18.dp), // icon-intrinsic size
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(Spacing.sm))
                     Text(stringResource(Res.string.add_place_pick_on_map))
                 }
             }
@@ -214,7 +218,7 @@ fun AddPlaceContent(
                     onPinDragged = { onAction(AddPlaceAction.DragPin(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(200.dp), // map preview intrinsic height
                 )
 
                 Text(
@@ -235,7 +239,7 @@ fun AddPlaceContent(
                 enabled = state.isValid,
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Spacing.xl))
         }
     }
 }

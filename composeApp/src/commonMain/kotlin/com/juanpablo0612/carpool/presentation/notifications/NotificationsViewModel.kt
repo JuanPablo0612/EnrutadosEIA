@@ -39,12 +39,13 @@ class NotificationsViewModel(
     }
 
     private fun loadNotifications() {
+        _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             getNotificationsUseCase(userId)
                 .onEach { notifications ->
-                    _state.update { it.copy(notifications = notifications, isLoading = false) }
+                    _state.update { it.copy(notifications = notifications, isLoading = false, error = null) }
                 }
-                .catch { _state.update { it.copy(isLoading = false) } }
+                .catch { e -> _state.update { it.copy(isLoading = false, error = e.toNotificationsError()) } }
                 .collect {}
         }
     }
@@ -61,11 +62,22 @@ class NotificationsViewModel(
                 }
             }
             is NotificationsAction.OnDismiss -> {
-                viewModelScope.launch { deleteNotificationUseCase(userId, action.id) }
+                viewModelScope.launch {
+                    deleteNotificationUseCase(userId, action.id)
+                        .onFailure { _state.update { it.copy(actionError = true) } }
+                }
             }
-            NotificationsAction.OnClearAll -> {
-                viewModelScope.launch { clearAllNotificationsUseCase(userId) }
+            NotificationsAction.OnClearAllClick -> _state.update { it.copy(showClearAllDialog = true) }
+            NotificationsAction.OnClearAllDismissed -> _state.update { it.copy(showClearAllDialog = false) }
+            NotificationsAction.OnClearAllConfirmed -> {
+                _state.update { it.copy(showClearAllDialog = false) }
+                viewModelScope.launch {
+                    clearAllNotificationsUseCase(userId)
+                        .onFailure { _state.update { it.copy(actionError = true) } }
+                }
             }
+            NotificationsAction.OnRetry -> loadNotifications()
+            NotificationsAction.OnDismissActionError -> _state.update { it.copy(actionError = false) }
             NotificationsAction.OnBackClick -> {
                 viewModelScope.launch { _events.emit(NotificationsEvent.NavigateBack) }
             }

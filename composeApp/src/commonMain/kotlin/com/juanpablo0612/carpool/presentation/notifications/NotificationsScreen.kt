@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.notifications
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,33 +14,39 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
+import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.bookmarks_24px
+import enrutadoseia.composeapp.generated.resources.cd_delete_notification
+import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.error_action_failed
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all
+import enrutadoseia.composeapp.generated.resources.notifications_clear_all_confirm_body
+import enrutadoseia.composeapp.generated.resources.notifications_clear_all_confirm_title
 import enrutadoseia.composeapp.generated.resources.notifications_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.notifications_empty_title
 import enrutadoseia.composeapp.generated.resources.notifications_title
@@ -72,58 +80,81 @@ fun NotificationsContent(
     state: NotificationsUiState,
     onAction: (NotificationsAction) -> Unit
 ) {
+    if (state.showClearAllDialog) {
+        ConfirmDialog(
+            title = stringResource(Res.string.notifications_clear_all_confirm_title),
+            description = stringResource(Res.string.notifications_clear_all_confirm_body),
+            confirmText = stringResource(Res.string.notifications_clear_all),
+            onConfirm = { onAction(NotificationsAction.OnClearAllConfirmed) },
+            onDismiss = { onAction(NotificationsAction.OnClearAllDismissed) },
+            isDestructive = true
+        )
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.notifications_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(NotificationsAction.OnBackClick) }) {
-                        Icon(vectorResource(Res.drawable.arrow_back_24px), null)
-                    }
-                },
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.notifications_title),
+                onBack = { onAction(NotificationsAction.OnBackClick) },
                 actions = {
                     if (state.notifications.isNotEmpty()) {
-                        TextButton(onClick = { onAction(NotificationsAction.OnClearAll) }) {
+                        TextButton(onClick = { onAction(NotificationsAction.OnClearAllClick) }) {
                             Text(stringResource(Res.string.notifications_clear_all))
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
     ) { padding ->
-        when {
-            state.isLoading -> {
-                Box(Modifier.fillMaxSize().padding(padding), Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            if (state.actionError) {
+                ErrorMessage(
+                    message = stringResource(Res.string.error_action_failed),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { onAction(NotificationsAction.OnDismissActionError) }
+                )
             }
-            state.notifications.isEmpty() -> {
-                Box(Modifier.fillMaxSize().padding(padding), Alignment.Center) {
-                    EmptyState(
-                        icon = vectorResource(Res.drawable.bookmarks_24px),
-                        title = stringResource(Res.string.notifications_empty_title),
-                        description = stringResource(Res.string.notifications_empty_subtitle)
-                    )
-                }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.padding(padding),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    items(state.notifications, key = { it.id }) { notification ->
-                        SwipeToDeleteNotification(
-                            notification = notification,
-                            onDismiss = { onAction(NotificationsAction.OnDismiss(notification.id)) },
-                            onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
+
+            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                when {
+                    state.isLoading -> {
+                        ListSkeleton(modifier = Modifier.fillMaxSize())
+                    }
+                    state.error != null -> {
+                        ErrorState(
+                            description = stringResource(state.error.asStringResource()),
+                            onRetry = { onAction(NotificationsAction.OnRetry) },
+                            modifier = Modifier.fillMaxSize().padding(16.dp)
                         )
+                    }
+                    state.notifications.isEmpty() -> {
+                        EmptyState(
+                            icon = vectorResource(Res.drawable.bookmarks_24px),
+                            title = stringResource(Res.string.notifications_empty_title),
+                            description = stringResource(Res.string.notifications_empty_subtitle),
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            items(state.notifications, key = { it.id }) { notification ->
+                                SwipeToDeleteNotification(
+                                    notification = notification,
+                                    onDismiss = { onAction(NotificationsAction.OnDismiss(notification.id)) },
+                                    onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -148,11 +179,30 @@ private fun SwipeToDeleteNotification(
     )
     SwipeToDismissBox(
         state = dismissState,
-        backgroundContent = {},
+        backgroundContent = { DeleteNotificationBackground() },
         content = {
             NotificationItem(notification = notification, onClick = onClick)
         }
     )
+}
+
+@Composable
+private fun DeleteNotificationBackground() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 2.dp)
+            .clip(CardDefaults.shape)
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(horizontal = 20.dp),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Icon(
+            imageVector = vectorResource(Res.drawable.delete_24px),
+            contentDescription = stringResource(Res.string.cd_delete_notification),
+            tint = MaterialTheme.colorScheme.onErrorContainer
+        )
+    }
 }
 
 @Composable

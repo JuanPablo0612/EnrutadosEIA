@@ -39,6 +39,8 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToDriverBookingRequests: () -> Unit,
     onNavigateToSearchTrips: () -> Unit,
     onNavigateToPassengerBookings: () -> Unit,
+    onNavigateToSavedPlaces: () -> Unit,
+    onNavigateToVehiclesList: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripDetailPassenger: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
@@ -57,6 +59,7 @@ fun NavGraphBuilder.mainNavGraph(
             onNavigateToDriverBookingRequests = onNavigateToDriverBookingRequests,
             onNavigateToSearchTrips = onNavigateToSearchTrips,
             onNavigateToPassengerBookings = onNavigateToPassengerBookings,
+            onNavigateToSavedPlaces = onNavigateToSavedPlaces,
             onNavigateToTripDetail = onNavigateToTripDetail,
             onNavigateToTripDetailPassenger = onNavigateToTripDetailPassenger,
         )
@@ -102,7 +105,9 @@ fun NavGraphBuilder.mainNavGraph(
             onBackClick = onNavigateBack,
             onTripPublished = onNavigateBack,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
-            onNavigateToVehiclesList = { onNavigateBack() }
+            // Opens the vehicle list rather than popping — "change vehicle" used to discard the
+            // whole in-progress trip form.
+            onNavigateToVehiclesList = onNavigateToVehiclesList
         )
     }
 

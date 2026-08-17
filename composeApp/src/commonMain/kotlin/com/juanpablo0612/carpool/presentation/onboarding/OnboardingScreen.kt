@@ -28,8 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.onboarding_next
 import enrutadoseia.composeapp.generated.resources.onboarding_skip
@@ -74,7 +77,7 @@ fun OnboardingContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(24.dp),
+                .padding(Spacing.screenHorizontalForm),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -97,12 +100,13 @@ fun OnboardingContent(
             }
 
             Row(
-                modifier = Modifier.padding(vertical = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(vertical = Spacing.xl),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 repeat(state.totalPages) { index ->
                     Box(
                         modifier = Modifier
+                            // Pager-dot dimensions are component-intrinsic, not spacing.
                             .size(if (index == state.currentPage) 24.dp else 8.dp, 8.dp)
                             .background(
                                 color = if (index == state.currentPage)
@@ -131,7 +135,7 @@ fun OnboardingContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
         }
     }
 }
@@ -150,6 +154,7 @@ private fun OnboardingSlide(page: Int) {
         verticalArrangement = Arrangement.Center
     ) {
         Box(
+            // Illustration placeholder dimensions are component-intrinsic, not spacing.
             modifier = Modifier
                 .size(300.dp, 260.dp)
                 .background(
@@ -164,6 +169,8 @@ private fun OnboardingSlide(page: Int) {
             )
         }
 
+        // 40.dp falls between the xl(24)/xxl(32) steps; kept literal rather than nudging this
+        // gap onto the nearest token and altering the onboarding illustration's layout.
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
@@ -172,13 +179,35 @@ private fun OnboardingSlide(page: Int) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         Text(
             text = body,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OnboardingFirstPagePreview() {
+    CarpoolTheme {
+        OnboardingContent(
+            state = OnboardingUiState(currentPage = 0, totalPages = 3),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OnboardingLastPagePreview() {
+    CarpoolTheme {
+        OnboardingContent(
+            state = OnboardingUiState(currentPage = 2, totalPages = 3),
+            onAction = {}
         )
     }
 }

@@ -11,6 +11,7 @@ data class SafetyUiState(
     val newContactPhone: String = "",
     val newContactNameError: SafetyContactFieldError? = null,
     val newContactPhoneError: SafetyContactFieldError? = null,
+    val pendingRemoveContactId: String? = null,
     val isLoading: Boolean = true,
     val isSaving: Boolean = false
 ) {

@@ -1,7 +1,8 @@
 package com.juanpablo0612.carpool.presentation.role_selector
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -42,52 +44,66 @@ fun RoleSelectorContent(
     onAction: (RoleSelectorAction) -> Unit
 ) {
     Scaffold { padding ->
-        Column(
+        // heightIn(min = maxHeight) rather than a bare verticalScroll: inside a scrollable the
+        // column is measured with unbounded height, so Arrangement.Center would have no slack to
+        // work with and the content would silently jump to the top. Holding the content to at
+        // least one viewport keeps it centred when it fits and lets it scroll when it doesn't —
+        // which is what landscape and large font scales need.
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = stringResource(Res.string.role_selector_greeting, state.userName),
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.role_selector_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(48.dp))
-
-            DriverRoleCard(
-                pendingCount = state.driverPendingCount,
-                onClick = { onAction(RoleSelectorAction.OnSelectDriver) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PassengerRoleCard(
-                onClick = { onAction(RoleSelectorAction.OnSelectPassenger) }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .heightIn(min = maxHeight)
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.screenHorizontalForm),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Checkbox(
-                    checked = state.rememberChoice,
-                    onCheckedChange = { onAction(RoleSelectorAction.OnToggleRememberChoice(it)) }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(Res.string.role_selector_remember_choice),
-                    style = MaterialTheme.typography.bodySmall
+                    text = stringResource(Res.string.role_selector_greeting, state.userName),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
                 )
+                Spacer(modifier = Modifier.height(Spacing.sm))
+                Text(
+                    text = stringResource(Res.string.role_selector_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                // 48.dp falls outside the xl(24)/xxl(32) scale; kept literal rather than
+                // altering this screen's hero spacing.
+                Spacer(modifier = Modifier.height(48.dp))
+
+                DriverRoleCard(
+                    pendingCount = state.driverPendingCount,
+                    onClick = { onAction(RoleSelectorAction.OnSelectDriver) }
+                )
+
+                Spacer(modifier = Modifier.height(Spacing.lg))
+
+                PassengerRoleCard(
+                    onClick = { onAction(RoleSelectorAction.OnSelectPassenger) }
+                )
+
+                Spacer(modifier = Modifier.height(Spacing.xl))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Checkbox(
+                        checked = state.rememberChoice,
+                        onCheckedChange = { onAction(RoleSelectorAction.OnToggleRememberChoice(it)) }
+                    )
+                    Spacer(modifier = Modifier.width(Spacing.sm))
+                    Text(
+                        text = stringResource(Res.string.role_selector_remember_choice),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
     }
@@ -102,10 +118,12 @@ private fun DriverRoleCard(
     Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
+            // 20.dp falls outside the lg(16)/xl(24) scale; kept literal rather than nudging
+            // this card's inset and altering its layout.
             modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -115,7 +133,7 @@ private fun DriverRoleCard(
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(32.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.lg))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(Res.string.role_selector_driver_title),
@@ -128,7 +146,7 @@ private fun DriverRoleCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
                 if (pendingCount > 0) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(Spacing.xs))
                     Text(
                         text = stringResource(Res.string.role_selector_driver_pending, pendingCount),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
@@ -148,10 +166,12 @@ private fun PassengerRoleCard(
     Surface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Row(
+            // 20.dp falls outside the lg(16)/xl(24) scale; kept literal rather than nudging
+            // this card's inset and altering its layout.
             modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -161,7 +181,7 @@ private fun PassengerRoleCard(
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(32.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Spacing.lg))
             Column {
                 Text(
                     text = stringResource(Res.string.role_selector_passenger_title),

@@ -681,6 +681,69 @@
     <string name="time_am">AM</string>
     <string name="time_pm">PM</string>
     <string name="date_of_connector">of</string>
+
+    <!-- Content descriptions for icon-only controls -->
+    <string name="cd_back">Go back</string>
+    <string name="cd_open_profile">Open profile</string>
+    <string name="cd_more_options">More options</string>
+    <string name="cd_send_message">Send message</string>
+    <string name="cd_edit_route">Edit route</string>
+    <string name="cd_delete_route">Delete route</string>
+    <string name="cd_add_place">Add place</string>
+    <string name="cd_delete_place">Delete place</string>
+    <string name="cd_swap_origin_destination">Swap origin and destination</string>
+    <string name="cd_remove_contact">Remove contact</string>
+    <string name="cd_delete_notification">Delete notification</string>
+    <string name="cd_decrease">Decrease</string>
+    <string name="cd_increase">Increase</string>
+    <string name="cd_route_line">From %1$s to %2$s</string>
+    <string name="cd_rating_stars">Rating: %1$d of 5 stars</string>
+    <string name="cd_status">Status: %1$s</string>
+
+    <string name="home_greeting_morning">Good morning, %1$s</string>
+    <string name="home_greeting_afternoon">Good afternoon, %1$s</string>
+    <string name="home_greeting_evening">Good evening, %1$s</string>
+
+    <string name="relative_in_minutes">In %1$d min</string>
+    <string name="relative_today">Today · %1$s</string>
+    <string name="relative_tomorrow">Tomorrow · %1$s</string>
+    <string name="relative_day_at_time">%1$s · %2$s</string>
+
+    <string name="trip_tracking_message_passenger">Message</string>
+
+    <string name="error_route_save_failed">Couldn't save the route. Please try again.</string>
+    <string name="error_route_delete_failed">Couldn't delete the route. Please try again.</string>
+
+    <string name="role_switch_to_driver">Switch to driver</string>
+    <string name="role_switch_to_passenger">Switch to passenger</string>
+    <string name="notice_route_created">Route created</string>
+    <string name="notice_trip_published">Trip published</string>
+    <string name="notice_vehicle_saved">Vehicle saved</string>
+    <string name="notice_place_saved">Place saved</string>
+    <string name="notice_profile_saved">Profile updated</string>
+
+    <plurals name="route_trips_count">
+        <item quantity="one">%1$d trip</item>
+        <item quantity="other">%1$d trips</item>
+    </plurals>
+    <string name="route_last_used_separator">%1$s · %2$s</string>
+
+    <string name="booking_request_rating">Rating %1$s</string>
+
+    <!-- SOS -->
+    <string name="trip_tracking_sos_dismiss">Close</string>
+    <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>
+    <string name="trip_tracking_sos_location_shared">Trip details sent to your emergency contacts.</string>
+
+    <!-- Destructive confirmations -->
+    <string name="safety_remove_contact_title">Remove contact?</string>
+    <string name="safety_remove_contact_body">They will no longer receive your trip details.</string>
+    <string name="safety_remove_contact_confirm">Remove</string>
+    <string name="notifications_clear_all_confirm_title">Clear all notifications?</string>
+    <string name="notifications_clear_all_confirm_body">This cannot be undone.</string>
+
+    <!-- Generic action failure -->
+    <string name="error_action_failed">Something went wrong. Please try again.</string>
     <string-array name="day_names_short">
         <item>Mon.</item>
         <item>Tue.</item>

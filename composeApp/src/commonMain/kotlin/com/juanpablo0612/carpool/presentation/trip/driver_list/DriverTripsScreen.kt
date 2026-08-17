@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,19 +32,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.places.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
+import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TripStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.utils.formatLongDate
 import com.juanpablo0612.carpool.presentation.utils.formatShortTime
@@ -70,11 +74,14 @@ import enrutadoseia.composeapp.generated.resources.tab_past
 import enrutadoseia.composeapp.generated.resources.tab_upcoming
 import enrutadoseia.composeapp.generated.resources.trip_action_start
 import enrutadoseia.composeapp.generated.resources.trip_action_track
-import enrutadoseia.composeapp.generated.resources.trip_action_view_passengers
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_body
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_button
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_title
 import enrutadoseia.composeapp.generated.resources.trip_seats_occupied
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_button
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_title
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_trip
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
@@ -129,6 +136,16 @@ fun DriverTripsContent(
         )
     }
 
+    state.pendingFinishTripId?.let { tripId ->
+        ConfirmDialog(
+            title = stringResource(Res.string.trip_tracking_complete_confirm_title),
+            description = stringResource(Res.string.trip_tracking_complete_confirm_body),
+            confirmText = stringResource(Res.string.trip_tracking_complete_confirm_button),
+            onConfirm = { onAction(DriverTripsAction.ConfirmFinish(tripId)) },
+            onDismiss = { onAction(DriverTripsAction.DismissFinish) }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(Res.string.nav_my_trips)) })
@@ -149,6 +166,16 @@ fun DriverTripsContent(
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            state.error?.let { error ->
+                ErrorMessage(
+                    message = stringResource(error.asStringResource()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                        .clickable { onAction(DriverTripsAction.DismissError) }
+                )
+            }
+
             SecondaryTabRow(selectedTabIndex = if (isUpcoming) 0 else 1) {
                 Tab(
                     selected = isUpcoming,
@@ -205,7 +232,7 @@ fun DriverTripsContent(
                             start = Spacing.lg,
                             end = Spacing.lg,
                             top = Spacing.md,
-                            bottom = 88.dp
+                            bottom = 88.dp // component-intrinsic: clears the FAB, not a spacing rhythm value
                         ),
                         verticalArrangement = Arrangement.spacedBy(Spacing.md)
                     ) {
@@ -280,9 +307,9 @@ private fun DriverTripCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onCardClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.card)
     ) {
         Column(modifier = Modifier.padding(Spacing.lg)) {
             Row(
@@ -303,7 +330,8 @@ private fun DriverTripCard(
             Text(
                 text = "${trip.origin.name} → ${trip.destination.name}",
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 2
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -328,33 +356,49 @@ private fun DriverTripCard(
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
+            // "Ver pasajeros" is intentionally not rendered here: its navigation callback is
+            // still a no-op in MainNavGraph (no passenger management screen exists yet), so
+            // showing it would be a dead tap. onViewPassengers stays wired below so the button
+            // can be restored with a one-line change once that screen exists.
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm, Alignment.End),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onViewPassengers) {
-                    Text(stringResource(Res.string.trip_action_view_passengers))
-                }
-
                 when (trip.status) {
-                    TripStatus.Active -> Button(
-                        onClick = onStartTrip,
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.trip_action_start),
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                    TripStatus.Active -> {
+                        TextButton(
+                            onClick = onCancelTrip,
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(stringResource(Res.string.trip_cancel_confirm_button))
+                        }
+                        Button(
+                            onClick = onStartTrip
+                            // No explicit height: the previous 36dp clipped below Material's
+                            // 40dp minimum touch target and at large font scales. Default sizing.
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.trip_action_start),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
-                    TripStatus.InProgress -> Button(
-                        onClick = onTrackTrip,
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.trip_action_track),
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                    TripStatus.InProgress -> {
+                        TextButton(onClick = onFinishTrip) {
+                            Text(stringResource(Res.string.trip_tracking_complete_trip))
+                        }
+                        Button(
+                            onClick = onTrackTrip
+                            // No explicit height: see rationale on the Start-trip button above.
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.trip_action_track),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                     TripStatus.Completed, TripStatus.Cancelled -> Unit
                 }

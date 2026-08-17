@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.vehicles.list
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,20 +9,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
@@ -33,7 +29,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.vehicles.list.components.VehicleCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_description
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_title
@@ -102,31 +97,10 @@ fun VehiclesListContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(Res.string.vehicles_list_title),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                        )
-                        Text(
-                            text = stringResource(Res.string.vehicles_list_subtitle),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(VehiclesListAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.vehicles_list_title),
+                subtitle = stringResource(Res.string.vehicles_list_subtitle),
+                onBack = { onAction(VehiclesListAction.OnBackClick) },
             )
         },
         floatingActionButton = {
@@ -167,7 +141,8 @@ fun VehiclesListContent(
                             totalVehicleCount = state.vehicles.size,
                             onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
                             onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
-                            onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) }
+                            onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
+                            onClick = null
                         )
                     }
                 }

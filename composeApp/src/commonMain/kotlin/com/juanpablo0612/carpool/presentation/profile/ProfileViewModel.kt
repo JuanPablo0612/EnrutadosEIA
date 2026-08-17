@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.use_case.DeleteAccountUseCase
 import com.juanpablo0612.carpool.domain.auth.use_case.UpdateUserRolesUseCase
+import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,10 +74,10 @@ class ProfileViewModel(
             is ProfileAction.OnToggleRole -> handleRoleToggle(action.role, action.enabled)
 
             ProfileAction.OnDeleteAccountClick -> _state.update {
-                it.copy(showDeleteAccountDialog = true, deleteAccountNameInput = "")
+                it.copy(showDeleteAccountDialog = true, deleteAccountNameInput = "", deleteAccountError = null)
             }
             ProfileAction.OnDeleteAccountDismissed -> _state.update {
-                it.copy(showDeleteAccountDialog = false, deleteAccountNameInput = "")
+                it.copy(showDeleteAccountDialog = false, deleteAccountNameInput = "", deleteAccountError = null)
             }
             is ProfileAction.OnDeleteAccountNameChange -> _state.update {
                 it.copy(deleteAccountNameInput = action.name)
@@ -114,15 +115,15 @@ class ProfileViewModel(
 
     private fun deleteAccount() {
         viewModelScope.launch {
-            _state.update { it.copy(isDeleting = true) }
+            _state.update { it.copy(isDeleting = true, deleteAccountError = null) }
             deleteAccountUseCase().fold(
                 onSuccess = {
                     _state.update { it.copy(isDeleting = false, showDeleteAccountDialog = false) }
                     userSession.clearSession()
                     _events.emit(ProfileEvent.DeleteAccountSuccess)
                 },
-                onFailure = {
-                    _state.update { it.copy(isDeleting = false) }
+                onFailure = { error ->
+                    _state.update { it.copy(isDeleting = false, deleteAccountError = error.toAuthError()) }
                 }
             )
         }

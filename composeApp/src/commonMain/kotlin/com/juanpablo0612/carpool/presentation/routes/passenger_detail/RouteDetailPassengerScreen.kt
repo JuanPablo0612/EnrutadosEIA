@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -28,8 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
@@ -47,13 +44,13 @@ import com.juanpablo0612.carpool.domain.vehicles.model.Vehicle
 import com.juanpablo0612.carpool.presentation.bookings.asStringResource
 import com.juanpablo0612.carpool.presentation.routes.passenger_detail.components.StopsTimeline
 import com.juanpablo0612.carpool.presentation.routes.search.formatEpochShort
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.available_seats_label
 import enrutadoseia.composeapp.generated.resources.book_request_button
 import enrutadoseia.composeapp.generated.resources.book_request_sent
@@ -107,24 +104,9 @@ fun RouteDetailPassengerContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.route_detail_passenger_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RouteDetailPassengerAction.OnBackClick) }) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.route_detail_passenger_title),
+                onBack = { onAction(RouteDetailPassengerAction.OnBackClick) },
             )
         }
     ) { padding ->
@@ -222,7 +204,7 @@ private fun DriverAndVehicleSection(
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            UserAvatar(name = driverName, photoUrl = driver?.photoUrl, size = 36.dp)
+            UserAvatar(name = driverName, photoUrl = driver?.photoUrl, size = 36.dp) // avatar-intrinsic size
             Spacer(modifier = Modifier.size(Spacing.sm))
             Column {
                 Text(
@@ -235,9 +217,9 @@ private fun DriverAndVehicleSection(
                             imageVector = vectorResource(Res.drawable.directions_car_24px),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(14.dp) // icon-intrinsic size
                         )
-                        Spacer(modifier = Modifier.size(4.dp))
+                        Spacer(modifier = Modifier.size(Spacing.xs))
                         Text(
                             text = "${v.brand} ${v.model} · ${v.color} · ${v.year} · ${v.licensePlate}",
                             style = MaterialTheme.typography.bodySmall,
@@ -287,12 +269,13 @@ private fun SeatsBadge(availableSeats: Int, modifier: Modifier = Modifier) {
         MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
     else
         MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-    Surface(shape = RoundedCornerShape(6.dp), color = bg, modifier = modifier) {
+    Surface(shape = MaterialTheme.shapes.extraSmall, color = bg, modifier = modifier) {
         Text(
             text = stringResource(Res.string.available_seats_label, availableSeats),
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
             color = fg,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+            // vertical inset is a fine visual tweak below the 4dp scale step, kept as a literal
+            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = 3.dp)
         )
     }
 }
@@ -424,6 +407,9 @@ private fun ConfirmRequestSheetContent(
             label = { Text(stringResource(Res.string.passenger_message_label)) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 2,
+            // OutlinedTextField's maxLines has no overflow parameter (Text-only API); typed input
+            // naturally wraps rather than clipping mid-glyph, so this maxLines is unaffected by
+            // Task 2's Ellipsis fix.
             maxLines = 4,
             supportingText = {
                 Text(
