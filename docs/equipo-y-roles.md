@@ -9,6 +9,9 @@ Dos premisas:
   están definidos para que eso no sea un problema.
 - **El equipo va a ser pequeño.** Entre cinco y ocho personas es un buen tamaño; con cuatro ya se
   puede arrancar.
+- **Hasta hoy lo he desarrollado yo solo.** Nadie más conoce el proyecto, así que cada persona que
+  entra cuesta tiempo mío antes de devolvérmelo. Por eso el equipo no se arma de una vez: se arma
+  por tandas, en el orden de abajo.
 
 La app ya existe y funciona: viajes, reservas, chat, calificaciones, vehículos y contactos de
 emergencia están construidos. Nadie llega a inventar nada desde cero — se llega a extender algo que
@@ -70,10 +73,24 @@ conductores publicando viajes, la app está vacía y ningún pasajero vuelve a a
 
 ---
 
-## Si llega poca gente
+## En qué orden llegan
 
-Con cuatro personas arranca: líder técnico, alguien en desarrollo, alguien en pruebas y alguien en
-campus. Los datos los puedo sostener yo al principio; el resto no.
+Recibir a cinco personas el mismo día, viniendo de un proyecto de una sola persona, hace que el
+proyecto avance más lento que ahora. Tres tandas:
+
+**Primera — dos personas, ninguna toca el código.** Producto y campus, y pruebas. No me suman cola
+de revisión, y responden la pregunta más urgente que tiene el proyecto, que no es técnica: ¿alguien
+va a usar esto? Mientras tanto yo dejo listas las credenciales y unas cuantas tareas de entrada.
+
+**Segunda — una sola persona en desarrollo.** La más sólida de las que se postulen, no la más
+entusiasta: esa primera persona termina siendo el segundo par de ojos del proyecto y es la que
+destraba a todos los que lleguen después. Hasta que alguien más pueda revisar código, yo soy el
+cuello de botella.
+
+**Tercera — el resto.** El segundo y tercer cupo de desarrollo, datos, y diseño.
+
+Lo que hay que contar de una vez, no descubrirlo a mitad de camino: **mientras el equipo crece, mi
+propia producción de código baja.** Ese es el costo de dejar de trabajar solo, y se paga una vez.
 
 ---
 
