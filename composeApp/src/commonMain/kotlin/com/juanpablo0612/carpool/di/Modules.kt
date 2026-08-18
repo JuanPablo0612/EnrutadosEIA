@@ -1,19 +1,31 @@
 package com.juanpablo0612.carpool.di
 
-import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
-import com.juanpablo0612.carpool.data.auth.remote.FirebaseAuthRemoteDataSource
+import com.juanpablo0612.carpool.data.auth.datasource.AuthRemoteDataSource
+import com.juanpablo0612.carpool.data.auth.datasource.FirebaseAuthRemoteDataSource
 import com.juanpablo0612.carpool.data.auth.repository.AuthRepositoryImpl
 import com.juanpablo0612.carpool.data.booking.repository.BookingRepositoryImpl
-import com.juanpablo0612.carpool.data.chat.ChatRepositoryImpl
-import com.juanpablo0612.carpool.data.notification.NotificationRepositoryImpl
+import com.juanpablo0612.carpool.data.chat.datasource.ChatRemoteDataSource
+import com.juanpablo0612.carpool.data.chat.datasource.FirebaseChatRemoteDataSource
+import com.juanpablo0612.carpool.data.chat.repository.ChatRepositoryImpl
+import com.juanpablo0612.carpool.data.notification.datasource.FirebaseNotificationRemoteDataSource
+import com.juanpablo0612.carpool.data.notification.datasource.NotificationRemoteDataSource
+import com.juanpablo0612.carpool.data.notification.repository.NotificationRepositoryImpl
+import com.juanpablo0612.carpool.data.place.datasource.CompassLocationService
+import com.juanpablo0612.carpool.data.place.datasource.CompassPlacesSearchService
+import com.juanpablo0612.carpool.data.place.datasource.FirebasePlaceRemoteDataSource
+import com.juanpablo0612.carpool.data.place.datasource.PlaceRemoteDataSource
 import com.juanpablo0612.carpool.data.place.repository.PlaceRepositoryImpl
-import com.juanpablo0612.carpool.data.place.service.CompassLocationService
-import com.juanpablo0612.carpool.data.place.service.CompassPlacesSearchService
-import com.juanpablo0612.carpool.data.preferences.UserPreferencesDataSource
-import com.juanpablo0612.carpool.data.preferences.UserPreferencesRepositoryImpl
-import com.juanpablo0612.carpool.data.rating.RatingRepositoryImpl
+import com.juanpablo0612.carpool.data.preferences.datasource.UserPreferencesLocalDataSource
+import com.juanpablo0612.carpool.data.preferences.repository.UserPreferencesRepositoryImpl
+import com.juanpablo0612.carpool.data.rating.datasource.FirebaseRatingRemoteDataSource
+import com.juanpablo0612.carpool.data.rating.datasource.RatingRemoteDataSource
+import com.juanpablo0612.carpool.data.rating.repository.RatingRepositoryImpl
+import com.juanpablo0612.carpool.data.route.datasource.FirebaseRouteRemoteDataSource
+import com.juanpablo0612.carpool.data.route.datasource.RouteRemoteDataSource
 import com.juanpablo0612.carpool.data.route.repository.RouteRepositoryImpl
-import com.juanpablo0612.carpool.data.safety.SafetyRepositoryImpl
+import com.juanpablo0612.carpool.data.safety.datasource.FirebaseSafetyRemoteDataSource
+import com.juanpablo0612.carpool.data.safety.datasource.SafetyRemoteDataSource
+import com.juanpablo0612.carpool.data.safety.repository.SafetyRepositoryImpl
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
 import com.juanpablo0612.carpool.data.vehicle.repository.VehicleRepositoryImpl
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
@@ -106,7 +118,7 @@ val authModule = module {
 
 val preferencesModule = module {
     // DataStore singleton is provided by platformModule (platform-specific)
-    singleOf(::UserPreferencesDataSource)
+    singleOf(::UserPreferencesLocalDataSource)
     singleOf(::UserPreferencesRepositoryImpl) bind UserPreferencesRepository::class
     viewModel { OnboardingViewModel(get()) }
 }
@@ -116,6 +128,7 @@ val roleSelectorModule = module {
 }
 
 val routeModule = module {
+    singleOf(::FirebaseRouteRemoteDataSource) bind RouteRemoteDataSource::class
     singleOf(::RouteRepositoryImpl) bind RouteRepository::class
     viewModel { CreateRouteViewModel(get(), get()) }
     viewModel { RoutesListViewModel(get(), get(), get()) }
@@ -135,6 +148,7 @@ val tripModule = module {
 val placeModule = module {
     singleOf(::CompassLocationService) bind LocationService::class
     singleOf(::CompassPlacesSearchService) bind PlacesSearchService::class
+    singleOf(::FirebasePlaceRemoteDataSource) bind PlaceRemoteDataSource::class
     singleOf(::PlaceRepositoryImpl) bind PlaceRepository::class
     single { createLocationPermissionRequester() }
     factoryOf(::GetSavedPlacesUseCase)
@@ -173,6 +187,7 @@ val homeModule = module {
 }
 
 val ratingModule = module {
+    singleOf(::FirebaseRatingRemoteDataSource) bind RatingRemoteDataSource::class
     singleOf(::RatingRepositoryImpl) bind RatingRepository::class
     factoryOf(::CreateRatingUseCase)
     viewModel { (bookingId: String, tripId: String, rateeId: String, rateeName: String, rateeIsDriver: Boolean) ->
@@ -181,6 +196,7 @@ val ratingModule = module {
 }
 
 val chatModule = module {
+    singleOf(::FirebaseChatRemoteDataSource) bind ChatRemoteDataSource::class
     singleOf(::ChatRepositoryImpl) bind ChatRepository::class
     factoryOf(::SendMessageUseCase)
     viewModel { (bookingId: String, otherPartyName: String, isReadOnly: Boolean) ->
@@ -189,12 +205,14 @@ val chatModule = module {
 }
 
 val notificationModule = module {
+    singleOf(::FirebaseNotificationRemoteDataSource) bind NotificationRemoteDataSource::class
     singleOf(::NotificationRepositoryImpl) bind NotificationRepository::class
     factoryOf(::CreateNotificationUseCase)
     viewModel { NotificationsViewModel(get(), get()) }
 }
 
 val safetyModule = module {
+    singleOf(::FirebaseSafetyRemoteDataSource) bind SafetyRemoteDataSource::class
     singleOf(::SafetyRepositoryImpl) bind SafetyRepository::class
     factoryOf(::AddEmergencyContactUseCase)
     viewModel { SafetyViewModel(get(), get(), get()) }

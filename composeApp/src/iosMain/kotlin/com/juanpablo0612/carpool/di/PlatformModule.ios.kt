@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.di
 
-import com.juanpablo0612.carpool.data.preferences.createDataStore
+import com.juanpablo0612.carpool.data.preferences.datasource.createDataStore
 import com.juanpablo0612.carpool.presentation.trip.tracking.EmergencyDialer
 import com.juanpablo0612.carpool.presentation.trip.tracking.LocationSharer
 import com.juanpablo0612.carpool.presentation.trip.tracking.createEmergencyDialer

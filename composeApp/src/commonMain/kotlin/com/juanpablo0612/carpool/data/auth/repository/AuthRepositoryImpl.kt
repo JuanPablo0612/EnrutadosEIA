@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.data.auth.repository
 
 import com.juanpablo0612.carpool.core.exception.AppException
-import com.juanpablo0612.carpool.data.auth.remote.AuthRemoteDataSource
+import com.juanpablo0612.carpool.data.auth.datasource.AuthRemoteDataSource
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
