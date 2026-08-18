@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
-import com.juanpablo0612.carpool.domain.vehicle.usecase.CreateVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetVehicleByIdUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.UpdateVehicleUseCase
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleUiState.Companion.PLATE_REGEX
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,9 +18,7 @@ import kotlinx.coroutines.launch
 
 class RegisterVehicleViewModel(
     private val vehicleId: String?,
-    private val createVehicleUseCase: CreateVehicleUseCase,
-    private val updateVehicleUseCase: UpdateVehicleUseCase,
-    private val getVehicleByIdUseCase: GetVehicleByIdUseCase,
+    private val vehicleRepository: VehicleRepository,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
@@ -40,7 +36,7 @@ class RegisterVehicleViewModel(
 
     private fun loadVehicle(id: String) {
         viewModelScope.launch {
-            getVehicleByIdUseCase(id).onSuccess { vehicle ->
+            vehicleRepository.getVehicleById(id).onSuccess { vehicle ->
                 val isCustomColor = vehicle.color !in RegisterVehicleUiState.PRESET_COLORS
                 val isCustomBrand = vehicle.brand !in RegisterVehicleUiState.COMMON_BRANDS
                 _state.update { s ->
@@ -181,9 +177,9 @@ class RegisterVehicleViewModel(
             val photoBytes = s.photoFile?.readBytes()
 
             val result = if (s.mode == RegisterVehicleUiState.Mode.Create) {
-                createVehicleUseCase(vehicle, photoBytes)
+                vehicleRepository.createVehicle(vehicle, photoBytes)
             } else {
-                updateVehicleUseCase(vehicle, photoBytes)
+                vehicleRepository.updateVehicle(vehicle, photoBytes)
             }
 
             result

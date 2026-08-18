@@ -3,10 +3,8 @@ package com.juanpablo0612.carpool.presentation.roleselector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
-import com.juanpablo0612.carpool.domain.booking.usecase.GetDriverBookingRequestsUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.ClearRolePreferenceUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.GetRolePreferenceUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.SaveRolePreferenceUseCase
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
+import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,10 +16,8 @@ import kotlinx.coroutines.launch
 
 class RoleSelectorViewModel(
     private val userSession: UserSession,
-    private val getDriverBookingRequestsUseCase: GetDriverBookingRequestsUseCase,
-    private val getRolePreferenceUseCase: GetRolePreferenceUseCase,
-    private val saveRolePreferenceUseCase: SaveRolePreferenceUseCase,
-    private val clearRolePreferenceUseCase: ClearRolePreferenceUseCase
+    private val bookingRepository: BookingRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoleSelectorUiState())
@@ -40,7 +36,7 @@ class RoleSelectorViewModel(
             _uiState.update { it.copy(userName = user?.name?.split(" ")?.firstOrNull() ?: "") }
 
             val userId = user?.id ?: return@launch
-            val bookings = getDriverBookingRequestsUseCase(userId).first()
+            val bookings = bookingRepository.getDriverBookingRequests(userId).first()
             _uiState.update { it.copy(driverPendingCount = bookings.size) }
         }
     }
@@ -56,11 +52,11 @@ class RoleSelectorViewModel(
     private fun selectRole(role: UserRole) {
         viewModelScope.launch {
             if (_uiState.value.rememberChoice) {
-                saveRolePreferenceUseCase(role)
+                userPreferencesRepository.saveRolePreference(role)
             } else {
                 // A later un-ticked choice must overwrite a previously remembered one, otherwise
                 // the stale preference keeps routing the next launch to the old role (3.9).
-                clearRolePreferenceUseCase()
+                userPreferencesRepository.clearRolePreference()
             }
             val event = when (role) {
                 UserRole.Driver -> RoleSelectorEvent.NavigateToDriver

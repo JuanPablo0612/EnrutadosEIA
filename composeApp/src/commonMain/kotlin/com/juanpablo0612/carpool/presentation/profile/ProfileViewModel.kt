@@ -3,8 +3,7 @@ package com.juanpablo0612.carpool.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
-import com.juanpablo0612.carpool.domain.auth.usecase.DeleteAccountUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.UpdateUserRolesUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,8 +18,7 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val userSession: UserSession,
-    private val deleteAccountUseCase: DeleteAccountUseCase,
-    private val updateUserRolesUseCase: UpdateUserRolesUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -96,7 +94,7 @@ class ProfileViewModel(
         }
         _state.update { it.copy(blockedRoleToggle = false) }
         viewModelScope.launch {
-            updateUserRolesUseCase(newIsDriver, newIsPassenger).onSuccess { updatedUser ->
+            authRepository.updateRoles(newIsDriver, newIsPassenger).onSuccess { updatedUser ->
                 userSession.setUser(updatedUser)
                 // Disabling the role you're currently in would otherwise leave the driver
                 // Home/bottom bar showing for a user who just turned Driver off (3.9) — switch to
@@ -116,7 +114,7 @@ class ProfileViewModel(
     private fun deleteAccount() {
         viewModelScope.launch {
             _state.update { it.copy(isDeleting = true, deleteAccountError = null) }
-            deleteAccountUseCase().fold(
+            authRepository.deleteAccount().fold(
                 onSuccess = {
                     _state.update { it.copy(isDeleting = false, showDeleteAccountDialog = false) }
                     userSession.clearSession()

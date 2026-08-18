@@ -6,9 +6,8 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.TripError
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.trip.usecase.GetDriverTripsUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdateTripStatusUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,10 +27,9 @@ import kotlin.time.Clock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DriverTripsViewModel(
-    private val getDriverTripsUseCase: GetDriverTripsUseCase,
-    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
+    private val tripRepository: TripRepository,
+    private val vehicleRepository: VehicleRepository,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
-    private val updateTripStatusUseCase: UpdateTripStatusUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -56,8 +54,8 @@ class DriverTripsViewModel(
 
         tripsJob = viewModelScope.launch {
             combine(
-                getDriverTripsUseCase(userId),
-                getUserVehiclesUseCase(userId)
+                tripRepository.getDriverTrips(userId),
+                vehicleRepository.getUserVehicles(userId)
             ) { trips, vehicles -> Pair(trips, vehicles) }
                 .flatMapLatest { (trips, vehicles) ->
                     val vehicleMap = vehicles.associateBy { it.id }
@@ -147,7 +145,7 @@ class DriverTripsViewModel(
     private fun updateStatus(tripId: String, status: TripStatus) {
         viewModelScope.launch {
             _state.update { it.copy(error = null) }
-            updateTripStatusUseCase(tripId, status)
+            tripRepository.updateTripStatus(tripId, status)
                 .onFailure { _state.update { it.copy(error = TripError.Unknown) } }
         }
     }

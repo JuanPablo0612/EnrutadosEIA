@@ -3,9 +3,8 @@ package com.juanpablo0612.carpool.presentation.route.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.route.usecase.DeleteRouteUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.GetUserRoutesUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetDriverTripsUseCase
+import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,10 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 
 class RoutesListViewModel(
-    private val getUserRoutesUseCase: GetUserRoutesUseCase,
-    private val getDriverTripsUseCase: GetDriverTripsUseCase,
-    private val authRepository: AuthRepository,
-    private val deleteRouteUseCase: DeleteRouteUseCase
+    private val routeRepository: RouteRepository,
+    private val tripRepository: TripRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoutesListUiState())
@@ -42,8 +40,8 @@ class RoutesListViewModel(
         }
         viewModelScope.launch {
             combine(
-                getUserRoutesUseCase(userId),
-                getDriverTripsUseCase(userId)
+                routeRepository.getUserRoutes(userId),
+                tripRepository.getDriverTrips(userId)
             ) { routes, trips ->
                 routes.map { route ->
                     val routeTrips = trips.filter { it.routeId == route.id }
@@ -93,7 +91,7 @@ class RoutesListViewModel(
         val routeId = _state.value.pendingDeleteRouteId ?: return
         _state.update { it.copy(pendingDeleteRouteId = null) }
         viewModelScope.launch {
-            deleteRouteUseCase(routeId)
+            routeRepository.deleteRoute(routeId)
         }
     }
 }

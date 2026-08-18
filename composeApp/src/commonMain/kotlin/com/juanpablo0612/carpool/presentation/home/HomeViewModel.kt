@@ -4,15 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetAllDriverBookingsUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetDriverBookingRequestsUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetPassengerBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.GetUserRoutesUseCase
+import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.trip.usecase.GetDriverTripsUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.Job
@@ -31,12 +29,10 @@ import kotlin.time.Clock
 
 class HomeViewModel(
     private val userSession: UserSession,
-    private val getDriverTripsUseCase: GetDriverTripsUseCase,
-    private val getDriverBookingRequestsUseCase: GetDriverBookingRequestsUseCase,
-    private val getAllDriverBookingsUseCase: GetAllDriverBookingsUseCase,
-    private val getPassengerBookingsUseCase: GetPassengerBookingsUseCase,
-    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
-    private val getUserRoutesUseCase: GetUserRoutesUseCase,
+    private val tripRepository: TripRepository,
+    private val bookingRepository: BookingRepository,
+    private val vehicleRepository: VehicleRepository,
+    private val routeRepository: RouteRepository,
     private val confirmBookingUseCase: ConfirmBookingUseCase,
     private val rejectBookingUseCase: RejectBookingUseCase,
 ) : ViewModel() {
@@ -80,11 +76,11 @@ class HomeViewModel(
 
     private suspend fun loadDriverData(userId: String, now: Long) {
         combine(
-            getDriverTripsUseCase(userId),
-            getDriverBookingRequestsUseCase(userId),
-            getAllDriverBookingsUseCase(userId),
-            getUserVehiclesUseCase(userId),
-            getUserRoutesUseCase(userId),
+            tripRepository.getDriverTrips(userId),
+            bookingRepository.getDriverBookingRequests(userId),
+            bookingRepository.getAllDriverBookings(userId),
+            vehicleRepository.getUserVehicles(userId),
+            routeRepository.getUserRoutes(userId),
         ) { trips, pendingBookings, allBookings, vehicles, routes ->
             val monthStart = startOfCurrentMonth(now)
             val nextTrip = trips
@@ -119,7 +115,7 @@ class HomeViewModel(
     }
 
     private suspend fun loadPassengerData(userId: String, now: Long) {
-        getPassengerBookingsUseCase(userId)
+        bookingRepository.getPassengerBookings(userId)
             .onEach { bookings ->
                 val nextBooking = bookings
                     .filter { it.status == BookingStatus.Confirmed && it.departureTime > now }

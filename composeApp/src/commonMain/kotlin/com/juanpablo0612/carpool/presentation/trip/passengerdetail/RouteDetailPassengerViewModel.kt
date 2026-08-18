@@ -2,13 +2,13 @@ package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.auth.usecase.GetUserPublicProfileUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.model.BookingError
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetTripByIdUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,12 +27,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class RouteDetailPassengerViewModel(
     private val tripId: String,
-    private val getTripByIdUseCase: GetTripByIdUseCase,
-    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
+    private val tripRepository: TripRepository,
+    private val vehicleRepository: VehicleRepository,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
-    private val getUserPublicProfileUseCase: GetUserPublicProfileUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState())
@@ -47,7 +47,7 @@ class RouteDetailPassengerViewModel(
 
     private fun loadTrip() {
         viewModelScope.launch {
-            getTripByIdUseCase(tripId)
+            tripRepository.getTripById(tripId)
                 .onSuccess { trip ->
                     _state.update { it.copy(isLoading = false, trip = trip) }
                     val alreadyRequested = checkExistingBookingUseCase(tripId)
@@ -66,7 +66,7 @@ class RouteDetailPassengerViewModel(
     // seats flow whenever the vehicle list changes, instead of collecting it nested inside onEach,
     // which would block this flow from ever processing a later vehicle emission (3.6).
     private fun observeVehicleAndSeats(driverId: String, vehicleId: String, tripId: String) {
-        getUserVehiclesUseCase(driverId)
+        vehicleRepository.getUserVehicles(driverId)
             .flatMapLatest { vehicles ->
                 val vehicle = vehicles.find { it.id == vehicleId }
                 getTripAvailableSeatsUseCase(tripId).map { seats -> vehicle to seats }
@@ -81,7 +81,7 @@ class RouteDetailPassengerViewModel(
     // label) — it must never fail the whole trip-detail load.
     private fun loadDriverProfile(driverId: String) {
         viewModelScope.launch {
-            val profile = getUserPublicProfileUseCase(driverId).getOrNull()
+            val profile = authRepository.getPublicProfile(driverId).getOrNull()
             _state.update { it.copy(driver = profile) }
         }
     }

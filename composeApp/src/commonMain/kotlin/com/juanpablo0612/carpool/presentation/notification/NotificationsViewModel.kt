@@ -3,10 +3,7 @@ package com.juanpablo0612.carpool.presentation.notification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.notification.usecase.ClearAllNotificationsUseCase
-import com.juanpablo0612.carpool.domain.notification.usecase.DeleteNotificationUseCase
-import com.juanpablo0612.carpool.domain.notification.usecase.GetNotificationsUseCase
-import com.juanpablo0612.carpool.domain.notification.usecase.MarkNotificationReadUseCase
+import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,10 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel(
-    private val getNotificationsUseCase: GetNotificationsUseCase,
-    private val markNotificationReadUseCase: MarkNotificationReadUseCase,
-    private val deleteNotificationUseCase: DeleteNotificationUseCase,
-    private val clearAllNotificationsUseCase: ClearAllNotificationsUseCase,
+    private val notificationRepository: NotificationRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -41,7 +35,7 @@ class NotificationsViewModel(
     private fun loadNotifications() {
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            getNotificationsUseCase(userId)
+            notificationRepository.getNotifications(userId)
                 .onEach { notifications ->
                     _state.update { it.copy(notifications = notifications, isLoading = false, error = null) }
                 }
@@ -54,7 +48,7 @@ class NotificationsViewModel(
         when (action) {
             is NotificationsAction.OnNotificationClick -> {
                 viewModelScope.launch {
-                    markNotificationReadUseCase(userId, action.notification.id)
+                    notificationRepository.markRead(userId, action.notification.id)
                     val deepLink = action.notification.deepLink
                     if (!deepLink.isNullOrBlank()) {
                         _events.emit(NotificationsEvent.NavigateTo(deepLink))
@@ -63,7 +57,7 @@ class NotificationsViewModel(
             }
             is NotificationsAction.OnDismiss -> {
                 viewModelScope.launch {
-                    deleteNotificationUseCase(userId, action.id)
+                    notificationRepository.delete(userId, action.id)
                         .onFailure { _state.update { it.copy(actionError = true) } }
                 }
             }
@@ -72,7 +66,7 @@ class NotificationsViewModel(
             NotificationsAction.OnClearAllConfirmed -> {
                 _state.update { it.copy(showClearAllDialog = false) }
                 viewModelScope.launch {
-                    clearAllNotificationsUseCase(userId)
+                    notificationRepository.clearAll(userId)
                         .onFailure { _state.update { it.copy(actionError = true) } }
                 }
             }

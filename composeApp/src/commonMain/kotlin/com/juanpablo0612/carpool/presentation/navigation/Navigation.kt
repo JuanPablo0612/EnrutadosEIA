@@ -19,7 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
-import com.juanpablo0612.carpool.domain.auth.usecase.LogoutUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import androidx.compose.runtime.LaunchedEffect
 import com.juanpablo0612.carpool.presentation.chat.ChatScreen
 import com.juanpablo0612.carpool.presentation.chat.ChatViewModel
@@ -67,7 +67,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
     val userSession = koinInject<UserSession>()
-    val logoutUseCase = koinInject<LogoutUseCase>()
+    val authRepository = koinInject<AuthRepository>()
     val scope = rememberCoroutineScope()
     val activeRole by userSession.activeRole.collectAsState()
 
@@ -115,7 +115,7 @@ fun AppNavigation(
 
     val onLogout: () -> Unit = {
         scope.launch {
-            logoutUseCase()
+            authRepository.logout()
             userSession.clearSession()
             navController.navigate(Route.Login) {
                 popUpTo(0) { inclusive = true }

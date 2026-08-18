@@ -17,37 +17,18 @@ import com.juanpablo0612.carpool.data.safety.SafetyRepositoryImpl
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
 import com.juanpablo0612.carpool.data.vehicle.repository.VehicleRepositoryImpl
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.auth.usecase.DeleteAccountUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.GetUserPublicProfileUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.LoginUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.LogoutUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.RegisterUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.SendEmailVerificationUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.SendPasswordResetEmailUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.UpdateProfileUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.UpdateUserRolesUseCase
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetAllDriverBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetBookingsForTripUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetDriverBookingRequestsUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetPassengerBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.chat.repository.ChatRepository
-import com.juanpablo0612.carpool.domain.chat.usecase.GetMessagesUseCase
-import com.juanpablo0612.carpool.domain.chat.usecase.MarkMessagesReadUseCase
 import com.juanpablo0612.carpool.domain.chat.usecase.SendMessageUseCase
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
-import com.juanpablo0612.carpool.domain.notification.usecase.ClearAllNotificationsUseCase
 import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationUseCase
-import com.juanpablo0612.carpool.domain.notification.usecase.DeleteNotificationUseCase
-import com.juanpablo0612.carpool.domain.notification.usecase.GetNotificationsUseCase
-import com.juanpablo0612.carpool.domain.notification.usecase.MarkNotificationReadUseCase
 import com.juanpablo0612.carpool.domain.place.repository.PlaceRepository
 import com.juanpablo0612.carpool.domain.place.service.LocationService
 import com.juanpablo0612.carpool.domain.place.service.PlacesSearchService
@@ -55,43 +36,14 @@ import com.juanpablo0612.carpool.domain.place.usecase.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.place.usecase.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.place.usecase.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
-import com.juanpablo0612.carpool.domain.preferences.usecase.ClearRolePreferenceUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.GetOnboardingSeenUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.GetRolePreferenceUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.SaveRolePreferenceUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.SetOnboardingSeenUseCase
 import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import com.juanpablo0612.carpool.domain.rating.usecase.CreateRatingUseCase
-import com.juanpablo0612.carpool.domain.rating.usecase.GetUserAverageRatingUseCase
-import com.juanpablo0612.carpool.domain.rating.usecase.HasRatedBookingUseCase
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
-import com.juanpablo0612.carpool.domain.route.usecase.CreateRouteUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.DeleteRouteUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.GetRouteByIdUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.GetUserRoutesUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.UpdateRouteUseCase
 import com.juanpablo0612.carpool.domain.safety.repository.SafetyRepository
 import com.juanpablo0612.carpool.domain.safety.usecase.AddEmergencyContactUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.GetEmergencyContactsUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.GetSafetySettingsUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.RemoveEmergencyContactUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.UpdateSafetySettingsUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
-import com.juanpablo0612.carpool.domain.trip.usecase.CreateTripUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetDriverTripsUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetTripByIdFlowUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetTripByIdUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdateDriverLocationUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdatePassengerStatusUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdateTripStatusUseCase
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
-import com.juanpablo0612.carpool.domain.vehicle.usecase.CreateVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.DeleteVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetVehicleByIdUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.SetPrimaryVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.UpdateVehicleUseCase
 import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationViewModel
 import com.juanpablo0612.carpool.presentation.auth.forgotpassword.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
@@ -143,23 +95,12 @@ val authModule = module {
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::UserSession)
 
-    factoryOf(::LoginUseCase)
-    factoryOf(::RegisterUseCase)
-    factoryOf(::LogoutUseCase)
-    factoryOf(::SendPasswordResetEmailUseCase)
-    factoryOf(::SendEmailVerificationUseCase)
-    factoryOf(::GetCurrentUserUseCase)
-    factoryOf(::GetUserPublicProfileUseCase)
-    factoryOf(::UpdateProfileUseCase)
-    factoryOf(::UpdateUserRolesUseCase)
-    factoryOf(::DeleteAccountUseCase)
-
-    viewModel { LoginViewModel(get(), get()) }
-    viewModel { RegisterViewModel(get(), get()) }
+    viewModel { LoginViewModel(get()) }
+    viewModel { RegisterViewModel(get()) }
     viewModel { ForgotPasswordViewModel(get()) }
-    viewModel { EmailVerificationViewModel(get(), get()) }
-    viewModel { SplashViewModel(get(), get(), get(), get()) }
-    viewModel { ProfileViewModel(get(), get(), get()) }
+    viewModel { EmailVerificationViewModel(get()) }
+    viewModel { SplashViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get()) }
     viewModel { EditProfileViewModel(get(), get()) }
 }
 
@@ -167,45 +108,28 @@ val preferencesModule = module {
     // DataStore singleton is provided by platformModule (platform-specific)
     singleOf(::UserPreferencesDataSource)
     singleOf(::UserPreferencesRepositoryImpl) bind UserPreferencesRepository::class
-    factoryOf(::SaveRolePreferenceUseCase)
-    factoryOf(::GetRolePreferenceUseCase)
-    factoryOf(::ClearRolePreferenceUseCase)
-    factoryOf(::GetOnboardingSeenUseCase)
-    factoryOf(::SetOnboardingSeenUseCase)
     viewModel { OnboardingViewModel(get()) }
 }
 
 val roleSelectorModule = module {
-    viewModel { RoleSelectorViewModel(get(), get(), get(), get(), get()) }
+    viewModel { RoleSelectorViewModel(get(), get(), get()) }
 }
 
 val routeModule = module {
     singleOf(::RouteRepositoryImpl) bind RouteRepository::class
-    factoryOf(::CreateRouteUseCase)
-    factoryOf(::GetUserRoutesUseCase)
-    factoryOf(::GetRouteByIdUseCase)
-    factoryOf(::UpdateRouteUseCase)
-    factoryOf(::DeleteRouteUseCase)
     viewModel { CreateRouteViewModel(get(), get()) }
-    viewModel { RoutesListViewModel(get(), get(), get(), get()) }
-    viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get(), get(), get(), get()) }
+    viewModel { RoutesListViewModel(get(), get(), get()) }
+    viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get()) }
 }
 
 val tripModule = module {
     singleOf(::TripRepositoryImpl) bind TripRepository::class
-    factoryOf(::CreateTripUseCase)
-    factoryOf(::GetDriverTripsUseCase)
     factoryOf(::GetAvailableTripsUseCase)
-    factoryOf(::GetTripByIdUseCase)
-    factoryOf(::GetTripByIdFlowUseCase)
-    factoryOf(::UpdateTripStatusUseCase)
-    factoryOf(::UpdateDriverLocationUseCase)
-    factoryOf(::UpdatePassengerStatusUseCase)
     viewModel { SearchRoutesViewModel(get(), get(), get(), get()) }
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
-    viewModel { DriverTripsViewModel(get(), get(), get(), get(), get()) }
+    viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
     viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val placeModule = module {
@@ -223,25 +147,16 @@ val placeModule = module {
 
 val vehicleModule = module {
     singleOf(::VehicleRepositoryImpl) bind VehicleRepository::class
-    factoryOf(::CreateVehicleUseCase)
-    factoryOf(::UpdateVehicleUseCase)
-    factoryOf(::DeleteVehicleUseCase)
-    factoryOf(::SetPrimaryVehicleUseCase)
-    factoryOf(::GetUserVehiclesUseCase)
-    factoryOf(::GetVehicleByIdUseCase)
     viewModel { (vehicleId: String?) ->
-        RegisterVehicleViewModel(vehicleId, get(), get(), get(), get())
+        RegisterVehicleViewModel(vehicleId, get(), get())
     }
-    viewModel { VehiclesListViewModel(get(), get(), get(), get(), get()) }
+    viewModel { VehiclesListViewModel(get(), get(), get()) }
 }
 
 val bookingModule = module {
     singleOf(::BookingRepositoryImpl) bind BookingRepository::class
     factoryOf(::CreateBookingUseCase)
     factoryOf(::GetTripAvailableSeatsUseCase)
-    factoryOf(::GetPassengerBookingsUseCase)
-    factoryOf(::GetDriverBookingRequestsUseCase)
-    factoryOf(::GetAllDriverBookingsUseCase)
     factoryOf(::GetBookingsForTripUseCase)
     factoryOf(::ConfirmBookingUseCase)
     factoryOf(::RejectBookingUseCase)
@@ -253,15 +168,13 @@ val bookingModule = module {
 
 val homeModule = module {
     viewModel {
-        HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get())
+        HomeViewModel(get(), get(), get(), get(), get(), get(), get())
     }
 }
 
 val ratingModule = module {
     singleOf(::RatingRepositoryImpl) bind RatingRepository::class
     factoryOf(::CreateRatingUseCase)
-    factoryOf(::HasRatedBookingUseCase)
-    factoryOf(::GetUserAverageRatingUseCase)
     viewModel { (bookingId: String, tripId: String, rateeId: String, rateeName: String, rateeIsDriver: Boolean) ->
         RatingViewModel(bookingId, tripId, rateeId, rateeName, rateeIsDriver, get(), get())
     }
@@ -269,32 +182,22 @@ val ratingModule = module {
 
 val chatModule = module {
     singleOf(::ChatRepositoryImpl) bind ChatRepository::class
-    factoryOf(::GetMessagesUseCase)
     factoryOf(::SendMessageUseCase)
-    factoryOf(::MarkMessagesReadUseCase)
     viewModel { (bookingId: String, otherPartyName: String, isReadOnly: Boolean) ->
-        ChatViewModel(bookingId, otherPartyName, isReadOnly, get(), get(), get(), get())
+        ChatViewModel(bookingId, otherPartyName, isReadOnly, get(), get(), get())
     }
 }
 
 val notificationModule = module {
     singleOf(::NotificationRepositoryImpl) bind NotificationRepository::class
-    factoryOf(::GetNotificationsUseCase)
     factoryOf(::CreateNotificationUseCase)
-    factoryOf(::MarkNotificationReadUseCase)
-    factoryOf(::DeleteNotificationUseCase)
-    factoryOf(::ClearAllNotificationsUseCase)
-    viewModel { NotificationsViewModel(get(), get(), get(), get(), get()) }
+    viewModel { NotificationsViewModel(get(), get()) }
 }
 
 val safetyModule = module {
     singleOf(::SafetyRepositoryImpl) bind SafetyRepository::class
-    factoryOf(::GetEmergencyContactsUseCase)
     factoryOf(::AddEmergencyContactUseCase)
-    factoryOf(::RemoveEmergencyContactUseCase)
-    factoryOf(::GetSafetySettingsUseCase)
-    factoryOf(::UpdateSafetySettingsUseCase)
-    viewModel { SafetyViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { SafetyViewModel(get(), get(), get()) }
 }
 
 val appModule = module {

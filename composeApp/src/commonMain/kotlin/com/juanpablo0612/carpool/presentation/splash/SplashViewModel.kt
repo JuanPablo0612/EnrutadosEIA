@@ -5,9 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.GetOnboardingSeenUseCase
-import com.juanpablo0612.carpool.domain.preferences.usecase.GetRolePreferenceUseCase
+import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,9 +14,7 @@ import kotlinx.coroutines.launch
 
 class SplashViewModel(
     private val authRepository: AuthRepository,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getRolePreferenceUseCase: GetRolePreferenceUseCase,
-    private val getOnboardingSeenUseCase: GetOnboardingSeenUseCase
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SplashUiState())
@@ -33,7 +29,7 @@ class SplashViewModel(
 
     private fun checkAuthState() {
         viewModelScope.launch {
-            if (!getOnboardingSeenUseCase()) {
+            if (!userPreferencesRepository.hasSeenOnboarding()) {
                 _events.emit(SplashEvent.NavigateToOnboarding)
                 return@launch
             }
@@ -41,7 +37,7 @@ class SplashViewModel(
                 _events.emit(SplashEvent.NavigateToAuth)
                 return@launch
             }
-            getCurrentUserUseCase()
+            authRepository.getCurrentUser()
                 .onSuccess { user -> _events.emit(user.toSplashEvent()) }
                 .onFailure { _events.emit(SplashEvent.NavigateToAuth) }
         }
@@ -49,7 +45,7 @@ class SplashViewModel(
 
     private suspend fun User.toSplashEvent(): SplashEvent = when {
         isDriver && isPassenger -> {
-            val savedRole = getRolePreferenceUseCase()
+            val savedRole = userPreferencesRepository.getRolePreference()
             when (savedRole) {
                 UserRole.Driver -> SplashEvent.NavigateToDriver(this)
                 UserRole.Passenger -> SplashEvent.NavigateToPassenger(this)

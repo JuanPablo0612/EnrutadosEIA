@@ -3,12 +3,12 @@ package com.juanpablo0612.carpool.presentation.trip.create
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.route.usecase.GetRouteByIdUseCase
+import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripError
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.trip.usecase.CreateTripUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,9 +29,9 @@ import kotlinx.datetime.toLocalDateTime
 
 class CreateTripViewModel(
     private val routeId: String,
-    private val getRouteByIdUseCase: GetRouteByIdUseCase,
-    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
-    private val createTripUseCase: CreateTripUseCase,
+    private val routeRepository: RouteRepository,
+    private val vehicleRepository: VehicleRepository,
+    private val tripRepository: TripRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -48,7 +48,7 @@ class CreateTripViewModel(
 
     private fun loadRoute() {
         viewModelScope.launch {
-            getRouteByIdUseCase(routeId)
+            routeRepository.getRouteById(routeId)
                 .onSuccess { route ->
                     val defaultTime = route.typicalDepartureTime ?: _state.value.departureTime
                     _state.update { it.copy(route = route, departureTime = defaultTime, isLoading = false) }
@@ -61,7 +61,7 @@ class CreateTripViewModel(
 
     private fun loadVehicles() {
         val userId = authRepository.getCurrentUserId() ?: return
-        getUserVehiclesUseCase(userId)
+        vehicleRepository.getUserVehicles(userId)
             .onEach { vehicles ->
                 _state.update { state ->
                     val autoSelected = if (state.selectedVehicleId == null && vehicles.isNotEmpty()) {
@@ -169,7 +169,7 @@ class CreateTripViewModel(
                 messageToPassengers = s.messageToPassengers,
                 status = TripStatus.Active
             )
-            createTripUseCase(trip)
+            tripRepository.createTrip(trip)
                 .onSuccess {
                     _state.update { it.copy(isPublishing = false) }
                     _events.emit(CreateTripEvent.TripPublished)

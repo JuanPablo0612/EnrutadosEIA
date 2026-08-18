@@ -4,11 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.safety.model.SafetySettings
+import com.juanpablo0612.carpool.domain.safety.repository.SafetyRepository
 import com.juanpablo0612.carpool.domain.safety.usecase.AddEmergencyContactUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.GetEmergencyContactsUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.GetSafetySettingsUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.RemoveEmergencyContactUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.UpdateSafetySettingsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,11 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SafetyViewModel(
-    private val getEmergencyContactsUseCase: GetEmergencyContactsUseCase,
+    private val safetyRepository: SafetyRepository,
     private val addEmergencyContactUseCase: AddEmergencyContactUseCase,
-    private val removeEmergencyContactUseCase: RemoveEmergencyContactUseCase,
-    private val getSafetySettingsUseCase: GetSafetySettingsUseCase,
-    private val updateSafetySettingsUseCase: UpdateSafetySettingsUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -41,8 +35,8 @@ class SafetyViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            val contactsResult = getEmergencyContactsUseCase(userId)
-            val settingsResult = getSafetySettingsUseCase(userId)
+            val contactsResult = safetyRepository.getEmergencyContacts(userId)
+            val settingsResult = safetyRepository.getSafetySettings(userId)
             _state.update { state ->
                 state.copy(
                     contacts = contactsResult.getOrDefault(emptyList()),
@@ -97,7 +91,7 @@ class SafetyViewModel(
             _state.update { it.copy(isSaving = true) }
             addEmergencyContactUseCase(userId, name, phone, state.contacts.size)
                 .onSuccess {
-                    val updated = getEmergencyContactsUseCase(userId).getOrDefault(state.contacts)
+                    val updated = safetyRepository.getEmergencyContacts(userId).getOrDefault(state.contacts)
                     _state.update { it.copy(contacts = updated, showAddDialog = false, isSaving = false) }
                 }
                 .onFailure {
@@ -108,7 +102,7 @@ class SafetyViewModel(
 
     private fun removeContact(contactId: String) {
         viewModelScope.launch {
-            removeEmergencyContactUseCase(userId, contactId)
+            safetyRepository.removeEmergencyContact(userId, contactId)
                 .onSuccess {
                     _state.update { it.copy(contacts = it.contacts.filter { c -> c.id != contactId }) }
                 }
@@ -122,7 +116,7 @@ class SafetyViewModel(
         val newSettings = SafetySettings(autoShareTrip = autoShare, vibrateSos = vibrateSos)
         _state.update { it.copy(settings = newSettings) }
         viewModelScope.launch {
-            updateSafetySettingsUseCase(userId, newSettings)
+            safetyRepository.updateSafetySettings(userId, newSettings)
         }
     }
 }

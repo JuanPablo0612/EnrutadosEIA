@@ -2,8 +2,7 @@ package com.juanpablo0612.carpool.presentation.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.LoginUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
@@ -16,8 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val loginUseCase: LoginUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -52,7 +50,7 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            loginUseCase(state.email, state.password)
+            authRepository.login(state.email, state.password)
                 .onSuccess { navigateAfterAuth() }
                 .onFailure { throwable ->
                     _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
@@ -61,7 +59,7 @@ class LoginViewModel(
     }
 
     private suspend fun navigateAfterAuth() {
-        getCurrentUserUseCase()
+        authRepository.getCurrentUser()
             .onSuccess { user ->
                 _uiState.update { it.copy(isLoading = false) }
                 _events.emit(AuthEvent.NavigateAfterAuth(user))

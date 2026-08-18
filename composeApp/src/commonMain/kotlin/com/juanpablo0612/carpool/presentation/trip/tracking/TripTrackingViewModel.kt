@@ -3,21 +3,16 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.auth.usecase.GetUserPublicProfileUseCase
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.usecase.GetBookingsForTripUseCase
 import com.juanpablo0612.carpool.domain.place.service.LocationService
 import com.juanpablo0612.carpool.domain.safety.model.SafetySettings
-import com.juanpablo0612.carpool.domain.safety.usecase.GetEmergencyContactsUseCase
-import com.juanpablo0612.carpool.domain.safety.usecase.GetSafetySettingsUseCase
+import com.juanpablo0612.carpool.domain.safety.repository.SafetyRepository
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.trip.usecase.GetTripByIdFlowUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdateDriverLocationUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdatePassengerStatusUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.UpdateTripStatusUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.place.add.components.LocationPermissionRequester
 import com.juanpablo0612.carpool.presentation.utils.formatCoordinates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,17 +34,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class TripTrackingViewModel(
     private val tripId: String,
-    private val getTripByIdFlowUseCase: GetTripByIdFlowUseCase,
+    private val tripRepository: TripRepository,
     private val getBookingsForTripUseCase: GetBookingsForTripUseCase,
-    private val updatePassengerStatusUseCase: UpdatePassengerStatusUseCase,
-    private val updateTripStatusUseCase: UpdateTripStatusUseCase,
     private val authRepository: AuthRepository,
-    private val getUserPublicProfileUseCase: GetUserPublicProfileUseCase,
-    private val updateDriverLocationUseCase: UpdateDriverLocationUseCase,
     private val locationService: LocationService,
     private val locationPermissionRequester: LocationPermissionRequester,
-    private val getEmergencyContactsUseCase: GetEmergencyContactsUseCase,
-    private val getSafetySettingsUseCase: GetSafetySettingsUseCase,
+    private val safetyRepository: SafetyRepository,
     private val emergencyDialer: EmergencyDialer,
     private val locationSharer: LocationSharer,
 ) : ViewModel() {
@@ -76,7 +66,7 @@ class TripTrackingViewModel(
             // party-scoped bookings flow whenever the trip emission changes, instead of nesting a
             // collect inside onEach (which would block later trip emissions from ever being
             // processed).
-            getTripByIdFlowUseCase(tripId)
+            tripRepository.getTripByIdFlow(tripId)
                 .flatMapLatest { trip ->
                     val isDriver = trip?.driverId == currentUserId
                     getBookingsForTripUseCase(tripId, currentUserId, isDriver)
@@ -95,7 +85,7 @@ class TripTrackingViewModel(
     private fun resolveDriverName(driverId: String) {
         if (driverId.isBlank() || _state.value.driverName.isNotBlank()) return
         viewModelScope.launch {
-            getUserPublicProfileUseCase(driverId)
+            authRepository.getPublicProfile(driverId)
                 .onSuccess { profile -> _state.update { it.copy(driverName = profile.name) } }
         }
     }
@@ -103,7 +93,7 @@ class TripTrackingViewModel(
     private fun loadSafetySettings() {
         if (currentUserId.isBlank()) return
         viewModelScope.launch {
-            val settings = getSafetySettingsUseCase(currentUserId).getOrDefault(SafetySettings())
+            val settings = safetyRepository.getSafetySettings(currentUserId).getOrDefault(SafetySettings())
             _state.update { it.copy(vibrateSosEnabled = settings.vibrateSos) }
         }
     }
@@ -181,7 +171,7 @@ class TripTrackingViewModel(
             _state.update {
                 it.copy(processingPassengerIds = it.processingPassengerIds + passengerId, error = null)
             }
-            updatePassengerStatusUseCase(tripId, passengerId, status)
+            tripRepository.updatePassengerStatus(tripId, passengerId, status.key)
                 .onFailure { _state.update { it.copy(error = TripTrackingError.ActionFailed) } }
             _state.update {
                 it.copy(processingPassengerIds = it.processingPassengerIds - passengerId)
@@ -192,7 +182,7 @@ class TripTrackingViewModel(
     private fun completeTrip() {
         viewModelScope.launch {
             _state.update { it.copy(isCompletingTrip = true, showCompleteTripDialog = false, error = null) }
-            updateTripStatusUseCase(tripId, TripStatus.Completed)
+            tripRepository.updateTripStatus(tripId, TripStatus.Completed)
                 .onSuccess { _events.emit(TripTrackingEvent.TripCompleted) }
                 .onFailure {
                     _state.update { it.copy(isCompletingTrip = false, error = TripTrackingError.ActionFailed) }
@@ -206,7 +196,7 @@ class TripTrackingViewModel(
     // honest implementation given what EmergencyContact and this app's permissions actually allow).
     private fun shareLocation() {
         viewModelScope.launch {
-            val contacts = getEmergencyContactsUseCase(currentUserId).getOrDefault(emptyList())
+            val contacts = safetyRepository.getEmergencyContacts(currentUserId).getOrDefault(emptyList())
             if (contacts.isEmpty()) {
                 _state.update { it.copy(sosNoContacts = true, sosLocationShared = false) }
                 return@launch
@@ -245,7 +235,7 @@ class TripTrackingViewModel(
                     while (true) {
                         val coordinates = locationService.getCurrentCoordinates()
                         if (coordinates != null) {
-                            updateDriverLocationUseCase(tripId, coordinates.latitude, coordinates.longitude)
+                            tripRepository.updateDriverLocation(tripId, coordinates.latitude, coordinates.longitude)
                         }
                         delay(LOCATION_POLL_INTERVAL_MS)
                     }

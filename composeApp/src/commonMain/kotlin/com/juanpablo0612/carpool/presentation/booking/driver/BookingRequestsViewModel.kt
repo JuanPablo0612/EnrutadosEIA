@@ -9,14 +9,14 @@ import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.model.BookingWithPassenger
 import com.juanpablo0612.carpool.domain.booking.model.PassengerSummary
 import com.juanpablo0612.carpool.domain.booking.model.TripSummary
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetAllDriverBookingsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetTripByIdUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notification_booking_accepted_body
@@ -37,11 +37,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 class BookingRequestsViewModel(
-    private val getAllDriverBookingsUseCase: GetAllDriverBookingsUseCase,
+    private val bookingRepository: BookingRepository,
     private val confirmBookingUseCase: ConfirmBookingUseCase,
     private val rejectBookingUseCase: RejectBookingUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
-    private val getTripByIdUseCase: GetTripByIdUseCase,
+    private val tripRepository: TripRepository,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val authRepository: AuthRepository,
     private val createNotificationUseCase: CreateNotificationUseCase,
@@ -68,7 +68,7 @@ class BookingRequestsViewModel(
             return
         }
         bookingsJob = viewModelScope.launch {
-            getAllDriverBookingsUseCase(driverId)
+            bookingRepository.getAllDriverBookings(driverId)
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect { bookings ->
                     val items = bookings.map { it.toBookingWithPassenger() }
@@ -203,7 +203,7 @@ class BookingRequestsViewModel(
 
     private fun checkTripFull(tripId: String) {
         viewModelScope.launch {
-            getTripByIdUseCase(tripId).getOrNull() ?: return@launch
+            tripRepository.getTripById(tripId).getOrNull() ?: return@launch
             val available = getTripAvailableSeatsUseCase(tripId).first()
             if (available == 0) {
                 _state.update { it.copy(tripJustFilled = true) }

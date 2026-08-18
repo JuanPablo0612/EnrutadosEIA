@@ -3,8 +3,7 @@ package com.juanpablo0612.carpool.presentation.auth.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
-import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.RegisterUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
@@ -18,8 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val registerUseCase: RegisterUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -96,7 +94,7 @@ class RegisterViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val photoBytes = state.photoFile?.readBytes()
-            registerUseCase(
+            authRepository.register(
                 email = state.email,
                 password = state.password,
                 name = state.fullName,
@@ -120,7 +118,7 @@ class RegisterViewModel(
     }
 
     private suspend fun navigateAfterAuth() {
-        getCurrentUserUseCase()
+        authRepository.getCurrentUser()
             .onSuccess { user ->
                 _uiState.update { it.copy(isLoading = false) }
                 _events.emit(AuthEvent.NavigateAfterAuth(user))

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.route.model.Route
-import com.juanpablo0612.carpool.domain.route.usecase.CreateRouteUseCase
+import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateRouteViewModel(
-    private val createRouteUseCase: CreateRouteUseCase,
+    private val routeRepository: RouteRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -109,7 +109,7 @@ class CreateRouteViewModel(
                 recurringDays = currentState.recurringDays,
                 typicalDepartureTime = currentState.typicalDepartureTime
             )
-            createRouteUseCase(route)
+            routeRepository.createRoute(route)
                 .onSuccess {
                     _state.update { it.copy(isLoading = false) }
                     _events.emit(CreateRouteEvent.RouteCreated)

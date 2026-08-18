@@ -3,8 +3,8 @@ package com.juanpablo0612.carpool.presentation.booking.passenger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetPassengerBookingsUseCase
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PassengerBookingsViewModel(
-    private val getPassengerBookingsUseCase: GetPassengerBookingsUseCase,
+    private val bookingRepository: BookingRepository,
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -39,7 +39,7 @@ class PassengerBookingsViewModel(
             return
         }
         viewModelScope.launch {
-            getPassengerBookingsUseCase(userId)
+            bookingRepository.getPassengerBookings(userId)
                 .onEach { bookings -> _state.update { it.copy(bookings = bookings, isLoading = false) } }
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect {}

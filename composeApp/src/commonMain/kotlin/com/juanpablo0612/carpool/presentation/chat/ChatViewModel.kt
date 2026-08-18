@@ -3,8 +3,7 @@ package com.juanpablo0612.carpool.presentation.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.chat.usecase.GetMessagesUseCase
-import com.juanpablo0612.carpool.domain.chat.usecase.MarkMessagesReadUseCase
+import com.juanpablo0612.carpool.domain.chat.repository.ChatRepository
 import com.juanpablo0612.carpool.domain.chat.usecase.SendMessageUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,9 +20,8 @@ class ChatViewModel(
     private val bookingId: String,
     private val otherPartyName: String,
     private val isReadOnly: Boolean,
-    private val getMessagesUseCase: GetMessagesUseCase,
+    private val chatRepository: ChatRepository,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val markMessagesReadUseCase: MarkMessagesReadUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -45,11 +43,11 @@ class ChatViewModel(
 
     private fun loadMessages() {
         viewModelScope.launch {
-            getMessagesUseCase(bookingId)
+            chatRepository.getMessages(bookingId)
                 .onEach { messages ->
                     _state.update { it.copy(messages = messages, isLoading = false) }
                     val userId = authRepository.getCurrentUserId() ?: return@onEach
-                    markMessagesReadUseCase(bookingId, userId)
+                    chatRepository.markMessagesRead(bookingId, userId)
                 }
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect {}

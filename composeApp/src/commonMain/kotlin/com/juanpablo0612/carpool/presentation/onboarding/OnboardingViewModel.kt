@@ -2,7 +2,7 @@ package com.juanpablo0612.carpool.presentation.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.preferences.usecase.SetOnboardingSeenUseCase
+import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
-    private val setOnboardingSeenUseCase: SetOnboardingSeenUseCase
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OnboardingUiState())
@@ -36,7 +36,7 @@ class OnboardingViewModel(
 
     private fun finish() {
         viewModelScope.launch {
-            setOnboardingSeenUseCase()
+            userPreferencesRepository.setOnboardingSeen()
             _events.emit(OnboardingEvent.NavigateToApp)
         }
     }

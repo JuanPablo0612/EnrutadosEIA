@@ -2,7 +2,7 @@ package com.juanpablo0612.carpool.presentation.profile.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.auth.usecase.UpdateProfileUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class EditProfileViewModel(
     private val userSession: UserSession,
-    private val updateProfileUseCase: UpdateProfileUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditProfileUiState())
@@ -63,10 +63,11 @@ class EditProfileViewModel(
         }
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true) }
-            updateProfileUseCase(
+            authRepository.updateProfile(
                 name = state.name.trim(),
                 phone = state.phone.trim().ifBlank { null },
-                bio = state.bio.trim().ifBlank { null }
+                bio = state.bio.trim().ifBlank { null },
+                photoUrl = null
             ).fold(
                 onSuccess = { updatedUser ->
                     userSession.setUser(updatedUser)

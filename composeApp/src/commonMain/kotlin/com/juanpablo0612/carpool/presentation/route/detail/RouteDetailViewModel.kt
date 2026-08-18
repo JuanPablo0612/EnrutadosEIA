@@ -3,11 +3,8 @@ package com.juanpablo0612.carpool.presentation.route.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.place.model.Place
-import com.juanpablo0612.carpool.domain.route.usecase.CreateRouteUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.DeleteRouteUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.GetRouteByIdUseCase
-import com.juanpablo0612.carpool.domain.route.usecase.UpdateRouteUseCase
-import com.juanpablo0612.carpool.domain.trip.usecase.GetDriverTripsUseCase
+import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
 import com.juanpablo0612.carpool.presentation.route.create.SelectionTarget
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,11 +19,8 @@ import kotlinx.datetime.Instant
 
 class RouteDetailViewModel(
     private val routeId: String,
-    private val getRouteByIdUseCase: GetRouteByIdUseCase,
-    private val updateRouteUseCase: UpdateRouteUseCase,
-    private val deleteRouteUseCase: DeleteRouteUseCase,
-    private val getDriverTripsUseCase: GetDriverTripsUseCase,
-    private val createRouteUseCase: CreateRouteUseCase
+    private val routeRepository: RouteRepository,
+    private val tripRepository: TripRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailUiState())
@@ -41,11 +35,11 @@ class RouteDetailViewModel(
 
     private fun loadRouteAndStats() {
         viewModelScope.launch {
-            getRouteByIdUseCase(routeId)
+            routeRepository.getRouteById(routeId)
                 .onSuccess { route ->
                     _state.update { it.copy(route = route, isLoading = false) }
                     launch {
-                        getDriverTripsUseCase(route.driverId).collect { trips ->
+                        tripRepository.getDriverTrips(route.driverId).collect { trips ->
                             val routeTrips = trips.filter { it.routeId == routeId }
                             _state.update {
                                 it.copy(
@@ -134,7 +128,7 @@ class RouteDetailViewModel(
                 recurringDays = draft.recurringDays,
                 typicalDepartureTime = draft.typicalDepartureTime
             )
-            updateRouteUseCase(updatedRoute)
+            routeRepository.updateRoute(updatedRoute)
                 .onSuccess {
                     _state.update { it.copy(isSaving = false, isEditing = false, draft = null, route = updatedRoute) }
                 }
@@ -147,7 +141,7 @@ class RouteDetailViewModel(
     private fun deleteRoute() {
         _state.update { it.copy(showDeleteConfirm = false, isDeleting = true) }
         viewModelScope.launch {
-            deleteRouteUseCase(routeId)
+            routeRepository.deleteRoute(routeId)
                 .onSuccess {
                     _state.update { it.copy(isDeleting = false) }
                     _events.emit(RouteDetailEvent.NavigateBack)
@@ -161,7 +155,7 @@ class RouteDetailViewModel(
     private fun duplicateRoute() {
         val route = _state.value.route ?: return
         viewModelScope.launch {
-            createRouteUseCase(route.copy(id = "", name = "${route.name} (copia)"))
+            routeRepository.createRoute(route.copy(id = "", name = "${route.name} (copia)"))
                 .onSuccess {
                     _events.emit(RouteDetailEvent.NavigateBack)
                 }

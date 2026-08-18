@@ -3,11 +3,11 @@ package com.juanpablo0612.carpool.presentation.route.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
-import com.juanpablo0612.carpool.domain.auth.usecase.GetUserPublicProfileUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,9 +21,9 @@ import kotlinx.coroutines.launch
 
 class SearchRoutesViewModel(
     getAvailableTripsUseCase: GetAvailableTripsUseCase,
-    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
+    private val vehicleRepository: VehicleRepository,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
-    private val getUserPublicProfileUseCase: GetUserPublicProfileUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchRoutesUiState())
@@ -131,12 +131,12 @@ class SearchRoutesViewModel(
             // fetch each distinct driverId exactly once and hand every trip the cached result.
             val driverProfiles = mutableMapOf<String, PublicProfile?>()
             for (driverId in filtered.map { it.driverId }.distinct()) {
-                driverProfiles[driverId] = getUserPublicProfileUseCase(driverId)
+                driverProfiles[driverId] = authRepository.getPublicProfile(driverId)
                     .getOrNull() // a failed fetch degrades to null, it must never fail the search
             }
 
             val results = filtered.mapNotNull { trip ->
-                val vehicles = getUserVehiclesUseCase(trip.driverId).first()
+                val vehicles = vehicleRepository.getUserVehicles(trip.driverId).first()
                 val vehicle = vehicles.find { it.id == trip.vehicleId }
                 val availableSeats = getTripAvailableSeatsUseCase(trip.id).first()
 

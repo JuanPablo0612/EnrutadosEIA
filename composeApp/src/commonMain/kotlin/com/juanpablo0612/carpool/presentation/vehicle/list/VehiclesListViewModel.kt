@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.trip.usecase.GetDriverTripsUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.DeleteVehicleUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
-import com.juanpablo0612.carpool.domain.vehicle.usecase.SetPrimaryVehicleUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,11 +19,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class VehiclesListViewModel(
-    private val getUserVehiclesUseCase: GetUserVehiclesUseCase,
+    private val vehicleRepository: VehicleRepository,
     private val authRepository: AuthRepository,
-    private val deleteVehicleUseCase: DeleteVehicleUseCase,
-    private val setPrimaryVehicleUseCase: SetPrimaryVehicleUseCase,
-    private val getDriverTripsUseCase: GetDriverTripsUseCase,
+    private val tripRepository: TripRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(VehiclesListUiState())
@@ -44,7 +40,7 @@ class VehiclesListViewModel(
             return
         }
         viewModelScope.launch {
-            getUserVehiclesUseCase(userId)
+            vehicleRepository.getUserVehicles(userId)
                 .onEach { vehicles -> _state.update { it.copy(vehicles = vehicles, isLoading = false) } }
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect {}
@@ -60,14 +56,14 @@ class VehiclesListViewModel(
             is VehiclesListAction.OnSetPrimary -> {
                 val userId = authRepository.getCurrentUserId() ?: return
                 viewModelScope.launch {
-                    setPrimaryVehicleUseCase(userId, action.vehicleId)
+                    vehicleRepository.setPrimaryVehicle(userId, action.vehicleId)
                 }
             }
 
             is VehiclesListAction.OnDeleteRequest -> {
                 val driverId = authRepository.getCurrentUserId() ?: return
                 viewModelScope.launch {
-                    val activeTrips = getDriverTripsUseCase(driverId).first()
+                    val activeTrips = tripRepository.getDriverTrips(driverId).first()
                         .filter { it.vehicleId == action.vehicle.id && it.status == TripStatus.Active }
                     if (activeTrips.isNotEmpty()) {
                         _state.update { it.copy(deleteBlockedVehicle = action.vehicle) }
@@ -81,7 +77,7 @@ class VehiclesListViewModel(
                 val vehicle = _state.value.vehicleToDelete ?: return
                 _state.update { it.copy(vehicleToDelete = null) }
                 viewModelScope.launch {
-                    deleteVehicleUseCase(vehicle.id, vehicle.driverId)
+                    vehicleRepository.deleteVehicle(vehicle.id, vehicle.driverId)
                 }
             }
 

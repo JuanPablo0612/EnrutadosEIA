@@ -2,7 +2,7 @@ package com.juanpablo0612.carpool.presentation.auth.forgotpassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.auth.usecase.SendPasswordResetEmailUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
 import kotlinx.coroutines.Job
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
-    private val sendPasswordResetEmailUseCase: SendPasswordResetEmailUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ForgotPasswordUiState())
@@ -51,7 +51,7 @@ class ForgotPasswordViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            sendPasswordResetEmailUseCase(email)
+            authRepository.sendPasswordResetEmail(email)
             // Always show success for privacy (don't reveal if email exists)
             _uiState.update {
                 it.copy(

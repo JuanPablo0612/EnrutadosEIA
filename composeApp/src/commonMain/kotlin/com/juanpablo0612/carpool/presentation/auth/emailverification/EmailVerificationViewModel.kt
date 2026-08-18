@@ -3,8 +3,7 @@ package com.juanpablo0612.carpool.presentation.auth.emailverification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
-import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.auth.usecase.SendEmailVerificationUseCase
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,8 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class EmailVerificationViewModel(
-    private val sendEmailVerificationUseCase: SendEmailVerificationUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EmailVerificationUiState())
@@ -48,7 +46,7 @@ class EmailVerificationViewModel(
 
     private fun loadUserEmail() {
         viewModelScope.launch {
-            getCurrentUserUseCase().onSuccess { user ->
+            authRepository.getCurrentUser().onSuccess { user ->
                 val email = user.email
                 val atIndex = email.indexOf('@')
                 val obfuscated = if (atIndex > 1) email[0] + "***" + email.substring(atIndex) else email
@@ -62,7 +60,7 @@ class EmailVerificationViewModel(
         pollingJob = viewModelScope.launch {
             while (true) {
                 delay(5000)
-                getCurrentUserUseCase().onSuccess { user ->
+                authRepository.getCurrentUser().onSuccess { user ->
                     if (user.isEmailVerified || !FeatureFlags.EMAIL_VERIFICATION_REQUIRED) {
                         pollingJob?.cancel()
                         _events.emit(EmailVerificationEvent.NavigateToApp(user))
@@ -75,7 +73,7 @@ class EmailVerificationViewModel(
     private fun resendEmail() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            sendEmailVerificationUseCase()
+            authRepository.sendEmailVerification()
                 .onSuccess {
                     _uiState.update { it.copy(isLoading = false) }
                     startCountdown()
