@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
-import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
+import com.juanpablo0612.carpool.domain.preferences.repository.UserPreferencesRepository
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

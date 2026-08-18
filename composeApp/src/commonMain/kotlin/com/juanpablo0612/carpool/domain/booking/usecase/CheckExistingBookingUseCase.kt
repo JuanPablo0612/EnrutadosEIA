@@ -7,8 +7,8 @@ class CheckExistingBookingUseCase(
     private val bookingRepository: BookingRepository,
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(tripId: String): Boolean {
-        val userId = authRepository.getCurrentUserId() ?: return false
-        return bookingRepository.hasActiveBooking(userId, tripId).getOrDefault(false)
+    suspend operator fun invoke(tripId: String): Result<Boolean> {
+        val userId = authRepository.getCurrentUserId() ?: return Result.success(false)
+        return bookingRepository.hasActiveBooking(userId, tripId)
     }
 }

@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.domain.preferences
+package com.juanpablo0612.carpool.domain.preferences.repository
 
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 

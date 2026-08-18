@@ -50,7 +50,9 @@ class RouteDetailPassengerViewModel(
             tripRepository.getTripById(tripId)
                 .onSuccess { trip ->
                     _state.update { it.copy(isLoading = false, trip = trip) }
-                    val alreadyRequested = checkExistingBookingUseCase(tripId)
+                    // A failed probe falls back to "not yet requested": CreateBookingUseCase re-checks for an
+                    // existing booking before it creates one, so this cannot produce a duplicate.
+                    val alreadyRequested = checkExistingBookingUseCase(tripId).getOrDefault(false)
                     _state.update { it.copy(alreadyRequested = alreadyRequested) }
                     observeVehicleAndSeats(trip.driverId, trip.vehicleId, trip.id)
                     loadDriverProfile(trip.driverId)

@@ -35,7 +35,7 @@ import com.juanpablo0612.carpool.domain.place.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.place.usecase.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.place.usecase.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.place.usecase.GetSavedPlacesUseCase
-import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
+import com.juanpablo0612.carpool.domain.preferences.repository.UserPreferencesRepository
 import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import com.juanpablo0612.carpool.domain.rating.usecase.CreateRatingUseCase
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository

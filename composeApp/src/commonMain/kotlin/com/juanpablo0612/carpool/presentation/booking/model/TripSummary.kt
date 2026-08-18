@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.domain.booking.model
+package com.juanpablo0612.carpool.presentation.booking.model
 
 data class TripSummary(
     val tripId: String,

@@ -43,17 +43,6 @@ class RatingRepositoryImpl(private val firestore: FirebaseFirestore) : RatingRep
         }
     }
 
-    override suspend fun getUserTotalTrips(userId: String): Result<Int> {
-        return try {
-            val snapshot = firestore.collection(COLLECTION)
-                .where { "rateeId" equalTo userId }
-                .get()
-            Result.success(snapshot.documents.size)
-        } catch (e: Exception) {
-            Result.failure(AppException.RatingException.Unknown)
-        }
-    }
-
     companion object {
         private const val COLLECTION = "ratings"
     }

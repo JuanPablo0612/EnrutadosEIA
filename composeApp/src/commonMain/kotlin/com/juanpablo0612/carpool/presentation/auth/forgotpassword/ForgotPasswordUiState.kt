@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.auth.forgotpassword
 
 import com.juanpablo0612.carpool.domain.auth.model.AuthError
-import com.juanpablo0612.carpool.domain.auth.util.ValidationError
+import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
 
 data class ForgotPasswordUiState(
     val email: String = "",

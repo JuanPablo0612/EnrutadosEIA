@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.preferences.UserPreferencesRepository
+import com.juanpablo0612.carpool.domain.preferences.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow

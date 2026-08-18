@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.auth.login
 
 import com.juanpablo0612.carpool.domain.auth.model.AuthError
-import com.juanpablo0612.carpool.domain.auth.util.ValidationError
+import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
 
 data class LoginUiState(
     val email: String = "",

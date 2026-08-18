@@ -2,7 +2,7 @@ package com.juanpablo0612.carpool.presentation.auth.common
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.auth.model.AuthError
-import com.juanpablo0612.carpool.domain.auth.util.ValidationError
+import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource
 

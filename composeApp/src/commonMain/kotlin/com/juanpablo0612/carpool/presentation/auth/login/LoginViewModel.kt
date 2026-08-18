@@ -3,8 +3,8 @@ package com.juanpablo0612.carpool.presentation.auth.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
-import com.juanpablo0612.carpool.domain.auth.util.Validator
+import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
+import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import kotlinx.coroutines.flow.MutableSharedFlow

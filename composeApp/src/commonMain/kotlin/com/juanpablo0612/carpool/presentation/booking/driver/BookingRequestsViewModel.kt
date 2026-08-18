@@ -6,9 +6,9 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
-import com.juanpablo0612.carpool.domain.booking.model.BookingWithPassenger
-import com.juanpablo0612.carpool.domain.booking.model.PassengerSummary
-import com.juanpablo0612.carpool.domain.booking.model.TripSummary
+import com.juanpablo0612.carpool.presentation.booking.model.BookingWithPassenger
+import com.juanpablo0612.carpool.presentation.booking.model.PassengerSummary
+import com.juanpablo0612.carpool.presentation.booking.model.TripSummary
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
