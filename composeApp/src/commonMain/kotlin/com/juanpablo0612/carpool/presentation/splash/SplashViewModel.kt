@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.preferences.use_case.GetOnboardingSeenUseCase
-import com.juanpablo0612.carpool.domain.preferences.use_case.GetRolePreferenceUseCase
+import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
+import com.juanpablo0612.carpool.domain.preferences.usecase.GetOnboardingSeenUseCase
+import com.juanpablo0612.carpool.domain.preferences.usecase.GetRolePreferenceUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow

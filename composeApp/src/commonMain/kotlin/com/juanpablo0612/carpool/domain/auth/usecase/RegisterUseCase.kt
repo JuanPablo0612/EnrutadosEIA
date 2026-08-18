@@ -1,0 +1,17 @@
+package com.juanpablo0612.carpool.domain.auth.usecase
+
+import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+
+class RegisterUseCase(private val repository: AuthRepository) {
+    suspend operator fun invoke(
+        email: String,
+        password: String,
+        name: String,
+        isPassenger: Boolean,
+        isDriver: Boolean,
+        phone: String = "",
+        photoBytes: ByteArray? = null
+    ): Result<Unit> {
+        return repository.register(email, password, name, isPassenger, isDriver, phone, photoBytes)
+    }
+}

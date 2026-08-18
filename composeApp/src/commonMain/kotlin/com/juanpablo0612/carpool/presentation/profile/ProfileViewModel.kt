@@ -3,8 +3,8 @@ package com.juanpablo0612.carpool.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
-import com.juanpablo0612.carpool.domain.auth.use_case.DeleteAccountUseCase
-import com.juanpablo0612.carpool.domain.auth.use_case.UpdateUserRolesUseCase
+import com.juanpablo0612.carpool.domain.auth.usecase.DeleteAccountUseCase
+import com.juanpablo0612.carpool.domain.auth.usecase.UpdateUserRolesUseCase
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow

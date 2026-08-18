@@ -40,11 +40,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.places.model.Coordinates
+import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.presentation.places.add.components.MapPreview
+import com.juanpablo0612.carpool.presentation.place.add.components.MapPreview
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
@@ -463,13 +463,13 @@ private val previewTrip = Trip(
     routeId = "r1",
     driverId = "d1",
     vehicleId = "v1",
-    origin = com.juanpablo0612.carpool.domain.places.model.Place(
+    origin = com.juanpablo0612.carpool.domain.place.model.Place(
         name = "Casa",
         address = "Calle 10 #20-30",
         latitude = 6.2,
         longitude = -75.6
     ),
-    destination = com.juanpablo0612.carpool.domain.places.model.Place.UNIVERSITY_EIA,
+    destination = com.juanpablo0612.carpool.domain.place.model.Place.UNIVERSITY_EIA,
     waypoints = emptyList(),
     departureTime = 0L,
     status = TripStatus.InProgress,

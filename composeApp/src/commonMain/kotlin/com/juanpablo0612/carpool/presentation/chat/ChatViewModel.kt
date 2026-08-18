@@ -3,9 +3,9 @@ package com.juanpablo0612.carpool.presentation.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.chat.use_case.GetMessagesUseCase
-import com.juanpablo0612.carpool.domain.chat.use_case.MarkMessagesReadUseCase
-import com.juanpablo0612.carpool.domain.chat.use_case.SendMessageUseCase
+import com.juanpablo0612.carpool.domain.chat.usecase.GetMessagesUseCase
+import com.juanpablo0612.carpool.domain.chat.usecase.MarkMessagesReadUseCase
+import com.juanpablo0612.carpool.domain.chat.usecase.SendMessageUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

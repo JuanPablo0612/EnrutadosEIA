@@ -2,7 +2,7 @@ package com.juanpablo0612.carpool.presentation.profile.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.auth.use_case.UpdateProfileUseCase
+import com.juanpablo0612.carpool.domain.auth.usecase.UpdateProfileUseCase
 import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -3,12 +3,12 @@ package com.juanpablo0612.carpool.presentation.trip.create
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.routes.use_case.GetRouteByIdUseCase
+import com.juanpablo0612.carpool.domain.route.usecase.GetRouteByIdUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripError
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.trip.use_case.CreateTripUseCase
-import com.juanpablo0612.carpool.domain.vehicles.use_case.GetUserVehiclesUseCase
+import com.juanpablo0612.carpool.domain.trip.usecase.CreateTripUseCase
+import com.juanpablo0612.carpool.domain.vehicle.usecase.GetUserVehiclesUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

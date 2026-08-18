@@ -1,0 +1,17 @@
+package com.juanpablo0612.carpool.presentation.route.create.components
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+
+@Composable
+fun SectionHeader(title: String, modifier: Modifier = Modifier) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = modifier.padding(Spacing.lg)
+    )
+}

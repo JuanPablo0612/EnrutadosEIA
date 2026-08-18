@@ -2,7 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
 
 /**
  * Places a phone call using the platform's dialer app. Mirrors the
- * [com.juanpablo0612.carpool.presentation.places.add.components.LocationPermissionRequester]
+ * [com.juanpablo0612.carpool.presentation.place.add.components.LocationPermissionRequester]
  * expect/actual seam: the interface + factory live in commonMain, the platform implementations
  * live in their respective source sets.
  */

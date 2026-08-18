@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.safety.model.SafetySettings
-import com.juanpablo0612.carpool.domain.safety.use_case.AddEmergencyContactUseCase
-import com.juanpablo0612.carpool.domain.safety.use_case.GetEmergencyContactsUseCase
-import com.juanpablo0612.carpool.domain.safety.use_case.GetSafetySettingsUseCase
-import com.juanpablo0612.carpool.domain.safety.use_case.RemoveEmergencyContactUseCase
-import com.juanpablo0612.carpool.domain.safety.use_case.UpdateSafetySettingsUseCase
+import com.juanpablo0612.carpool.domain.safety.usecase.AddEmergencyContactUseCase
+import com.juanpablo0612.carpool.domain.safety.usecase.GetEmergencyContactsUseCase
+import com.juanpablo0612.carpool.domain.safety.usecase.GetSafetySettingsUseCase
+import com.juanpablo0612.carpool.domain.safety.usecase.RemoveEmergencyContactUseCase
+import com.juanpablo0612.carpool.domain.safety.usecase.UpdateSafetySettingsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

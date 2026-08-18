@@ -3,8 +3,8 @@ package com.juanpablo0612.carpool.presentation.auth.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
-import com.juanpablo0612.carpool.domain.auth.use_case.GetCurrentUserUseCase
-import com.juanpablo0612.carpool.domain.auth.use_case.RegisterUseCase
+import com.juanpablo0612.carpool.domain.auth.usecase.GetCurrentUserUseCase
+import com.juanpablo0612.carpool.domain.auth.usecase.RegisterUseCase
 import com.juanpablo0612.carpool.domain.auth.util.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.util.Validator
 import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
