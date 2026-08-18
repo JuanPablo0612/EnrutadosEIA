@@ -3,14 +3,14 @@ package com.juanpablo0612.carpool.data.place.repository
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.place.model.PlaceDto
 import com.juanpablo0612.carpool.domain.place.model.Place
-import com.juanpablo0612.carpool.domain.place.repository.PlacesRepository
+import com.juanpablo0612.carpool.domain.place.repository.PlaceRepository
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class PlacesRepositoryImpl(
+class PlaceRepositoryImpl(
     private val firestore: FirebaseFirestore
-) : PlacesRepository {
+) : PlaceRepository {
 
     override suspend fun deletePlace(placeId: String): Result<Unit> {
         return try {

@@ -6,7 +6,7 @@ import com.juanpablo0612.carpool.data.auth.repository.AuthRepositoryImpl
 import com.juanpablo0612.carpool.data.booking.repository.BookingRepositoryImpl
 import com.juanpablo0612.carpool.data.chat.ChatRepositoryImpl
 import com.juanpablo0612.carpool.data.notification.NotificationRepositoryImpl
-import com.juanpablo0612.carpool.data.place.repository.PlacesRepositoryImpl
+import com.juanpablo0612.carpool.data.place.repository.PlaceRepositoryImpl
 import com.juanpablo0612.carpool.data.place.service.CompassLocationService
 import com.juanpablo0612.carpool.data.place.service.CompassPlacesSearchService
 import com.juanpablo0612.carpool.data.preferences.UserPreferencesDataSource
@@ -48,7 +48,7 @@ import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationU
 import com.juanpablo0612.carpool.domain.notification.usecase.DeleteNotificationUseCase
 import com.juanpablo0612.carpool.domain.notification.usecase.GetNotificationsUseCase
 import com.juanpablo0612.carpool.domain.notification.usecase.MarkNotificationReadUseCase
-import com.juanpablo0612.carpool.domain.place.repository.PlacesRepository
+import com.juanpablo0612.carpool.domain.place.repository.PlaceRepository
 import com.juanpablo0612.carpool.domain.place.service.LocationService
 import com.juanpablo0612.carpool.domain.place.service.PlacesSearchService
 import com.juanpablo0612.carpool.domain.place.usecase.CreatePlaceUseCase
@@ -211,7 +211,7 @@ val tripModule = module {
 val placeModule = module {
     singleOf(::CompassLocationService) bind LocationService::class
     singleOf(::CompassPlacesSearchService) bind PlacesSearchService::class
-    singleOf(::PlacesRepositoryImpl) bind PlacesRepository::class
+    singleOf(::PlaceRepositoryImpl) bind PlaceRepository::class
     single { createLocationPermissionRequester() }
     factoryOf(::GetSavedPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
