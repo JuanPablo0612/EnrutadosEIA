@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.data.vehicle
+package com.juanpablo0612.carpool.data.vehicle.datasource
 
 import dev.gitlive.firebase.storage.StorageReference
 

@@ -3,6 +3,8 @@ package com.juanpablo0612.carpool.di
 import com.juanpablo0612.carpool.data.auth.datasource.AuthRemoteDataSource
 import com.juanpablo0612.carpool.data.auth.datasource.FirebaseAuthRemoteDataSource
 import com.juanpablo0612.carpool.data.auth.repository.AuthRepositoryImpl
+import com.juanpablo0612.carpool.data.booking.datasource.BookingRemoteDataSource
+import com.juanpablo0612.carpool.data.booking.datasource.FirebaseBookingRemoteDataSource
 import com.juanpablo0612.carpool.data.booking.repository.BookingRepositoryImpl
 import com.juanpablo0612.carpool.data.chat.datasource.ChatRemoteDataSource
 import com.juanpablo0612.carpool.data.chat.datasource.FirebaseChatRemoteDataSource
@@ -26,7 +28,13 @@ import com.juanpablo0612.carpool.data.route.repository.RouteRepositoryImpl
 import com.juanpablo0612.carpool.data.safety.datasource.FirebaseSafetyRemoteDataSource
 import com.juanpablo0612.carpool.data.safety.datasource.SafetyRemoteDataSource
 import com.juanpablo0612.carpool.data.safety.repository.SafetyRepositoryImpl
+import com.juanpablo0612.carpool.data.trip.datasource.FirebaseTripRemoteDataSource
+import com.juanpablo0612.carpool.data.trip.datasource.TripRemoteDataSource
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
+import com.juanpablo0612.carpool.data.vehicle.datasource.FirebaseVehicleRemoteDataSource
+import com.juanpablo0612.carpool.data.vehicle.datasource.FirebaseVehicleStorageDataSource
+import com.juanpablo0612.carpool.data.vehicle.datasource.VehicleRemoteDataSource
+import com.juanpablo0612.carpool.data.vehicle.datasource.VehicleStorageDataSource
 import com.juanpablo0612.carpool.data.vehicle.repository.VehicleRepositoryImpl
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
@@ -136,6 +144,7 @@ val routeModule = module {
 }
 
 val tripModule = module {
+    singleOf(::FirebaseTripRemoteDataSource) bind TripRemoteDataSource::class
     singleOf(::TripRepositoryImpl) bind TripRepository::class
     factoryOf(::GetAvailableTripsUseCase)
     viewModel { SearchRoutesViewModel(get(), get(), get(), get()) }
@@ -160,6 +169,8 @@ val placeModule = module {
 }
 
 val vehicleModule = module {
+    singleOf(::FirebaseVehicleRemoteDataSource) bind VehicleRemoteDataSource::class
+    singleOf(::FirebaseVehicleStorageDataSource) bind VehicleStorageDataSource::class
     singleOf(::VehicleRepositoryImpl) bind VehicleRepository::class
     viewModel { (vehicleId: String?) ->
         RegisterVehicleViewModel(vehicleId, get(), get())
@@ -168,6 +179,7 @@ val vehicleModule = module {
 }
 
 val bookingModule = module {
+    singleOf(::FirebaseBookingRemoteDataSource) bind BookingRemoteDataSource::class
     singleOf(::BookingRepositoryImpl) bind BookingRepository::class
     factoryOf(::CreateBookingUseCase)
     factoryOf(::GetTripAvailableSeatsUseCase)
