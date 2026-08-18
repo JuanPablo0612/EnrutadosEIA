@@ -17,7 +17,7 @@ class RouteRepositoryImpl(
             val dto = RouteDto.fromDomain(route)
             remoteDataSource.createRoute(dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RouteException.Unknown)
         }
     }
@@ -31,7 +31,7 @@ class RouteRepositoryImpl(
         return try {
             val route = remoteDataSource.getRouteById(id).toDomain()
             Result.success(route)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RouteException.Unknown)
         }
     }
@@ -41,7 +41,7 @@ class RouteRepositoryImpl(
             val dto = RouteDto.fromDomain(route)
             remoteDataSource.updateRoute(dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RouteException.Unknown)
         }
     }
@@ -50,7 +50,7 @@ class RouteRepositoryImpl(
         return try {
             remoteDataSource.deleteRoute(id)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RouteException.Unknown)
         }
     }

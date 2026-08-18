@@ -16,7 +16,7 @@ class PlaceRepositoryImpl(
         return try {
             remoteDataSource.deletePlace(placeId)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.PlaceException.Unknown)
         }
     }
@@ -26,7 +26,7 @@ class PlaceRepositoryImpl(
             val dto = PlaceDto.fromDomain(place)
             remoteDataSource.createPlace(dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.PlaceException.Unknown)
         }
     }

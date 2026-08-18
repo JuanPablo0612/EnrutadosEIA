@@ -24,7 +24,7 @@ class ChatRepositoryImpl(
             val dto = MessageDto.fromDomain(message)
             remoteDataSource.sendMessage(message.bookingId, message.id, dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.ChatException.Unknown)
         }
     }
@@ -33,7 +33,7 @@ class ChatRepositoryImpl(
         return try {
             remoteDataSource.markMessagesRead(bookingId, userId)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.ChatException.Unknown)
         }
     }

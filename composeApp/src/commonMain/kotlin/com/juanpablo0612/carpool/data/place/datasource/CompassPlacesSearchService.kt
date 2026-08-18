@@ -25,7 +25,7 @@ class CompassPlacesSearchService : PlacesSearchService {
                     fullAddress = full,
                 )
             } ?: emptyList()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
@@ -41,7 +41,7 @@ class CompassPlacesSearchService : PlacesSearchService {
                             .joinToString(", ")
                             .takeIf { it.isNotBlank() }
                 }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

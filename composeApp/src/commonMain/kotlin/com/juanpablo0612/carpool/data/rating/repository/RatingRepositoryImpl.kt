@@ -15,7 +15,7 @@ class RatingRepositoryImpl(
             val dto = RatingDto.fromDomain(rating)
             remoteDataSource.createRating(dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RatingException.Unknown)
         }
     }
@@ -23,7 +23,7 @@ class RatingRepositoryImpl(
     override suspend fun hasRatedBooking(bookingId: String, raterId: String): Result<Boolean> {
         return try {
             Result.success(remoteDataSource.hasRatedBooking(bookingId, raterId))
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RatingException.Unknown)
         }
     }
@@ -33,7 +33,7 @@ class RatingRepositoryImpl(
             val ratings = remoteDataSource.getRatingsForUser(userId)
             val avg = if (ratings.isEmpty()) null else ratings.map { it.stars }.average()
             Result.success(avg)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.RatingException.Unknown)
         }
     }

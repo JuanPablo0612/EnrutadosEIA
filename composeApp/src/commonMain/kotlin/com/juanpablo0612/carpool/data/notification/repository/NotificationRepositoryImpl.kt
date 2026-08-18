@@ -24,7 +24,7 @@ class NotificationRepositoryImpl(
             val dto = NotificationDto.fromDomain(notification)
             remoteDataSource.createNotification(dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.NotificationException.Unknown)
         }
     }
@@ -33,7 +33,7 @@ class NotificationRepositoryImpl(
         return try {
             remoteDataSource.markRead(userId, notificationId)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.NotificationException.Unknown)
         }
     }
@@ -42,7 +42,7 @@ class NotificationRepositoryImpl(
         return try {
             remoteDataSource.delete(userId, notificationId)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.NotificationException.Unknown)
         }
     }
@@ -51,7 +51,7 @@ class NotificationRepositoryImpl(
         return try {
             remoteDataSource.clearAll(userId)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.NotificationException.Unknown)
         }
     }

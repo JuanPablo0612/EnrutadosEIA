@@ -15,7 +15,7 @@ class SafetyRepositoryImpl(
         return try {
             val contacts = remoteDataSource.getEmergencyContacts(userId).map { it.toDomain() }
             Result.success(contacts)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.SafetyException.Unknown)
         }
     }
@@ -25,7 +25,7 @@ class SafetyRepositoryImpl(
             val dto = EmergencyContactDto.fromDomain(contact)
             remoteDataSource.addEmergencyContact(userId, dto)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.SafetyException.Unknown)
         }
     }
@@ -34,7 +34,7 @@ class SafetyRepositoryImpl(
         return try {
             remoteDataSource.removeEmergencyContact(userId, contactId)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.SafetyException.Unknown)
         }
     }
@@ -42,8 +42,8 @@ class SafetyRepositoryImpl(
     override suspend fun getSafetySettings(userId: String): Result<SafetySettings> {
         return try {
             Result.success(remoteDataSource.getSafetySettings(userId))
-        } catch (e: Exception) {
-            Result.success(SafetySettings())
+        } catch (_: Exception) {
+            Result.failure(AppException.SafetyException.Unknown)
         }
     }
 
@@ -51,7 +51,7 @@ class SafetyRepositoryImpl(
         return try {
             remoteDataSource.updateSafetySettings(userId, settings)
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure(AppException.SafetyException.Unknown)
         }
     }

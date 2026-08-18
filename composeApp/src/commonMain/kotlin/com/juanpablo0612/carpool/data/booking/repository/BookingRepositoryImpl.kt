@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.booking.repository
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.booking.datasource.BookingRemoteDataSource
 import com.juanpablo0612.carpool.data.booking.model.BookingDto
 import com.juanpablo0612.carpool.domain.booking.model.Booking
@@ -18,8 +19,8 @@ class BookingRepositoryImpl(
             val dto = BookingDto.fromDomain(booking)
             remoteDataSource.createBooking(dto)
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (_: Exception) {
+            Result.failure(AppException.BookingException.Unknown)
         }
     }
 
@@ -84,8 +85,8 @@ class BookingRepositoryImpl(
         return try {
             remoteDataSource.applyStatusTransition(bookingId, newStatus, extraFields)
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (_: Exception) {
+            Result.failure(AppException.BookingException.Unknown)
         }
     }
 
@@ -93,8 +94,8 @@ class BookingRepositoryImpl(
         return try {
             val hasActive = remoteDataSource.hasActiveBooking(passengerId, tripId)
             Result.success(hasActive)
-        } catch (e: Exception) {
-            Result.failure(e)
+        } catch (_: Exception) {
+            Result.failure(AppException.BookingException.Unknown)
         }
     }
 }
