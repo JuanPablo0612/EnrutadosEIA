@@ -15,49 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import androidx.compose.runtime.LaunchedEffect
-import com.juanpablo0612.carpool.presentation.chat.ChatScreen
-import com.juanpablo0612.carpool.presentation.chat.ChatViewModel
-import com.juanpablo0612.carpool.presentation.place.add.AddPlaceAction
-import com.juanpablo0612.carpool.presentation.place.add.AddPlaceScreen
-import com.juanpablo0612.carpool.presentation.place.add.AddPlaceViewModel
-import com.juanpablo0612.carpool.presentation.place.picker.MapPickerScreen
-import com.juanpablo0612.carpool.presentation.place.picker.MapPickerViewModel
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorMode
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
-import com.juanpablo0612.carpool.presentation.navigation.graph.mainNavGraph
+import com.juanpablo0612.carpool.presentation.navigation.graph.driverNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
-import com.juanpablo0612.carpool.presentation.notification.NotificationsScreen
-import com.juanpablo0612.carpool.presentation.notification.NotificationsViewModel
-import com.juanpablo0612.carpool.presentation.onboarding.OnboardingScreen
-import com.juanpablo0612.carpool.presentation.onboarding.OnboardingViewModel
-import com.juanpablo0612.carpool.presentation.profile.ProfileScreen
-import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
-import com.juanpablo0612.carpool.presentation.profile.edit.EditProfileScreen
-import com.juanpablo0612.carpool.presentation.profile.edit.EditProfileViewModel
-import com.juanpablo0612.carpool.presentation.rating.RatingScreen
-import com.juanpablo0612.carpool.presentation.rating.RatingViewModel
-import com.juanpablo0612.carpool.presentation.roleselector.RoleSelectorScreen
-import com.juanpablo0612.carpool.presentation.roleselector.RoleSelectorViewModel
-import com.juanpablo0612.carpool.presentation.safety.SafetyScreen
-import com.juanpablo0612.carpool.presentation.safety.SafetyViewModel
+import com.juanpablo0612.carpool.presentation.navigation.graph.rootNavGraph
+import com.juanpablo0612.carpool.presentation.navigation.graph.sharedNavGraph
 import com.juanpablo0612.carpool.presentation.session.UserSession
-import com.juanpablo0612.carpool.presentation.splash.SplashScreen
-import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
-import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingScreen
-import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingViewModel
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 private const val MAP_PICK_RESULT_KEY = "map_pick_result"
 
@@ -176,71 +145,53 @@ fun AppNavigation(
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding)
             ) {
-                composable<Route.Splash> {
-                    val viewModel: SplashViewModel = koinViewModel()
-                    SplashScreen(
-                        viewModel = viewModel,
-                        onNavigateToAuth = {
-                            navController.navigate(Route.Login) {
-                                popUpTo<Route.Splash> { inclusive = true }
-                            }
-                        },
-                        onNavigateToOnboarding = {
-                            navController.navigate(Route.Onboarding) {
-                                popUpTo<Route.Splash> { inclusive = true }
-                            }
-                        },
-                        onNavigateToDriver = { user ->
-                            userSession.setSession(user, UserRole.Driver)
-                            navController.navigate(Route.Home) {
-                                popUpTo<Route.Splash> { inclusive = true }
-                            }
-                        },
-                        onNavigateToPassenger = { user ->
-                            userSession.setSession(user, UserRole.Passenger)
-                            navController.navigate(Route.PassengerHome) {
-                                popUpTo<Route.Splash> { inclusive = true }
-                            }
-                        },
-                        onNavigateToRoleSelector = { user ->
-                            userSession.setUser(user)
-                            navController.navigate(Route.RoleSelector) {
-                                popUpTo<Route.Splash> { inclusive = true }
-                            }
+                rootNavGraph(
+                    onSplashNavigateToAuth = {
+                        navController.navigate(Route.Login) {
+                            popUpTo<Route.Splash> { inclusive = true }
                         }
-                    )
-                }
-
-                composable<Route.Onboarding> {
-                    val viewModel: OnboardingViewModel = koinViewModel()
-                    OnboardingScreen(
-                        viewModel = viewModel,
-                        onNavigateToApp = {
-                            navController.navigate(Route.Splash) {
-                                popUpTo<Route.Onboarding> { inclusive = true }
-                            }
+                    },
+                    onSplashNavigateToOnboarding = {
+                        navController.navigate(Route.Onboarding) {
+                            popUpTo<Route.Splash> { inclusive = true }
                         }
-                    )
-                }
-
-                composable<Route.RoleSelector> {
-                    val viewModel: RoleSelectorViewModel = koinViewModel()
-                    RoleSelectorScreen(
-                        viewModel = viewModel,
-                        onSelectDriver = {
-                            userSession.setActiveRole(UserRole.Driver)
-                            navController.navigate(Route.Home) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        },
-                        onSelectPassenger = {
-                            userSession.setActiveRole(UserRole.Passenger)
-                            navController.navigate(Route.PassengerHome) {
-                                popUpTo(0) { inclusive = true }
-                            }
+                    },
+                    onSplashNavigateToDriver = { user ->
+                        userSession.setSession(user, UserRole.Driver)
+                        navController.navigate(Route.Home) {
+                            popUpTo<Route.Splash> { inclusive = true }
                         }
-                    )
-                }
+                    },
+                    onSplashNavigateToPassenger = { user ->
+                        userSession.setSession(user, UserRole.Passenger)
+                        navController.navigate(Route.PassengerHome) {
+                            popUpTo<Route.Splash> { inclusive = true }
+                        }
+                    },
+                    onSplashNavigateToRoleSelector = { user ->
+                        userSession.setUser(user)
+                        navController.navigate(Route.RoleSelector) {
+                            popUpTo<Route.Splash> { inclusive = true }
+                        }
+                    },
+                    onOnboardingNavigateToApp = {
+                        navController.navigate(Route.Splash) {
+                            popUpTo<Route.Onboarding> { inclusive = true }
+                        }
+                    },
+                    onSelectDriver = {
+                        userSession.setActiveRole(UserRole.Driver)
+                        navController.navigate(Route.Home) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onSelectPassenger = {
+                        userSession.setActiveRole(UserRole.Passenger)
+                        navController.navigate(Route.PassengerHome) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
 
                 authNavGraph(
                     onAuthSuccess = { user ->
@@ -276,7 +227,7 @@ fun AppNavigation(
                     onNavigateBack = { navController.popBackStack() }
                 )
 
-                mainNavGraph(
+                driverNavGraph(
                     // A direct toggle: RoleSelector stays for first run and the explicit
                     // "remember my choice" flow, not for flipping a binary you already know.
                     onSwitchRole = { switchActiveRole(UserRole.Passenger) },
@@ -322,158 +273,47 @@ fun AppNavigation(
                     onNavigateBack = { navController.popBackStack() }
                 )
 
-                composable<Route.AddPlace> { backStackEntry ->
-                    val viewModel: AddPlaceViewModel = koinViewModel()
-                    val mapPickResult by backStackEntry.savedStateHandle
-                        .getStateFlow<String?>(MAP_PICK_RESULT_KEY, null)
-                        .collectAsState()
-
-                    LaunchedEffect(mapPickResult) {
-                        mapPickResult?.let { raw ->
-                            val parts = raw.split(",")
-                            viewModel.onAction(
-                                AddPlaceAction.OnMapPickResult(parts[0].toDouble(), parts[1].toDouble())
-                            )
-                            backStackEntry.savedStateHandle.remove<String>(MAP_PICK_RESULT_KEY)
+                sharedNavGraph(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToMapPicker = { lat, lon ->
+                        navController.navigate(Route.MapPicker(lat ?: 6.1633, lon ?: -75.4913))
+                    },
+                    onCoordinatesPicked = { lat, lon ->
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set(MAP_PICK_RESULT_KEY, "$lat,$lon")
+                        navController.popBackStack()
+                    },
+                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                    onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
+                    onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
+                    onLogout = onLogout,
+                    onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
+                    // The list, not the creation form — the row is labelled "saved places".
+                    onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
+                    onNavigateToNotifications = { navController.navigate(Route.Notifications) },
+                    onNavigateToSafety = { navController.navigate(Route.Safety) },
+                    onDeleteAccountSuccess = {
+                        navController.navigate(Route.Login) {
+                            popUpTo(0) { inclusive = true }
                         }
-                    }
-
-                    AddPlaceScreen(
-                        viewModel = viewModel,
-                        onBack = { navController.popBackStack() },
-                        onPlaceSaved = { navController.popBackStack() },
-                        onNavigateToMapPicker = { lat, lon ->
-                            navController.navigate(Route.MapPicker(lat ?: 6.1633, lon ?: -75.4913))
+                    },
+                    onRoleSwitched = { role ->
+                        // ProfileViewModel already flipped userSession.activeRole — just move
+                        // the nav graph so it agrees (3.9).
+                        val destination =
+                            if (role == UserRole.Driver) Route.Home else Route.PassengerHome
+                        navController.navigate(destination) {
+                            popUpTo(0) { inclusive = true }
                         }
-                    )
-                }
-
-                composable<Route.SavedPlaces> {
-                    val viewModel: PlaceSelectorViewModel = koinViewModel {
-                        parametersOf(PlaceSelectorMode.MY_PLACES_KEY)
+                    },
+                    onNavigateToDeepLink = { deepLink ->
+                        deepLink.toRouteOrNull()?.let { navController.navigate(it) }
+                    },
+                    onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
+                        navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
                     }
-                    val state by viewModel.state.collectAsState()
-                    // Reuses the browse-and-delete surface that already existed but was never
-                    // registered as a destination; only the selection callback is dropped, since
-                    // here the list is the destination rather than a picker.
-                    PlaceSelectorContent(
-                        state = state,
-                        onAction = viewModel::onAction,
-                        onBack = { navController.popBackStack() },
-                        onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    )
-                }
-
-                composable<Route.MapPicker> { backStackEntry ->
-                    val args = backStackEntry.toRoute<Route.MapPicker>()
-                    val viewModel: MapPickerViewModel = koinViewModel {
-                        parametersOf(args.initialLatitude, args.initialLongitude)
-                    }
-                    MapPickerScreen(
-                        viewModel = viewModel,
-                        onCoordinatesPicked = { lat, lon ->
-                            navController.previousBackStackEntry
-                                ?.savedStateHandle
-                                ?.set(MAP_PICK_RESULT_KEY, "$lat,$lon")
-                            navController.popBackStack()
-                        },
-                        onBack = { navController.popBackStack() },
-                    )
-                }
-
-                composable<Route.Profile> {
-                    val viewModel: ProfileViewModel = koinViewModel()
-                    ProfileScreen(
-                        viewModel = viewModel,
-                        onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
-                        onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
-                        onLogout = onLogout,
-                        onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
-                        // The list, not the creation form — the row is labelled "saved places".
-                        onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
-                        onNavigateToNotifications = { navController.navigate(Route.Notifications) },
-                        onNavigateToSafety = { navController.navigate(Route.Safety) },
-                        onDeleteAccountSuccess = {
-                            navController.navigate(Route.Login) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        },
-                        onRoleSwitched = { role ->
-                            // ProfileViewModel already flipped userSession.activeRole — just move
-                            // the nav graph so it agrees (3.9).
-                            val destination =
-                                if (role == UserRole.Driver) Route.Home else Route.PassengerHome
-                            navController.navigate(destination) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                    )
-                }
-
-                composable<Route.EditProfile> {
-                    val viewModel: EditProfileViewModel = koinViewModel()
-                    EditProfileScreen(
-                        viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() },
-                        onSaved = { navController.popBackStack() }
-                    )
-                }
-
-                composable<Route.Notifications> {
-                    val viewModel: NotificationsViewModel = koinViewModel()
-                    NotificationsScreen(
-                        viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() },
-                        // The ViewModel already parses a deep link off each notification; without
-                        // this the parsed destination was dropped and tapping only marked it read.
-                        onNavigateTo = { deepLink ->
-                            deepLink.toRouteOrNull()?.let { navController.navigate(it) }
-                        }
-                    )
-                }
-
-                composable<Route.Safety> {
-                    val viewModel: SafetyViewModel = koinViewModel()
-                    SafetyScreen(
-                        viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() }
-                    )
-                }
-
-                composable<Route.Chat> { backStackEntry ->
-                    val args = backStackEntry.toRoute<Route.Chat>()
-                    val viewModel: ChatViewModel = koinViewModel {
-                        parametersOf(args.bookingId, args.otherPartyName, args.isReadOnly)
-                    }
-                    ChatScreen(
-                        viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() }
-                    )
-                }
-
-                composable<Route.TripTracking> { backStackEntry ->
-                    val args = backStackEntry.toRoute<Route.TripTracking>()
-                    val viewModel: TripTrackingViewModel = koinViewModel { parametersOf(args.tripId) }
-                    TripTrackingScreen(
-                        viewModel = viewModel,
-                        onBackClick = { navController.popBackStack() },
-                        onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
-                            navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
-                        },
-                        onTripCompleted = { navController.popBackStack() }
-                    )
-                }
-
-                composable<Route.PostTripRating> { backStackEntry ->
-                    val args = backStackEntry.toRoute<Route.PostTripRating>()
-                    val viewModel: RatingViewModel = koinViewModel {
-                        parametersOf(args.bookingId, args.tripId, args.rateeId, args.rateeName, args.rateeIsDriver)
-                    }
-                    RatingScreen(
-                        viewModel = viewModel,
-                        onDismiss = { navController.popBackStack() }
-                    )
-                }
+                )
             }
         }
     }

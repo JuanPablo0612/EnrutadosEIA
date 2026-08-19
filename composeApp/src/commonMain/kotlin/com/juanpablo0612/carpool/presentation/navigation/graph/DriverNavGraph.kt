@@ -25,7 +25,7 @@ import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleVi
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.mainNavGraph(
+fun NavGraphBuilder.driverNavGraph(
     onSwitchRole: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,

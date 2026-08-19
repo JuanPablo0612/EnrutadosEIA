@@ -120,7 +120,7 @@ internal fun DriverTripCard(
             Spacer(modifier = Modifier.height(Spacing.sm))
 
             // "Ver pasajeros" is intentionally not rendered here: its navigation callback is
-            // still a no-op in MainNavGraph (no passenger management screen exists yet), so
+            // still a no-op in DriverNavGraph (no passenger management screen exists yet), so
             // showing it would be a dead tap. onViewPassengers stays wired below so the button
             // can be restored with a one-line change once that screen exists.
             Row(
