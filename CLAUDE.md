@@ -19,7 +19,7 @@ EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app f
 ./gradlew :composeApp:compileCommonMainKotlinMetadata
 ```
 
-There is no test command — android host tests are not enabled (`composeApp`'s `commonTest` source set exists but isn't wired to a runnable target) and the project has no tests. Don't add `./gradlew :composeApp:testDebugUnitTest` to docs or scripts; it does not exist. `composeApp` is a Kotlin Multiplatform **library** module, not an application — `:composeApp:assembleDebug` is not a valid task; the installable APK is built via `:androidApp:assembleDebug`.
+There is no test command — android host tests are not enabled (`composeApp`'s `commonTest` source set exists but isn't wired to a runnable target) and the project has no tests. Don't add `./gradlew :composeApp:testDebugUnitTest` to docs or scripts; it does not exist. `composeApp` is a Kotlin Multiplatform **library** module, not an application — `:composeApp:assembleDebug` is not a valid task; the installable APK is built via `:androidApp:assembleDebug`. There is also no CI workflow and no lint/detekt/ktlint config — `./gradlew :composeApp:compileCommonMainKotlinMetadata` is the only automated check available.
 
 Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library). Gradle configuration cache is enabled. JVM target is 17.
 
@@ -39,17 +39,27 @@ A fresh clone is missing two gitignored files the Android build needs:
 
 ## Architecture
 
-**Clean Architecture + MVVM**, organized as hybrid layers + features:
+**Clean Architecture + MVVM**, organized as hybrid layers + features. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, safety, trip, vehicle` (`route` is a driver's published route; `trip` is a bookable trip instance on that route — they are separate features on purpose).
 
 ```
 com/juanpablo0612/carpool/
-├── core/exception/        # AppException sealed class (domain-safe errors)
-├── data/{feature}/        # DTOs, remote data sources, repository implementations
-├── domain/{feature}/      # Models, repository interfaces, use cases, validators
-├── presentation/{feature}/ # Screens, ViewModels, UiState, Actions
-├── presentation/ui/       # Shared components & theme
-└── di/                    # Koin modules
+├── core/exception/         # AppException sealed class (domain-safe errors)
+├── data/{feature}/
+│   ├── model/               # DTOs (absent for `preferences`, which has no Firestore DTO)
+│   ├── datasource/           # owns every Firebase/DataStore call; throws
+│   └── repository/           # DTO→domain mapping, catches and returns Result<T>
+├── domain/{feature}/
+│   ├── model/                # domain models
+│   ├── repository/           # repository interfaces
+│   └── usecase/              # only where there is real logic (see below)
+├── presentation/{feature}/  # Screens, ViewModels, UiState, Actions, screen-local errors
+│   └── .../components/       # leaf composables for screens over ~250 lines
+├── presentation/navigation/ # Route.kt + graph/ (see Navigation below)
+├── presentation/ui/         # components/ used by 2+ features, theme, util/
+└── di/                       # one Koin module file per feature (see DI below)
 ```
+
+Non-feature presentation packages also exist alongside the feature ones: `home`, `onboarding`, `profile`, `roleselector`, `session`, `splash`.
 
 **Dependency rule:** presentation → domain ← data. Domain is pure Kotlin with no framework imports.
 
@@ -59,25 +69,25 @@ com/juanpablo0612/carpool/
 1. `XxxScreen` — injects ViewModel, collects state, handles navigation side-effects
 2. `XxxContent` — stateless, receives state + callbacks, supports `@Preview`
 
-**ViewModel** — one per screen. Exposes `StateFlow<UiState>` + `SharedFlow<Event>`. UI calls `onAction(Action)`. No business logic in ViewModels.
+**ViewModel** — one per screen. Exposes `StateFlow<UiState>` + `SharedFlow<Event>`. UI calls `onAction(Action)`. No business logic in ViewModels. `BookingWithPassenger`, `PassengerSummary`, and `TripSummary` live in `presentation/booking/model/` rather than `domain/` — a ViewModel builds them and only Compose consumes them, so there's no reason to keep them framework-free.
 
-**Use cases** — single-responsibility, stateless. Injected as Koin factories.
+**Use cases** — 15 total, kept only where there is real logic: orchestration across repositories, derivation, ownership checks, or entity construction with id/timestamp (`booking`: CreateBooking, CheckExistingBooking, GetTripAvailableSeats, GetBookingsForTrip, RejectBooking, ConfirmBooking, CancelBooking · `place`: CreatePlace, DeletePlace, GetSavedPlaces · `trip`: GetAvailableTrips · `chat`: SendMessage · `notification`: CreateNotification · `rating`: CreateRating · `safety`: AddEmergencyContact). For a plain single-call read or write, the ViewModel injects the repository directly instead of wrapping it in a use case. `domain/auth/validation/Validator.kt` is one exception worth knowing about: it's called directly from Login/Register/ForgotPassword ViewModels rather than through a use case — that's fine, since it's pure framework-free domain logic with no repository involved.
 
-**Error handling** — every repository maps raw SDK/Firebase exceptions to a domain-safe subclass of `core/exception/AppException.kt` at the data-layer boundary (one nested sealed class per feature: `AuthException`, `BookingException`, `TripException`, `RouteException`, `VehicleException`, `PlaceException`, `ChatException`, `RatingException`, `NotificationException`, `SafetyException`) — `Result.failure(e)` with a raw exception is never returned. Two error-typing styles coexist depending on where the error is produced:
-  - **Domain-pure sealed class + presentation mapper** (`AuthError`/`AuthErrorMapper.kt`, `BookingError`/`BookingErrorMapper.kt`, `TripError`/`TripErrorMapper.kt`, `RatingError`/`RatingErrorMapper.kt`) — for errors that originate from a repository/use-case failure. The domain class stays framework-free; a `presentation/{feature}/XxxErrorMapper.kt` holds `Throwable.toXxxError()` and `XxxError.asStringResource()` as extension functions.
-  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `SafetyContactFieldError`, `HomeError`) — for screen-local validation errors that never touch the domain layer. These live in `presentation/{feature}/` and carry their own member `asStringResource()`.
+**Error handling** — one rule: **repositories fail with `AppException`; presentation owns every error type the UI renders.** Every repository maps raw SDK/Firebase exceptions to a domain-safe subclass of `core/exception/AppException.kt` at the data-layer boundary (one nested sealed class per feature: `AuthException`, `BookingException`, `TripException`, `RouteException`, `VehicleException`, `PlaceException`, `ChatException`, `RatingException`, `NotificationException`, `SafetyException`) — `Result.failure(e)` with a raw exception is never returned. Firestore-backed features (everything except `AuthException`) can currently only ever produce their `.Unknown` case: the `dev.gitlive` Firestore SDK exposes no exception subtypes to branch on the way `FirebaseAuthException` does, so `data/auth/repository/AuthRepositoryImpl.kt` is the only file outside a `datasource/` package that imports `dev.gitlive` at all. Two error-typing styles coexist in `presentation/{feature}/`, both purely presentation-layer now:
+  - **Sealed class + mapper** (`AuthError`/`AuthErrorMapper.kt`, `BookingError`/`BookingErrorMapper.kt`, `TripError`/`TripErrorMapper.kt`, `RatingError`/`RatingErrorMapper.kt`, `NotificationError`/`NotificationErrorMapper.kt`) — for errors that originate from a repository/use-case failure. A `presentation/{feature}/XxxErrorMapper.kt` holds `Throwable.toXxxError()` and `XxxError.asStringResource()` as extension functions. One deliberate exception: `BookingError.VehicleNotFound` is constructed directly in `RouteDetailPassengerViewModel` for a trip whose vehicle is missing, not via a mapped repository failure.
+  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `SafetyContactFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`) — for screen-local errors that never touch the domain layer. These carry their own member `asStringResource()`.
 
   Either way, errors reach the UI as `ErrorMessage`/`ErrorState` components or inline text-field errors — **never SnackBars, never a raw `throwable.message`.**
 
-**Navigation** — type-safe routes via `@Serializable sealed interface Route` + AndroidX Navigation Compose. One-time events use `ObserveAsEvents` utility with `SharedFlow`.
+**Navigation** — type-safe routes via one flat `@Serializable sealed interface Route` (29 routes) in `presentation/navigation/Route.kt`. `presentation/navigation/graph/` splits the graph into `AuthNavGraph`, `DriverNavGraph`, `PassengerNavGraph`, `RootNavGraph` (Splash/Onboarding/RoleSelector), and `SharedNavGraph` (role-agnostic routes). `Navigation.kt` only assembles the `NavHost` plus session/logout/role-switch wiring. One-time events use the `ObserveAsEvents` utility (in `presentation/ui/util/`) with `SharedFlow`.
 
 ## DI (Koin)
 
-Modules defined in `di/Modules.kt`: `authModule`, `routeModule`, `placeModule`, composed into `appModule`. Singletons for Firebase/repos, factories for use cases, `koinViewModel<T>()` for ViewModels. Hand-written Koin DSL only — the project does not use `koin-annotations` or the `koinCompose` compiler plugin (`@Single`/`@Factory`/`@KoinViewModel`), so don't add those dependencies back without actually adopting the annotation-based style everywhere.
+`di/` has one file per module instead of a single aggregate: `FirebaseModule` (the three Firebase SDK singletons), `AppStateModule` (`UserSession`, `createLocationPermissionRequester`), one module per feature (`AuthModule`, `RouteModule`, `PlaceModule`, etc.) plus `SplashModule`/`ProfileModule`/`HomeModule`/`RoleSelectorModule`, and `AppModule` — the `includes(...)` aggregate plus `initKoin`. Singletons for Firebase/repos, factories for use cases, `koinViewModel<T>()` for ViewModels. Hand-written Koin DSL only — the project does not use `koin-annotations` or the `koinCompose` compiler plugin (`@Single`/`@Factory`/`@KoinViewModel`), so don't add those dependencies back without actually adopting the annotation-based style everywhere.
 
 ## Key Conventions
 
-- **Naming:** `AuthRepository` (interface), `AuthRepositoryImpl` (impl), `UserDto` (DTO), `User` (model), `LoginUseCase` (verb + UseCase)
+- **Naming:** `AuthRepository` (interface), `AuthRepositoryImpl` (impl), `UserDto` (DTO), `User` (model), `LoginUseCase` (verb + UseCase, in `domain/{feature}/usecase/`)
 - **Localization:** all UI strings via `Res.string.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, kept in exact key parity with `values/`). No hardcoded strings. Inside a `@Composable`, resolve with `stringResource(Res.string.x)`; when text must be resolved **outside** composition — e.g. a notification title/body that gets persisted to Firestore as plain text from a ViewModel — use the suspend `getString(Res.string.x)` from `org.jetbrains.compose.resources` instead.
 - **DTOs default every field.** Every field in a `data/{feature}/model/XxxDto.kt` has a default value, so a partially-missing Firestore document decodes instead of throwing (which otherwise surfaces as a generic failure and, for `UserDto` specifically, previously caused a login loop).
 - **Icons:** local XML vectors in `composeResources/drawable/`. Access via `vectorResource(Res.drawable.icon_name)`. **`material-icons-extended` is forbidden.** If a new icon is needed, reference it in code and tell the user which icon to download.

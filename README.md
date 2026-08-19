@@ -3,7 +3,13 @@
 Enrutados EIA is a carpooling app for Universidad EIA students and staff. Drivers publish
 recurring routes and one-off trips; passengers search those trips and reserve seats. It's built
 with Kotlin Multiplatform and Compose Multiplatform, backed by Firebase (Auth, Firestore, and
-Storage), and follows Clean Architecture with MVVM on the presentation layer.
+Storage), and follows Clean Architecture with MVVM on the presentation layer: eleven singular
+feature packages (`auth, booking, chat, notification, place, preferences, rating, route, safety,
+trip, vehicle`) live in parallel under `data/`, `domain/`, and `presentation/`, each with a
+`datasource/` that owns every Firebase call, a `repository/` that maps DTOs to domain models and
+translates failures to `AppException`, and a `domain/{feature}/usecase/` that holds only the use
+cases with real orchestration or derivation logic — plain single-call reads and writes go straight
+from ViewModel to repository instead.
 
 The project is two modules:
 
@@ -58,8 +64,9 @@ in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and r
 `firestore.rules` / `firestore.indexes.json` (Firestore security rules and the composite indexes
 every repository's `where` query relies on) and `storage.rules` (Storage security rules for the
 `users/{uid}/profile.jpg` and `vehicles/{driverId}/{vehicleId}.jpg` paths written by
-`FirebaseAuthRemoteDataSource` and `VehicleRepositoryImpl`) live at the repo root. They are **not**
-applied automatically — deploy them with the [Firebase CLI](https://firebase.google.com/docs/cli):
+`FirebaseAuthRemoteDataSource` and `FirebaseVehicleStorageDataSource`) live at the repo root. They
+are **not** applied automatically — deploy them with the
+[Firebase CLI](https://firebase.google.com/docs/cli):
 
 ```shell
 npm install -g firebase-tools   # once
