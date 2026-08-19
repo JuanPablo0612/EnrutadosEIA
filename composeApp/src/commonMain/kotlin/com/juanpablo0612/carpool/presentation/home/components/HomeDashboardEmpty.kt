@@ -1,10 +1,12 @@
-package com.juanpablo0612.carpool.presentation.home
+package com.juanpablo0612.carpool.presentation.home.components
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.presentation.home.HomeAction
+import com.juanpablo0612.carpool.presentation.home.HomeUiState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing

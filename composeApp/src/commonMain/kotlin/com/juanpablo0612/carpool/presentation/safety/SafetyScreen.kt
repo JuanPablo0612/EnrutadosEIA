@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.safety
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,17 +9,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -30,12 +23,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.safety.model.EmergencyContact
+import com.juanpablo0612.carpool.presentation.safety.components.AddContactDialog
+import com.juanpablo0612.carpool.presentation.safety.components.ContactItem
+import com.juanpablo0612.carpool.presentation.safety.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
@@ -43,24 +34,16 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.call_24px
-import enrutadoseia.composeapp.generated.resources.cancel_button
-import enrutadoseia.composeapp.generated.resources.cd_remove_contact
-import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.safety_add_contact
 import enrutadoseia.composeapp.generated.resources.safety_add_contact_title
 import enrutadoseia.composeapp.generated.resources.safety_auto_share
 import enrutadoseia.composeapp.generated.resources.safety_auto_share_desc
-import enrutadoseia.composeapp.generated.resources.safety_contact_name_label
-import enrutadoseia.composeapp.generated.resources.safety_contact_name_placeholder
-import enrutadoseia.composeapp.generated.resources.safety_contact_phone_label
-import enrutadoseia.composeapp.generated.resources.safety_contact_phone_placeholder
 import enrutadoseia.composeapp.generated.resources.safety_contacts_section
 import enrutadoseia.composeapp.generated.resources.safety_description
 import enrutadoseia.composeapp.generated.resources.safety_max_contacts_reached
 import enrutadoseia.composeapp.generated.resources.safety_remove_contact_body
 import enrutadoseia.composeapp.generated.resources.safety_remove_contact_confirm
 import enrutadoseia.composeapp.generated.resources.safety_remove_contact_title
-import enrutadoseia.composeapp.generated.resources.safety_save_contact
 import enrutadoseia.composeapp.generated.resources.safety_settings_section
 import enrutadoseia.composeapp.generated.resources.safety_title
 import enrutadoseia.composeapp.generated.resources.safety_vibrate_sos
@@ -210,90 +193,4 @@ fun SafetyContent(
             }
         }
     }
-}
-
-@Composable
-private fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-    )
-}
-
-@Composable
-private fun ContactItem(contact: EmergencyContact, onRemove: () -> Unit) {
-    ListItem(
-        headlineContent = { Text(contact.name, fontWeight = FontWeight.SemiBold) },
-        supportingContent = { Text(contact.phone) },
-        trailingContent = {
-            IconButton(onClick = onRemove) {
-                Icon(
-                    imageVector = vectorResource(Res.drawable.delete_24px),
-                    contentDescription = stringResource(Res.string.cd_remove_contact),
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    )
-}
-
-@Composable
-private fun AddContactDialog(
-    name: String,
-    phone: String,
-    nameError: SafetyContactFieldError?,
-    phoneError: SafetyContactFieldError?,
-    isSaving: Boolean,
-    onNameChange: (String) -> Unit,
-    onPhoneChange: (String) -> Unit,
-    onSave: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.safety_add_contact_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = onNameChange,
-                    label = { Text(stringResource(Res.string.safety_contact_name_label)) },
-                    placeholder = { Text(stringResource(Res.string.safety_contact_name_placeholder)) },
-                    isError = nameError != null,
-                    supportingText = nameError?.let { { Text(stringResource(it.asStringResource())) } },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Next
-                    ),
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = phone,
-                    onValueChange = onPhoneChange,
-                    label = { Text(stringResource(Res.string.safety_contact_phone_label)) },
-                    placeholder = { Text(stringResource(Res.string.safety_contact_phone_placeholder)) },
-                    isError = phoneError != null,
-                    supportingText = phoneError?.let { { Text(stringResource(it.asStringResource())) } },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = onSave, enabled = !isSaving) {
-                if (isSaving) CircularProgressIndicator(modifier = Modifier.padding(4.dp))
-                else Text(stringResource(Res.string.safety_save_contact))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel_button)) }
-        }
-    )
 }

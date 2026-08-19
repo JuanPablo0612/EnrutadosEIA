@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.home
+package com.juanpablo0612.carpool.presentation.home.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.presentation.home.HomeAction
+import com.juanpablo0612.carpool.presentation.home.HomeUiState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px

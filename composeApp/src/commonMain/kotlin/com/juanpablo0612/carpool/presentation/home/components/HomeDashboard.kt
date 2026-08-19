@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.home
+package com.juanpablo0612.carpool.presentation.home.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.presentation.home.HomeAction
+import com.juanpablo0612.carpool.presentation.home.HomeUiState
 import com.juanpablo0612.carpool.presentation.ui.components.OfflineBanner
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import kotlin.time.Clock

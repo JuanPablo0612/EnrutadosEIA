@@ -18,6 +18,8 @@ import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
+import com.juanpablo0612.carpool.presentation.home.components.HomeDashboard
+import com.juanpablo0612.carpool.presentation.home.components.HomeDashboardEmpty
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton

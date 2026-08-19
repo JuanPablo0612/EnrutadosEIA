@@ -1,8 +1,9 @@
-package com.juanpablo0612.carpool.presentation.home
+package com.juanpablo0612.carpool.presentation.home.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.presentation.home.relativeTime
 import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.components.HighlightCard
 import enrutadoseia.composeapp.generated.resources.Res

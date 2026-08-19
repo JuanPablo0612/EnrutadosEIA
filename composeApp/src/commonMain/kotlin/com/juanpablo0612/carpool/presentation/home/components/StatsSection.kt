@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.home
+package com.juanpablo0612.carpool.presentation.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
