@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.home.HomeAction
 import com.juanpablo0612.carpool.presentation.home.HomeUiState
-import com.juanpablo0612.carpool.presentation.ui.components.OfflineBanner
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import kotlin.time.Clock
 

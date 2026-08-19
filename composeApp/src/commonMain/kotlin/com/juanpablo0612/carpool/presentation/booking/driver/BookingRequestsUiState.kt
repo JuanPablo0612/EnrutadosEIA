@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.presentation.booking.driver
 
-import com.juanpablo0612.carpool.domain.booking.model.BookingError
+import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.presentation.booking.model.BookingWithPassenger
 import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 

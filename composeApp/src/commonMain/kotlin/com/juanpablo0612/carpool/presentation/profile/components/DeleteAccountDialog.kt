@@ -14,8 +14,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.auth.model.AuthError
-import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
+import com.juanpablo0612.carpool.presentation.auth.AuthError
+import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel_button

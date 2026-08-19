@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.trip.create
 
 import com.juanpablo0612.carpool.domain.route.model.Route
-import com.juanpablo0612.carpool.domain.trip.model.TripError
+import com.juanpablo0612.carpool.presentation.trip.TripError
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import kotlin.time.Clock
 import kotlinx.datetime.DateTimeUnit

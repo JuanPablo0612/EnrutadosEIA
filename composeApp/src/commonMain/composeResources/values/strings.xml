@@ -179,7 +179,6 @@
     <string name="no_seats_available">No seats available</string>
     <string name="error_no_seats_available">No seats available on this vehicle</string>
     <string name="error_already_booked">You already have a booking on this route</string>
-    <string name="error_booking_not_found">Booking not found</string>
     <string name="error_booking_vehicle_not_found">Vehicle not found for this trip</string>
 
     <!-- Route Detail Passenger -->

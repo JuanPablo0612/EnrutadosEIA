@@ -30,7 +30,7 @@ import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingR
 import com.juanpablo0612.carpool.presentation.booking.driver.components.ConfirmedBookingCard
 import com.juanpablo0612.carpool.presentation.booking.driver.components.HistoryBookingCard
 import com.juanpablo0612.carpool.presentation.booking.driver.components.RejectBottomSheet
-import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage

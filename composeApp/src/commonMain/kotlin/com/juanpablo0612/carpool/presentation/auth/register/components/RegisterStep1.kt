@@ -8,12 +8,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
+import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterAction
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterUiState
 import com.juanpablo0612.carpool.presentation.ui.components.EmailTextField
-import com.juanpablo0612.carpool.presentation.ui.components.NameTextField
-import com.juanpablo0612.carpool.presentation.ui.components.PasswordStrengthIndicator
 import com.juanpablo0612.carpool.presentation.ui.components.PasswordTextField
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing

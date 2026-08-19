@@ -31,10 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
+import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterAction
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterUiState
-import com.juanpablo0612.carpool.presentation.ui.components.PhoneTextField
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res

@@ -1,7 +1,6 @@
-package com.juanpablo0612.carpool.presentation.auth.common
+package com.juanpablo0612.carpool.presentation.auth
 
 import com.juanpablo0612.carpool.core.exception.AppException
-import com.juanpablo0612.carpool.domain.auth.model.AuthError
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
 import enrutadoseia.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.StringResource

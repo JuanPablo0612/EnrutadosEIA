@@ -179,7 +179,6 @@
     <string name="no_seats_available">Sin asientos disponibles</string>
     <string name="error_no_seats_available">No hay asientos disponibles en este vehículo</string>
     <string name="error_already_booked">Ya tienes una reserva en esta ruta</string>
-    <string name="error_booking_not_found">Reserva no encontrada</string>
     <string name="error_booking_vehicle_not_found">No se encontró el vehículo de este viaje</string>
 
     <!-- Detalle de ruta (pasajero) -->

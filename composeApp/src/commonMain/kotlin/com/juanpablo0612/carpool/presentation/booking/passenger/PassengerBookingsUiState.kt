@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.booking.passenger
 
 import com.juanpablo0612.carpool.domain.booking.model.Booking
-import com.juanpablo0612.carpool.domain.booking.model.BookingError
+import com.juanpablo0612.carpool.presentation.booking.BookingError
 
 data class PassengerBookingsUiState(
     val isLoading: Boolean = true,

@@ -14,7 +14,7 @@ import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.place.add.components.LocationPermissionRequester
-import com.juanpablo0612.carpool.presentation.utils.formatCoordinates
+import com.juanpablo0612.carpool.presentation.ui.util.formatCoordinates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

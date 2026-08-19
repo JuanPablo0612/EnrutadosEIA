@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.ui.components
+package com.juanpablo0612.carpool.presentation.home.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Row

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -115,60 +114,6 @@ fun SecondaryButton(
     }
 }
 
-/**
- * The app's middle emphasis tier, between [PrimaryButton]'s filled CTA and [SecondaryButton]'s
- * outline: a [FilledTonalButton] for actions that matter but shouldn't compete with the screen's
- * one primary action (e.g. a secondary but still-affirmative choice). Same API shape as
- * [PrimaryButton] so call sites can switch emphasis without re-plumbing loading/enabled state.
- */
-@Composable
-fun TertiaryButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    isLoading: Boolean = false,
-    shape: Shape = MaterialTheme.shapes.medium,
-    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
-    trailingIcon: ImageVector? = null
-) {
-    FilledTonalButton(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp),
-        enabled = enabled && !isLoading,
-        shape = shape,
-        colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = containerColor,
-            contentColor = contentColor,
-        )
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(Spacing.xl),
-                color = contentColor,
-                strokeWidth = 2.dp
-            )
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                if (trailingIcon != null) {
-                    Spacer(modifier = Modifier.width(Spacing.sm))
-                    Icon(imageVector = trailingIcon, contentDescription = null)
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun LinkText(
     text: String,
@@ -201,17 +146,6 @@ private fun PrimaryButtonPreview() {
 private fun SecondaryButtonPreview() {
     CarpoolTheme {
         SecondaryButton(text = "Cancel", onClick = {}, modifier = Modifier.padding(Spacing.lg))
-    }
-}
-
-@Preview
-@Composable
-private fun TertiaryButtonPreview() {
-    CarpoolTheme {
-        Column {
-            TertiaryButton(text = "Maybe later", onClick = {}, modifier = Modifier.padding(Spacing.lg))
-            TertiaryButton(text = "Loading", onClick = {}, isLoading = true, modifier = Modifier.padding(Spacing.lg))
-        }
     }
 }
 

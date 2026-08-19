@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.presentation.profile.edit
 
-import com.juanpablo0612.carpool.domain.auth.model.AuthError
+import com.juanpablo0612.carpool.presentation.auth.AuthError
 
 data class EditProfileUiState(
     val name: String = "",

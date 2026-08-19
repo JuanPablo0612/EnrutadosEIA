@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.domain.trip.model
+package com.juanpablo0612.carpool.presentation.trip
 
 sealed class TripError {
     data object TripNotFound : TripError()

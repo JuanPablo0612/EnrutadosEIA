@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.booking.model.BookingWithPassenger
 import com.juanpablo0612.carpool.presentation.booking.model.PassengerSummary
-import com.juanpablo0612.carpool.presentation.home.relativeTime
+import com.juanpablo0612.carpool.presentation.ui.util.relativeTime
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar

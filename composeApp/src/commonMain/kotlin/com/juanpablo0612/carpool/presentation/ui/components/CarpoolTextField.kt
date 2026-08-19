@@ -19,22 +19,18 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.presentation.ui.input.ColombianPhoneVisualTransformation
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.call_24px
 import enrutadoseia.composeapp.generated.resources.error_24px
 import enrutadoseia.composeapp.generated.resources.hide_password
 import enrutadoseia.composeapp.generated.resources.lock_24px
 import enrutadoseia.composeapp.generated.resources.mail_24px
-import enrutadoseia.composeapp.generated.resources.person_24px
 import enrutadoseia.composeapp.generated.resources.show_password
 import enrutadoseia.composeapp.generated.resources.visibility_24px
 import enrutadoseia.composeapp.generated.resources.visibility_off_24px
@@ -146,38 +142,6 @@ fun EmailTextField(
 }
 
 @Composable
-fun NameTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    errorMessage: String? = null,
-    supportingText: @Composable (() -> Unit)? = null,
-    imeAction: ImeAction = ImeAction.Next,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    leadingIcon: ImageVector = vectorResource(Res.drawable.person_24px)
-) {
-    CarpoolTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = label,
-        placeholder = placeholder,
-        modifier = modifier,
-        errorMessage = errorMessage,
-        supportingText = supportingText,
-        leadingIcon = { Icon(imageVector = leadingIcon, contentDescription = null) },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Text,
-            imeAction = imeAction,
-            capitalization = KeyboardCapitalization.Words,
-            autoCorrectEnabled = false
-        ),
-        keyboardActions = keyboardActions
-    )
-}
-
-@Composable
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
@@ -224,34 +188,6 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction,
             autoCorrectEnabled = false
-        ),
-        keyboardActions = keyboardActions
-    )
-}
-
-@Composable
-fun PhoneTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    errorMessage: String? = null,
-    imeAction: ImeAction = ImeAction.Next,
-    keyboardActions: KeyboardActions = KeyboardActions.Default
-) {
-    CarpoolTextField(
-        value = value,
-        onValueChange = { onValueChange(it.filter { c -> c.isDigit() }.take(10)) },
-        label = label,
-        placeholder = placeholder,
-        modifier = modifier,
-        errorMessage = errorMessage,
-        leadingIcon = { Icon(imageVector = vectorResource(Res.drawable.call_24px), contentDescription = null) },
-        visualTransformation = ColombianPhoneVisualTransformation(),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Phone,
-            imeAction = imeAction
         ),
         keyboardActions = keyboardActions
     )

@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.domain.auth.model
+package com.juanpablo0612.carpool.presentation.auth
 
 sealed class AuthError {
     data object InvalidCredentials : AuthError()

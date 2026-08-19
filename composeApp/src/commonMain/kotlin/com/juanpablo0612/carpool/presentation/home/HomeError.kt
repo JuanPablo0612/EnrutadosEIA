@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.presentation.home
 
-import com.juanpablo0612.carpool.domain.booking.model.BookingError
+import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_unknown

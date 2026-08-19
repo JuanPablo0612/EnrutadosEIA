@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.vehicle.register
+package com.juanpablo0612.carpool.presentation.ui.input
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

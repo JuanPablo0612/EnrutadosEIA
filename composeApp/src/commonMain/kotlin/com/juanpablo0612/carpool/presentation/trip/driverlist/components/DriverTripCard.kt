@@ -25,8 +25,8 @@ import com.juanpablo0612.carpool.presentation.trip.driverlist.TripWithStats
 import com.juanpablo0612.carpool.presentation.ui.components.TripStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.utils.formatLongDate
-import com.juanpablo0612.carpool.presentation.utils.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
+import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.date_of_connector
 import enrutadoseia.composeapp.generated.resources.day_names_short

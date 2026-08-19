@@ -9,7 +9,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.vehicle.register.ColombianPlateVisualTransformation
+import com.juanpablo0612.carpool.presentation.ui.input.ColombianPlateVisualTransformation
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.vehicle_plate_error_format
 import enrutadoseia.composeapp.generated.resources.vehicle_plate_label

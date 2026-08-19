@@ -9,11 +9,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
+import com.juanpablo0612.carpool.presentation.auth.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.register.components.RegisterStep1
 import com.juanpablo0612.carpool.presentation.auth.register.components.RegisterStep2
 import com.juanpablo0612.carpool.presentation.auth.register.components.RegisterStep3
+import com.juanpablo0612.carpool.presentation.auth.register.components.StepIndicator
 import com.juanpablo0612.carpool.presentation.ui.components.*
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*

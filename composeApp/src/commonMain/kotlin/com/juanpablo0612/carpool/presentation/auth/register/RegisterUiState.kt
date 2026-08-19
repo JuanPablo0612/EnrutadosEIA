@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.presentation.auth.register
 
-import com.juanpablo0612.carpool.domain.auth.model.AuthError
+import com.juanpablo0612.carpool.presentation.auth.AuthError
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
 import io.github.vinceglb.filekit.PlatformFile
 

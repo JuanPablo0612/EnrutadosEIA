@@ -36,7 +36,7 @@ import com.juanpablo0612.carpool.presentation.profile.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.profile.components.UserHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
-import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_road_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px

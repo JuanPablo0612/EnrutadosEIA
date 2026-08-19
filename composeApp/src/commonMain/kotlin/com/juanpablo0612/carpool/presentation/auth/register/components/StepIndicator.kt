@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.ui.components
+package com.juanpablo0612.carpool.presentation.auth.register.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background

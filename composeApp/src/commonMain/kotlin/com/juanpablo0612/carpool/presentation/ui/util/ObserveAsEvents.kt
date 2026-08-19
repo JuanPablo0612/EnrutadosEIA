@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.ui.components
+package com.juanpablo0612.carpool.presentation.ui.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.notification
 
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
-import com.juanpablo0612.carpool.domain.notification.model.NotificationError
 
 data class NotificationsUiState(
     val notifications: List<AppNotification> = emptyList(),

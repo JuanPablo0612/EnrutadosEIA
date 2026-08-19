@@ -19,7 +19,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.utils.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_action_rate
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_cancelled

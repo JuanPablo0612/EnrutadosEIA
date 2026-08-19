@@ -26,7 +26,7 @@ import com.juanpablo0612.carpool.presentation.chat.components.MessageBubble
 import com.juanpablo0612.carpool.presentation.chat.components.QuickRepliesRow
 import com.juanpablo0612.carpool.presentation.chat.components.ReadOnlyBanner
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
-import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 
 @Composable
 fun ChatScreen(

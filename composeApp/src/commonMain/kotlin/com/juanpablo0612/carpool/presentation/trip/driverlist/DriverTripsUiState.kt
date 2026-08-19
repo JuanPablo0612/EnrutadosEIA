@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.trip.driverlist
 
 import com.juanpablo0612.carpool.domain.trip.model.Trip
-import com.juanpablo0612.carpool.domain.trip.model.TripError
+import com.juanpablo0612.carpool.presentation.trip.TripError
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 
 data class TripWithStats(

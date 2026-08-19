@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
+import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterAction
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterUiState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage

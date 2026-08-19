@@ -6,8 +6,8 @@ import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
-import com.juanpablo0612.carpool.presentation.auth.common.AuthEvent
-import com.juanpablo0612.carpool.presentation.auth.common.toAuthError
+import com.juanpablo0612.carpool.presentation.auth.AuthEvent
+import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
