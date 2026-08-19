@@ -24,6 +24,7 @@ import com.juanpablo0612.carpool.presentation.route.create.components.DaySelecto
 import com.juanpablo0612.carpool.presentation.route.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.route.create.components.StopType
+import com.juanpablo0612.carpool.presentation.route.detail.components.RecurrenceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
@@ -32,7 +33,6 @@ import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -434,46 +434,6 @@ internal fun RouteDetailEditContent(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun RecurrenceRow(
-    recurringDays: Set<DayOfWeek>,
-    typicalDepartureTime: LocalTime?
-) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
-    ) {
-        val dayAbbrevs = mapOf(
-            DayOfWeek.MONDAY to Res.string.day_abbr_mon,
-            DayOfWeek.TUESDAY to Res.string.day_abbr_tue,
-            DayOfWeek.WEDNESDAY to Res.string.day_abbr_wed,
-            DayOfWeek.THURSDAY to Res.string.day_abbr_thu,
-            DayOfWeek.FRIDAY to Res.string.day_abbr_fri,
-            DayOfWeek.SATURDAY to Res.string.day_abbr_sat,
-            DayOfWeek.SUNDAY to Res.string.day_abbr_sun
-        )
-        recurringDays.sortedBy { it.ordinal }.forEach { day ->
-            dayAbbrevs[day]?.let { res ->
-                Text(
-                    text = stringResource(res),
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-        typicalDepartureTime?.let { t ->
-            Text(
-                text = "· ${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

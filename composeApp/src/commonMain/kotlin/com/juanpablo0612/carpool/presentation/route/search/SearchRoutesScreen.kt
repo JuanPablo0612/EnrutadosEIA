@@ -1,51 +1,29 @@
 package com.juanpablo0612.carpool.presentation.route.search
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
+import com.juanpablo0612.carpool.presentation.route.search.components.DateTimeBottomSheet
+import com.juanpablo0612.carpool.presentation.route.search.components.FiltersBottomSheet
+import com.juanpablo0612.carpool.presentation.route.search.components.SearchCard
 import com.juanpablo0612.carpool.presentation.route.search.components.TripResultCard
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
@@ -55,27 +33,12 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
-import enrutadoseia.composeapp.generated.resources.filter_list_24px
 import enrutadoseia.composeapp.generated.resources.role_selector_passenger_title
 import enrutadoseia.composeapp.generated.resources.search_24px
 import enrutadoseia.composeapp.generated.resources.search_adjust_button
-import enrutadoseia.composeapp.generated.resources.search_button
-import enrutadoseia.composeapp.generated.resources.search_date_placeholder
-import enrutadoseia.composeapp.generated.resources.search_destination_placeholder
 import enrutadoseia.composeapp.generated.resources.search_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.search_empty_title
-import enrutadoseia.composeapp.generated.resources.search_filter_female_driver
-import enrutadoseia.composeapp.generated.resources.search_filter_female_driver_coming_soon
-import enrutadoseia.composeapp.generated.resources.search_filter_max_contribution
-import enrutadoseia.composeapp.generated.resources.search_filters_button
-import enrutadoseia.composeapp.generated.resources.search_filters_title
-import enrutadoseia.composeapp.generated.resources.search_origin_placeholder
-import enrutadoseia.composeapp.generated.resources.cd_swap_origin_destination
-import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
-import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -236,234 +199,6 @@ fun SearchRoutesContent(
             onDismiss = { onAction(SearchRoutesAction.OnDismissDateTimeSheet) }
         )
     }
-}
-
-@Composable
-private fun SearchCard(
-    state: SearchRoutesUiState,
-    onAction: (SearchRoutesAction) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
-    ) {
-        Column(modifier = Modifier.padding(Spacing.md)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = state.origin?.name ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    placeholder = { Text(stringResource(Res.string.search_origin_placeholder)) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onAction(SearchRoutesAction.OnPickOrigin) }
-                        .semantics { role = Role.Button },
-                    singleLine = true
-                )
-                IconButton(onClick = { onAction(SearchRoutesAction.OnSwapPlaces) }) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.swap_horiz_24px),
-                        contentDescription = stringResource(Res.string.cd_swap_origin_destination),
-                        modifier = Modifier.rotate(90f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(Spacing.xs))
-
-            OutlinedTextField(
-                value = state.destination?.name ?: "",
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text(stringResource(Res.string.search_destination_placeholder)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onAction(SearchRoutesAction.OnPickDestination) }
-                    .semantics { role = Role.Button },
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(Spacing.xs))
-
-            OutlinedTextField(
-                value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text(stringResource(Res.string.search_date_placeholder)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onAction(SearchRoutesAction.OnShowDateTimeSheet) }
-                    .semantics { role = Role.Button },
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(Spacing.sm))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AssistChip(
-                    onClick = { onAction(SearchRoutesAction.OnShowFilters) },
-                    label = { Text(stringResource(Res.string.search_filters_button)) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.filter_list_24px),
-                            contentDescription = null
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    onClick = { onAction(SearchRoutesAction.OnSearchClick) },
-                    enabled = !state.isSearching
-                ) {
-                    Text(stringResource(Res.string.search_button))
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FiltersBottomSheet(
-    filters: SearchFilters,
-    sheetState: androidx.compose.material3.SheetState,
-    onApply: (SearchFilters) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var maxContrib by remember { mutableStateOf(filters.maxContribution?.toString() ?: "") }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Spacing.lg)
-                .padding(bottom = Spacing.xl),
-            verticalArrangement = Arrangement.spacedBy(Spacing.md)
-        ) {
-            Text(
-                text = stringResource(Res.string.search_filters_title),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-            )
-
-            OutlinedTextField(
-                value = maxContrib,
-                onValueChange = { maxContrib = it.filter { c -> c.isDigit() } },
-                label = { Text(stringResource(Res.string.search_filter_max_contribution)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                prefix = { Text("$") }
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(stringResource(Res.string.search_filter_female_driver), style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        stringResource(Res.string.search_filter_female_driver_coming_soon),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(checked = false, onCheckedChange = {}, enabled = false)
-            }
-
-            Button(
-                onClick = {
-                    onApply(
-                        SearchFilters(
-                            maxContribution = maxContrib.toIntOrNull()
-                        )
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(Res.string.search_button))
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DateTimeBottomSheet(
-    currentEpochMs: Long?,
-    currentTolerance: Int,
-    sheetState: androidx.compose.material3.SheetState,
-    onConfirm: (Long?, Int) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var selectedTolerance by remember { mutableIntStateOf(currentTolerance) }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Spacing.lg)
-                .padding(bottom = Spacing.xl),
-            verticalArrangement = Arrangement.spacedBy(Spacing.md)
-        ) {
-            Text(
-                text = stringResource(Res.string.search_date_placeholder),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-            )
-
-            Text(
-                "Tolerancia",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                listOf(15, 30, 60).forEach { tol ->
-                    AssistChip(
-                        onClick = { selectedTolerance = tol },
-                        label = { Text("$tol min") },
-                        colors = if (selectedTolerance == tol) {
-                            androidx.compose.material3.AssistChipDefaults.assistChipColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                labelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        } else androidx.compose.material3.AssistChipDefaults.assistChipColors()
-                    )
-                }
-            }
-
-            Button(
-                onClick = { onConfirm(currentEpochMs, selectedTolerance) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(Res.string.search_button))
-            }
-        }
-    }
-}
-
-internal fun formatEpochShort(epochMs: Long): String {
-    val instant = Instant.fromEpochMilliseconds(epochMs)
-    val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    val hour = local.hour.toString().padStart(2, '0')
-    val minute = local.minute.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val day = local.dayOfMonth.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val month = local.monthNumber.toString().padStart(2, '0')
-    return "$day/$month · $hour:$minute"
 }
 
 private val previewUser = User(

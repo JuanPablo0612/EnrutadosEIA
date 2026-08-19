@@ -19,18 +19,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,9 +39,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
@@ -55,6 +49,10 @@ import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
+import com.juanpablo0612.carpool.presentation.trip.create.components.RouteSummaryCard
+import com.juanpablo0612.carpool.presentation.trip.create.components.SectionLabel
+import com.juanpablo0612.carpool.presentation.trip.create.components.SingleVehicleCard
+import com.juanpablo0612.carpool.presentation.trip.create.components.VehicleRadioItem
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -66,7 +64,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.utils.formatLongDate
 import com.juanpablo0612.carpool.presentation.utils.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.arrow_forward_24px
 import enrutadoseia.composeapp.generated.resources.cancel
 import enrutadoseia.composeapp.generated.resources.confirm
 import enrutadoseia.composeapp.generated.resources.date_of_connector
@@ -84,7 +81,6 @@ import enrutadoseia.composeapp.generated.resources.publish_trip
 import enrutadoseia.composeapp.generated.resources.select_vehicle_section
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary_with_contribution
-import enrutadoseia.composeapp.generated.resources.trip_change_vehicle
 import enrutadoseia.composeapp.generated.resources.trip_contribution_hint
 import enrutadoseia.composeapp.generated.resources.trip_contribution_section
 import enrutadoseia.composeapp.generated.resources.trip_message_counter
@@ -92,10 +88,8 @@ import enrutadoseia.composeapp.generated.resources.trip_message_placeholder
 import enrutadoseia.composeapp.generated.resources.trip_message_section
 import enrutadoseia.composeapp.generated.resources.trip_no_vehicle_title
 import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
-import enrutadoseia.composeapp.generated.resources.trip_available_seats
 import enrutadoseia.composeapp.generated.resources.trip_seats_helper
 import enrutadoseia.composeapp.generated.resources.trip_seats_section
-import enrutadoseia.composeapp.generated.resources.trip_waypoint_count
 import enrutadoseia.composeapp.generated.resources.trip_when_section
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -105,7 +99,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -510,140 +503,6 @@ fun CreateTripContent(
 }
 
 private enum class DateChip { Today, Tomorrow, Other }
-
-@Composable
-private fun RouteSummaryCard(
-    originName: String,
-    destinationName: String,
-    waypointCount: Int,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
-    ) {
-        Column(modifier = Modifier.padding(Spacing.lg)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = originName,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Icon(
-                    imageVector = vectorResource(Res.drawable.arrow_forward_24px),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = Spacing.sm).size(20.dp) // component-intrinsic icon size
-                )
-                Text(
-                    text = destinationName,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            if (waypointCount > 0) {
-                Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(
-                    text = "· " + pluralStringResource(
-                        Res.plurals.trip_waypoint_count,
-                        waypointCount,
-                        waypointCount
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SingleVehicleCard(
-    vehicle: Vehicle,
-    onChangeClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.card)
-    ) {
-        Row(
-            modifier = Modifier.padding(Spacing.lg),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "${vehicle.brand} ${vehicle.model}",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
-                Text(
-                    text = "${vehicle.color} · ${vehicle.licensePlate} · " +
-                        stringResource(Res.string.trip_available_seats, vehicle.seatsAvailable),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            TextButton(onClick = onChangeClick) {
-                Text(stringResource(Res.string.trip_change_vehicle))
-            }
-        }
-    }
-}
-
-@Composable
-private fun SectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun VehicleRadioItem(
-    vehicle: Vehicle,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        onClick = onClick,
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected)
-                MaterialTheme.colorScheme.primaryContainer
-            else
-                MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.card)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(selected = isSelected, onClick = onClick)
-            Spacer(modifier = Modifier.width(Spacing.sm))
-            Column {
-                Text(
-                    text = "${vehicle.brand} ${vehicle.model}",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
-                Text(
-                    text = "${vehicle.color} · ${vehicle.licensePlate}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
 
 private class PesosVisualTransformation : VisualTransformation {
     override fun filter(text: androidx.compose.ui.text.AnnotatedString): TransformedText {
