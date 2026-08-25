@@ -17,9 +17,7 @@ sealed class AppException : Exception() {
         data object NotAuthenticated : BookingException()
         data object NoSeatsAvailable : BookingException()
         data object AlreadyBooked : BookingException()
-        data object BookingNotFound : BookingException()
         data object VehicleNotFound : BookingException()
-        data object Unauthorized : BookingException()
         data object Unknown : BookingException()
     }
 

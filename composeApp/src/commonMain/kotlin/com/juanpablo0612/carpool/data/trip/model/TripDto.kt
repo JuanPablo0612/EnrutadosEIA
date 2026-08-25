@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.data.trip.model
 
-import com.juanpablo0612.carpool.data.places.model.PlaceDto
+import com.juanpablo0612.carpool.data.place.model.PlaceDto
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import kotlinx.serialization.Serializable

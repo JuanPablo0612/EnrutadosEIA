@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.trip
 
-import com.juanpablo0612.carpool.domain.trip.model.TripError
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_no_vehicle_selected
 import enrutadoseia.composeapp.generated.resources.error_trip_departure_in_past

@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.rating
 
 import com.juanpablo0612.carpool.domain.rating.model.RatingChip
-import com.juanpablo0612.carpool.domain.rating.model.RatingError
 
 data class RatingUiState(
     val bookingId: String = "",

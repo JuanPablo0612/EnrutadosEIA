@@ -3,10 +3,10 @@ package com.juanpablo0612.carpool.presentation.navigation.graph
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.juanpablo0612.carpool.domain.auth.model.User
-import com.juanpablo0612.carpool.presentation.auth.email_verification.EmailVerificationScreen
-import com.juanpablo0612.carpool.presentation.auth.email_verification.EmailVerificationViewModel
-import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordScreen
-import com.juanpablo0612.carpool.presentation.auth.forgot_password.ForgotPasswordViewModel
+import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationScreen
+import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationViewModel
+import com.juanpablo0612.carpool.presentation.auth.forgotpassword.ForgotPasswordScreen
+import com.juanpablo0612.carpool.presentation.auth.forgotpassword.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
 import com.juanpablo0612.carpool.presentation.auth.login.LoginViewModel
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen

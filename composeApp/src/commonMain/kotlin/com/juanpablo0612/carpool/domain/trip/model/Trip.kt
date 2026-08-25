@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.domain.trip.model
 
-import com.juanpablo0612.carpool.domain.places.model.Place
+import com.juanpablo0612.carpool.domain.place.model.Place
 
 data class Trip(
     val id: String = "",

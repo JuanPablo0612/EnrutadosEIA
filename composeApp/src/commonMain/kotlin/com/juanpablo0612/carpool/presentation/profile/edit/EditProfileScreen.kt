@@ -30,8 +30,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
-import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
-import com.juanpablo0612.carpool.presentation.auth.common.asStringResource
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_counter
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_label

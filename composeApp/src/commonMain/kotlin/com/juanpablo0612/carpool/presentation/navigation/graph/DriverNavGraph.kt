@@ -1,0 +1,150 @@
+package com.juanpablo0612.carpool.presentation.navigation.graph
+
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsScreen
+import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsViewModel
+import com.juanpablo0612.carpool.presentation.home.HomeScreen
+import com.juanpablo0612.carpool.presentation.home.HomeViewModel
+import com.juanpablo0612.carpool.presentation.navigation.Route
+import com.juanpablo0612.carpool.presentation.route.create.CreateRouteScreen
+import com.juanpablo0612.carpool.presentation.route.create.CreateRouteViewModel
+import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailScreen
+import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailViewModel
+import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
+import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
+import com.juanpablo0612.carpool.presentation.trip.create.CreateTripScreen
+import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
+import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
+import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
+import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListScreen
+import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListViewModel
+import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleScreen
+import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+fun NavGraphBuilder.driverNavGraph(
+    onSwitchRole: () -> Unit,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToCreateRoute: () -> Unit,
+    onNavigateToRegisterVehicle: () -> Unit,
+    onNavigateToEditVehicle: (String) -> Unit,
+    onNavigateToRouteDetail: (String) -> Unit,
+    onNavigateToCreateTrip: (String) -> Unit,
+    onNavigateToAddPlace: () -> Unit,
+    onNavigateToRoutesList: () -> Unit,
+    onNavigateToDriverTrips: () -> Unit,
+    onNavigateToDriverBookingRequests: () -> Unit,
+    onNavigateToSearchTrips: () -> Unit,
+    onNavigateToPassengerBookings: () -> Unit,
+    onNavigateToSavedPlaces: () -> Unit,
+    onNavigateToVehiclesList: () -> Unit,
+    onNavigateToTripDetail: (String) -> Unit,
+    onNavigateToTripDetailPassenger: (String) -> Unit,
+    onNavigateToTripTracking: (String) -> Unit,
+    onNavigateBack: () -> Unit,
+) {
+    composable<Route.Home> {
+        val viewModel: HomeViewModel = koinViewModel()
+        HomeScreen(
+            viewModel = viewModel,
+            onNavigateToProfile = onNavigateToProfile,
+            onSwitchRole = onSwitchRole,
+            onNavigateToCreateRoute = onNavigateToCreateRoute,
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToRoutesList = onNavigateToRoutesList,
+            onNavigateToDriverTrips = onNavigateToDriverTrips,
+            onNavigateToDriverBookingRequests = onNavigateToDriverBookingRequests,
+            onNavigateToSearchTrips = onNavigateToSearchTrips,
+            onNavigateToPassengerBookings = onNavigateToPassengerBookings,
+            onNavigateToSavedPlaces = onNavigateToSavedPlaces,
+            onNavigateToTripDetail = onNavigateToTripDetail,
+            onNavigateToTripDetailPassenger = onNavigateToTripDetailPassenger,
+        )
+    }
+
+    composable<Route.RoutesList> {
+        val viewModel: RoutesListViewModel = koinViewModel()
+        RoutesListScreen(
+            viewModel = viewModel,
+            onNavigateToCreateRoute = onNavigateToCreateRoute,
+            onNavigateToRouteDetail = onNavigateToRouteDetail,
+            onNavigateToCreateTrip = onNavigateToCreateTrip,
+            onBackClick = onNavigateBack
+        )
+    }
+
+    composable<Route.CreateRoute> {
+        val viewModel: CreateRouteViewModel = koinViewModel()
+        CreateRouteScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onRouteCreated = onNavigateBack,
+            onNavigateToAddPlace = onNavigateToAddPlace
+        )
+    }
+
+    composable<Route.RouteDetail> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.RouteDetail>()
+        val viewModel: RouteDetailViewModel = koinViewModel { parametersOf(args.routeId) }
+        RouteDetailScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onNavigateToAddPlace = onNavigateToAddPlace,
+            onNavigateToCreateTrip = onNavigateToCreateTrip
+        )
+    }
+
+    composable<Route.CreateTrip> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.CreateTrip>()
+        val viewModel: CreateTripViewModel = koinViewModel { parametersOf(args.routeId) }
+        CreateTripScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onTripPublished = onNavigateBack,
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            // Opens the vehicle list rather than popping — "change vehicle" used to discard the
+            // whole in-progress trip form.
+            onNavigateToVehiclesList = onNavigateToVehiclesList
+        )
+    }
+
+    composable<Route.DriverTrips> {
+        val viewModel: DriverTripsViewModel = koinViewModel()
+        DriverTripsScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onNavigateToRoutesList = onNavigateToRoutesList,
+            onNavigateToTripDetail = onNavigateToTripDetail,
+            onNavigateToPassengers = { /* TODO: wire when passenger management screen exists */ },
+            onNavigateToTripTracking = onNavigateToTripTracking
+        )
+    }
+
+    composable<Route.VehiclesList> {
+        val viewModel: VehiclesListViewModel = koinViewModel()
+        VehiclesListScreen(
+            viewModel = viewModel,
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToEditVehicle = onNavigateToEditVehicle,
+            onBackClick = onNavigateBack
+        )
+    }
+
+    composable<Route.RegisterVehicle> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.RegisterVehicle>()
+        val viewModel: RegisterVehicleViewModel = koinViewModel { parametersOf(args.vehicleId) }
+        RegisterVehicleScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onVehicleRegistered = onNavigateBack
+        )
+    }
+
+    composable<Route.DriverBookingRequests> {
+        val viewModel: BookingRequestsViewModel = koinViewModel()
+        BookingRequestsScreen(viewModel = viewModel)
+    }
+}

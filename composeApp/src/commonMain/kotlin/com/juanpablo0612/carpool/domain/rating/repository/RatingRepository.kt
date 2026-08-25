@@ -6,5 +6,4 @@ interface RatingRepository {
     suspend fun createRating(rating: Rating): Result<Unit>
     suspend fun hasRatedBooking(bookingId: String, raterId: String): Result<Boolean>
     suspend fun getUserAverageRating(userId: String): Result<Double?>
-    suspend fun getUserTotalTrips(userId: String): Result<Int>
 }

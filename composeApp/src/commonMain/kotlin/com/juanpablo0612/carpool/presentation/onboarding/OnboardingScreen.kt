@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.presentation.ui.components.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
