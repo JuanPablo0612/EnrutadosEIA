@@ -10,5 +10,6 @@ data class PassengerBookingsUiState(
     val cancellingBookingId: String? = null,
     val showCancelConfirmFor: String? = null,
     val error: BookingError? = null,
-    val successMessage: String? = null
+    /** driverId -> display name, resolved once per distinct driver so the rating sheet can show a real name. */
+    val driverNames: Map<String, String> = emptyMap()
 )

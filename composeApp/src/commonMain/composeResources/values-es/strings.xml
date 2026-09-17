@@ -551,6 +551,7 @@
     <string name="trip_tracking_no_location">Sin ubicación aún</string>
     <string name="trip_tracking_sos">SOS</string>
     <string name="trip_tracking_message_driver">Mensaje</string>
+    <string name="trip_tracking_your_status">Tu estado</string>
     <string name="pickup_status_picked_up">Recogido</string>
     <string name="pickup_status_dropped_off">Bajó</string>
     <string name="trip_tracking_passengers_title">Pasajeros</string>
@@ -596,6 +597,9 @@
     <string name="search_origin_placeholder">Origen</string>
     <string name="search_destination_placeholder">Destino</string>
     <string name="search_date_placeholder">Fecha y hora</string>
+    <string name="search_date_field_placeholder">Fecha</string>
+    <string name="search_time_field_placeholder">Hora</string>
+    <string name="search_tolerance_label">Tolerancia</string>
     <string name="search_button">Buscar</string>
     <string name="search_filters_button">Filtros</string>
     <string name="search_filters_title">Filtros</string>

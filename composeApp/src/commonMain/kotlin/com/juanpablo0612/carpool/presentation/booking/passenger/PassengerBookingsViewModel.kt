@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.booking.passenger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
@@ -40,9 +41,27 @@ class PassengerBookingsViewModel(
         }
         viewModelScope.launch {
             bookingRepository.getPassengerBookings(userId)
-                .onEach { bookings -> _state.update { it.copy(bookings = bookings, isLoading = false) } }
+                .onEach { bookings ->
+                    _state.update { it.copy(bookings = bookings, isLoading = false) }
+                    resolveDriverNames(bookings)
+                }
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect {}
+        }
+    }
+
+    // One driver with several bookings must cost one profile read, not one per booking — fetch
+    // each distinct driverId not already cached, exactly once.
+    private fun resolveDriverNames(bookings: List<Booking>) {
+        val missingIds = bookings.map { it.driverId }.distinct() - _state.value.driverNames.keys
+        if (missingIds.isEmpty()) return
+        viewModelScope.launch {
+            val resolved = missingIds.associateWith { driverId ->
+                authRepository.getPublicProfile(driverId).getOrNull()?.name
+            }.filterValues { it != null }.mapValues { it.value!! }
+            if (resolved.isNotEmpty()) {
+                _state.update { it.copy(driverNames = it.driverNames + resolved) }
+            }
         }
     }
 
@@ -68,9 +87,6 @@ class PassengerBookingsViewModel(
 
             PassengerBookingsAction.OnDismissError ->
                 _state.update { it.copy(error = null) }
-
-            PassengerBookingsAction.OnDismissSuccess ->
-                _state.update { it.copy(successMessage = null) }
 
             is PassengerBookingsAction.OnTrackTrip -> viewModelScope.launch {
                 _events.emit(PassengerBookingsEvent.NavigateToTripTracking(action.tripId))

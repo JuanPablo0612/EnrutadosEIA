@@ -282,6 +282,7 @@ fun AppNavigation(
                             Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = true)
                         )
                     },
+                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                     onNavigateBack = { navController.popBackStack() }
                 )
 

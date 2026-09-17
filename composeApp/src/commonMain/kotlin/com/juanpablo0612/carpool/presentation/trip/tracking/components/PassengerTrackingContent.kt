@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.tracking.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +28,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_tracking_message_driver
 import enrutadoseia.composeapp.generated.resources.trip_tracking_no_location
+import enrutadoseia.composeapp.generated.resources.trip_tracking_your_status
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -51,6 +54,24 @@ internal fun PassengerTrackingContent(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                val myStatus = state.passengers.find { it.bookingId == state.currentPassengerBookingId }?.status
+                if (myStatus != null) {
+                    Spacer(Modifier.height(Spacing.sm))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.trip_tracking_your_status),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        PickupStatusChip(status = myStatus)
+                    }
+                }
+
                 Spacer(Modifier.height(Spacing.sm))
                 val driverLatitude = state.driverLatitude
                 val driverLongitude = state.driverLongitude

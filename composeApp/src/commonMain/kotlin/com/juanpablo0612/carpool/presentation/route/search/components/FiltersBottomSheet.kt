@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.presentation.route.search.SearchFilters
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.search_button
+import enrutadoseia.composeapp.generated.resources.confirm
 import enrutadoseia.composeapp.generated.resources.search_filter_female_driver
 import enrutadoseia.composeapp.generated.resources.search_filter_female_driver_coming_soon
 import enrutadoseia.composeapp.generated.resources.search_filter_max_contribution
@@ -92,7 +92,7 @@ internal fun FiltersBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(Res.string.search_button))
+                Text(stringResource(Res.string.confirm))
             }
         }
     }

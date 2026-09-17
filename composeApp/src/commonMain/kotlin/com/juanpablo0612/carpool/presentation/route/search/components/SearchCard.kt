@@ -1,7 +1,10 @@
 package com.juanpablo0612.carpool.presentation.route.search.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -57,17 +61,21 @@ internal fun SearchCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    value = state.origin?.name ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    placeholder = { Text(stringResource(Res.string.search_origin_placeholder)) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onAction(SearchRoutesAction.OnPickOrigin) }
-                        .semantics { role = Role.Button },
-                    singleLine = true
-                )
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = state.origin?.name ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = { Text(stringResource(Res.string.search_origin_placeholder)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                    // A readOnly OutlinedTextField still consumes a tap for focus before it ever
+                    // reaches a `.clickable` modifier on the same node — the field just highlighted
+                    // and never opened the picker. A transparent overlay on top intercepts the tap
+                    // first instead.
+                    TapOverlay(onClick = { onAction(SearchRoutesAction.OnPickOrigin) })
+                }
                 IconButton(onClick = { onAction(SearchRoutesAction.OnSwapPlaces) }) {
                     Icon(
                         imageVector = vectorResource(Res.drawable.swap_horiz_24px),
@@ -79,31 +87,31 @@ internal fun SearchCard(
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            OutlinedTextField(
-                value = state.destination?.name ?: "",
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text(stringResource(Res.string.search_destination_placeholder)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onAction(SearchRoutesAction.OnPickDestination) }
-                    .semantics { role = Role.Button },
-                singleLine = true
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = state.destination?.name ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    placeholder = { Text(stringResource(Res.string.search_destination_placeholder)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                TapOverlay(onClick = { onAction(SearchRoutesAction.OnPickDestination) })
+            }
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            OutlinedTextField(
-                value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text(stringResource(Res.string.search_date_placeholder)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onAction(SearchRoutesAction.OnShowDateTimeSheet) }
-                    .semantics { role = Role.Button },
-                singleLine = true
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
+                    onValueChange = {},
+                    readOnly = true,
+                    placeholder = { Text(stringResource(Res.string.search_date_placeholder)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                TapOverlay(onClick = { onAction(SearchRoutesAction.OnShowDateTimeSheet) })
+            }
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
@@ -131,6 +139,20 @@ internal fun SearchCard(
             }
         }
     }
+}
+
+@Composable
+private fun BoxScope.TapOverlay(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .matchParentSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
+            .semantics { role = Role.Button }
+    )
 }
 
 internal fun formatEpochShort(epochMs: Long): String {

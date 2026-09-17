@@ -417,6 +417,9 @@
     <string name="search_origin_placeholder">Origin</string>
     <string name="search_destination_placeholder">Destination</string>
     <string name="search_date_placeholder">Date and time</string>
+    <string name="search_date_field_placeholder">Date</string>
+    <string name="search_time_field_placeholder">Time</string>
+    <string name="search_tolerance_label">Tolerance</string>
     <string name="search_button">Search</string>
     <string name="search_filters_button">Filters</string>
     <string name="search_filters_title">Filters</string>
@@ -642,8 +645,9 @@
     <string name="trip_tracking_no_location">No location yet</string>
     <string name="trip_tracking_sos">SOS</string>
     <string name="trip_tracking_message_driver">Message</string>
-    <string name="pickup_status_picked_up">Recogido</string>
-    <string name="pickup_status_dropped_off">Bajó</string>
+    <string name="trip_tracking_your_status">Your status</string>
+    <string name="pickup_status_picked_up">Picked up</string>
+    <string name="pickup_status_dropped_off">Dropped off</string>
     <string name="trip_tracking_passengers_title">Pasajeros</string>
     <string name="trip_tracking_complete_confirm_title">End trip?</string>
     <string name="trip_tracking_complete_confirm_body">All passengers will be marked as dropped off and the trip will be completed.</string>

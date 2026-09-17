@@ -24,6 +24,7 @@ fun NavGraphBuilder.passengerNavGraph(
     onNavigateToPassengerBookings: () -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
+    onNavigateToAddPlace: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     composable<Route.PassengerHome> {
@@ -38,7 +39,8 @@ fun NavGraphBuilder.passengerNavGraph(
                 isDualRole = isDualRole,
                 onSwitchRole = onSwitchRole,
                 onNavigateToProfile = onNavigateToProfile,
-                onNavigateToTripDetail = onNavigateToTripDetail
+                onNavigateToTripDetail = onNavigateToTripDetail,
+                onNavigateToAddPlace = onNavigateToAddPlace
             )
         }
     }

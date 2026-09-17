@@ -51,7 +51,8 @@ fun SearchRoutesScreen(
     isDualRole: Boolean,
     onSwitchRole: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    onNavigateToTripDetail: (String) -> Unit
+    onNavigateToTripDetail: (String) -> Unit,
+    onNavigateToAddPlace: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -75,7 +76,7 @@ fun SearchRoutesScreen(
                 originSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
             },
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
-            onNavigateToAddPlace = {}
+            onNavigateToAddPlace = onNavigateToAddPlace
         )
 
         "DESTINATION" -> PlaceSelectorContent(
@@ -86,7 +87,7 @@ fun SearchRoutesScreen(
                 destinationSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
             },
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
-            onNavigateToAddPlace = {}
+            onNavigateToAddPlace = onNavigateToAddPlace
         )
 
         else -> SearchRoutesContent(

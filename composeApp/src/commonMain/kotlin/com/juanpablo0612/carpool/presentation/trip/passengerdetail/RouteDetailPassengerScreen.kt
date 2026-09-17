@@ -49,7 +49,6 @@ fun RouteDetailPassengerScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             RouteDetailPassengerEvent.NavigateBack -> onBackClick()
-            RouteDetailPassengerEvent.BookingCreated -> onBookingCreated()
             RouteDetailPassengerEvent.NavigateToPassengerBookings -> onBookingCreated()
         }
     }

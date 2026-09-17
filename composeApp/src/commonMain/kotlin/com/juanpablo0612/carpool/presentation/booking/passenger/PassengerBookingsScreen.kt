@@ -156,6 +156,7 @@ fun PassengerBookingsContent(
                     PassengerBookingsTab.Past -> PastContent(
                         bookings = pastBookings,
                         nowMs = nowMs,
+                        driverNames = state.driverNames,
                         onAction = onAction
                     )
                 }
@@ -221,6 +222,7 @@ private fun UpcomingContent(
 private fun PastContent(
     bookings: List<Booking>,
     nowMs: Long,
+    driverNames: Map<String, String>,
     onAction: (PassengerBookingsAction) -> Unit
 ) {
     if (bookings.isEmpty()) {
@@ -240,7 +242,10 @@ private fun PastContent(
             EnrichedBookingCard(
                 booking = booking,
                 nowMs = nowMs,
-                onRateBooking = { bookingId, tripId, rateeId, rateeName ->
+                onRateBooking = { bookingId, tripId, rateeId, _ ->
+                    // EnrichedBookingCard has no driver-name field to draw from (Booking only
+                    // denormalizes the passenger's), so the resolved map from the ViewModel wins.
+                    val rateeName = driverNames[rateeId] ?: ""
                     onAction(PassengerBookingsAction.OnRateBooking(bookingId, tripId, rateeId, rateeName))
                 },
                 modifier = Modifier.padding(vertical = Spacing.xs)
