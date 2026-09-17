@@ -402,6 +402,13 @@
     <string name="trip_action_view_passengers">View passengers</string>
     <string name="booking_action_rate">Rate</string>
 
+    <!-- TripPassengers screen -->
+    <string name="trip_passengers_title">Trip Passengers</string>
+    <string name="trip_passengers_section_pending">Pending requests</string>
+    <string name="trip_passengers_section_confirmed">Confirmed passengers</string>
+    <string name="trip_passengers_empty_title">No passengers yet</string>
+    <string name="trip_passengers_empty_subtitle">Pending and confirmed passengers for this trip will appear here.</string>
+
     <!-- VehiclesList - header & FAB -->
     <string name="vehicles_list_subtitle">Vehicles you use to offer seats</string>
     <string name="vehicles_add_fab">Add vehicle</string>

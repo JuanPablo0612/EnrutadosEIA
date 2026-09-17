@@ -248,6 +248,18 @@ fun AppNavigation(
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripDetailPassenger = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
+                    onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
+                    onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
+                    onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
+                        // Driver side, so the ratee is always the passenger — selects the
+                        // passenger chip set, mirroring the passenger graph's rateeIsDriver = true.
+                        navController.navigate(
+                            Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = false)
+                        )
+                    },
+                    onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
+                        navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
+                    },
                     onNavigateBack = { navController.popBackStack() },
                 )
 

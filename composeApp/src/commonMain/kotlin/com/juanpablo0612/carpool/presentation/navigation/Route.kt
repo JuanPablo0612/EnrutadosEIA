@@ -67,6 +67,12 @@ sealed interface Route {
     data object DriverBookingRequests : Route
 
     @Serializable
+    data class TripPassengers(val tripId: String) : Route
+
+    @Serializable
+    data class PassengerProfile(val userId: String) : Route
+
+    @Serializable
     data object EmailVerification : Route
 
     @Serializable

@@ -49,7 +49,8 @@ class RouteDetailPassengerViewModel(
         viewModelScope.launch {
             tripRepository.getTripById(tripId)
                 .onSuccess { trip ->
-                    _state.update { it.copy(isLoading = false, trip = trip) }
+                    val isOwner = authRepository.getCurrentUserId() == trip.driverId
+                    _state.update { it.copy(isLoading = false, trip = trip, isOwner = isOwner) }
                     // A failed probe falls back to "not yet requested": CreateBookingUseCase re-checks for an
                     // existing booking before it creates one, so this cannot produce a duplicate.
                     val alreadyRequested = checkExistingBookingUseCase(tripId).getOrDefault(false)
@@ -112,6 +113,7 @@ class RouteDetailPassengerViewModel(
 
     private fun book() {
         val trip = _state.value.trip ?: return
+        if (_state.value.isOwner) return
         if (_state.value.vehicle == null) {
             // The vehicle is only used for display here (seats come from trip.seatCount, 3.1),
             // but a missing vehicle still means the trip's data is incomplete — surface it instead

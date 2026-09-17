@@ -115,15 +115,17 @@ fun RouteDetailPassengerContent(
                                 )
                             }
                         }
-                        item { HorizontalDivider() }
-                        item {
-                            BookingCtaSection(
-                                availableSeats = state.availableSeats,
-                                alreadyRequested = state.alreadyRequested,
-                                isBooking = state.isBooking,
-                                onAction = onAction,
-                                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
-                            )
+                        if (!state.isOwner) {
+                            item { HorizontalDivider() }
+                            item {
+                                BookingCtaSection(
+                                    availableSeats = state.availableSeats,
+                                    alreadyRequested = state.alreadyRequested,
+                                    isBooking = state.isBooking,
+                                    onAction = onAction,
+                                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
+                                )
+                            }
                         }
                         state.error?.let { error ->
                             item {

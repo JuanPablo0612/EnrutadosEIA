@@ -35,6 +35,7 @@ import enrutadoseia.composeapp.generated.resources.time_am
 import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.trip_action_start
 import enrutadoseia.composeapp.generated.resources.trip_action_track
+import enrutadoseia.composeapp.generated.resources.trip_action_view_passengers
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_button
 import enrutadoseia.composeapp.generated.resources.trip_seats_occupied
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_trip
@@ -119,10 +120,17 @@ internal fun DriverTripCard(
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
-            // "Ver pasajeros" is intentionally not rendered here: its navigation callback is
-            // still a no-op in DriverNavGraph (no passenger management screen exists yet), so
-            // showing it would be a dead tap. onViewPassengers stays wired below so the button
-            // can be restored with a one-line change once that screen exists.
+            if (trip.status == TripStatus.Active || trip.status == TripStatus.InProgress) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onViewPassengers) {
+                        Text(stringResource(Res.string.trip_action_view_passengers))
+                    }
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.sm, Alignment.End),

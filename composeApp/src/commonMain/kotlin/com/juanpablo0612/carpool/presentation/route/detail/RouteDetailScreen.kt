@@ -54,7 +54,6 @@ fun RouteDetailScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            RouteDetailEvent.RouteUpdated -> onBackClick()
             RouteDetailEvent.NavigateBack -> onBackClick()
             is RouteDetailEvent.NavigateToCreateTrip -> onNavigateToCreateTrip(event.routeId)
         }

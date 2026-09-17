@@ -402,6 +402,13 @@
     <string name="trip_action_view_passengers">Ver pasajeros</string>
     <string name="booking_action_rate">Calificar</string>
 
+    <!-- TripPassengers screen -->
+    <string name="trip_passengers_title">Pasajeros del viaje</string>
+    <string name="trip_passengers_section_pending">Solicitudes pendientes</string>
+    <string name="trip_passengers_section_confirmed">Pasajeros confirmados</string>
+    <string name="trip_passengers_empty_title">Aún no hay pasajeros</string>
+    <string name="trip_passengers_empty_subtitle">Los pasajeros pendientes y confirmados de este viaje aparecerán aquí.</string>
+
     <!-- DriverTrips - estados vacíos -->
     <string name="driver_trips_upcoming_empty_title">No tienes viajes próximos.</string>
     <string name="driver_trips_upcoming_empty_subtitle">Publica tu próximo viaje y comparte el camino.</string>

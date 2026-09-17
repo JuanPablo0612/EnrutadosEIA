@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
@@ -53,6 +54,7 @@ import enrutadoseia.composeapp.generated.resources.history_empty_title
 import enrutadoseia.composeapp.generated.resources.inbox_24px
 import enrutadoseia.composeapp.generated.resources.pending_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.pending_empty_title
+import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -60,6 +62,8 @@ import org.jetbrains.compose.resources.vectorResource
 fun BookingRequestsScreen(
     viewModel: BookingRequestsViewModel,
     onNavigateToPassengerProfile: (String) -> Unit = {},
+    onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit = { _, _, _, _ -> },
+    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _ -> },
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -67,12 +71,15 @@ fun BookingRequestsScreen(
         when (event) {
             is BookingRequestsEvent.NavigateToPassengerProfile ->
                 onNavigateToPassengerProfile(event.passengerId)
+            is BookingRequestsEvent.NavigateToRating ->
+                onNavigateToRating(event.bookingId, event.tripId, event.rateeId, event.rateeName)
         }
     }
 
     BookingRequestsContent(
         state = state,
         onAction = viewModel::onAction,
+        onNavigateToChat = onNavigateToChat,
     )
 }
 
@@ -81,7 +88,9 @@ fun BookingRequestsScreen(
 fun BookingRequestsContent(
     state: BookingRequestsUiState,
     onAction: (BookingRequestsAction) -> Unit,
+    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _ -> },
 ) {
+    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
     if (state.pendingRejectionFor != null) {
         RejectBottomSheet(
             selectedReason = state.selectedRejectReason,
@@ -198,11 +207,25 @@ fun BookingRequestsContent(
                         emptyTitle = stringResource(Res.string.confirmed_empty_title),
                         emptySubtitle = stringResource(Res.string.confirmed_empty_subtitle),
                     ) { item ->
+                        val isPast = item.booking.departureTime <= nowMs
                         ConfirmedBookingCard(
                             item = item,
                             processingIds = state.processingIds,
-                            onMessage = { /* chat: future screen */ },
+                            nowMs = nowMs,
+                            onMessage = {
+                                onNavigateToChat(item.booking.id, item.passenger.name, isPast)
+                            },
                             onCancel = { onAction(BookingRequestsAction.OpenCancelConfirmed(item.booking.id)) },
+                            onRate = {
+                                onAction(
+                                    BookingRequestsAction.OnRateBooking(
+                                        bookingId = item.booking.id,
+                                        tripId = item.booking.tripId,
+                                        rateeId = item.passenger.id,
+                                        rateeName = item.passenger.name,
+                                    )
+                                )
+                            },
                         )
                     }
 

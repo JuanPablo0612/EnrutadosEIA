@@ -23,6 +23,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.booking_action_rate
 import enrutadoseia.composeapp.generated.resources.confirmed_booking_cancel_button
 import enrutadoseia.composeapp.generated.resources.confirmed_booking_message_button
 import org.jetbrains.compose.resources.stringResource
@@ -31,13 +32,18 @@ import org.jetbrains.compose.resources.stringResource
 fun ConfirmedBookingCard(
     item: BookingWithPassenger,
     processingIds: Set<String>,
+    // Passed in rather than defaulted to `now`: a default read during composition makes this
+    // composable non-idempotent and re-reads the clock on every recomposition.
+    nowMs: Long,
     onMessage: () -> Unit,
     onCancel: () -> Unit,
+    onRate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val booking = item.booking
     val passenger = item.passenger
     val isProcessing = booking.id in processingIds
+    val isPast = booking.departureTime <= nowMs
 
     CarpoolListCard(modifier = modifier) {
         Row(
@@ -74,18 +80,27 @@ fun ConfirmedBookingCard(
             ) {
                 Text(text = stringResource(Res.string.confirmed_booking_message_button))
             }
-            OutlinedButton(
-                onClick = onCancel,
-                enabled = !isProcessing,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error,
-                ),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error),
-                ),
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(text = stringResource(Res.string.confirmed_booking_cancel_button))
+            if (isPast) {
+                OutlinedButton(
+                    onClick = onRate,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(text = stringResource(Res.string.booking_action_rate))
+                }
+            } else {
+                OutlinedButton(
+                    onClick = onCancel,
+                    enabled = !isProcessing,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error),
+                    ),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(text = stringResource(Res.string.confirmed_booking_cancel_button))
+                }
             }
         }
     }
