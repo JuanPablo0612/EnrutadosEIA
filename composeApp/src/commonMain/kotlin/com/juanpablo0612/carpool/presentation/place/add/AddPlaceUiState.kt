@@ -12,6 +12,7 @@ data class AddPlaceUiState(
     val autocompleteSuggestions: List<AutocompleteSuggestion> = emptyList(),
     val isGeocoding: Boolean = false,
     val isSearchingAddress: Boolean = false,
+    val isResolvingSuggestion: Boolean = false,
     val isSaving: Boolean = false,
     val nameError: AddPlaceError? = null,
     val generalError: AddPlaceError? = null,

@@ -159,7 +159,7 @@ fun AddPlaceContent(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Done
                 ),
-                trailingIcon = if (state.isSearchingAddress) {
+                trailingIcon = if (state.isSearchingAddress || state.isResolvingSuggestion) {
                     { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) }
                 } else null,
                 errorMessage = null,
@@ -184,7 +184,7 @@ fun AddPlaceContent(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 },
-                                modifier = Modifier.clickable {
+                                modifier = Modifier.clickable(enabled = !state.isResolvingSuggestion) {
                                     onAction(AddPlaceAction.SelectSuggestion(suggestion))
                                 },
                             )
@@ -216,6 +216,7 @@ fun AddPlaceContent(
                 MapPreview(
                     coordinates = state.coordinates,
                     onPinDragged = { onAction(AddPlaceAction.DragPin(it)) },
+                    onPoiSelected = { onAction(AddPlaceAction.SelectMapPoi(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp), // map preview intrinsic height

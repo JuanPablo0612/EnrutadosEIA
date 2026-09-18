@@ -1,9 +1,11 @@
 package com.juanpablo0612.carpool.di
 
+import com.juanpablo0612.carpool.core.config.BuildKonfig
 import com.juanpablo0612.carpool.data.place.datasource.CompassLocationService
-import com.juanpablo0612.carpool.data.place.datasource.CompassPlacesSearchService
 import com.juanpablo0612.carpool.data.place.datasource.FirebasePlaceRemoteDataSource
+import com.juanpablo0612.carpool.data.place.datasource.GooglePlacesSearchService
 import com.juanpablo0612.carpool.data.place.datasource.PlaceRemoteDataSource
+import com.juanpablo0612.carpool.data.place.datasource.createPlacesHttpClient
 import com.juanpablo0612.carpool.data.place.repository.PlaceRepositoryImpl
 import com.juanpablo0612.carpool.domain.place.repository.PlaceRepository
 import com.juanpablo0612.carpool.domain.place.service.LocationService
@@ -22,7 +24,8 @@ import org.koin.dsl.module
 
 val placeModule = module {
     singleOf(::CompassLocationService) bind LocationService::class
-    singleOf(::CompassPlacesSearchService) bind PlacesSearchService::class
+    single { createPlacesHttpClient() }
+    single<PlacesSearchService> { GooglePlacesSearchService(get(), BuildKonfig.MAPS_API_KEY) }
     singleOf(::FirebasePlaceRemoteDataSource) bind PlaceRemoteDataSource::class
     singleOf(::PlaceRepositoryImpl) bind PlaceRepository::class
     factoryOf(::GetSavedPlacesUseCase)
@@ -30,5 +33,5 @@ val placeModule = module {
     factoryOf(::DeletePlaceUseCase)
     viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get(), get()) }
     viewModel { AddPlaceViewModel(get(), get()) }
-    viewModel { (lat: Double, lon: Double) -> MapPickerViewModel(lat, lon, get(), get()) }
+    viewModel { (lat: Double, lon: Double) -> MapPickerViewModel(lat, lon, get(), get(), get()) }
 }

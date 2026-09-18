@@ -1,4 +1,6 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -6,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -35,22 +38,17 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             implementation(libs.compass.geolocation.mobile)
-            implementation(libs.compass.geocoder.mobile)
-            implementation(libs.compass.autocomplete.mobile)
             implementation(libs.compass.permissions.mobile)
         }
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.google.maps.compose)
             implementation(libs.compass.geolocation.mobile)
-            implementation(libs.compass.geocoder.mobile)
-            implementation(libs.compass.autocomplete.mobile)
             implementation(libs.compass.permissions.mobile)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(libs.compass.geolocation)
-            implementation(libs.compass.geocoder)
-            implementation(libs.compass.autocomplete)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -77,6 +75,8 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.datastore.preferences.core)
         }
         commonTest.dependencies {
@@ -87,4 +87,21 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+buildkonfig {
+    packageName = "com.juanpablo0612.carpool.core.config"
+
+    defaultConfigs {
+        val secretsProperties = Properties()
+        val secretsPropertiesFile = rootProject.file("secrets.properties")
+        if (secretsPropertiesFile.exists()) {
+            secretsProperties.load(secretsPropertiesFile.inputStream())
+        }
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "MAPS_API_KEY",
+            secretsProperties.getProperty("MAPS_API_KEY") ?: "",
+        )
+    }
 }

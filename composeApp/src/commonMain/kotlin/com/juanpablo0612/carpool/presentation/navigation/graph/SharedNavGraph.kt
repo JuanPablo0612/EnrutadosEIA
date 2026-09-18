@@ -43,7 +43,7 @@ private const val MAP_PICK_RESULT_KEY = "map_pick_result"
 fun NavGraphBuilder.sharedNavGraph(
     onNavigateBack: () -> Unit,
     onNavigateToMapPicker: (Double?, Double?) -> Unit,
-    onCoordinatesPicked: (Double, Double) -> Unit,
+    onCoordinatesPicked: (Double, Double, String?) -> Unit,
     onNavigateToAddPlace: () -> Unit,
     onNavigateToRoutes: () -> Unit,
     onNavigateToVehicles: () -> Unit,
@@ -65,9 +65,14 @@ fun NavGraphBuilder.sharedNavGraph(
 
         LaunchedEffect(mapPickResult) {
             mapPickResult?.let { raw ->
-                val parts = raw.split(",")
+                // limit = 3 so a place name containing commas isn't truncated at the first one.
+                val parts = raw.split(",", limit = 3)
                 viewModel.onAction(
-                    AddPlaceAction.OnMapPickResult(parts[0].toDouble(), parts[1].toDouble())
+                    AddPlaceAction.OnMapPickResult(
+                        latitude = parts[0].toDouble(),
+                        longitude = parts[1].toDouble(),
+                        placeName = parts.getOrNull(2)?.takeIf { it.isNotBlank() },
+                    )
                 )
                 backStackEntry.savedStateHandle.remove<String>(MAP_PICK_RESULT_KEY)
             }

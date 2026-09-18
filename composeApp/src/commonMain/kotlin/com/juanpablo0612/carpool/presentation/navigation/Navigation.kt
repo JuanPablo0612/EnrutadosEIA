@@ -315,10 +315,10 @@ fun AppNavigation(
                     onNavigateToMapPicker = { lat, lon ->
                         navController.navigate(Route.MapPicker(lat ?: 6.1633, lon ?: -75.4913))
                     },
-                    onCoordinatesPicked = { lat, lon ->
+                    onCoordinatesPicked = { lat, lon, placeName ->
                         navController.previousBackStackEntry
                             ?.savedStateHandle
-                            ?.set(MAP_PICK_RESULT_KEY, "$lat,$lon")
+                            ?.set(MAP_PICK_RESULT_KEY, "$lat,$lon,${placeName ?: ""}")
                         navController.popBackStack()
                     },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },

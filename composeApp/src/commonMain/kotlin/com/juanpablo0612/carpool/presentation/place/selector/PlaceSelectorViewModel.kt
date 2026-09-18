@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.place.selector
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.place.model.AutocompleteSuggestion
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.place.service.LocationService
 import com.juanpablo0612.carpool.domain.place.service.PlacesSearchService
@@ -22,6 +23,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 sealed class PlaceSelectorEvent {
     data class PlaceSelected(val place: Place) : PlaceSelectorEvent()
@@ -29,6 +32,7 @@ sealed class PlaceSelectorEvent {
     data object Dismiss : PlaceSelectorEvent()
 }
 
+@OptIn(ExperimentalUuidApi::class)
 class PlaceSelectorViewModel(
     mode: String,
     private val getSavedPlacesUseCase: GetSavedPlacesUseCase,
@@ -37,6 +41,11 @@ class PlaceSelectorViewModel(
     private val deletePlaceUseCase: DeletePlaceUseCase,
     private val locationPermissionRequester: LocationPermissionRequester,
 ) : ViewModel() {
+
+    // Shared across every autocomplete keystroke and the details call for the picked
+    // suggestion, then rotated — Google bills that whole sequence as one session instead
+    // of pricing each autocomplete request separately.
+    private var sessionToken = Uuid.random().toString()
 
     private val _state = MutableStateFlow(
         PlaceSelectorUiState(
@@ -84,6 +93,7 @@ class PlaceSelectorViewModel(
                 _events.emit(PlaceSelectorEvent.NavigateToAddPlace)
             }
             PlaceSelectorAction.OnDismiss -> viewModelScope.launch {
+                sessionToken = Uuid.random().toString()
                 _state.update { it.copy(searchQuery = "", searchResults = emptyList(), error = null) }
                 _events.emit(PlaceSelectorEvent.Dismiss)
             }
@@ -110,7 +120,7 @@ class PlaceSelectorViewModel(
             searchJob = viewModelScope.launch {
                 delay(300)
                 _state.update { it.copy(isSearching = true) }
-                val results = placesSearchService.search(query)
+                val results = placesSearchService.search(query, sessionToken)
                 _state.update { it.copy(searchResults = results, isSearching = false) }
             }
         } else {
@@ -145,15 +155,26 @@ class PlaceSelectorViewModel(
         }
     }
 
-    private fun selectSuggestion(suggestion: com.juanpablo0612.carpool.domain.place.model.AutocompleteSuggestion) {
+    private fun selectSuggestion(suggestion: AutocompleteSuggestion) {
+        if (_state.value.isResolvingSuggestion) return
         viewModelScope.launch {
+            _state.update { it.copy(isResolvingSuggestion = true, error = null) }
+            val coords = placesSearchService.resolvePlace(suggestion.placeId, sessionToken)
+            if (coords == null) {
+                _state.update {
+                    it.copy(isResolvingSuggestion = false, error = PlaceSelectorError.SuggestionUnavailable)
+                }
+                return@launch
+            }
+            sessionToken = Uuid.random().toString()
             val place = Place(
-                id = "${suggestion.latitude}_${suggestion.longitude}",
+                id = suggestion.placeId,
                 name = suggestion.primaryText,
                 address = suggestion.fullAddress,
-                latitude = suggestion.latitude,
-                longitude = suggestion.longitude,
+                latitude = coords.latitude,
+                longitude = coords.longitude,
             )
+            _state.update { it.copy(isResolvingSuggestion = false) }
             _events.emit(PlaceSelectorEvent.PlaceSelected(place))
         }
     }

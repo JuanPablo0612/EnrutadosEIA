@@ -14,6 +14,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.juanpablo0612.carpool.domain.place.model.Coordinates
+import com.juanpablo0612.carpool.domain.place.model.MapPointOfInterest
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 
@@ -23,6 +24,7 @@ actual fun MapPreview(
     onPinDragged: (Coordinates) -> Unit,
     modifier: Modifier,
     isMyLocationEnabled: Boolean,
+    onPoiSelected: (MapPointOfInterest) -> Unit,
 ) {
     val cameraState = rememberCameraPositionState {
         coordinates?.let {
@@ -63,6 +65,15 @@ actual fun MapPreview(
         modifier = modifier,
         properties = MapProperties(isMyLocationEnabled = isMyLocationEnabled),
         uiSettings = MapUiSettings(myLocationButtonEnabled = false),
+        onPOIClick = { poi ->
+            onPoiSelected(
+                MapPointOfInterest(
+                    placeId = poi.placeId,
+                    name = poi.name,
+                    coordinates = Coordinates(poi.latLng.latitude, poi.latLng.longitude),
+                )
+            )
+        },
     ) {
         if (coordinates != null) {
             Marker(

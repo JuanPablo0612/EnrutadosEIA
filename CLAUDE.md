@@ -28,7 +28,7 @@ Two-module project: `androidApp` (Android application shell) + `composeApp` (sha
 A fresh clone is missing two gitignored files the Android build needs:
 
 1. **`androidApp/google-services.json`** — Firebase config for the `com.juanpablo0612.carpool` app. Download it from the Firebase console (Project settings → your Android app) and place it at that exact path. Without it, the `googleServices` Gradle plugin fails the build.
-2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` and injected into the manifest as a placeholder. Copy `secrets.properties.example` to `secrets.properties` and fill in a real Google Maps API key. Without this file (or with a blank key), the build still succeeds but the key resolves to an empty string and every map screen renders blank.
+2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` and injected into the manifest as a placeholder, and also by `composeApp/build.gradle.kts` (via the BuildKonfig plugin) as the generated `com.juanpablo0612.carpool.core.config.BuildKonfig.MAPS_API_KEY` Kotlin constant used for Places API (New) autocomplete/details and Geocoding API reverse-geocoding calls (`data/place/datasource/GooglePlacesSearchService.kt`). Copy `secrets.properties.example` to `secrets.properties` and fill in a real Google Maps API key that has **Maps SDK for Android**, **Places API (New)**, and **Geocoding API** all enabled in the Google Cloud console. Without this file (or with a blank key), the build still succeeds but the key resolves to an empty string, map screens render blank, and address search/reverse geocoding silently return no results.
 
 ### Firestore/Storage rules, indexes, and data backfills
 

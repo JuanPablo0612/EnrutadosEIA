@@ -2,6 +2,9 @@ package com.juanpablo0612.carpool.presentation.place.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.place.model.AutocompleteSuggestion
+import com.juanpablo0612.carpool.domain.place.model.Coordinates
+import com.juanpablo0612.carpool.domain.place.model.MapPointOfInterest
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.place.model.PlaceType
 import com.juanpablo0612.carpool.domain.place.service.PlacesSearchService
@@ -22,7 +25,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class AddPlaceViewModel(
     private val createPlaceUseCase: CreatePlaceUseCase,
     private val placesSearchService: PlacesSearchService,
@@ -36,6 +42,11 @@ class AddPlaceViewModel(
 
     private var searchJob: Job? = null
 
+    // Shared across every autocomplete keystroke and the details call for the picked
+    // suggestion, then rotated — Google bills that whole sequence as one session instead
+    // of pricing each autocomplete request separately.
+    private var sessionToken = Uuid.random().toString()
+
     fun onAction(action: AddPlaceAction) {
         when (action) {
             is AddPlaceAction.SelectType -> selectType(action.type)
@@ -44,6 +55,7 @@ class AddPlaceViewModel(
             is AddPlaceAction.OnAddressChanged -> handleAddressChange(action.text)
             is AddPlaceAction.SelectSuggestion -> selectSuggestion(action.suggestion)
             is AddPlaceAction.DragPin -> dragPin(action.to)
+            is AddPlaceAction.SelectMapPoi -> selectMapPoi(action.poi)
             AddPlaceAction.OnSaveClick -> savePlace()
             AddPlaceAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(AddPlaceEvent.NavigateBack)
@@ -52,7 +64,8 @@ class AddPlaceViewModel(
                 _events.emit(AddPlaceEvent.NavigateToMapPicker)
             }
             is AddPlaceAction.OnMapPickResult -> dragPin(
-                com.juanpablo0612.carpool.domain.place.model.Coordinates(action.latitude, action.longitude)
+                Coordinates(action.latitude, action.longitude),
+                placeName = action.placeName,
             )
         }
     }
@@ -82,7 +95,7 @@ class AddPlaceViewModel(
             searchJob = viewModelScope.launch {
                 delay(300)
                 _state.update { it.copy(isSearchingAddress = true) }
-                val suggestions = placesSearchService.search(text)
+                val suggestions = placesSearchService.search(text, sessionToken)
                 _state.update { it.copy(autocompleteSuggestions = suggestions, isSearchingAddress = false) }
             }
         } else {
@@ -90,22 +103,62 @@ class AddPlaceViewModel(
         }
     }
 
-    private fun selectSuggestion(suggestion: com.juanpablo0612.carpool.domain.place.model.AutocompleteSuggestion) {
-        val coords = com.juanpablo0612.carpool.domain.place.model.Coordinates(
-            suggestion.latitude,
-            suggestion.longitude,
-        )
-        _state.update {
-            it.copy(
-                address = suggestion.fullAddress,
-                autocompleteSuggestions = emptyList(),
-                coordinates = coords,
-            )
+    private fun selectSuggestion(suggestion: AutocompleteSuggestion) {
+        if (_state.value.isResolvingSuggestion) return
+        viewModelScope.launch {
+            _state.update { it.copy(isResolvingSuggestion = true, generalError = null) }
+            val coords = placesSearchService.resolvePlace(suggestion.placeId, sessionToken)
+            if (coords == null) {
+                _state.update {
+                    it.copy(isResolvingSuggestion = false, generalError = AddPlaceError.SuggestionUnavailable)
+                }
+                return@launch
+            }
+            sessionToken = Uuid.random().toString()
+            _state.update {
+                it.copy(
+                    // Only fill the name in if the user hasn't already set one themselves.
+                    name = if (it.name.isBlank() && suggestion.primaryText.isNotBlank()) {
+                        suggestion.primaryText
+                    } else {
+                        it.name
+                    },
+                    address = suggestion.fullAddress,
+                    autocompleteSuggestions = emptyList(),
+                    coordinates = coords,
+                    isResolvingSuggestion = false,
+                )
+            }
         }
     }
 
-    private fun dragPin(to: com.juanpablo0612.carpool.domain.place.model.Coordinates) {
-        _state.update { it.copy(coordinates = to) }
+    private fun selectMapPoi(poi: MapPointOfInterest) {
+        _state.update {
+            it.copy(
+                coordinates = poi.coordinates,
+                // Only fill the name in if the user hasn't already set one themselves.
+                name = if (it.name.isBlank() && poi.name.isNotBlank()) poi.name else it.name,
+            )
+        }
+        viewModelScope.launch {
+            // A tapped POI carries a real Google placeId, so prefer its formatted address over
+            // reverse-geocoding the raw coordinate — more accurate for named places.
+            val address = placesSearchService.getPlaceAddress(poi.placeId)
+                ?: placesSearchService.reverseGeocode(poi.coordinates)
+            if (!address.isNullOrBlank()) {
+                _state.update { it.copy(address = address) }
+            }
+        }
+    }
+
+    private fun dragPin(to: Coordinates, placeName: String? = null) {
+        _state.update {
+            it.copy(
+                coordinates = to,
+                // Only fill the name in if the user hasn't already set one themselves.
+                name = if (it.name.isBlank() && !placeName.isNullOrBlank()) placeName else it.name,
+            )
+        }
         viewModelScope.launch {
             val address = placesSearchService.reverseGeocode(to)
             if (!address.isNullOrBlank()) {

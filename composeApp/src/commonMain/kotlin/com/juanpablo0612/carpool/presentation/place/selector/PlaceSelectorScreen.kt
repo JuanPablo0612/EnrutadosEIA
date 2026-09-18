@@ -238,7 +238,7 @@ fun PlaceSelectorContent(
                         SectionHeader(title = stringResource(Res.string.place_selector_section_results))
                     }
                     when {
-                        state.isSearching -> {
+                        state.isSearching || state.isResolvingSuggestion -> {
                             item {
                                 CircularProgressIndicator(modifier = Modifier.padding(Spacing.lg))
                             }
@@ -254,7 +254,7 @@ fun PlaceSelectorContent(
                             }
                         }
                         else -> {
-                            items(state.searchResults, key = { "${it.latitude}_${it.longitude}" }) { suggestion ->
+                            items(state.searchResults, key = { it.placeId }) { suggestion ->
                                 PlaceRow(
                                     icon = vectorResource(Res.drawable.location_on_24px),
                                     name = suggestion.primaryText,

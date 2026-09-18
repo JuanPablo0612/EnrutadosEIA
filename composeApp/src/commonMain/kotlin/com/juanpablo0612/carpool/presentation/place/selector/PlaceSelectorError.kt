@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.presentation.place.selector
 
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.error_suggestion_unavailable
 import enrutadoseia.composeapp.generated.resources.place_selector_location_error
 import org.jetbrains.compose.resources.StringResource
 
@@ -11,8 +12,10 @@ import org.jetbrains.compose.resources.StringResource
  */
 sealed class PlaceSelectorError {
     data object LocationUnavailable : PlaceSelectorError()
+    data object SuggestionUnavailable : PlaceSelectorError()
 
     fun asStringResource(): StringResource = when (this) {
         LocationUnavailable -> Res.string.place_selector_location_error
+        SuggestionUnavailable -> Res.string.error_suggestion_unavailable
     }
 }

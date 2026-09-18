@@ -27,6 +27,7 @@
     <string name="error_email_already_in_use">Email already in use</string>
     <string name="error_weak_password">Password is too weak</string>
     <string name="error_unknown">An unexpected error occurred</string>
+    <string name="error_suggestion_unavailable">Couldn\'t load that place. Please try again.</string>
 
     <string name="error_email_empty">Email cannot be empty</string>
     <string name="error_email_invalid">Please enter a valid email address</string>
@@ -136,6 +137,8 @@
     <string name="map_picker_title">Choose location</string>
     <string name="map_picker_confirm">Confirm location</string>
     <string name="map_picker_my_location">My location</string>
+    <string name="map_picker_resolving_address">Locating address…</string>
+    <string name="map_picker_address_unavailable">Address unavailable for this location</string>
     <string name="place_selector_title_origin">Select origin</string>
     <string name="place_selector_title_destination">Select destination</string>
     <string name="place_selector_title_waypoint">Select a stop</string>
