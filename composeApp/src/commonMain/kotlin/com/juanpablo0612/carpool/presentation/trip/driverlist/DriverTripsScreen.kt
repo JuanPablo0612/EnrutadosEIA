@@ -41,6 +41,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.RelativeDateGroup
 import com.juanpablo0612.carpool.presentation.ui.util.groupByRelativeDate
 import com.juanpablo0612.carpool.presentation.ui.util.label
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -186,7 +187,7 @@ fun DriverTripsContent(
                     }
                 }
                 else -> {
-                    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+                    val nowMs = rememberNowMs()
                     val grouped = if (isUpcoming) {
                         remember(state.trips, nowMs) {
                             groupByRelativeDate(state.trips, nowMs) { it.trip.departureTime }

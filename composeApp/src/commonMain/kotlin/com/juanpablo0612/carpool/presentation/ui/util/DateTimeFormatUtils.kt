@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.presentation.ui.util
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.day_names_short
 import enrutadoseia.composeapp.generated.resources.relative_date_later
@@ -23,6 +24,11 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 import kotlin.time.Clock
 import kotlin.time.Instant
+
+/** The current time frozen at first composition — shared by every screen that needs a stable
+ *  "now" to compare list items against without re-reading the clock on each recomposition. */
+@Composable
+fun rememberNowMs(): Long = remember { Clock.System.now().toEpochMilliseconds() }
 
 fun formatShortTime(hour: Int, minute: Int, amMarker: String, pmMarker: String): String {
     val h12 = if (hour % 12 == 0) 12 else hour % 12

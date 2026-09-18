@@ -34,6 +34,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.RelativeDateGroup
 import com.juanpablo0612.carpool.presentation.ui.util.groupByRelativeDate
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -83,7 +84,7 @@ fun PassengerBookingsContent(
     state: PassengerBookingsUiState,
     onAction: (PassengerBookingsAction) -> Unit
 ) {
-    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+    val nowMs = rememberNowMs()
     // A booking belongs to "Past" once its departure has gone by, or as soon as it reaches a
     // terminal status. The previous split kept every Confirmed booking in "Upcoming" regardless
     // of date, which meant a departed-and-confirmed booking never reached the tab that offers

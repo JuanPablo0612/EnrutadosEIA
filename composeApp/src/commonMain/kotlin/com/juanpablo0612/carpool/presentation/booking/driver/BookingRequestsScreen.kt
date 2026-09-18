@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Badge
@@ -23,30 +24,27 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
-import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingRequestCard
-import com.juanpablo0612.carpool.presentation.booking.driver.components.ConfirmedBookingCard
+import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingCancelConfirmDialog
 import com.juanpablo0612.carpool.presentation.booking.driver.components.HistoryBookingCard
 import com.juanpablo0612.carpool.presentation.booking.driver.components.RejectBottomSheet
+import com.juanpablo0612.carpool.presentation.booking.driver.components.confirmedBookingItems
+import com.juanpablo0612.carpool.presentation.booking.driver.components.pendingBookingItems
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
-import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_confirmed
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_history
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_pending
 import enrutadoseia.composeapp.generated.resources.booking_requests_title
 import enrutadoseia.composeapp.generated.resources.booking_trip_now_full
-import enrutadoseia.composeapp.generated.resources.confirmed_cancel_dialog_body
-import enrutadoseia.composeapp.generated.resources.confirmed_cancel_dialog_button
-import enrutadoseia.composeapp.generated.resources.confirmed_cancel_dialog_title
 import enrutadoseia.composeapp.generated.resources.confirmed_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.confirmed_empty_title
 import enrutadoseia.composeapp.generated.resources.history_empty_subtitle
@@ -54,7 +52,6 @@ import enrutadoseia.composeapp.generated.resources.history_empty_title
 import enrutadoseia.composeapp.generated.resources.inbox_24px
 import enrutadoseia.composeapp.generated.resources.pending_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.pending_empty_title
-import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -90,7 +87,7 @@ fun BookingRequestsContent(
     onAction: (BookingRequestsAction) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
 ) {
-    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+    val nowMs = rememberNowMs()
     if (state.pendingRejectionFor != null) {
         RejectBottomSheet(
             selectedReason = state.selectedRejectReason,
@@ -103,13 +100,9 @@ fun BookingRequestsContent(
     }
 
     if (state.cancelConfirmFor != null) {
-        ConfirmDialog(
-            title = stringResource(Res.string.confirmed_cancel_dialog_title),
-            description = stringResource(Res.string.confirmed_cancel_dialog_body),
-            confirmText = stringResource(Res.string.confirmed_cancel_dialog_button),
+        BookingCancelConfirmDialog(
             onConfirm = { onAction(BookingRequestsAction.CancelConfirmed(state.cancelConfirmFor)) },
             onDismiss = { onAction(BookingRequestsAction.DismissCancelConfirmed) },
-            isDestructive = true,
         )
     }
 
@@ -187,39 +180,36 @@ fun BookingRequestsContent(
                 state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
                 else -> when (state.tab) {
                     DriverBookingsTab.Pending -> TabContent(
-                        items = state.pending,
+                        isEmpty = state.pending.isEmpty(),
                         emptyTitle = stringResource(Res.string.pending_empty_title),
                         emptySubtitle = stringResource(Res.string.pending_empty_subtitle),
-                        key = { it.booking.id },
-                    ) { item ->
-                        BookingRequestCard(
-                            item = item,
+                    ) {
+                        pendingBookingItems(
+                            items = state.pending,
                             processingIds = state.processingIds,
                             nowMs = nowMs,
-                            onAccept = { id, tripId ->
-                                onAction(BookingRequestsAction.Accept(id, tripId))
-                            },
+                            key = { it.booking.id },
+                            onAccept = { id, tripId -> onAction(BookingRequestsAction.Accept(id, tripId)) },
                             onReject = { onAction(BookingRequestsAction.OpenReject(it)) },
                             onViewProfile = { onAction(BookingRequestsAction.OpenPassengerProfile(it)) },
                         )
                     }
 
                     DriverBookingsTab.Confirmed -> TabContent(
-                        items = state.confirmed,
+                        isEmpty = state.confirmed.isEmpty(),
                         emptyTitle = stringResource(Res.string.confirmed_empty_title),
                         emptySubtitle = stringResource(Res.string.confirmed_empty_subtitle),
-                        key = { it.booking.id },
-                    ) { item ->
-                        val isPast = item.booking.departureTime <= nowMs
-                        ConfirmedBookingCard(
-                            item = item,
+                    ) {
+                        confirmedBookingItems(
+                            items = state.confirmed,
                             processingIds = state.processingIds,
                             nowMs = nowMs,
-                            onMessage = {
+                            key = { it.booking.id },
+                            onMessage = { item, isPast ->
                                 onNavigateToChat(item.booking.id, item.booking.tripId, item.passenger.name, isPast)
                             },
-                            onCancel = { onAction(BookingRequestsAction.OpenCancelConfirmed(item.booking.id)) },
-                            onRate = {
+                            onCancel = { onAction(BookingRequestsAction.OpenCancelConfirmed(it)) },
+                            onRate = { item ->
                                 onAction(
                                     BookingRequestsAction.OnRateBooking(
                                         bookingId = item.booking.id,
@@ -233,12 +223,13 @@ fun BookingRequestsContent(
                     }
 
                     DriverBookingsTab.History -> TabContent(
-                        items = state.history,
+                        isEmpty = state.history.isEmpty(),
                         emptyTitle = stringResource(Res.string.history_empty_title),
                         emptySubtitle = stringResource(Res.string.history_empty_subtitle),
-                        key = { it.booking.id },
-                    ) { item ->
-                        HistoryBookingCard(item = item)
+                    ) {
+                        items(state.history, key = { it.booking.id }) { item ->
+                            HistoryBookingCard(item = item)
+                        }
                     }
                 }
             }
@@ -268,15 +259,14 @@ private fun TripFilledBanner(
 }
 
 @Composable
-private fun <T> TabContent(
-    items: List<T>,
+private fun TabContent(
+    isEmpty: Boolean,
     emptyTitle: String,
     emptySubtitle: String,
-    key: (T) -> Any,
     modifier: Modifier = Modifier,
-    itemContent: @Composable (T) -> Unit,
+    content: LazyListScope.() -> Unit,
 ) {
-    if (items.isEmpty()) {
+    if (isEmpty) {
         EmptyState(
             icon = vectorResource(Res.drawable.inbox_24px),
             title = emptyTitle,
@@ -288,9 +278,8 @@ private fun <T> TabContent(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
-        ) {
-            items(items, key = key) { item -> itemContent(item) }
-        }
+            content = content,
+        )
     }
 }
 

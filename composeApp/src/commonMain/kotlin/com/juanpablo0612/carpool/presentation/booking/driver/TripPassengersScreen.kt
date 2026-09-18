@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -16,32 +15,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
-import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingRequestCard
-import com.juanpablo0612.carpool.presentation.booking.driver.components.ConfirmedBookingCard
+import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingCancelConfirmDialog
 import com.juanpablo0612.carpool.presentation.booking.driver.components.RejectBottomSheet
+import com.juanpablo0612.carpool.presentation.booking.driver.components.confirmedBookingItems
+import com.juanpablo0612.carpool.presentation.booking.driver.components.pendingBookingItems
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
-import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.confirmed_cancel_dialog_body
-import enrutadoseia.composeapp.generated.resources.confirmed_cancel_dialog_button
-import enrutadoseia.composeapp.generated.resources.confirmed_cancel_dialog_title
 import enrutadoseia.composeapp.generated.resources.inbox_24px
 import enrutadoseia.composeapp.generated.resources.trip_passengers_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.trip_passengers_empty_title
 import enrutadoseia.composeapp.generated.resources.trip_passengers_section_confirmed
 import enrutadoseia.composeapp.generated.resources.trip_passengers_section_pending
 import enrutadoseia.composeapp.generated.resources.trip_passengers_title
-import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -79,7 +74,7 @@ fun TripPassengersContent(
     onBackClick: () -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
 ) {
-    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
+    val nowMs = rememberNowMs()
 
     if (state.pendingRejectionFor != null) {
         RejectBottomSheet(
@@ -93,13 +88,9 @@ fun TripPassengersContent(
     }
 
     if (state.cancelConfirmFor != null) {
-        ConfirmDialog(
-            title = stringResource(Res.string.confirmed_cancel_dialog_title),
-            description = stringResource(Res.string.confirmed_cancel_dialog_body),
-            confirmText = stringResource(Res.string.confirmed_cancel_dialog_button),
+        BookingCancelConfirmDialog(
             onConfirm = { onAction(TripPassengersAction.CancelConfirmed(state.cancelConfirmFor)) },
             onDismiss = { onAction(TripPassengersAction.DismissCancelConfirmed) },
-            isDestructive = true,
         )
     }
 
@@ -143,16 +134,15 @@ fun TripPassengersContent(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        items(state.pending, key = { "pending_${it.booking.id}" }) { item ->
-                            BookingRequestCard(
-                                item = item,
-                                processingIds = state.processingIds,
-                                nowMs = nowMs,
-                                onAccept = { id, tripId -> onAction(TripPassengersAction.Accept(id, tripId)) },
-                                onReject = { onAction(TripPassengersAction.OpenReject(it)) },
-                                onViewProfile = { onAction(TripPassengersAction.OpenPassengerProfile(it)) },
-                            )
-                        }
+                        pendingBookingItems(
+                            items = state.pending,
+                            processingIds = state.processingIds,
+                            nowMs = nowMs,
+                            key = { "pending_${it.booking.id}" },
+                            onAccept = { id, tripId -> onAction(TripPassengersAction.Accept(id, tripId)) },
+                            onReject = { onAction(TripPassengersAction.OpenReject(it)) },
+                            onViewProfile = { onAction(TripPassengersAction.OpenPassengerProfile(it)) },
+                        )
                     }
 
                     if (state.confirmed.isNotEmpty()) {
@@ -163,26 +153,26 @@ fun TripPassengersContent(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        items(state.confirmed, key = { "confirmed_${it.booking.id}" }) { item ->
-                            val isPast = item.booking.departureTime <= nowMs
-                            ConfirmedBookingCard(
-                                item = item,
-                                processingIds = state.processingIds,
-                                nowMs = nowMs,
-                                onMessage = { onNavigateToChat(item.booking.id, item.booking.tripId, item.passenger.name, isPast) },
-                                onCancel = { onAction(TripPassengersAction.OpenCancelConfirmed(item.booking.id)) },
-                                onRate = {
-                                    onAction(
-                                        TripPassengersAction.OnRateBooking(
-                                            bookingId = item.booking.id,
-                                            tripId = item.booking.tripId,
-                                            rateeId = item.passenger.id,
-                                            rateeName = item.passenger.name,
-                                        )
+                        confirmedBookingItems(
+                            items = state.confirmed,
+                            processingIds = state.processingIds,
+                            nowMs = nowMs,
+                            key = { "confirmed_${it.booking.id}" },
+                            onMessage = { item, isPast ->
+                                onNavigateToChat(item.booking.id, item.booking.tripId, item.passenger.name, isPast)
+                            },
+                            onCancel = { onAction(TripPassengersAction.OpenCancelConfirmed(it)) },
+                            onRate = { item ->
+                                onAction(
+                                    TripPassengersAction.OnRateBooking(
+                                        bookingId = item.booking.id,
+                                        tripId = item.booking.tripId,
+                                        rateeId = item.passenger.id,
+                                        rateeName = item.passenger.name,
                                     )
-                                },
-                            )
-                        }
+                                )
+                            },
+                        )
                     }
                 }
             }
