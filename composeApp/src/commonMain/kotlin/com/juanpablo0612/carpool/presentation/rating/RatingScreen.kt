@@ -42,7 +42,9 @@ import enrutadoseia.composeapp.generated.resources.rating_chip_carro_limpio
 import enrutadoseia.composeapp.generated.resources.rating_chip_conduccion_segura
 import enrutadoseia.composeapp.generated.resources.rating_chip_puntual
 import enrutadoseia.composeapp.generated.resources.rating_chip_respetuoso
+import enrutadoseia.composeapp.generated.resources.error_already_rated
 import enrutadoseia.composeapp.generated.resources.rating_comment_hint
+import enrutadoseia.composeapp.generated.resources.rating_default_ratee_name
 import enrutadoseia.composeapp.generated.resources.rating_highlights
 import enrutadoseia.composeapp.generated.resources.rating_skip
 import enrutadoseia.composeapp.generated.resources.rating_submit
@@ -82,83 +84,124 @@ fun RatingContent(
         onDismissRequest = { /* Non-dismissible — user must tap skip or submit */ },
         sheetState = sheetState
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = if (state.rateeName.isBlank())
-                    stringResource(Res.string.rating_title, "tu compañero/a de viaje")
-                else
-                    stringResource(Res.string.rating_title, state.rateeName),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center
-            )
-
-            StarRow(
-                selectedStars = state.selectedStars,
-                onStarClick = { onAction(RatingAction.OnStarSelect(it)) }
-            )
-
-            if (state.availableChips.isNotEmpty()) {
+        when {
+            state.isLoading -> {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            state.alreadyRated -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = stringResource(Res.string.rating_highlights),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = stringResource(Res.string.error_already_rated),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        textAlign = TextAlign.Center
                     )
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+
+                    TextButton(
+                        onClick = { onAction(RatingAction.OnSkip) },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        state.availableChips.forEach { chip ->
-                            FilterChip(
-                                selected = chip in state.selectedChips,
-                                onClick = { onAction(RatingAction.OnChipToggle(chip)) },
-                                label = { Text(chip.toLabel()) }
-                            )
-                        }
+                        Text(stringResource(Res.string.rating_skip))
                     }
                 }
             }
 
-            OutlinedTextField(
-                value = state.comment,
-                onValueChange = { onAction(RatingAction.OnCommentChange(it)) },
-                placeholder = { Text(stringResource(Res.string.rating_comment_hint)) },
-                maxLines = 4,
-                modifier = Modifier.fillMaxWidth()
-            )
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 32.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = if (state.rateeName.isBlank())
+                            stringResource(Res.string.rating_title, stringResource(Res.string.rating_default_ratee_name))
+                        else
+                            stringResource(Res.string.rating_title, state.rateeName),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        textAlign = TextAlign.Center
+                    )
 
-            state.error?.let {
-                ErrorMessage(message = stringResource(it.asStringResource()))
-            }
+                    StarRow(
+                        selectedStars = state.selectedStars,
+                        onStarClick = { onAction(RatingAction.OnStarSelect(it)) }
+                    )
 
-            Button(
-                onClick = { onAction(RatingAction.OnSubmit) },
-                enabled = state.selectedStars > 0 && !state.isSubmitting,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (state.isSubmitting) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                } else {
-                    Text(stringResource(Res.string.rating_submit))
+                    if (state.availableChips.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.rating_highlights),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                state.availableChips.forEach { chip ->
+                                    FilterChip(
+                                        selected = chip in state.selectedChips,
+                                        onClick = { onAction(RatingAction.OnChipToggle(chip)) },
+                                        label = { Text(chip.toLabel()) }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = state.comment,
+                        onValueChange = { onAction(RatingAction.OnCommentChange(it)) },
+                        placeholder = { Text(stringResource(Res.string.rating_comment_hint)) },
+                        maxLines = 4,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    state.error?.let {
+                        ErrorMessage(message = stringResource(it.asStringResource()))
+                    }
+
+                    Button(
+                        onClick = { onAction(RatingAction.OnSubmit) },
+                        enabled = state.selectedStars > 0 && !state.isSubmitting && state.error !is RatingError.AlreadyRated,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        if (state.isSubmitting) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        } else {
+                            Text(stringResource(Res.string.rating_submit))
+                        }
+                    }
+
+                    TextButton(
+                        onClick = { onAction(RatingAction.OnSkip) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(Res.string.rating_skip))
+                    }
                 }
-            }
-
-            TextButton(
-                onClick = { onAction(RatingAction.OnSkip) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(Res.string.rating_skip))
             }
         }
     }

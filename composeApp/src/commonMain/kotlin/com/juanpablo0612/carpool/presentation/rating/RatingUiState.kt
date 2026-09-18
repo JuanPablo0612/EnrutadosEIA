@@ -12,6 +12,7 @@ data class RatingUiState(
     val comment: String = "",
     val isLoading: Boolean = false,
     val isSubmitting: Boolean = false,
+    val alreadyRated: Boolean = false,
     val error: RatingError? = null
 ) {
     val availableChips: List<RatingChip>

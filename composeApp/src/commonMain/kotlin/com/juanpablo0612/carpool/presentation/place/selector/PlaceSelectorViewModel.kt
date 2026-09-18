@@ -84,7 +84,7 @@ class PlaceSelectorViewModel(
                 _events.emit(PlaceSelectorEvent.NavigateToAddPlace)
             }
             PlaceSelectorAction.OnDismiss -> viewModelScope.launch {
-                _state.update { it.copy(searchQuery = "", searchResults = emptyList()) }
+                _state.update { it.copy(searchQuery = "", searchResults = emptyList(), error = null) }
                 _events.emit(PlaceSelectorEvent.Dismiss)
             }
             is PlaceSelectorAction.OnDeletePlace ->
@@ -120,10 +120,16 @@ class PlaceSelectorViewModel(
 
     private fun resolveCurrentLocation() {
         viewModelScope.launch {
-            _state.update { it.copy(isResolvingLocation = true) }
+            _state.update { it.copy(isResolvingLocation = true, error = null) }
             val coords = locationService.getCurrentCoordinates()
             if (coords == null) {
-                _state.update { it.copy(isResolvingLocation = false, locationPermissionGranted = false) }
+                _state.update {
+                    it.copy(
+                        isResolvingLocation = false,
+                        locationPermissionGranted = false,
+                        error = PlaceSelectorError.LocationUnavailable,
+                    )
+                }
                 return@launch
             }
             val address = placesSearchService.reverseGeocode(coords) ?: ""

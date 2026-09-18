@@ -76,7 +76,7 @@ class AddPlaceViewModel(
     }
 
     private fun handleAddressChange(text: String) {
-        _state.update { it.copy(address = text) }
+        _state.update { it.copy(address = text, hasManuallyEditedAddress = true) }
         searchJob?.cancel()
         if (text.length >= 2) {
             searchJob = viewModelScope.launch {
@@ -109,7 +109,8 @@ class AddPlaceViewModel(
         viewModelScope.launch {
             val address = placesSearchService.reverseGeocode(to)
             if (!address.isNullOrBlank()) {
-                _state.update { it.copy(address = address) }
+                // Don't clobber an address the user has typed/edited themselves (5).
+                _state.update { if (it.hasManuallyEditedAddress) it else it.copy(address = address) }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.rating
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import com.juanpablo0612.carpool.domain.rating.usecase.CreateRatingUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ class RatingViewModel(
     private val rateeName: String,
     private val rateeIsDriver: Boolean,
     private val createRatingUseCase: CreateRatingUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val ratingRepository: RatingRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -35,6 +37,31 @@ class RatingViewModel(
 
     private val _events = MutableSharedFlow<RatingEvent>()
     val events: SharedFlow<RatingEvent> = _events.asSharedFlow()
+
+    init {
+        checkAlreadyRated()
+    }
+
+    private fun checkAlreadyRated() {
+        val raterId = authRepository.getCurrentUserId()
+        if (raterId == null) {
+            _state.update { it.copy(isLoading = false, alreadyRated = false) }
+            return
+        }
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            ratingRepository.hasRatedBooking(bookingId, raterId).fold(
+                onSuccess = { hasRated ->
+                    _state.update { it.copy(isLoading = false, alreadyRated = hasRated) }
+                },
+                onFailure = {
+                    // Fail open: don't block the user from rating just because the pre-check
+                    // itself failed. The post-submit AlreadyRated handling remains as a backstop.
+                    _state.update { it.copy(isLoading = false, alreadyRated = false) }
+                }
+            )
+        }
+    }
 
     fun onAction(action: RatingAction) {
         when (action) {

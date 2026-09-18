@@ -16,4 +16,5 @@ data class PlaceSelectorUiState(
     val searchResults: List<AutocompleteSuggestion> = emptyList(),
     val isSearching: Boolean = false,
     val isConfirmingDelete: Place? = null,
+    val error: PlaceSelectorError? = null,
 )

@@ -59,6 +59,9 @@
     <string name="place_selector_section_my_places">Mis lugares</string>
     <string name="place_selector_section_eia">Sedes EIA</string>
     <string name="place_selector_section_results">Resultados</string>
+    <string name="place_selector_empty_my_places_title">Aún no tienes lugares guardados</string>
+    <string name="place_selector_empty_my_places_description">Los lugares que guardes aparecerán aquí para un acceso rápido.</string>
+    <string name="place_selector_location_error">No pudimos obtener tu ubicación actual. Inténtalo de nuevo.</string>
 
     <string name="error_email_empty">El correo no puede estar vacío</string>
     <string name="error_email_invalid">Ingresa un correo electrónico válido</string>
@@ -523,6 +526,7 @@
 
     <!-- Calificación -->
     <string name="rating_title">¿Cómo estuvo tu viaje con %1$s?</string>
+    <string name="rating_default_ratee_name">tu compañero/a de viaje</string>
     <string name="rating_submit">Enviar calificación</string>
     <string name="rating_skip">Saltar</string>
     <string name="rating_comment_hint">Comentario (opcional)</string>

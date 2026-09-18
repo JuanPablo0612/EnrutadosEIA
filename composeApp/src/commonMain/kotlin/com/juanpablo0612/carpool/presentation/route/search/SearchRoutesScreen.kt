@@ -15,11 +15,15 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.auth.model.User
+import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
+import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.route.search.components.DateTimeBottomSheet
 import com.juanpablo0612.carpool.presentation.route.search.components.FiltersBottomSheet
@@ -44,6 +48,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchRoutesScreen(
     viewModel: SearchRoutesViewModel,
@@ -67,27 +72,52 @@ fun SearchRoutesScreen(
         }
     }
 
+    val onOriginSelected: (Place) -> Unit = { place ->
+        viewModel.onAction(SearchRoutesAction.OnPlaceSelected(place))
+        originSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
+    }
+    val onDestinationSelected: (Place) -> Unit = { place ->
+        viewModel.onAction(SearchRoutesAction.OnPlaceSelected(place))
+        destinationSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
+    }
+    // Row taps (saved/campus place) call onPlaceSelected directly, but "use current location"
+    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected — without observing
+    // it here, those two paths silently did nothing and leaked a suspended coroutine on every tap
+    // (the emit has no collector to receive it).
+    ObserveAsEvents(originSelectorViewModel.events) { event ->
+        when (event) {
+            is PlaceSelectorEvent.PlaceSelected -> onOriginSelected(event.place)
+            PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
+            PlaceSelectorEvent.Dismiss -> Unit
+        }
+    }
+    ObserveAsEvents(destinationSelectorViewModel.events) { event ->
+        when (event) {
+            is PlaceSelectorEvent.PlaceSelected -> onDestinationSelected(event.place)
+            PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
+            PlaceSelectorEvent.Dismiss -> Unit
+        }
+    }
+
+    // The selector is an inline content swap, not a real back-stack entry — without this, system
+    // back while it's open exits the whole search flow and discards the in-progress search.
+    BackHandler(enabled = state.selectionTarget != null) {
+        viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection)
+    }
+
     when (state.selectionTarget) {
         "ORIGIN" -> PlaceSelectorContent(
             state = originSelectorState,
             onAction = originSelectorViewModel::onAction,
-            onPlaceSelected = { place ->
-                viewModel.onAction(SearchRoutesAction.OnPlaceSelected(place))
-                originSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
-            },
+            onPlaceSelected = onOriginSelected,
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
-            onNavigateToAddPlace = onNavigateToAddPlace
         )
 
         "DESTINATION" -> PlaceSelectorContent(
             state = destinationSelectorState,
             onAction = destinationSelectorViewModel::onAction,
-            onPlaceSelected = { place ->
-                viewModel.onAction(SearchRoutesAction.OnPlaceSelected(place))
-                destinationSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
-            },
+            onPlaceSelected = onDestinationSelected,
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
-            onNavigateToAddPlace = onNavigateToAddPlace
         )
 
         else -> SearchRoutesContent(

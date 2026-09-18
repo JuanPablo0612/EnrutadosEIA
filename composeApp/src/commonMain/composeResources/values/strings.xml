@@ -148,6 +148,9 @@
     <string name="place_selector_section_my_places">My places</string>
     <string name="place_selector_section_eia">EIA Campuses</string>
     <string name="place_selector_section_results">Results</string>
+    <string name="place_selector_empty_my_places_title">No saved places yet</string>
+    <string name="place_selector_empty_my_places_description">Places you save will show up here for quick access.</string>
+    <string name="place_selector_location_error">Couldn\'t get your current location. Please try again.</string>
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">Hello, %1$s!</string>
@@ -617,6 +620,7 @@
 
     <!-- Rating -->
     <string name="rating_title">How was your trip with %1$s?</string>
+    <string name="rating_default_ratee_name">your travel companion</string>
     <string name="rating_submit">Submit rating</string>
     <string name="rating_skip">Saltar</string>
     <string name="rating_comment_hint">Comment (optional)</string>

@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.presentation.place.selector.components.PlaceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -42,6 +44,8 @@ import enrutadoseia.composeapp.generated.resources.delete_place_confirm_title
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.place_selector_allow_location
 import enrutadoseia.composeapp.generated.resources.place_selector_current_location
+import enrutadoseia.composeapp.generated.resources.place_selector_empty_my_places_description
+import enrutadoseia.composeapp.generated.resources.place_selector_empty_my_places_title
 import enrutadoseia.composeapp.generated.resources.place_selector_no_results
 import enrutadoseia.composeapp.generated.resources.place_selector_resolving_location
 import enrutadoseia.composeapp.generated.resources.place_selector_search_hint
@@ -79,7 +83,6 @@ fun PlaceSelectorScreen(
         onAction = viewModel::onAction,
         onBack = onBack,
         onPlaceSelected = onPlaceSelected,
-        onNavigateToAddPlace = onNavigateToAddPlace,
     )
 }
 
@@ -90,7 +93,6 @@ fun PlaceSelectorContent(
     onAction: (PlaceSelectorAction) -> Unit,
     onBack: () -> Unit,
     onPlaceSelected: (Place) -> Unit = {},
-    onNavigateToAddPlace: () -> Unit = {},
 ) {
     val title = when (state.mode) {
         PlaceSelectorMode.Origin -> stringResource(Res.string.place_selector_title_origin)
@@ -124,6 +126,15 @@ fun PlaceSelectorContent(
                 },
                 singleLine = true,
             )
+
+            state.error?.let { error ->
+                ErrorMessage(
+                    message = stringResource(error.asStringResource()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                )
+            }
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 // Current location row — always visible
@@ -166,7 +177,7 @@ fun PlaceSelectorContent(
                         SectionHeader(
                             title = stringResource(Res.string.place_selector_section_my_places),
                             action = {
-                                IconButton(onClick = onNavigateToAddPlace) {
+                                IconButton(onClick = { onAction(PlaceSelectorAction.OnAddPlace) }) {
                                     Icon(
                                         vectorResource(Res.drawable.add_24px),
                                         contentDescription = stringResource(Res.string.cd_add_place),
@@ -175,23 +186,36 @@ fun PlaceSelectorContent(
                             }
                         )
                     }
-                    items(state.savedPlaces, key = { it.id }) { place ->
-                        PlaceRow(
-                            icon = vectorResource(Res.drawable.location_on_24px),
-                            name = place.name,
-                            address = place.address,
-                            trailing = {
-                                IconButton(onClick = { onAction(PlaceSelectorAction.OnDeletePlace(place)) }) {
-                                    Icon(
-                                        vectorResource(Res.drawable.delete_24px),
-                                        contentDescription = stringResource(Res.string.cd_delete_place),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            },
-                            onClick = { onPlaceSelected(place) },
-                        )
-                        HorizontalDivider()
+                    if (state.savedPlaces.isEmpty()) {
+                        item {
+                            EmptyState(
+                                icon = vectorResource(Res.drawable.location_on_24px),
+                                title = stringResource(Res.string.place_selector_empty_my_places_title),
+                                description = stringResource(Res.string.place_selector_empty_my_places_description),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
+                            )
+                        }
+                    } else {
+                        items(state.savedPlaces, key = { it.id }) { place ->
+                            PlaceRow(
+                                icon = vectorResource(Res.drawable.location_on_24px),
+                                name = place.name,
+                                address = place.address,
+                                trailing = {
+                                    IconButton(onClick = { onAction(PlaceSelectorAction.OnDeletePlace(place)) }) {
+                                        Icon(
+                                            vectorResource(Res.drawable.delete_24px),
+                                            contentDescription = stringResource(Res.string.cd_delete_place),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                },
+                                onClick = { onPlaceSelected(place) },
+                            )
+                            HorizontalDivider()
+                        }
                     }
 
                     item {

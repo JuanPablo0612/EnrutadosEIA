@@ -15,6 +15,9 @@ data class AddPlaceUiState(
     val isSaving: Boolean = false,
     val nameError: AddPlaceError? = null,
     val generalError: AddPlaceError? = null,
+    // True once the user has typed into the address field directly, so a pin-drag's
+    // reverse-geocode result doesn't clobber an address they've customized by hand.
+    val hasManuallyEditedAddress: Boolean = false,
 ) {
     val isValid: Boolean get() = name.isNotBlank() && coordinates != null
 }

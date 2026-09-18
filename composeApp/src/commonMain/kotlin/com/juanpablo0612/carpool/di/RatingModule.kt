@@ -17,6 +17,6 @@ val ratingModule = module {
     singleOf(::RatingRepositoryImpl) bind RatingRepository::class
     factoryOf(::CreateRatingUseCase)
     viewModel { (bookingId: String, tripId: String, rateeId: String, rateeName: String, rateeIsDriver: Boolean) ->
-        RatingViewModel(bookingId, tripId, rateeId, rateeName, rateeIsDriver, get(), get())
+        RatingViewModel(bookingId, tripId, rateeId, rateeName, rateeIsDriver, get(), get(), get())
     }
 }

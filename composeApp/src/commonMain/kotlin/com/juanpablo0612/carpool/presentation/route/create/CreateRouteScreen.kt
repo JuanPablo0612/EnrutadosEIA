@@ -10,12 +10,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
+import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorUiState
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.route.create.components.DaySelector
@@ -34,6 +37,7 @@ import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateRouteScreen(
     viewModel: CreateRouteViewModel,
@@ -42,8 +46,15 @@ fun CreateRouteScreen(
     onNavigateToAddPlace: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    val placeSelectorViewModel: PlaceSelectorViewModel = koinViewModel { parametersOf("ORIGIN") }
-    val placeSelectorState by placeSelectorViewModel.state.collectAsState()
+
+    // Each selection target gets its own keyed instance so the selector's mode-dependent title
+    // and state don't bleed across origin/destination/waypoint (they used to share one instance).
+    val originSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "origin") { parametersOf("ORIGIN") }
+    val destinationSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "destination") { parametersOf("DESTINATION") }
+    val waypointSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "waypoint") { parametersOf("WAYPOINT") }
+    val originSelectorState by originSelectorViewModel.state.collectAsState()
+    val destinationSelectorState by destinationSelectorViewModel.state.collectAsState()
+    val waypointSelectorState by waypointSelectorViewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -52,12 +63,41 @@ fun CreateRouteScreen(
         }
     }
 
+    // The selector is an inline content swap, not a real back-stack entry — without this, system
+    // back while it's open exits the whole create-route flow and discards the in-progress draft.
+    BackHandler(enabled = state.selectionTarget != null) {
+        viewModel.onAction(CreateRouteAction.OnCancelSelection)
+    }
+
+    val (activeSelectorState, activeSelectorViewModel) = when (state.selectionTarget) {
+        SelectionTarget.Origin -> originSelectorState to originSelectorViewModel
+        SelectionTarget.Destination -> destinationSelectorState to destinationSelectorViewModel
+        is SelectionTarget.EditWaypoint, SelectionTarget.NewWaypoint -> waypointSelectorState to waypointSelectorViewModel
+        null -> originSelectorState to originSelectorViewModel
+    }
+
+    val onPlaceSelected: (Place) -> Unit = { place ->
+        viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
+        activeSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
+    }
+    // Row taps (saved/campus place) call onPlaceSelected directly, but "use current location"
+    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected — without observing
+    // it here, those two paths silently did nothing and leaked a suspended coroutine on every tap
+    // (the emit has no collector to receive it).
+    ObserveAsEvents(activeSelectorViewModel.events) { event ->
+        when (event) {
+            is PlaceSelectorEvent.PlaceSelected -> onPlaceSelected(event.place)
+            PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
+            PlaceSelectorEvent.Dismiss -> Unit
+        }
+    }
+
     CreateRouteScreenContent(
         state = state,
-        placeSelectorState = placeSelectorState,
+        placeSelectorState = activeSelectorState,
         onAction = viewModel::onAction,
-        onPlaceSelectorAction = placeSelectorViewModel::onAction,
-        onNavigateToAddPlace = onNavigateToAddPlace
+        onPlaceSelectorAction = activeSelectorViewModel::onAction,
+        onPlaceSelected = onPlaceSelected
     )
 }
 
@@ -67,19 +107,16 @@ fun CreateRouteScreenContent(
     placeSelectorState: PlaceSelectorUiState,
     onAction: (CreateRouteAction) -> Unit,
     onPlaceSelectorAction: (PlaceSelectorAction) -> Unit,
-    onNavigateToAddPlace: () -> Unit = {}
+    onPlaceSelected: (Place) -> Unit,
 ) {
     if (state.selectionTarget != null) {
         PlaceSelectorContent(
             state = placeSelectorState,
             onAction = onPlaceSelectorAction,
-            onPlaceSelected = { place ->
-                onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
-            },
+            onPlaceSelected = onPlaceSelected,
             onBack = {
                 onAction(CreateRouteAction.OnCancelSelection)
             },
-            onNavigateToAddPlace = onNavigateToAddPlace
         )
     } else {
         CreateRouteContent(
