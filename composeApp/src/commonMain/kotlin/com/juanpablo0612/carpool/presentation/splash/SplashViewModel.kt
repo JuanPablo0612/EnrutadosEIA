@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
@@ -44,6 +45,7 @@ class SplashViewModel(
     }
 
     private suspend fun User.toSplashEvent(): SplashEvent = when {
+        FeatureFlags.EMAIL_VERIFICATION_REQUIRED && !isEmailVerified -> SplashEvent.NavigateToEmailVerification
         isDriver && isPassenger -> {
             val savedRole = userPreferencesRepository.getRolePreference()
             when (savedRole) {

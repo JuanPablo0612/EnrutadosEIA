@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.trip.tracking
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,13 +9,18 @@ import android.net.Uri
 // but does not send anything itself, so — like ACTION_DIAL — it needs no runtime permission.
 // FLAG_ACTIVITY_NEW_TASK is needed because the injected Context is the Application context.
 private class AndroidLocationSharer(private val context: Context) : LocationSharer {
-    override fun share(phoneNumbers: List<String>, message: String) {
+    override fun share(phoneNumbers: List<String>, message: String): Boolean {
         val recipients = phoneNumbers.joinToString(";")
         val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$recipients")).apply {
             putExtra("sms_body", message)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        return try {
+            context.startActivity(intent)
+            true
+        } catch (e: ActivityNotFoundException) {
+            false
+        }
     }
 }
 

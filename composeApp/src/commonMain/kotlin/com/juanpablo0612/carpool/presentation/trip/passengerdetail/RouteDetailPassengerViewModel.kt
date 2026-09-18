@@ -7,9 +7,15 @@ import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
+import com.juanpablo0612.carpool.domain.notification.model.NotificationType
+import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
+import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.notification_new_booking_request_body
+import enrutadoseia.composeapp.generated.resources.notification_new_booking_request_title
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RouteDetailPassengerViewModel(
@@ -32,7 +39,8 @@ class RouteDetailPassengerViewModel(
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val createNotificationUseCase: CreateNotificationUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState())
@@ -133,6 +141,13 @@ class RouteDetailPassengerViewModel(
             )
                 .onSuccess {
                     _state.update { it.copy(isBooking = false, alreadyRequested = true) }
+                    createNotificationUseCase(
+                        userId = trip.driverId,
+                        type = NotificationType.NewBookingRequest,
+                        title = getString(Res.string.notification_new_booking_request_title),
+                        body = getString(Res.string.notification_new_booking_request_body),
+                        deepLink = NotificationDeepLink.bookingRequests()
+                    )
                     _events.emit(RouteDetailPassengerEvent.NavigateToPassengerBookings)
                 }
                 .onFailure { throwable ->

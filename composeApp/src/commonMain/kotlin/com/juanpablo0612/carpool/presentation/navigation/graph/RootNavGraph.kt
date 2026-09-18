@@ -15,6 +15,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NavGraphBuilder.rootNavGraph(
     onSplashNavigateToAuth: () -> Unit,
     onSplashNavigateToOnboarding: () -> Unit,
+    onSplashNavigateToEmailVerification: () -> Unit,
     onSplashNavigateToDriver: (User) -> Unit,
     onSplashNavigateToPassenger: (User) -> Unit,
     onSplashNavigateToRoleSelector: (User) -> Unit,
@@ -28,6 +29,7 @@ fun NavGraphBuilder.rootNavGraph(
             viewModel = viewModel,
             onNavigateToAuth = onSplashNavigateToAuth,
             onNavigateToOnboarding = onSplashNavigateToOnboarding,
+            onNavigateToEmailVerification = onSplashNavigateToEmailVerification,
             onNavigateToDriver = onSplashNavigateToDriver,
             onNavigateToPassenger = onSplashNavigateToPassenger,
             onNavigateToRoleSelector = onSplashNavigateToRoleSelector

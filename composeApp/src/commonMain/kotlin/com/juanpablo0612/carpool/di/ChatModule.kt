@@ -16,7 +16,7 @@ val chatModule = module {
     singleOf(::FirebaseChatRemoteDataSource) bind ChatRemoteDataSource::class
     singleOf(::ChatRepositoryImpl) bind ChatRepository::class
     factoryOf(::SendMessageUseCase)
-    viewModel { (bookingId: String, otherPartyName: String, isReadOnly: Boolean) ->
-        ChatViewModel(bookingId, otherPartyName, isReadOnly, get(), get(), get())
+    viewModel { (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) ->
+        ChatViewModel(bookingId, tripId, otherPartyName, isReadOnly, get(), get(), get(), get())
     }
 }

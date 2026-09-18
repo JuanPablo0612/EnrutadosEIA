@@ -51,7 +51,7 @@ fun TripPassengersScreen(
     onBackClick: () -> Unit,
     onNavigateToPassengerProfile: (String) -> Unit,
     onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -77,7 +77,7 @@ fun TripPassengersContent(
     state: TripPassengersUiState,
     onAction: (TripPassengersAction) -> Unit,
     onBackClick: () -> Unit,
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _ -> },
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
 ) {
     val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
 
@@ -147,6 +147,7 @@ fun TripPassengersContent(
                             BookingRequestCard(
                                 item = item,
                                 processingIds = state.processingIds,
+                                nowMs = nowMs,
                                 onAccept = { id, tripId -> onAction(TripPassengersAction.Accept(id, tripId)) },
                                 onReject = { onAction(TripPassengersAction.OpenReject(it)) },
                                 onViewProfile = { onAction(TripPassengersAction.OpenPassengerProfile(it)) },
@@ -168,7 +169,7 @@ fun TripPassengersContent(
                                 item = item,
                                 processingIds = state.processingIds,
                                 nowMs = nowMs,
-                                onMessage = { onNavigateToChat(item.booking.id, item.passenger.name, isPast) },
+                                onMessage = { onNavigateToChat(item.booking.id, item.booking.tripId, item.passenger.name, isPast) },
                                 onCancel = { onAction(TripPassengersAction.OpenCancelConfirmed(item.booking.id)) },
                                 onRate = {
                                     onAction(

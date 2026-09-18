@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 fun TripTrackingScreen(
     viewModel: TripTrackingViewModel,
     onBackClick: () -> Unit,
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onTripCompleted: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -47,7 +47,7 @@ fun TripTrackingScreen(
             TripTrackingEvent.NavigateBack -> onBackClick()
             TripTrackingEvent.TripCompleted -> onTripCompleted()
             is TripTrackingEvent.NavigateToChat ->
-                onNavigateToChat(event.bookingId, event.otherPartyName, event.isReadOnly)
+                onNavigateToChat(event.bookingId, event.tripId, event.otherPartyName, event.isReadOnly)
         }
     }
 

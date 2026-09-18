@@ -162,8 +162,9 @@ class HomeViewModel(
     }
 
     private fun confirmBooking(bookingId: String) {
+        val tripId = _state.value.pendingRequests.firstOrNull { it.id == bookingId }?.tripId ?: return
         viewModelScope.launch {
-            confirmBookingUseCase(bookingId).onFailure { e ->
+            confirmBookingUseCase(bookingId, tripId).onFailure { e ->
                 _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
             }
         }

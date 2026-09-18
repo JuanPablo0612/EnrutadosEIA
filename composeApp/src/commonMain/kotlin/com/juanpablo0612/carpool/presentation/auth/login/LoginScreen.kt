@@ -26,6 +26,7 @@ fun LoginScreen(
     onLoginSuccess: (com.juanpablo0612.carpool.domain.auth.model.User) -> Unit,
     onNavigateToRegister: () -> Unit,
     onForgotPasswordClick: () -> Unit,
+    onNavigateToEmailVerification: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -33,7 +34,7 @@ fun LoginScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is AuthEvent.NavigateAfterAuth -> onLoginSuccess(event.user)
-            AuthEvent.NavigateToEmailVerification -> { /* not emitted from login */ }
+            AuthEvent.NavigateToEmailVerification -> onNavigateToEmailVerification()
         }
     }
 

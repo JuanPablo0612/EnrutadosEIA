@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.trip.tracking
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,11 +10,16 @@ import android.net.Uri
 // is needed because the Context injected via Koin's androidContext() is the Application context,
 // not an Activity.
 private class AndroidEmergencyDialer(private val context: Context) : EmergencyDialer {
-    override fun dial(phoneNumber: String) {
+    override fun dial(phoneNumber: String): Boolean {
         val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        return try {
+            context.startActivity(intent)
+            true
+        } catch (e: ActivityNotFoundException) {
+            false
+        }
     }
 }
 

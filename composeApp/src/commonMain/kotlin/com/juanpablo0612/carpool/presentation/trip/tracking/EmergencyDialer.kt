@@ -11,8 +11,10 @@ interface EmergencyDialer {
      * Opens the platform dialer pre-filled with [phoneNumber]. Uses ACTION_DIAL semantics (not
      * ACTION_CALL) on Android, so the user must still tap "call" themselves — this needs no
      * CALL_PHONE runtime permission.
+     *
+     * @return `true` if a dialer app handled the request, `false` if no app on the device could.
      */
-    fun dial(phoneNumber: String)
+    fun dial(phoneNumber: String): Boolean
 }
 
 /**

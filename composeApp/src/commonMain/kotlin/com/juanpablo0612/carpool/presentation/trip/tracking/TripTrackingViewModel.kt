@@ -146,7 +146,11 @@ class TripTrackingViewModel(
                 _state.update { it.copy(showSosDialog = true, sosNoContacts = false, sosLocationShared = false) }
             TripTrackingAction.OnSOSDismiss ->
                 _state.update { it.copy(showSosDialog = false) }
-            TripTrackingAction.OnSOSCallEmergencyClick -> emergencyDialer.dial(EMERGENCY_PHONE_NUMBER)
+            TripTrackingAction.OnSOSCallEmergencyClick -> {
+                if (!emergencyDialer.dial(EMERGENCY_PHONE_NUMBER)) {
+                    _state.update { it.copy(error = TripTrackingError.NoAppAvailable) }
+                }
+            }
             TripTrackingAction.OnSOSShareLocationClick -> shareLocation()
             TripTrackingAction.OnBackClick ->
                 viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateBack) }
@@ -155,6 +159,7 @@ class TripTrackingViewModel(
                     _events.emit(
                         TripTrackingEvent.NavigateToChat(
                             bookingId = action.bookingId,
+                            tripId = tripId,
                             otherPartyName = action.otherPartyName,
                             isReadOnly = _state.value.isChatReadOnly,
                         )
@@ -215,8 +220,12 @@ class TripTrackingViewModel(
                 }
             }
 
-            locationSharer.share(contacts.map { it.phone }, message)
-            _state.update { it.copy(sosLocationShared = true, sosNoContacts = false) }
+            val shared = locationSharer.share(contacts.map { it.phone }, message)
+            if (shared) {
+                _state.update { it.copy(sosLocationShared = true, sosNoContacts = false) }
+            } else {
+                _state.update { it.copy(error = TripTrackingError.NoAppAvailable) }
+            }
         }
     }
 

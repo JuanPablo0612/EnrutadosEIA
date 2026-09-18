@@ -36,8 +36,10 @@ class RoleSelectorViewModel(
             _uiState.update { it.copy(userName = user?.name?.split(" ")?.firstOrNull() ?: "") }
 
             val userId = user?.id ?: return@launch
-            val bookings = bookingRepository.getDriverBookingRequests(userId).first()
-            _uiState.update { it.copy(driverPendingCount = bookings.size) }
+            val pendingCount = runCatching { bookingRepository.getDriverBookingRequests(userId).first() }
+                .getOrDefault(emptyList())
+                .size
+            _uiState.update { it.copy(driverPendingCount = pendingCount) }
         }
     }
 

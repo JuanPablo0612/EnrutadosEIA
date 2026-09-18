@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
@@ -62,7 +63,11 @@ class LoginViewModel(
         authRepository.getCurrentUser()
             .onSuccess { user ->
                 _uiState.update { it.copy(isLoading = false) }
-                _events.emit(AuthEvent.NavigateAfterAuth(user))
+                if (FeatureFlags.EMAIL_VERIFICATION_REQUIRED && !user.isEmailVerified) {
+                    _events.emit(AuthEvent.NavigateToEmailVerification)
+                } else {
+                    _events.emit(AuthEvent.NavigateAfterAuth(user))
+                }
             }
             .onFailure { throwable ->
                 _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }

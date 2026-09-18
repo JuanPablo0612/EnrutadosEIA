@@ -30,6 +30,21 @@ import org.koin.compose.koinInject
 
 private const val MAP_PICK_RESULT_KEY = "map_pick_result"
 
+/**
+ * Which role's nav graph a route belongs to, or `null` for role-agnostic/shared routes. Used so a
+ * deep link can switch [UserSession.activeRole] to match its target before navigating, instead of
+ * leaving a dual-role user's bottom bar/theme desynced from the screen they land on.
+ */
+private fun Route.requiredRoleOrNull(): UserRole? = when (this) {
+    is Route.Home, is Route.RoutesList, is Route.CreateRoute, is Route.RouteDetail,
+    is Route.CreateTrip, is Route.DriverTrips, is Route.TripPassengers, is Route.VehiclesList,
+    is Route.RegisterVehicle, is Route.DriverBookingRequests, is Route.PassengerProfile -> UserRole.Driver
+
+    is Route.PassengerHome, is Route.TripDetailPassenger, is Route.PassengerBookings -> UserRole.Passenger
+
+    else -> null
+}
+
 @Composable
 fun AppNavigation(
     navController: NavHostController,
@@ -73,10 +88,14 @@ fun AppNavigation(
     // The one way to change active role. Every caller resets the back stack, because leaving the
     // previous role's destinations underneath is exactly how activeRole ends up disagreeing with
     // the tab set that is actually on screen — the desync the bottom-bar comment below guards
-    // against, reached from the other direction.
-    val switchActiveRole: (UserRole) -> Unit = { role ->
+    // against, reached from the other direction. `destination` defaults to that role's home
+    // screen, but a caller landing somewhere more specific (e.g. a deep link target) can override
+    // it while still getting the same role-set-then-reset-stack behavior.
+    fun switchActiveRole(
+        role: UserRole,
+        destination: Route = if (role == UserRole.Driver) Route.Home else Route.PassengerHome
+    ) {
         userSession.setActiveRole(role)
-        val destination = if (role == UserRole.Driver) Route.Home else Route.PassengerHome
         navController.navigate(destination) {
             popUpTo(0) { inclusive = true }
         }
@@ -153,6 +172,11 @@ fun AppNavigation(
                     },
                     onSplashNavigateToOnboarding = {
                         navController.navigate(Route.Onboarding) {
+                            popUpTo<Route.Splash> { inclusive = true }
+                        }
+                    },
+                    onSplashNavigateToEmailVerification = {
+                        navController.navigate(Route.EmailVerification) {
                             popUpTo<Route.Splash> { inclusive = true }
                         }
                     },
@@ -257,8 +281,8 @@ fun AppNavigation(
                             Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = false)
                         )
                     },
-                    onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
-                        navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
+                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
                     },
                     onNavigateBack = { navController.popBackStack() },
                 )
@@ -321,10 +345,20 @@ fun AppNavigation(
                         }
                     },
                     onNavigateToDeepLink = { deepLink ->
-                        deepLink.toRouteOrNull()?.let { navController.navigate(it) }
+                        deepLink.toRouteOrNull()?.let { route ->
+                            val requiredRole = route.requiredRoleOrNull()
+                            if (requiredRole != null && requiredRole != activeRole) {
+                                // Land on the deep link's actual target, not that role's home
+                                // screen, while still keeping activeRole/bottom-bar/theme in
+                                // sync with where the user is actually being sent.
+                                switchActiveRole(requiredRole, route)
+                            } else {
+                                navController.navigate(route)
+                            }
+                        }
                     },
-                    onNavigateToChat = { bookingId, otherPartyName, isReadOnly ->
-                        navController.navigate(Route.Chat(bookingId, otherPartyName, isReadOnly))
+                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
                     }
                 )
             }

@@ -5,6 +5,7 @@ sealed class TripTrackingEvent {
     data object NavigateBack : TripTrackingEvent()
     data class NavigateToChat(
         val bookingId: String,
+        val tripId: String,
         val otherPartyName: String,
         val isReadOnly: Boolean,
     ) : TripTrackingEvent()

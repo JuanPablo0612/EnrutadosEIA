@@ -18,6 +18,7 @@ fun SplashScreen(
     viewModel: SplashViewModel,
     onNavigateToAuth: () -> Unit,
     onNavigateToOnboarding: () -> Unit,
+    onNavigateToEmailVerification: () -> Unit,
     onNavigateToDriver: (User) -> Unit,
     onNavigateToPassenger: (User) -> Unit,
     onNavigateToRoleSelector: (User) -> Unit
@@ -28,6 +29,7 @@ fun SplashScreen(
         when (event) {
             SplashEvent.NavigateToAuth -> onNavigateToAuth()
             SplashEvent.NavigateToOnboarding -> onNavigateToOnboarding()
+            SplashEvent.NavigateToEmailVerification -> onNavigateToEmailVerification()
             is SplashEvent.NavigateToDriver -> onNavigateToDriver(event.user)
             is SplashEvent.NavigateToPassenger -> onNavigateToPassenger(event.user)
             is SplashEvent.NavigateToRoleSelector -> onNavigateToRoleSelector(event.user)

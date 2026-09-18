@@ -74,9 +74,7 @@ class RoutesListViewModel(
             is RoutesListAction.OnDeleteRouteClick -> {
                 _state.update { it.copy(pendingDeleteRouteId = action.routeId) }
             }
-            is RoutesListAction.OnDuplicateRouteClick -> viewModelScope.launch {
-                _events.emit(RoutesListEvent.NavigateToRouteDetail(action.routeId))
-            }
+            is RoutesListAction.OnDuplicateRouteClick -> duplicateRoute(action.routeId)
             RoutesListAction.OnConfirmDelete -> deleteRoute()
             RoutesListAction.OnDismissDelete -> {
                 _state.update { it.copy(pendingDeleteRouteId = null) }
@@ -84,6 +82,16 @@ class RoutesListViewModel(
             RoutesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateBack)
             }
+        }
+    }
+
+    // Mirrors RouteDetailViewModel.duplicateRoute() — the user is already on the list (which is
+    // Flow-driven off a live Firestore listener), so unlike the detail screen's version there's
+    // no NavigateBack: the duplicate just appears once routeRepository.getUserRoutes() re-emits.
+    private fun duplicateRoute(routeId: String) {
+        val route = _state.value.routes.find { it.route.id == routeId }?.route ?: return
+        viewModelScope.launch {
+            routeRepository.createRoute(route.copy(id = "", name = "${route.name} (copia)"))
         }
     }
 

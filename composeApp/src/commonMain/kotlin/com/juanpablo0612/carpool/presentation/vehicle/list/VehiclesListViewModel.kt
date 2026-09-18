@@ -57,6 +57,7 @@ class VehiclesListViewModel(
                 val userId = authRepository.getCurrentUserId() ?: return
                 viewModelScope.launch {
                     vehicleRepository.setPrimaryVehicle(userId, action.vehicleId)
+                        .onFailure { _state.update { it.copy(actionError = true) } }
                 }
             }
 
@@ -78,6 +79,7 @@ class VehiclesListViewModel(
                 _state.update { it.copy(vehicleToDelete = null) }
                 viewModelScope.launch {
                     vehicleRepository.deleteVehicle(vehicle.id, vehicle.driverId)
+                        .onFailure { _state.update { it.copy(actionError = true) } }
                 }
             }
 
@@ -94,6 +96,8 @@ class VehiclesListViewModel(
             VehiclesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(VehiclesListEvent.NavigateBack)
             }
+
+            VehiclesListAction.OnDismissActionError -> _state.update { it.copy(actionError = false) }
         }
     }
 }

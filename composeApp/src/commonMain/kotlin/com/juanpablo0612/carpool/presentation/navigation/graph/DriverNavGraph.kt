@@ -51,7 +51,7 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToPassengers: (String) -> Unit,
     onNavigateToPassengerProfile: (String) -> Unit,
     onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     composable<Route.Home> {

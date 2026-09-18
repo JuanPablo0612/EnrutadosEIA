@@ -17,8 +17,8 @@ import com.juanpablo0612.carpool.presentation.place.add.AddPlaceScreen
 import com.juanpablo0612.carpool.presentation.place.add.AddPlaceViewModel
 import com.juanpablo0612.carpool.presentation.place.picker.MapPickerScreen
 import com.juanpablo0612.carpool.presentation.place.picker.MapPickerViewModel
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorMode
+import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorScreen
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.profile.ProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.ProfileViewModel
@@ -55,7 +55,7 @@ fun NavGraphBuilder.sharedNavGraph(
     onDeleteAccountSuccess: () -> Unit,
     onRoleSwitched: (UserRole) -> Unit,
     onNavigateToDeepLink: (String) -> Unit,
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
 ) {
     composable<Route.AddPlace> { backStackEntry ->
         val viewModel: AddPlaceViewModel = koinViewModel()
@@ -85,13 +85,14 @@ fun NavGraphBuilder.sharedNavGraph(
         val viewModel: PlaceSelectorViewModel = koinViewModel {
             parametersOf(PlaceSelectorMode.MY_PLACES_KEY)
         }
-        val state by viewModel.state.collectAsState()
         // Reuses the browse-and-delete surface that already existed but was never
-        // registered as a destination; only the selection callback is dropped, since
-        // here the list is the destination rather than a picker.
-        PlaceSelectorContent(
-            state = state,
-            onAction = viewModel::onAction,
+        // registered as a destination. This is the stateful PlaceSelectorScreen (not the
+        // bare Content) so its events (current-location resolve, suggestion select) are
+        // actually collected instead of suspending forever with no collector; selecting a
+        // place here has no further use, so onPlaceSelected is a no-op.
+        PlaceSelectorScreen(
+            viewModel = viewModel,
+            onPlaceSelected = {},
             onBack = onNavigateBack,
             onNavigateToAddPlace = onNavigateToAddPlace,
         )
@@ -157,7 +158,7 @@ fun NavGraphBuilder.sharedNavGraph(
     composable<Route.Chat> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.Chat>()
         val viewModel: ChatViewModel = koinViewModel {
-            parametersOf(args.bookingId, args.otherPartyName, args.isReadOnly)
+            parametersOf(args.bookingId, args.tripId, args.otherPartyName, args.isReadOnly)
         }
         ChatScreen(
             viewModel = viewModel,

@@ -124,10 +124,11 @@ class TripPassengersViewModel(
     }
 
     private fun acceptBooking(bookingId: String, tripId: String) {
+        if (bookingId in _state.value.processingIds) return
         val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            confirmBookingUseCase(bookingId)
+            confirmBookingUseCase(bookingId, tripId)
                 .onSuccess {
                     if (passengerId != null) {
                         createNotificationUseCase(
@@ -145,6 +146,7 @@ class TripPassengersViewModel(
     }
 
     private fun rejectBooking(bookingId: String, reason: RejectReason, comment: String?) {
+        if (bookingId in _state.value.processingIds) return
         val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }

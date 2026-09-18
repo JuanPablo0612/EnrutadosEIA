@@ -41,13 +41,16 @@ import enrutadoseia.composeapp.generated.resources.relative_days_ago
 import enrutadoseia.composeapp.generated.resources.relative_hours_ago
 import enrutadoseia.composeapp.generated.resources.relative_just_now
 import enrutadoseia.composeapp.generated.resources.relative_minutes_ago
-import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BookingRequestCard(
     item: BookingWithPassenger,
     processingIds: Set<String>,
+    // Passed in rather than defaulted to `now`, matching ConfirmedBookingCard: a default read
+    // during composition makes this composable non-idempotent and re-reads the clock on every
+    // recomposition.
+    nowMs: Long,
     onAccept: (String, String) -> Unit,
     onReject: (String) -> Unit,
     onViewProfile: (String) -> Unit,
@@ -75,7 +78,7 @@ fun BookingRequestCard(
             }
             Spacer(modifier = Modifier.width(Spacing.sm))
             Text(
-                text = relativeCreatedAt(booking.createdAt),
+                text = relativeCreatedAt(booking.createdAt, nowMs),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -185,9 +188,8 @@ private fun ReputationLine(passenger: PassengerSummary) {
 }
 
 @Composable
-private fun relativeCreatedAt(createdAtMs: Long): String {
-    val now = Clock.System.now().toEpochMilliseconds()
-    val diffMs = now - createdAtMs
+private fun relativeCreatedAt(createdAtMs: Long, nowMs: Long): String {
+    val diffMs = nowMs - createdAtMs
     val diffMin = diffMs / 60_000
     val diffHour = diffMs / 3_600_000
     val diffDay = diffMs / 86_400_000

@@ -1,16 +1,16 @@
 package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,6 +31,7 @@ import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.St
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripSummarySection
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -128,11 +129,12 @@ fun RouteDetailPassengerContent(
                         }
                         state.error?.let { error ->
                             item {
-                                Text(
-                                    text = stringResource(error.asStringResource()),
-                                    color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(horizontal = Spacing.lg)
+                                ErrorMessage(
+                                    message = stringResource(error.asStringResource()),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                                        .clickable { onAction(RouteDetailPassengerAction.OnDismissError) },
                                 )
                             }
                         }

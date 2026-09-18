@@ -535,13 +535,16 @@
     <string name="rating_chip_respetuoso">Respetuoso</string>
     <string name="rating_chip_aporte_exacto">Aporte exacto</string>
     <string name="rating_chip_buen_viaje">Buen viaje</string>
+    <string name="error_already_rated">Ya calificaste este viaje</string>
 
     <!-- Chat -->
+    <string name="chat_default_title">Chat</string>
     <string name="chat_input_hint">Escribe un mensaje…</string>
     <string name="chat_read_only_banner">Este viaje ha terminado. La conversación es solo lectura.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
+    <string name="chat_send_failed">No se pudo enviar el mensaje. Inténtalo de nuevo.</string>
 
     <!-- Seguimiento de viaje -->
     <string name="trip_tracking_title">Viaje en curso</string>
@@ -572,6 +575,8 @@
     <string name="notification_booking_accepted_body">El conductor aceptó tu reserva. ¡Que tengas buen viaje!</string>
     <string name="notification_booking_rejected_title">Reserva rechazada</string>
     <string name="notification_booking_rejected_body">El conductor no pudo aceptar tu reserva.</string>
+    <string name="notification_new_booking_request_title">Nueva solicitud de reserva</string>
+    <string name="notification_new_booking_request_body">Un pasajero solicitó un puesto en tu viaje.</string>
 
     <!-- Seguridad -->
     <string name="safety_title">Seguridad</string>
@@ -744,6 +749,7 @@
     <string name="trip_tracking_sos_dismiss">Cerrar</string>
     <string name="trip_tracking_sos_no_contacts">Aún no tienes contactos de emergencia. Agrega uno en Perfil → Seguridad.</string>
     <string name="trip_tracking_sos_location_shared">Detalles del viaje enviados a tus contactos de emergencia.</string>
+    <string name="trip_tracking_sos_no_app_available">Ninguna app en este dispositivo puede realizar esa acción.</string>
 
     <!-- Confirmaciones destructivas -->
     <string name="safety_remove_contact_title">¿Eliminar contacto?</string>

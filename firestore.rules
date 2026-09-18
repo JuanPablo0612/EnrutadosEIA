@@ -61,12 +61,23 @@ service cloud.firestore {
     // approximation (there is no server-side function in this project to verify the caller
     // actually held a CONFIRMED booking on this exact trip); the residual risk is a signed-in user
     // spamming another trip's counter down one at a time, not a PII leak or an ownership takeover.
+    //
+    // The driver-owned branch is bounded the same way on the increment side: whenever a
+    // driver-initiated update touches confirmedSeats (accepting a booking), the new value may
+    // never exceed seatCount — this is the server-side backstop against overbooking a trip past
+    // its seat capacity, matching the ConfirmBookingUseCase seat check on the client.
     // ---------------------------------------------------------------------------------------
     match /trips/{tripId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
       allow update: if isSignedIn() && (
-        resource.data.driverId == request.auth.uid ||
+        (
+          resource.data.driverId == request.auth.uid &&
+          (
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['confirmedSeats']) ||
+            request.resource.data.confirmedSeats <= resource.data.seatCount
+          )
+        ) ||
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['confirmedSeats']) &&
           request.resource.data.confirmedSeats == resource.data.confirmedSeats - 1 &&

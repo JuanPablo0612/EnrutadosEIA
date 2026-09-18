@@ -146,10 +146,11 @@ class BookingRequestsViewModel(
     }
 
     private fun acceptBooking(bookingId: String, tripId: String) {
+        if (bookingId in _state.value.processingIds) return
         val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            confirmBookingUseCase(bookingId)
+            confirmBookingUseCase(bookingId, tripId)
                 .onSuccess {
                     checkTripFull(tripId)
                     if (passengerId != null) {
@@ -170,6 +171,7 @@ class BookingRequestsViewModel(
     }
 
     private fun rejectBooking(bookingId: String, reason: com.juanpablo0612.carpool.domain.booking.model.RejectReason, comment: String?) {
+        if (bookingId in _state.value.processingIds) return
         val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }

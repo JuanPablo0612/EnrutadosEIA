@@ -26,13 +26,14 @@ import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
-import com.juanpablo0612.carpool.presentation.booking.passenger.components.BookingDateGroup
 import com.juanpablo0612.carpool.presentation.booking.passenger.components.BookingDateGroupHeader
 import com.juanpablo0612.carpool.presentation.booking.passenger.components.EnrichedBookingCard
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.RelativeDateGroup
+import com.juanpablo0612.carpool.presentation.ui.util.groupByRelativeDate
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -48,10 +49,6 @@ import enrutadoseia.composeapp.generated.resources.cancel_confirm_button
 import enrutadoseia.composeapp.generated.resources.cancel_confirm_title
 import enrutadoseia.composeapp.generated.resources.passenger_bookings_title
 import kotlin.time.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -193,7 +190,9 @@ private fun UpcomingContent(
         return
     }
 
-    val grouped = groupByRelativeDate(bookings, nowMs)
+    val grouped = remember(bookings, nowMs) {
+        groupByRelativeDate(bookings, nowMs) { it.departureTime }
+    }
 
     LazyColumn(
         contentPadding = PaddingValues(bottom = Spacing.lg)
@@ -257,30 +256,6 @@ private fun PastContent(
 /** A booking that can no longer become active, whatever its departure time says. */
 private val BookingStatus.isTerminal: Boolean
     get() = this is BookingStatus.Cancelled || this is BookingStatus.Rejected
-
-private fun groupByRelativeDate(
-    bookings: List<Booking>,
-    nowMs: Long
-): List<Pair<BookingDateGroup, List<Booking>>> {
-    val tz = TimeZone.currentSystemDefault()
-    val nowDate = kotlin.time.Instant.fromEpochMilliseconds(nowMs).toLocalDateTime(tz).date
-    val tomorrow = nowDate.plus(1, DateTimeUnit.DAY)
-    val nextWeek = nowDate.plus(7, DateTimeUnit.DAY)
-
-    val groups = LinkedHashMap<BookingDateGroup, MutableList<Booking>>()
-    bookings.forEach { booking ->
-        val date = kotlin.time.Instant.fromEpochMilliseconds(booking.departureTime)
-            .toLocalDateTime(tz).date
-        val group = when {
-            date == nowDate -> BookingDateGroup.TODAY
-            date == tomorrow -> BookingDateGroup.TOMORROW
-            date < nextWeek -> BookingDateGroup.THIS_WEEK
-            else -> BookingDateGroup.LATER
-        }
-        groups.getOrPut(group) { mutableListOf() }.add(booking)
-    }
-    return groups.entries.map { (k, v) -> k to v }
-}
 
 @Preview
 @Composable

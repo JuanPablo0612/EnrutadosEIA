@@ -96,9 +96,13 @@ sealed interface Route {
     @Serializable
     data class Chat(
         val bookingId: String,
+        val tripId: String,
         /** Shown as the screen title; without it the title fell back to the literal "Chat". */
         val otherPartyName: String,
-        /** Set once the trip is over, so the thread renders its read-only banner. */
+        /**
+         * Initial read-only guess at nav time; the screen re-derives this live from the trip's
+         * status via [tripId] so it doesn't go stale if the trip completes/cancels mid-chat.
+         */
         val isReadOnly: Boolean,
     ) : Route
 

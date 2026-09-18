@@ -44,6 +44,7 @@ sealed class AppException : Exception() {
     }
 
     sealed class RatingException : AppException() {
+        data object AlreadyRated : RatingException()
         data object Unknown : RatingException()
     }
 

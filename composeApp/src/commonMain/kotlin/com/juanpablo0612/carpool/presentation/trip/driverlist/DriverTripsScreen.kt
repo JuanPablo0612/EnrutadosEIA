@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,9 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.RelativeDateGroup
+import com.juanpablo0612.carpool.presentation.ui.util.groupByRelativeDate
+import com.juanpablo0612.carpool.presentation.ui.util.label
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -48,10 +52,6 @@ import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_s
 import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_title
 import enrutadoseia.composeapp.generated.resources.nav_my_trips
 import enrutadoseia.composeapp.generated.resources.publish_trip_fab
-import enrutadoseia.composeapp.generated.resources.relative_date_later
-import enrutadoseia.composeapp.generated.resources.relative_date_this_week
-import enrutadoseia.composeapp.generated.resources.relative_date_today
-import enrutadoseia.composeapp.generated.resources.relative_date_tomorrow
 import enrutadoseia.composeapp.generated.resources.tab_past
 import enrutadoseia.composeapp.generated.resources.tab_upcoming
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_body
@@ -61,12 +61,6 @@ import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confir
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_button
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_title
 import kotlin.time.Clock
-import kotlin.time.Instant
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -192,12 +186,10 @@ fun DriverTripsContent(
                     }
                 }
                 else -> {
-                    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
                     val grouped = if (isUpcoming) {
-                        state.trips.groupBy { ts ->
-                            val date = Instant.fromEpochMilliseconds(ts.trip.departureTime)
-                                .toLocalDateTime(TimeZone.currentSystemDefault()).date
-                            dateGroupKey(date, today)
+                        remember(state.trips, nowMs) {
+                            groupByRelativeDate(state.trips, nowMs) { it.trip.departureTime }
                         }
                     } else {
                         null
@@ -216,9 +208,8 @@ fun DriverTripsContent(
                         if (grouped != null) {
                             grouped.forEach { (key, tripsInGroup) ->
                                 stickyHeader(key = key) {
-                                    val label = dateGroupLabel(key)
                                     Text(
-                                        text = label,
+                                        text = key.label(),
                                         style = MaterialTheme.typography.labelMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier
@@ -256,27 +247,6 @@ fun DriverTripsContent(
             }
         }
     }
-}
-
-private enum class DateGroupKey { Today, Tomorrow, ThisWeek, Later }
-
-private fun dateGroupKey(date: LocalDate, today: LocalDate): DateGroupKey {
-    val tomorrow = today.plus(1, DateTimeUnit.DAY)
-    val endOfWeek = today.plus(7, DateTimeUnit.DAY)
-    return when {
-        date == today -> DateGroupKey.Today
-        date == tomorrow -> DateGroupKey.Tomorrow
-        date < endOfWeek -> DateGroupKey.ThisWeek
-        else -> DateGroupKey.Later
-    }
-}
-
-@Composable
-private fun dateGroupLabel(key: DateGroupKey): String = when (key) {
-    DateGroupKey.Today -> stringResource(Res.string.relative_date_today)
-    DateGroupKey.Tomorrow -> stringResource(Res.string.relative_date_tomorrow)
-    DateGroupKey.ThisWeek -> stringResource(Res.string.relative_date_this_week)
-    DateGroupKey.Later -> stringResource(Res.string.relative_date_later)
 }
 
 @Preview

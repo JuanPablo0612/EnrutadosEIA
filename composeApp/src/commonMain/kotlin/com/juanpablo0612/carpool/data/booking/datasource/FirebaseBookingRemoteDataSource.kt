@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.data.booking.datasource
 
 import com.juanpablo0612.carpool.data.booking.model.BookingDto
+import com.juanpablo0612.carpool.data.trip.model.TripDto
 import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -112,6 +113,12 @@ class FirebaseBookingRemoteDataSource(
             val exitsConfirmed = booking.status == "CONFIRMED" && newStatus != "CONFIRMED"
             if (entersConfirmed || exitsConfirmed) {
                 val tripRef = firestore.collection(TRIPS_COLLECTION_NAME).document(booking.tripId)
+                if (entersConfirmed) {
+                    val trip = get(tripRef).data(TripDto.serializer())
+                    check(trip.confirmedSeats < trip.seatCount) {
+                        "Trip ${booking.tripId} has no available seats"
+                    }
+                }
                 val delta = if (entersConfirmed) 1 else -1
                 update(tripRef, "confirmedSeats" to FieldValue.increment(delta))
             }

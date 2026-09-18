@@ -1,8 +1,11 @@
 package com.juanpablo0612.carpool.presentation.vehicle.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,11 +20,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -30,6 +35,7 @@ import com.juanpablo0612.carpool.presentation.vehicle.list.components.VehicleCar
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
+import enrutadoseia.composeapp.generated.resources.error_action_failed
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_description
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_title
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_confirm_description
@@ -118,32 +124,43 @@ fun VehiclesListContent(
             )
         }
     ) { padding ->
-        when {
-            state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
-            state.vehicles.isEmpty() -> EmptyState(
-                icon = vectorResource(Res.drawable.directions_car_24px),
-                title = stringResource(Res.string.vehicles_empty_title),
-                description = stringResource(Res.string.vehicles_empty_subtitle),
-                modifier = Modifier.fillMaxSize().padding(padding),
-                primaryAction = ActionButton(stringResource(Res.string.vehicles_add_fab)) {
-                    onAction(VehiclesListAction.OnAddVehicle)
-                }
-            )
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(Spacing.lg),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.md)
-                ) {
-                    items(state.vehicles, key = { it.id }) { vehicle ->
-                        VehicleCard(
-                            vehicle = vehicle,
-                            totalVehicleCount = state.vehicles.size,
-                            onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
-                            onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
-                            onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
-                            onClick = null
-                        )
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            if (state.actionError) {
+                ErrorMessage(
+                    message = stringResource(Res.string.error_action_failed),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { onAction(VehiclesListAction.OnDismissActionError) }
+                )
+            }
+            when {
+                state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
+                state.vehicles.isEmpty() -> EmptyState(
+                    icon = vectorResource(Res.drawable.directions_car_24px),
+                    title = stringResource(Res.string.vehicles_empty_title),
+                    description = stringResource(Res.string.vehicles_empty_subtitle),
+                    modifier = Modifier.fillMaxSize(),
+                    primaryAction = ActionButton(stringResource(Res.string.vehicles_add_fab)) {
+                        onAction(VehiclesListAction.OnAddVehicle)
+                    }
+                )
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(Spacing.lg),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.md)
+                    ) {
+                        items(state.vehicles, key = { it.id }) { vehicle ->
+                            VehicleCard(
+                                vehicle = vehicle,
+                                totalVehicleCount = state.vehicles.size,
+                                onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
+                                onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
+                                onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
+                                onClick = null
+                            )
+                        }
                     }
                 }
             }

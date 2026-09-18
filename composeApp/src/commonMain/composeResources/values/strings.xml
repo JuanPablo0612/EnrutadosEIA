@@ -629,13 +629,16 @@
     <string name="rating_chip_respetuoso">Respetuoso</string>
     <string name="rating_chip_aporte_exacto">Aporte exacto</string>
     <string name="rating_chip_buen_viaje">Good trip</string>
+    <string name="error_already_rated">You already rated this trip</string>
 
     <!-- Chat -->
+    <string name="chat_default_title">Chat</string>
     <string name="chat_input_hint">Type a message…</string>
     <string name="chat_read_only_banner">This trip has ended. The conversation is read-only.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
+    <string name="chat_send_failed">Message couldn\'t be sent. Try again.</string>
 
     <!-- Trip tracking -->
     <string name="trip_tracking_title">Trip in progress</string>
@@ -666,6 +669,8 @@
     <string name="notification_booking_accepted_body">The driver accepted your request. Have a great trip!</string>
     <string name="notification_booking_rejected_title">Booking rejected</string>
     <string name="notification_booking_rejected_body">The driver couldn\'t accept your request.</string>
+    <string name="notification_new_booking_request_title">New booking request</string>
+    <string name="notification_new_booking_request_body">A passenger requested a seat on your trip.</string>
 
     <!-- Safety -->
     <string name="safety_title">Seguridad</string>
@@ -744,6 +749,7 @@
     <string name="trip_tracking_sos_dismiss">Close</string>
     <string name="trip_tracking_sos_no_contacts">You have no emergency contacts yet. Add one under Profile → Safety.</string>
     <string name="trip_tracking_sos_location_shared">Trip details sent to your emergency contacts.</string>
+    <string name="trip_tracking_sos_no_app_available">No app on this device can handle that action.</string>
 
     <!-- Destructive confirmations -->
     <string name="safety_remove_contact_title">Remove contact?</string>

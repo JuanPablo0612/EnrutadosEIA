@@ -37,7 +37,7 @@ class SearchRoutesViewModel(
     init {
         getAvailableTripsUseCase()
             .onEach { trips ->
-                allTrips.value = trips
+                allTrips.update { trips }
                 _uiState.update { it.copy(isLoading = false) }
             }
             .launchIn(viewModelScope)

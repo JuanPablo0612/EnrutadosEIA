@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
 
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_action_failed
+import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_no_app_available
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -13,7 +14,11 @@ import org.jetbrains.compose.resources.StringResource
 sealed class TripTrackingError {
     data object ActionFailed : TripTrackingError()
 
+    /** Neither ACTION_DIAL nor ACTION_SENDTO resolved to an app on this device. */
+    data object NoAppAvailable : TripTrackingError()
+
     fun asStringResource(): StringResource = when (this) {
         ActionFailed -> Res.string.error_action_failed
+        NoAppAvailable -> Res.string.trip_tracking_sos_no_app_available
     }
 }

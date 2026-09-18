@@ -11,7 +11,8 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
  * in control of what actually gets sent.
  */
 interface LocationSharer {
-    fun share(phoneNumbers: List<String>, message: String)
+    /** @return `true` if an SMS app handled the request, `false` if no app on the device could. */
+    fun share(phoneNumbers: List<String>, message: String): Boolean
 }
 
 /**

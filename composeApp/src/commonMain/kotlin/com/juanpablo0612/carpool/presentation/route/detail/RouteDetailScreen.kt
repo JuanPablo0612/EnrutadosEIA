@@ -222,7 +222,10 @@ internal fun RouteDetailReadContent(
                 )
             }
 
-            itemsIndexed(route.waypoints) { index, waypoint ->
+            itemsIndexed(
+                route.waypoints,
+                key = { index, waypoint -> waypoint.id.ifBlank { "waypoint_$index" } }
+            ) { index, waypoint ->
                 RouteStopItem(
                     label = stringResource(Res.string.stop_number, index + 1),
                     place = waypoint,
@@ -354,7 +357,10 @@ internal fun RouteDetailEditContent(
                 )
             }
 
-            itemsIndexed(draft.waypoints) { index, waypoint ->
+            itemsIndexed(
+                draft.waypoints,
+                key = { index, waypoint -> waypoint.id.ifBlank { "waypoint_$index" } }
+            ) { index, waypoint ->
                 RouteStopItem(
                     label = stringResource(Res.string.stop_number, index + 1),
                     place = waypoint,

@@ -5,4 +5,5 @@ sealed class ChatAction {
     data class OnQuickReplyClick(val text: String) : ChatAction()
     data object OnSendClick : ChatAction()
     data object OnBackClick : ChatAction()
+    data object OnDismissSendError : ChatAction()
 }

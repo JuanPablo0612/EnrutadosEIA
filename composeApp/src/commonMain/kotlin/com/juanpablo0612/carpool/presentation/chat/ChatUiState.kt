@@ -8,6 +8,7 @@ data class ChatUiState(
     val isLoading: Boolean = true,
     val isSending: Boolean = false,
     val isReadOnly: Boolean = false,
+    val sendFailed: Boolean = false,
     val otherPartyName: String = "",
     val currentUserId: String = ""
 )

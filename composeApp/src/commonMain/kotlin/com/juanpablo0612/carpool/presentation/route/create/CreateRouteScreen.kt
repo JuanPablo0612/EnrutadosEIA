@@ -162,7 +162,10 @@ fun CreateRouteContent(
                 )
             }
 
-            itemsIndexed(state.waypoints) { index, waypoint ->
+            itemsIndexed(
+                state.waypoints,
+                key = { index, waypoint -> waypoint.id.ifBlank { "waypoint_$index" } }
+            ) { index, waypoint ->
                 RouteStopItem(
                     label = stringResource(Res.string.stop_number, index + 1),
                     place = waypoint,

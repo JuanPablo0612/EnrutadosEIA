@@ -134,6 +134,7 @@ fun NotificationsContent(
                             items(state.notifications, key = { it.id }) { notification ->
                                 SwipeToDeleteNotification(
                                     notification = notification,
+                                    actionError = state.actionError,
                                     onDismiss = { onAction(NotificationsAction.OnDismiss(notification.id)) },
                                     onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
                                 )

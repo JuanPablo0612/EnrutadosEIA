@@ -7,4 +7,5 @@ data class VehiclesListUiState(
     val vehicles: List<Vehicle> = emptyList(),
     val vehicleToDelete: Vehicle? = null,
     val deleteBlockedVehicle: Vehicle? = null,
+    val actionError: Boolean = false,
 )

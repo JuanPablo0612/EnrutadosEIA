@@ -5,12 +5,14 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SwipeToDeleteNotification(
     notification: AppNotification,
+    actionError: Boolean,
     onDismiss: () -> Unit,
     onClick: () -> Unit
 ) {
@@ -22,6 +24,16 @@ internal fun SwipeToDeleteNotification(
             } else false
         }
     )
+
+    // The swipe commits optimistically (confirmValueChange returns true before the
+    // repository call resolves) — if the delete then fails, reset back to Settled so the
+    // row is interactive again instead of stuck in a visually-dismissed state.
+    LaunchedEffect(actionError) {
+        if (actionError) {
+            dismissState.reset()
+        }
+    }
+
     SwipeToDismissBox(
         state = dismissState,
         backgroundContent = { DeleteNotificationBackground() },

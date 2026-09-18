@@ -63,7 +63,7 @@ fun BookingRequestsScreen(
     viewModel: BookingRequestsViewModel,
     onNavigateToPassengerProfile: (String) -> Unit = {},
     onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit = { _, _, _, _ -> },
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _ -> },
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -88,7 +88,7 @@ fun BookingRequestsScreen(
 fun BookingRequestsContent(
     state: BookingRequestsUiState,
     onAction: (BookingRequestsAction) -> Unit,
-    onNavigateToChat: (bookingId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _ -> },
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
 ) {
     val nowMs = remember { Clock.System.now().toEpochMilliseconds() }
     if (state.pendingRejectionFor != null) {
@@ -190,10 +190,12 @@ fun BookingRequestsContent(
                         items = state.pending,
                         emptyTitle = stringResource(Res.string.pending_empty_title),
                         emptySubtitle = stringResource(Res.string.pending_empty_subtitle),
+                        key = { it.booking.id },
                     ) { item ->
                         BookingRequestCard(
                             item = item,
                             processingIds = state.processingIds,
+                            nowMs = nowMs,
                             onAccept = { id, tripId ->
                                 onAction(BookingRequestsAction.Accept(id, tripId))
                             },
@@ -206,6 +208,7 @@ fun BookingRequestsContent(
                         items = state.confirmed,
                         emptyTitle = stringResource(Res.string.confirmed_empty_title),
                         emptySubtitle = stringResource(Res.string.confirmed_empty_subtitle),
+                        key = { it.booking.id },
                     ) { item ->
                         val isPast = item.booking.departureTime <= nowMs
                         ConfirmedBookingCard(
@@ -213,7 +216,7 @@ fun BookingRequestsContent(
                             processingIds = state.processingIds,
                             nowMs = nowMs,
                             onMessage = {
-                                onNavigateToChat(item.booking.id, item.passenger.name, isPast)
+                                onNavigateToChat(item.booking.id, item.booking.tripId, item.passenger.name, isPast)
                             },
                             onCancel = { onAction(BookingRequestsAction.OpenCancelConfirmed(item.booking.id)) },
                             onRate = {
@@ -233,6 +236,7 @@ fun BookingRequestsContent(
                         items = state.history,
                         emptyTitle = stringResource(Res.string.history_empty_title),
                         emptySubtitle = stringResource(Res.string.history_empty_subtitle),
+                        key = { it.booking.id },
                     ) { item ->
                         HistoryBookingCard(item = item)
                     }
@@ -268,6 +272,7 @@ private fun <T> TabContent(
     items: List<T>,
     emptyTitle: String,
     emptySubtitle: String,
+    key: (T) -> Any,
     modifier: Modifier = Modifier,
     itemContent: @Composable (T) -> Unit,
 ) {
@@ -284,7 +289,7 @@ private fun <T> TabContent(
             contentPadding = PaddingValues(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            items(items) { item -> itemContent(item) }
+            items(items, key = key) { item -> itemContent(item) }
         }
     }
 }

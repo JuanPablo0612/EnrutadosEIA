@@ -28,6 +28,7 @@ fun NavGraphBuilder.authNavGraph(
             onLoginSuccess = onAuthSuccess,
             onNavigateToRegister = onNavigateToRegister,
             onForgotPasswordClick = onNavigateToForgotPassword,
+            onNavigateToEmailVerification = onNavigateToEmailVerification,
             onBackClick = onNavigateBack
         )
     }

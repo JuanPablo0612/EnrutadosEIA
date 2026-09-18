@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.domain.rating.usecase
 
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.rating.model.Rating
 import com.juanpablo0612.carpool.domain.rating.model.RatingChip
 import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
@@ -15,6 +16,12 @@ class CreateRatingUseCase(private val repository: RatingRepository) {
         chips: List<RatingChip>,
         comment: String?
     ): Result<Unit> {
+        val alreadyRated = repository.hasRatedBooking(bookingId, raterId)
+            .getOrElse { return Result.failure(AppException.RatingException.Unknown) }
+        if (alreadyRated) {
+            return Result.failure(AppException.RatingException.AlreadyRated)
+        }
+
         val rating = Rating(
             id = "${bookingId}_${raterId}",
             tripId = tripId,
