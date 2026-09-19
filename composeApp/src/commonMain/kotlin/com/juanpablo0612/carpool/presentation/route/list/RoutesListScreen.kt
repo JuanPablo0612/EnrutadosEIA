@@ -1,8 +1,11 @@
 package com.juanpablo0612.carpool.presentation.route.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,6 +27,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -130,6 +134,16 @@ fun RoutesListContent(
                     contentPadding = PaddingValues(Spacing.lg),
                     verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
+                    state.actionError?.let { actionError ->
+                        item(key = "action_error") {
+                            ErrorMessage(
+                                message = stringResource(actionError.asStringResource()),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onAction(RoutesListAction.OnDismissActionError) }
+                            )
+                        }
+                    }
                     items(state.routes, key = { it.route.id }) { routeWithStats ->
                         RouteCard(
                             routeWithStats = routeWithStats,
@@ -137,7 +151,8 @@ fun RoutesListContent(
                             onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
                             onEditClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
                             onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
-                            onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) }
+                            onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) },
+                            isDuplicating = state.duplicatingRouteId == routeWithStats.route.id
                         )
                     }
                 }

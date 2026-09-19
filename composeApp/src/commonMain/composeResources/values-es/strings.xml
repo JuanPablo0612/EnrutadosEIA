@@ -737,6 +737,7 @@
 
     <string name="error_route_save_failed">No se pudo guardar la ruta. Inténtalo de nuevo.</string>
     <string name="error_route_delete_failed">No se pudo eliminar la ruta. Inténtalo de nuevo.</string>
+    <string name="error_route_duplicate_failed">No se pudo duplicar la ruta. Inténtalo de nuevo.</string>
 
     <string name="role_switch_to_driver">Cambiar a conductor</string>
     <string name="role_switch_to_passenger">Cambiar a pasajero</string>

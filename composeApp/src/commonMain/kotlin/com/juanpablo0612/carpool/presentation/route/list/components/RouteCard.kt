@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
@@ -59,7 +60,8 @@ fun RouteCard(
     onEditClick: () -> Unit,
     onDuplicateClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isDuplicating: Boolean = false,
 ) {
     val route = routeWithStats.route
     var expanded by remember { mutableStateOf(false) }
@@ -80,10 +82,7 @@ fun RouteCard(
                     modifier = Modifier.weight(1f)
                 )
                 Box {
-                    IconButton(
-                        onClick = { expanded = true },
-                        modifier = Modifier.size(32.dp) // compact touch target, not a spacing value
-                    ) {
+                    IconButton(onClick = { expanded = true }) {
                         Icon(
                             imageVector = vectorResource(Res.drawable.more_vert_24px),
                             contentDescription = stringResource(Res.string.cd_more_options),
@@ -104,7 +103,11 @@ fun RouteCard(
                         )
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.route_menu_duplicate)) },
-                            onClick = { expanded = false; onDuplicateClick() }
+                            onClick = { expanded = false; onDuplicateClick() },
+                            enabled = !isDuplicating,
+                            trailingIcon = if (isDuplicating) {
+                                { CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp) }
+                            } else null,
                         )
                         DropdownMenuItem(
                             text = {

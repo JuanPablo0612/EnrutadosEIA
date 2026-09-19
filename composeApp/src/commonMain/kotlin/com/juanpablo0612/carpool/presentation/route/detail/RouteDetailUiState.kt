@@ -13,6 +13,7 @@ data class RouteDetailUiState(
     val draft: CreateRouteUiState? = null,
     val isSaving: Boolean = false,
     val isDeleting: Boolean = false,
+    val isDuplicating: Boolean = false,
     val showDeleteConfirm: Boolean = false,
     val error: RouteDetailError? = null
 )

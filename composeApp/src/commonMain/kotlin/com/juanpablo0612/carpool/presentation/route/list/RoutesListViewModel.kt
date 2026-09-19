@@ -81,6 +81,7 @@ class RoutesListViewModel(
                 _state.update { it.copy(pendingDeleteRouteId = null) }
             }
             RoutesListAction.OnRetry -> loadRoutes()
+            RoutesListAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
             RoutesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateBack)
             }
@@ -92,8 +93,17 @@ class RoutesListViewModel(
     // no NavigateBack: the duplicate just appears once routeRepository.getUserRoutes() re-emits.
     private fun duplicateRoute(routeId: String) {
         val route = _state.value.routes.find { it.route.id == routeId }?.route ?: return
+        _state.update { it.copy(duplicatingRouteId = routeId, actionError = null) }
         viewModelScope.launch {
             routeRepository.createRoute(route.copy(id = "", name = "${route.name} (copia)"))
+                .onSuccess {
+                    _state.update { it.copy(duplicatingRouteId = null) }
+                }
+                .onFailure {
+                    _state.update {
+                        it.copy(duplicatingRouteId = null, actionError = RoutesListError.DuplicateFailed)
+                    }
+                }
         }
     }
 

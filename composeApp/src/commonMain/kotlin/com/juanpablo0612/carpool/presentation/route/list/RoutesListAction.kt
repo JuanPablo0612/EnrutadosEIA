@@ -9,5 +9,6 @@ sealed class RoutesListAction {
     data object OnConfirmDelete : RoutesListAction()
     data object OnDismissDelete : RoutesListAction()
     data object OnRetry : RoutesListAction()
+    data object OnDismissActionError : RoutesListAction()
     data object OnBackClick : RoutesListAction()
 }

@@ -33,6 +33,7 @@ import com.juanpablo0612.carpool.presentation.route.detail.components.Recurrence
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
@@ -186,9 +187,14 @@ internal fun RouteDetailReadContent(
                     }
                     TextButton(
                         onClick = { onAction(RouteDetailAction.OnDuplicateClick) },
+                        enabled = !state.isDuplicating,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(Res.string.route_duplicate_button))
+                        if (state.isDuplicating) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                        } else {
+                            Text(stringResource(Res.string.route_duplicate_button))
+                        }
                     }
                 }
             }
@@ -330,10 +336,11 @@ internal fun RouteDetailReadContent(
 
             state.error?.let { error ->
                 item {
-                    Text(
-                        text = stringResource(error.asStringResource()),
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(Spacing.lg)
+                    ErrorMessage(
+                        message = stringResource(error.asStringResource()),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                     )
                 }
             }

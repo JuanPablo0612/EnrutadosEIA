@@ -156,10 +156,15 @@ class RouteDetailViewModel(
 
     private fun duplicateRoute() {
         val route = _state.value.route ?: return
+        _state.update { it.copy(isDuplicating = true) }
         viewModelScope.launch {
             routeRepository.createRoute(route.copy(id = "", name = "${route.name} (copia)"))
                 .onSuccess {
+                    _state.update { it.copy(isDuplicating = false) }
                     _events.emit(RouteDetailEvent.NavigateBack)
+                }
+                .onFailure {
+                    _state.update { it.copy(isDuplicating = false, error = RouteDetailError.DuplicateFailed) }
                 }
         }
     }

@@ -737,6 +737,7 @@
 
     <string name="error_route_save_failed">Couldn't save the route. Please try again.</string>
     <string name="error_route_delete_failed">Couldn't delete the route. Please try again.</string>
+    <string name="error_route_duplicate_failed">Couldn't duplicate the route. Please try again.</string>
 
     <string name="role_switch_to_driver">Switch to driver</string>
     <string name="role_switch_to_passenger">Switch to passenger</string>
