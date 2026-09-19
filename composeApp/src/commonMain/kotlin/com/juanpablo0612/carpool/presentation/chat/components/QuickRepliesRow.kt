@@ -15,7 +15,7 @@ import enrutadoseia.composeapp.generated.resources.chat_quick_reply_llegue
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun QuickRepliesRow(onQuickReply: (String) -> Unit) {
+internal fun QuickRepliesRow(onQuickReply: (String) -> Unit, enabled: Boolean = true) {
     val enCamino = stringResource(Res.string.chat_quick_reply_en_camino)
     val llegue = stringResource(Res.string.chat_quick_reply_llegue)
     val esperando = stringResource(Res.string.chat_quick_reply_esperando)
@@ -26,7 +26,8 @@ internal fun QuickRepliesRow(onQuickReply: (String) -> Unit) {
         items(listOf(enCamino, llegue, esperando)) { reply ->
             SuggestionChip(
                 onClick = { onQuickReply(reply) },
-                label = { Text(reply) }
+                label = { Text(reply) },
+                enabled = enabled,
             )
         }
     }

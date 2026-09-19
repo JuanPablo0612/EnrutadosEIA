@@ -46,13 +46,16 @@ internal fun ChatInputRow(
             maxLines = 4,
             shape = RoundedCornerShape(24.dp)
         )
-        if (isSending) {
-            CircularProgressIndicator(modifier = Modifier.size(24.dp))
-        } else {
-            IconButton(
-                onClick = onSendClick,
-                enabled = text.isNotBlank()
-            ) {
+        // Always the same IconButton (48dp touch target) — overlay the spinner while sending
+        // instead of swapping it out for a bare CircularProgressIndicator, which used to shrink
+        // the tappable area to 24dp and shift layout right as the button disappeared.
+        IconButton(
+            onClick = onSendClick,
+            enabled = text.isNotBlank() && !isSending
+        ) {
+            if (isSending) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+            } else {
                 Icon(
                     imageVector = vectorResource(Res.drawable.arrow_forward_24px),
                     contentDescription = stringResource(Res.string.cd_send_message),

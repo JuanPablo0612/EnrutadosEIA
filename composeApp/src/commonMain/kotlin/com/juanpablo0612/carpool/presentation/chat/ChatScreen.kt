@@ -135,7 +135,10 @@ fun ChatContent(
             }
 
             if (!state.isReadOnly) {
-                QuickRepliesRow(onQuickReply = { onAction(ChatAction.OnQuickReplyClick(it)) })
+                QuickRepliesRow(
+                    onQuickReply = { onAction(ChatAction.OnQuickReplyClick(it)) },
+                    enabled = !state.isSending,
+                )
                 ChatInputRow(
                     text = state.inputText,
                     isSending = state.isSending,
