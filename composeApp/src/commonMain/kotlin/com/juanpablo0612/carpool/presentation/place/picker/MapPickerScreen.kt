@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.place.picker
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.place.model.MapPointOfInterest
 import com.juanpablo0612.carpool.presentation.place.add.components.MapPreview
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -54,6 +56,7 @@ fun MapPickerScreen(
         onPinDragged = viewModel::onPinDragged,
         onPoiSelected = viewModel::onPoiSelected,
         onMyLocationClick = viewModel::onMyLocationClick,
+        onDismissError = viewModel::onDismissError,
         onConfirm = {
             onCoordinatesPicked(
                 state.pickedCoordinates.latitude,
@@ -74,6 +77,7 @@ fun MapPickerContent(
     onMyLocationClick: () -> Unit,
     onConfirm: () -> Unit,
     onBack: () -> Unit,
+    onDismissError: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -88,6 +92,15 @@ fun MapPickerContent(
                     .fillMaxWidth()
                     .padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg),
             ) {
+                state.error?.let { error ->
+                    ErrorMessage(
+                        message = stringResource(error.asStringResource()),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = Spacing.sm)
+                            .clickable { onDismissError() },
+                    )
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (state.isResolvingAddress) {
                         CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
@@ -101,7 +114,10 @@ fun MapPickerContent(
                         Text(
                             text = state.resolvedAddress ?: stringResource(Res.string.map_picker_address_unavailable),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            // Was always onSurfaceVariant, giving no visual warning that
+                            // confirming now will save a pin with no resolved address.
+                            color = if (state.resolvedAddress == null) MaterialTheme.colorScheme.error
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }

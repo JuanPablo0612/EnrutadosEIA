@@ -9,4 +9,5 @@ data class MapPickerUiState(
     val isMyLocationEnabled: Boolean = false,
     val resolvedAddress: String? = null,
     val isResolvingAddress: Boolean = false,
+    val error: MapPickerError? = null,
 )

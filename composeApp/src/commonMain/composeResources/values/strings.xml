@@ -136,6 +136,8 @@
     <string name="map_picker_my_location">My location</string>
     <string name="map_picker_resolving_address">Locating address…</string>
     <string name="map_picker_address_unavailable">Address unavailable for this location</string>
+    <string name="map_picker_error_location_permission_denied">Location permission denied. Enable it in your device settings to use your current location.</string>
+    <string name="map_picker_error_location_unavailable">Couldn\'t get your current location. Please try again.</string>
     <string name="place_selector_title_origin">Select origin</string>
     <string name="place_selector_title_destination">Select destination</string>
     <string name="place_selector_title_waypoint">Select a stop</string>

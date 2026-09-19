@@ -48,13 +48,19 @@ class MapPickerViewModel(
 
     fun onMyLocationClick() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoadingLocation = true) }
+            _state.update { it.copy(isLoadingLocation = true, error = null) }
             // Request the OS permission explicitly so isMyLocationEnabled only ever reflects a
             // real grant, never an assumption (3.12) — GoogleMap throws a SecurityException
             // otherwise.
             val granted = locationPermissionRequester.requestPermission()
             if (!granted) {
-                _state.update { it.copy(isLoadingLocation = false, isMyLocationEnabled = false) }
+                _state.update {
+                    it.copy(
+                        isLoadingLocation = false,
+                        isMyLocationEnabled = false,
+                        error = MapPickerError.LocationPermissionDenied,
+                    )
+                }
                 return@launch
             }
             val coords = locationService.getCurrentCoordinates()
@@ -69,9 +75,13 @@ class MapPickerViewModel(
                 }
                 resolveAddress(coords)
             } else {
-                _state.update { it.copy(isLoadingLocation = false) }
+                _state.update { it.copy(isLoadingLocation = false, error = MapPickerError.LocationUnavailable) }
             }
         }
+    }
+
+    fun onDismissError() {
+        _state.update { it.copy(error = null) }
     }
 
     private fun resolveAddress(coordinates: Coordinates, placeId: String? = null) {

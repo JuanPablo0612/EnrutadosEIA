@@ -50,6 +50,8 @@
     <string name="map_picker_my_location">Mi ubicación</string>
     <string name="map_picker_resolving_address">Buscando dirección…</string>
     <string name="map_picker_address_unavailable">Dirección no disponible para esta ubicación</string>
+    <string name="map_picker_error_location_permission_denied">Permiso de ubicación denegado. Actívalo en la configuración de tu dispositivo para usar tu ubicación actual.</string>
+    <string name="map_picker_error_location_unavailable">No pudimos obtener tu ubicación actual. Inténtalo de nuevo.</string>
     <string name="place_selector_title_origin">Selecciona el origen</string>
     <string name="place_selector_title_destination">Selecciona el destino</string>
     <string name="place_selector_title_waypoint">Selecciona una parada</string>
