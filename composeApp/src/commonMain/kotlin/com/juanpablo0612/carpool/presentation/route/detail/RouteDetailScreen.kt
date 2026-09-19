@@ -14,11 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
+import com.juanpablo0612.carpool.presentation.place.add.components.MapRoutePreview
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
@@ -222,38 +225,20 @@ internal fun RouteDetailReadContent(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
-            // Map placeholder
+            // Route map: origin -> waypoints -> destination, in order.
             item {
-                Card(
+                val stops = remember(route.id) {
+                    (listOf(route.origin) + route.waypoints + route.destination)
+                        .map { Coordinates(it.latitude, it.longitude) }
+                }
+                MapRoutePreview(
+                    markers = stops,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp) // component-intrinsic preview height, not a spacing value
-                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.location_on_24px),
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp), // icon-intrinsic size
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(Modifier.height(Spacing.xs))
-                            Text(
-                                text = stringResource(Res.string.route_map_placeholder),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        .clip(MaterialTheme.shapes.medium),
+                )
             }
 
             // Recurrence row

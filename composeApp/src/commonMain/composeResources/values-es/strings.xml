@@ -351,7 +351,6 @@
     <string name="route_detail_trips_published">%1$d viajes publicados</string>
     <string name="route_detail_last_used">Último uso: %1$s</string>
     <string name="route_detail_never_used">Sin viajes publicados aún</string>
-    <string name="route_map_placeholder">Vista previa del mapa</string>
 
     <!-- Acciones de detalle de ruta -->
     <string name="route_publish_trip_button">Publicar viaje</string>

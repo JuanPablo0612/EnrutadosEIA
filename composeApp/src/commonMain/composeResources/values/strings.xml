@@ -351,7 +351,6 @@
     <string name="route_detail_trips_published">%1$d trips published</string>
     <string name="route_detail_last_used">Last used: %1$s</string>
     <string name="route_detail_never_used">No trips published yet</string>
-    <string name="route_map_placeholder">Map preview</string>
 
     <!-- Route detail actions -->
     <string name="route_publish_trip_button">Publish trip</string>

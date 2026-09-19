@@ -5,24 +5,31 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
+import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
+import com.juanpablo0612.carpool.presentation.place.add.components.MapRoutePreview
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.BookingCtaSection
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.ConfirmRequestSheetContent
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverAndVehicleSection
@@ -104,6 +111,20 @@ fun RouteDetailPassengerContent(
                             StopsSection(
                                 trip = trip,
                                 modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
+                            )
+                        }
+                        item {
+                            val stops = remember(trip.id) {
+                                (listOf(trip.origin) + trip.waypoints + trip.destination)
+                                    .map { Coordinates(it.latitude, it.longitude) }
+                            }
+                            MapRoutePreview(
+                                markers = stops,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(160.dp) // matches Route Detail's map preview height
+                                    .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                                    .clip(MaterialTheme.shapes.medium),
                             )
                         }
                         if (trip.messageToPassengers.isNotBlank()) {
