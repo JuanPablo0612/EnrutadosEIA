@@ -1,10 +1,8 @@
 package com.juanpablo0612.carpool.presentation.trip.create
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,11 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
@@ -33,7 +29,6 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +50,9 @@ import com.juanpablo0612.carpool.presentation.trip.create.components.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
@@ -151,34 +149,17 @@ fun CreateTripContent(
             initialMinute = state.departureTime.minute,
             is24Hour = false
         )
-        BasicAlertDialog(onDismissRequest = { onAction(CreateTripAction.OnDismissTimePicker) }) {
-            Surface(shape = MaterialTheme.shapes.large) {
-                Column(
-                    modifier = Modifier.padding(Spacing.xl),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TimePicker(state = timePickerState)
-                    Spacer(modifier = Modifier.height(Spacing.lg))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(onClick = { onAction(CreateTripAction.OnDismissTimePicker) }) {
-                            Text(stringResource(Res.string.cancel))
-                        }
-                        Spacer(modifier = Modifier.width(Spacing.sm))
-                        TextButton(onClick = {
-                            onAction(
-                                CreateTripAction.OnTimeSelected(
-                                    LocalTime(timePickerState.hour, timePickerState.minute)
-                                )
-                            )
-                        }) {
-                            Text(stringResource(Res.string.confirm))
-                        }
-                    }
-                }
+        TimePickerDialog(
+            onCancel = { onAction(CreateTripAction.OnDismissTimePicker) },
+            onConfirm = {
+                onAction(
+                    CreateTripAction.OnTimeSelected(
+                        LocalTime(timePickerState.hour, timePickerState.minute)
+                    )
+                )
             }
+        ) {
+            TimePicker(state = timePickerState)
         }
     }
 
@@ -262,12 +243,7 @@ fun CreateTripContent(
         }
     ) { padding ->
         if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
             return@Scaffold
         }
 
@@ -380,11 +356,11 @@ fun CreateTripContent(
             // Error
             state.error?.let { error ->
                 item {
-                    Text(
-                        text = stringResource(error.asStringResource()),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                    ErrorMessage(
+                        message = stringResource(error.asStringResource()),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
                     )
                 }
             }
