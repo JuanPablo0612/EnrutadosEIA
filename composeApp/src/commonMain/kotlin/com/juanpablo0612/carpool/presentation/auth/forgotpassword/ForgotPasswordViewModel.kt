@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
+import com.juanpablo0612.carpool.presentation.auth.AuthError
+import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -51,17 +53,32 @@ class ForgotPasswordViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            authRepository.sendPasswordResetEmail(email)
-            // Always show success for privacy (don't reveal if email exists)
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    isSuccess = true,
-                    obfuscatedEmail = obfuscateEmail(email)
-                )
-            }
-            startCountdown()
+            authRepository.sendPasswordResetEmail(email).fold(
+                onSuccess = { onResetLinkSucceeded(email) },
+                onFailure = { throwable ->
+                    val authError = throwable.toAuthError()
+                    if (authError is AuthError.UserNotFound) {
+                        // Always show success for privacy (don't reveal if the email exists).
+                        onResetLinkSucceeded(email)
+                    } else {
+                        // A genuine failure (network, unknown) — unlike UserNotFound, this
+                        // doesn't reveal anything about the account, so it's safe to surface.
+                        _uiState.update { it.copy(isLoading = false, error = authError) }
+                    }
+                }
+            )
         }
+    }
+
+    private fun onResetLinkSucceeded(email: String) {
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isSuccess = true,
+                obfuscatedEmail = obfuscateEmail(email)
+            )
+        }
+        startCountdown()
     }
 
     private fun startCountdown() {
