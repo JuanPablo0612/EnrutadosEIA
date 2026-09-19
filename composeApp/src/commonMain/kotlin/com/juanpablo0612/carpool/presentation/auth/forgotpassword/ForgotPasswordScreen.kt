@@ -13,7 +13,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
@@ -25,12 +24,6 @@ fun ForgotPasswordScreen(
     onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-
-    ObserveAsEvents(viewModel.events) { event ->
-        when (event) {
-            ForgotPasswordEvent.OpenGmail -> { /* handled by platform-level intent launcher */ }
-        }
-    }
 
     ForgotPasswordContent(
         state = state,

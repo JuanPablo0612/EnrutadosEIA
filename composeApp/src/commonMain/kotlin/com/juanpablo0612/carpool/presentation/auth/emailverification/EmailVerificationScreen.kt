@@ -28,7 +28,6 @@ fun EmailVerificationScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is EmailVerificationEvent.NavigateToApp -> onNavigateToApp(event.user)
-            EmailVerificationEvent.OpenGmail -> { /* platform-handled */ }
         }
     }
 

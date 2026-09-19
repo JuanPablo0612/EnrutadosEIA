@@ -1,6 +1,8 @@
 package com.juanpablo0612.carpool.di
 
 import com.juanpablo0612.carpool.data.preferences.datasource.createDataStore
+import com.juanpablo0612.carpool.presentation.auth.EmailAppLauncher
+import com.juanpablo0612.carpool.presentation.auth.createEmailAppLauncher
 import com.juanpablo0612.carpool.presentation.trip.tracking.EmergencyDialer
 import com.juanpablo0612.carpool.presentation.trip.tracking.LocationSharer
 import com.juanpablo0612.carpool.presentation.trip.tracking.createEmergencyDialer
@@ -13,4 +15,5 @@ actual val platformModule: Module = module {
     single { createDataStore(androidContext()) }
     single<EmergencyDialer> { createEmergencyDialer(androidContext()) }
     single<LocationSharer> { createLocationSharer(androidContext()) }
+    single<EmailAppLauncher> { createEmailAppLauncher(androidContext()) }
 }

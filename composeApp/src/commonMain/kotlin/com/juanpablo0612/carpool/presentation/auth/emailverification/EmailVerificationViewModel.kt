@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.presentation.auth.EmailAppLauncher
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class EmailVerificationViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val emailAppLauncher: EmailAppLauncher
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EmailVerificationUiState())
@@ -38,9 +40,7 @@ class EmailVerificationViewModel(
             EmailVerificationAction.OnCountdownTick -> {
                 _uiState.update { it.copy(resendCountdown = (it.resendCountdown - 1).coerceAtLeast(0)) }
             }
-            EmailVerificationAction.OnOpenGmail -> viewModelScope.launch {
-                _events.emit(EmailVerificationEvent.OpenGmail)
-            }
+            EmailVerificationAction.OnOpenGmail -> emailAppLauncher.openEmailApp()
         }
     }
 

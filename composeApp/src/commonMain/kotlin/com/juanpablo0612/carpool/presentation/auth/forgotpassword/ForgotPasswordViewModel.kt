@@ -6,25 +6,22 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.AuthError
+import com.juanpablo0612.carpool.presentation.auth.EmailAppLauncher
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val emailAppLauncher: EmailAppLauncher
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ForgotPasswordUiState())
     val uiState = _uiState.asStateFlow()
-
-    private val _events = MutableSharedFlow<ForgotPasswordEvent>()
-    val events = _events.asSharedFlow()
 
     private var countdownJob: Job? = null
 
@@ -36,9 +33,7 @@ class ForgotPasswordViewModel(
             ForgotPasswordAction.OnSendResetLink -> sendResetLink()
             ForgotPasswordAction.OnResendLink -> sendResetLink()
             ForgotPasswordAction.OnCountdownTick -> tick()
-            ForgotPasswordAction.OnOpenGmail -> viewModelScope.launch {
-                _events.emit(ForgotPasswordEvent.OpenGmail)
-            }
+            ForgotPasswordAction.OnOpenGmail -> emailAppLauncher.openEmailApp()
         }
     }
 
