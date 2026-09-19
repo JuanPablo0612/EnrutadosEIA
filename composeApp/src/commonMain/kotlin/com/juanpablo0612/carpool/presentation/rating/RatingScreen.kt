@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.juanpablo0612.carpool.domain.rating.model.RatingChip
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.rating_chip_amable
@@ -102,10 +103,10 @@ fun RatingContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .padding(bottom = 32.dp),
+                        .padding(horizontal = Spacing.screenHorizontalForm)
+                        .padding(bottom = Spacing.xxl),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(Spacing.lg)
                 ) {
                     CircularProgressIndicator()
                 }
@@ -115,10 +116,10 @@ fun RatingContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .padding(bottom = 32.dp),
+                        .padding(horizontal = Spacing.screenHorizontalForm)
+                        .padding(bottom = Spacing.xxl),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(Spacing.lg)
                 ) {
                     Text(
                         text = stringResource(Res.string.error_already_rated),
@@ -139,11 +140,11 @@ fun RatingContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .padding(bottom = 32.dp)
+                        .padding(horizontal = Spacing.screenHorizontalForm)
+                        .padding(bottom = Spacing.xxl)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(Spacing.lg)
                 ) {
                     Text(
                         text = if (state.rateeName.isBlank())
@@ -162,7 +163,7 @@ fun RatingContent(
                     if (state.availableChips.isNotEmpty()) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                         ) {
                             Text(
                                 text = stringResource(Res.string.rating_highlights),
@@ -170,8 +171,8 @@ fun RatingContent(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                                verticalArrangement = Arrangement.spacedBy(Spacing.xs)
                             ) {
                                 state.availableChips.forEach { chip ->
                                     FilterChip(
@@ -228,7 +229,7 @@ private fun StarRow(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
         for (i in 1..5) {
