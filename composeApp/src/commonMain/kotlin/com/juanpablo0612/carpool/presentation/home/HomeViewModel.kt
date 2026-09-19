@@ -147,7 +147,14 @@ class HomeViewModel(
             HomeAction.ViewSavedPlaces -> emit(HomeEvent.NavigateToSavedPlaces)
             HomeAction.Refresh -> handleRefresh()
             is HomeAction.AcceptRequest -> confirmBooking(action.bookingId)
-            is HomeAction.RejectRequest -> rejectBooking(action.bookingId)
+            is HomeAction.OnRejectRequestClick ->
+                _state.update { it.copy(pendingRejectBookingId = action.bookingId) }
+            HomeAction.OnConfirmReject -> {
+                val bookingId = _state.value.pendingRejectBookingId
+                _state.update { it.copy(pendingRejectBookingId = null) }
+                if (bookingId != null) rejectBooking(bookingId)
+            }
+            HomeAction.OnDismissRejectConfirm -> _state.update { it.copy(pendingRejectBookingId = null) }
             is HomeAction.OpenTrip -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
             is HomeAction.OpenBooking -> emit(HomeEvent.NavigateToTripDetailPassenger(action.tripId))
             HomeAction.DismissBookingActionError -> _state.update { it.copy(error = null) }

@@ -19,4 +19,5 @@ data class HomeUiState(
     val tripsThisMonth: Int = 0,
     val passengersThisMonth: Int = 0,
     val error: HomeError? = null,
+    val pendingRejectBookingId: String? = null,
 )

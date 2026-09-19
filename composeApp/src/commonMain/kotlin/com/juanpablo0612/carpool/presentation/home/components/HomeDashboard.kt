@@ -96,7 +96,7 @@ internal fun HomeDashboard(
                     PendingRequestsSection(
                         requests = state.pendingRequests,
                         onAccept = { onAction(HomeAction.AcceptRequest(it)) },
-                        onReject = { onAction(HomeAction.RejectRequest(it)) },
+                        onReject = { onAction(HomeAction.OnRejectRequestClick(it)) },
                         onSeeAll = { onAction(HomeAction.OpenAllRequests) },
                         modifier = Modifier.padding(horizontal = Spacing.lg),
                     )

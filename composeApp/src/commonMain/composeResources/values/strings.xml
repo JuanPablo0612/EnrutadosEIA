@@ -240,6 +240,8 @@
     <string name="home_stats_trips">Trips</string>
     <string name="home_stats_passengers">Pasajeros</string>
     <string name="home_see_all_requests">See all requests</string>
+    <string name="home_reject_confirm_title">Reject this request?</string>
+    <string name="home_reject_confirm_body">The passenger will be notified that their request was rejected.</string>
 
     <!-- Home quick actions -->
     <string name="home_action_publish_trip">Publish trip</string>

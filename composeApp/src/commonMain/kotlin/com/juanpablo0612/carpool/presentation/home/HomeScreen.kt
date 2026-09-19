@@ -21,6 +21,7 @@ import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.home.components.HomeDashboard
 import com.juanpablo0612.carpool.presentation.home.components.HomeDashboardEmpty
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -28,7 +29,10 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.driver_home_title
+import enrutadoseia.composeapp.generated.resources.home_reject_confirm_body
+import enrutadoseia.composeapp.generated.resources.home_reject_confirm_title
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
+import enrutadoseia.composeapp.generated.resources.reject_confirm_button
 import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
 import enrutadoseia.composeapp.generated.resources.role_switch_to_passenger
 import kotlin.time.Clock
@@ -83,6 +87,17 @@ internal fun HomeContent(
     onAction: (HomeAction) -> Unit,
 ) {
     val pullRefreshState = rememberPullToRefreshState()
+
+    if (state.pendingRejectBookingId != null) {
+        ConfirmDialog(
+            title = stringResource(Res.string.home_reject_confirm_title),
+            description = stringResource(Res.string.home_reject_confirm_body),
+            confirmText = stringResource(Res.string.reject_confirm_button),
+            onConfirm = { onAction(HomeAction.OnConfirmReject) },
+            onDismiss = { onAction(HomeAction.OnDismissRejectConfirm) },
+            isDestructive = true,
+        )
+    }
 
     Scaffold(
         topBar = {
