@@ -8,6 +8,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_message_counter
@@ -36,14 +37,19 @@ internal fun TripMessageSection(
             maxLines = 4,
             minLines = 3
         )
+        val extendedColors = LocalExtendedColors.current
         Text(
             text = stringResource(Res.string.trip_message_counter, message.length),
             style = MaterialTheme.typography.bodySmall,
-            color = if (message.length >= 140)
-                MaterialTheme.colorScheme.error
-            else
-                MaterialTheme.colorScheme.onSurfaceVariant,
+            color = when {
+                message.length >= MAX_MESSAGE_LENGTH -> MaterialTheme.colorScheme.error
+                message.length >= MAX_MESSAGE_LENGTH - WARNING_THRESHOLD -> extendedColors.warning
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
+            },
             modifier = Modifier.padding(horizontal = Spacing.lg)
         )
     }
 }
+
+private const val MAX_MESSAGE_LENGTH = 140
+private const val WARNING_THRESHOLD = 20
