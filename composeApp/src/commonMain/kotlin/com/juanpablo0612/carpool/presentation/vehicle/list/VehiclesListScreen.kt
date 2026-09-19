@@ -20,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -130,7 +129,7 @@ fun VehiclesListContent(
                     message = stringResource(Res.string.error_action_failed),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                         .clickable { onAction(VehiclesListAction.OnDismissActionError) }
                 )
             }
