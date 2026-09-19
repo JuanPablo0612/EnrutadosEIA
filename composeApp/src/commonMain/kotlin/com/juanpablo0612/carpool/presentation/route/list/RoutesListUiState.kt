@@ -12,5 +12,6 @@ data class RouteWithStats(
 data class RoutesListUiState(
     val routes: List<RouteWithStats> = emptyList(),
     val isLoading: Boolean = true,
-    val pendingDeleteRouteId: String? = null
+    val pendingDeleteRouteId: String? = null,
+    val error: RoutesListError? = null
 )

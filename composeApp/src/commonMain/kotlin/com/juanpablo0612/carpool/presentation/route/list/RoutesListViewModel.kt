@@ -38,6 +38,7 @@ class RoutesListViewModel(
             _state.update { it.copy(isLoading = false) }
             return
         }
+        _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             combine(
                 routeRepository.getUserRoutes(userId),
@@ -53,9 +54,9 @@ class RoutesListViewModel(
                     )
                 }
             }
-                .catch { _state.update { it.copy(isLoading = false) } }
+                .catch { _state.update { it.copy(isLoading = false, error = RoutesListError.LoadFailed) } }
                 .collect { routesWithStats ->
-                    _state.update { it.copy(routes = routesWithStats, isLoading = false) }
+                    _state.update { it.copy(routes = routesWithStats, isLoading = false, error = null) }
                 }
         }
     }
@@ -79,6 +80,7 @@ class RoutesListViewModel(
             RoutesListAction.OnDismissDelete -> {
                 _state.update { it.copy(pendingDeleteRouteId = null) }
             }
+            RoutesListAction.OnRetry -> loadRoutes()
             RoutesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateBack)
             }

@@ -15,6 +15,7 @@ sealed class RouteDetailAction {
     data object OnDismissDelete : RouteDetailAction()
     data object OnPublishTripClick : RouteDetailAction()
     data object OnDuplicateClick : RouteDetailAction()
+    data object OnRetry : RouteDetailAction()
 
     // Draft editing (mirrors CreateRouteAction)
     data class OnNameChange(val name: String) : RouteDetailAction()

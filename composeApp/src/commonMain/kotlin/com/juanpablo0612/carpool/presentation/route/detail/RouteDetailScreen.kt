@@ -33,6 +33,7 @@ import com.juanpablo0612.carpool.presentation.route.detail.components.Recurrence
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -198,7 +199,18 @@ internal fun RouteDetailReadContent(
             return@Scaffold
         }
 
-        val route = state.route ?: return@Scaffold
+        if (state.route == null) {
+            ErrorState(
+                description = stringResource(
+                    (state.error ?: RouteDetailError.NotFound).asStringResource()
+                ),
+                onRetry = { onAction(RouteDetailAction.OnRetry) },
+                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
+            )
+            return@Scaffold
+        }
+
+        val route = state.route
 
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),

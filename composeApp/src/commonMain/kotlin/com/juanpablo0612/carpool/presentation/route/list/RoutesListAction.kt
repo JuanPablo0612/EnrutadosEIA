@@ -8,5 +8,6 @@ sealed class RoutesListAction {
     data class OnDuplicateRouteClick(val routeId: String) : RoutesListAction()
     data object OnConfirmDelete : RoutesListAction()
     data object OnDismissDelete : RoutesListAction()
+    data object OnRetry : RoutesListAction()
     data object OnBackClick : RoutesListAction()
 }

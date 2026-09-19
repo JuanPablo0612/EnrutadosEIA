@@ -34,6 +34,7 @@ class RouteDetailViewModel(
     }
 
     private fun loadRouteAndStats() {
+        _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             routeRepository.getRouteById(routeId)
                 .onSuccess { route ->
@@ -72,6 +73,7 @@ class RouteDetailViewModel(
                 _events.emit(RouteDetailEvent.NavigateToCreateTrip(routeId))
             }
             RouteDetailAction.OnDuplicateClick -> duplicateRoute()
+            RouteDetailAction.OnRetry -> loadRouteAndStats()
 
             // Draft editing
             is RouteDetailAction.OnNameChange -> updateDraft { it.copy(name = action.name) }

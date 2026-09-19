@@ -24,6 +24,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -109,6 +110,11 @@ fun RoutesListContent(
     ) { padding ->
         when {
             state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
+            state.error != null -> ErrorState(
+                description = stringResource(state.error.asStringResource()),
+                onRetry = { onAction(RoutesListAction.OnRetry) },
+                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
+            )
             state.routes.isEmpty() -> EmptyState(
                 icon = vectorResource(Res.drawable.location_on_24px),
                 title = stringResource(Res.string.routes_empty_title),
