@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -15,7 +14,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.domain.trip.model.Trip
@@ -25,6 +23,7 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.components.DriverTra
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.PassengerTrackingContent
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.SosDialog
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -94,9 +93,7 @@ fun TripTrackingContent(
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 if (state.isLoading) {
-                    Box(Modifier.fillMaxSize(), Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+                    DetailSkeleton(modifier = Modifier.fillMaxSize())
                 } else if (state.isDriver) {
                     DriverTrackingContent(state = state, onAction = onAction)
                 } else {
