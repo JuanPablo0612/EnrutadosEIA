@@ -183,7 +183,7 @@
     <string name="no_seats_available">Sin asientos disponibles</string>
     <string name="error_no_seats_available">No hay asientos disponibles en este vehículo</string>
     <string name="error_already_booked">Ya tienes una reserva en esta ruta</string>
-    <string name="error_booking_vehicle_not_found">No se encontró el vehículo de este viaje</string>
+    <string name="error_booking_vehicle_not_found">Falta la información del vehículo de este viaje — por favor contacta al conductor</string>
 
     <!-- Detalle de ruta (pasajero) -->
     <string name="route_detail_passenger_title">Detalles de la Ruta</string>
@@ -381,6 +381,7 @@
     <string name="trip_message_section">Mensaje (opcional)</string>
     <string name="trip_message_placeholder">Ej. Salgo puntual, espero 5 min en la portería.</string>
     <string name="trip_message_counter">%1$d / 140</string>
+    <string name="trip_publish_disabled_hint">Tu mensaje para los pasajeros supera el límite de 140 caracteres</string>
     <string name="trip_no_vehicle_title">Necesitas un vehículo para publicar viajes.</string>
     <string name="trip_register_vehicle_action">Registrar vehículo</string>
     <string name="trip_change_vehicle">Cambiar</string>

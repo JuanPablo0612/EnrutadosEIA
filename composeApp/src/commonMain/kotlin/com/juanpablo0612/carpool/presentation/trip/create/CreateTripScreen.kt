@@ -74,6 +74,7 @@ import enrutadoseia.composeapp.generated.resources.select_vehicle_section
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary_with_contribution
 import enrutadoseia.composeapp.generated.resources.trip_no_vehicle_title
+import enrutadoseia.composeapp.generated.resources.trip_publish_disabled_hint
 import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -236,6 +237,17 @@ fun CreateTripContent(
                             } else {
                                 Text(stringResource(Res.string.publish_trip))
                             }
+                        }
+                        // The other canPublish conditions can't actually be false once vehicles
+                        // exist (route always loads, seatCount/message default within range), so
+                        // this hint only fires for the one reachable case: an over-limit message.
+                        if (!state.canPublish && state.vehicles.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(Spacing.xs))
+                            Text(
+                                text = stringResource(Res.string.trip_publish_disabled_hint),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     }
                 }
