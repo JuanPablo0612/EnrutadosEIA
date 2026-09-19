@@ -21,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.chat.components.ChatInputRow
 import com.juanpablo0612.carpool.presentation.chat.components.MessageBubble
 import com.juanpablo0612.carpool.presentation.chat.components.QuickRepliesRow
@@ -30,6 +29,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.chat_default_title
@@ -93,7 +93,7 @@ fun ChatContent(
                     message = stringResource(Res.string.chat_send_failed),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                         .clickable { onAction(ChatAction.OnDismissSendError) },
                 )
             }
@@ -101,8 +101,8 @@ fun ChatContent(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm)
             ) {
                 when {
                     state.isLoading -> item {

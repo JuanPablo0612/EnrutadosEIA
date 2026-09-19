@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.chat.model.Message
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -36,7 +37,7 @@ internal fun MessageBubble(message: Message, isOwn: Boolean) {
             else MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
-            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm)) {
                 Text(
                     text = message.text,
                     style = MaterialTheme.typography.bodyMedium,
