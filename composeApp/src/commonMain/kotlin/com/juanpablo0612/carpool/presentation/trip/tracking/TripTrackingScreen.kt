@@ -37,6 +37,7 @@ fun TripTrackingScreen(
     viewModel: TripTrackingViewModel,
     onBackClick: () -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToSafety: () -> Unit,
     onTripCompleted: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -47,6 +48,7 @@ fun TripTrackingScreen(
             TripTrackingEvent.TripCompleted -> onTripCompleted()
             is TripTrackingEvent.NavigateToChat ->
                 onNavigateToChat(event.bookingId, event.tripId, event.otherPartyName, event.isReadOnly)
+            TripTrackingEvent.NavigateToSafety -> onNavigateToSafety()
         }
     }
 
@@ -116,6 +118,7 @@ fun TripTrackingContent(
                 locationSharedMessageVisible = state.sosLocationShared,
                 onCallEmergency = { onAction(TripTrackingAction.OnSOSCallEmergencyClick) },
                 onShareLocation = { onAction(TripTrackingAction.OnSOSShareLocationClick) },
+                onAddEmergencyContact = { onAction(TripTrackingAction.OnSOSAddEmergencyContactClick) },
                 onDismiss = { onAction(TripTrackingAction.OnSOSDismiss) }
             )
         }

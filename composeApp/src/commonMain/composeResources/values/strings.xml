@@ -671,6 +671,8 @@
     <string name="pickup_status_picked_up">Picked up</string>
     <string name="pickup_status_dropped_off">Dropped off</string>
     <string name="trip_tracking_passengers_title">Pasajeros</string>
+    <string name="trip_tracking_sharing_location">Sharing your live location with passengers</string>
+    <string name="trip_tracking_sos_add_contact">Add an emergency contact</string>
     <string name="trip_tracking_complete_confirm_title">End trip?</string>
     <string name="trip_tracking_complete_confirm_body">All passengers will be marked as dropped off and the trip will be completed.</string>
     <string name="trip_tracking_complete_confirm_button">End trip</string>

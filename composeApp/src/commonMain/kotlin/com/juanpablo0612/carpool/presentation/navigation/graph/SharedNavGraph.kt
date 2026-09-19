@@ -178,6 +178,7 @@ fun NavGraphBuilder.sharedNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onNavigateToChat = onNavigateToChat,
+            onNavigateToSafety = onNavigateToSafety,
             onTripCompleted = onNavigateBack
         )
     }

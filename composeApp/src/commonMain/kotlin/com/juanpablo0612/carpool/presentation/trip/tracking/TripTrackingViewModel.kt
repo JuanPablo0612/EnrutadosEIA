@@ -152,6 +152,11 @@ class TripTrackingViewModel(
                 }
             }
             TripTrackingAction.OnSOSShareLocationClick -> shareLocation()
+            TripTrackingAction.OnSOSAddEmergencyContactClick ->
+                viewModelScope.launch {
+                    _state.update { it.copy(showSosDialog = false) }
+                    _events.emit(TripTrackingEvent.NavigateToSafety)
+                }
             TripTrackingAction.OnBackClick ->
                 viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateBack) }
             is TripTrackingAction.OnChatClick ->
@@ -237,6 +242,7 @@ class TripTrackingViewModel(
     // error, so the screen just keeps showing the last known fix.
     private fun updateLocationPolling(isDriver: Boolean, status: TripStatus?) {
         val shouldPoll = isDriver && status is TripStatus.InProgress
+        _state.update { it.copy(isSharingLocation = shouldPoll) }
         if (shouldPoll) {
             if (locationPollingJob == null) {
                 locationPollingJob = viewModelScope.launch {

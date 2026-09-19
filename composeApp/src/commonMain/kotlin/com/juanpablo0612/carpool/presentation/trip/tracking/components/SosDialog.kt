@@ -14,10 +14,12 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.call_24px
 import enrutadoseia.composeapp.generated.resources.my_location_24px
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_call_emergency
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_dismiss
+import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_add_contact
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_location_shared
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_no_contacts
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos_share_location
@@ -32,6 +34,7 @@ internal fun SosDialog(
     locationSharedMessageVisible: Boolean,
     onCallEmergency: () -> Unit,
     onShareLocation: () -> Unit,
+    onAddEmergencyContact: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
@@ -60,6 +63,11 @@ internal fun SosDialog(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)
+                    )
+                    SosActionRow(
+                        icon = vectorResource(Res.drawable.add_24px),
+                        label = stringResource(Res.string.trip_tracking_sos_add_contact),
+                        onClick = onAddEmergencyContact
                     )
                 }
                 if (locationSharedMessageVisible) {

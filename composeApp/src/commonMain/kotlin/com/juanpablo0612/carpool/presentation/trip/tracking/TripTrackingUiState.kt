@@ -21,6 +21,8 @@ data class TripTrackingUiState(
     val vibrateSosEnabled: Boolean = true,
     /** passengerId set currently mid-mutation, so their action buttons can be disabled to prevent double-taps. */
     val processingPassengerIds: Set<String> = emptySet(),
+    /** True while the driver-location poll loop is actually running (see updateLocationPolling). */
+    val isSharingLocation: Boolean = false,
     val error: TripTrackingError? = null
 ) {
     val driverLatitude: Double? get() = trip?.driverLatitude

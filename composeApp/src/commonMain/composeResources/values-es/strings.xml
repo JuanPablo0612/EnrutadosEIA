@@ -577,6 +577,8 @@
     <string name="pickup_status_picked_up">Recogido</string>
     <string name="pickup_status_dropped_off">Bajó</string>
     <string name="trip_tracking_passengers_title">Pasajeros</string>
+    <string name="trip_tracking_sharing_location">Compartiendo tu ubicación en vivo con los pasajeros</string>
+    <string name="trip_tracking_sos_add_contact">Agregar un contacto de emergencia</string>
     <string name="trip_tracking_complete_confirm_title">¿Finalizar viaje?</string>
     <string name="trip_tracking_complete_confirm_body">Todos los pasajeros serán marcados como entregados y el viaje quedará completado.</string>
     <string name="trip_tracking_complete_confirm_button">Finalizar viaje</string>

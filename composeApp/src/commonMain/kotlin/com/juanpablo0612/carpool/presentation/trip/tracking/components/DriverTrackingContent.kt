@@ -2,21 +2,27 @@ package com.juanpablo0612.carpool.presentation.trip.tracking.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.trip.model.PickupStatus
 import com.juanpablo0612.carpool.presentation.trip.tracking.PassengerWithStatus
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingAction
@@ -25,9 +31,12 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.previewTrip
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.my_location_24px
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_trip
 import enrutadoseia.composeapp.generated.resources.trip_tracking_passengers_title
+import enrutadoseia.composeapp.generated.resources.trip_tracking_sharing_location
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 internal fun DriverTrackingContent(
@@ -40,6 +49,25 @@ internal fun DriverTrackingContent(
         contentPadding = PaddingValues(Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.md)
     ) {
+        if (state.isSharingLocation) {
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.my_location_24px),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp) // icon-intrinsic size
+                    )
+                    Spacer(Modifier.width(Spacing.xs))
+                    Text(
+                        text = stringResource(Res.string.trip_tracking_sharing_location),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
         item {
             Text(
                 text = stringResource(Res.string.trip_tracking_passengers_title),

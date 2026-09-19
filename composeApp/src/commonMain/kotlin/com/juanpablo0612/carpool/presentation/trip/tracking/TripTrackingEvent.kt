@@ -9,4 +9,5 @@ sealed class TripTrackingEvent {
         val otherPartyName: String,
         val isReadOnly: Boolean,
     ) : TripTrackingEvent()
+    data object NavigateToSafety : TripTrackingEvent()
 }
