@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -32,12 +33,12 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.juanpablo0612.carpool.domain.rating.model.RatingChip
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.cd_rating_star
 import enrutadoseia.composeapp.generated.resources.rating_chip_amable
 import enrutadoseia.composeapp.generated.resources.rating_chip_aporte_exacto
 import enrutadoseia.composeapp.generated.resources.rating_chip_buen_viaje
@@ -47,13 +48,17 @@ import enrutadoseia.composeapp.generated.resources.rating_chip_conduccion_segura
 import enrutadoseia.composeapp.generated.resources.rating_chip_puntual
 import enrutadoseia.composeapp.generated.resources.rating_chip_respetuoso
 import enrutadoseia.composeapp.generated.resources.error_already_rated
+import enrutadoseia.composeapp.generated.resources.rating_comment_counter
 import enrutadoseia.composeapp.generated.resources.rating_comment_hint
 import enrutadoseia.composeapp.generated.resources.rating_default_ratee_name
 import enrutadoseia.composeapp.generated.resources.rating_highlights
 import enrutadoseia.composeapp.generated.resources.rating_skip
 import enrutadoseia.composeapp.generated.resources.rating_submit
 import enrutadoseia.composeapp.generated.resources.rating_title
+import enrutadoseia.composeapp.generated.resources.star_24px
+import enrutadoseia.composeapp.generated.resources.star_outline_24px
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun RatingScreen(
@@ -189,6 +194,17 @@ fun RatingContent(
                         value = state.comment,
                         onValueChange = { onAction(RatingAction.OnCommentChange(it)) },
                         placeholder = { Text(stringResource(Res.string.rating_comment_hint)) },
+                        supportingText = {
+                            Text(
+                                text = stringResource(
+                                    Res.string.rating_comment_counter,
+                                    state.comment.length,
+                                    RatingViewModel.MAX_COMMENT_LENGTH
+                                ),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         maxLines = 4,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -233,11 +249,15 @@ private fun StarRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         for (i in 1..5) {
+            val filled = i <= selectedStars
             IconButton(onClick = { onStarClick(i) }) {
-                Text(
-                    text = if (i <= selectedStars) "★" else "☆",
-                    fontSize = 36.sp,
-                    color = if (i <= selectedStars) MaterialTheme.colorScheme.primary
+                Icon(
+                    imageVector = vectorResource(
+                        if (filled) Res.drawable.star_24px else Res.drawable.star_outline_24px
+                    ),
+                    contentDescription = stringResource(Res.string.cd_rating_star, i),
+                    modifier = Modifier.size(36.dp),
+                    tint = if (filled) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.outlineVariant
                 )
             }

@@ -71,7 +71,8 @@ class RatingViewModel(
                 if (action.chip in chips) chips.remove(action.chip) else chips.add(action.chip)
                 _state.update { it.copy(selectedChips = chips) }
             }
-            is RatingAction.OnCommentChange -> _state.update { it.copy(comment = action.comment) }
+            is RatingAction.OnCommentChange ->
+                _state.update { it.copy(comment = action.comment.take(MAX_COMMENT_LENGTH)) }
             RatingAction.OnSubmit -> submit()
             RatingAction.OnSkip -> viewModelScope.launch { _events.emit(RatingEvent.Skipped) }
         }
@@ -101,5 +102,9 @@ class RatingViewModel(
                 }
             )
         }
+    }
+
+    companion object {
+        const val MAX_COMMENT_LENGTH = 200
     }
 }

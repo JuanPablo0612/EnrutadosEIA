@@ -543,6 +543,8 @@
     <string name="rating_submit">Enviar calificación</string>
     <string name="rating_skip">Saltar</string>
     <string name="rating_comment_hint">Comentario (opcional)</string>
+    <string name="rating_comment_counter">%1$d / %2$d</string>
+    <string name="cd_rating_star">Calificar %1$d de 5 estrellas</string>
     <string name="rating_highlights">¿Qué destacarías? (opcional)</string>
     <string name="rating_chip_puntual">Puntual</string>
     <string name="rating_chip_amable">Amable</string>
