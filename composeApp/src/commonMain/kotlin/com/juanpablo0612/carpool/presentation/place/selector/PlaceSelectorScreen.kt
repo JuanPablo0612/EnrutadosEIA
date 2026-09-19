@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -28,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.presentation.place.selector.components.PlaceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -35,7 +35,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
-import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.cd_add_place
 import enrutadoseia.composeapp.generated.resources.cd_delete_place
 import enrutadoseia.composeapp.generated.resources.delete_24px
@@ -282,20 +281,13 @@ fun PlaceSelectorContent(
 
     // Delete confirmation dialog
     state.isConfirmingDelete?.let { place ->
-        AlertDialog(
-            onDismissRequest = { onAction(PlaceSelectorAction.OnCancelDelete) },
-            title = { Text(stringResource(Res.string.delete_place_confirm_title)) },
-            text = { Text(stringResource(Res.string.delete_place_confirm_body, place.name)) },
-            confirmButton = {
-                TextButton(onClick = { onAction(PlaceSelectorAction.OnConfirmDelete) }) {
-                    Text(stringResource(Res.string.route_delete_confirm_button))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onAction(PlaceSelectorAction.OnCancelDelete) }) {
-                    Text(stringResource(Res.string.cancel_button))
-                }
-            },
+        ConfirmDialog(
+            title = stringResource(Res.string.delete_place_confirm_title),
+            description = stringResource(Res.string.delete_place_confirm_body, place.name),
+            confirmText = stringResource(Res.string.route_delete_confirm_button),
+            onConfirm = { onAction(PlaceSelectorAction.OnConfirmDelete) },
+            onDismiss = { onAction(PlaceSelectorAction.OnCancelDelete) },
+            isDestructive = true,
         )
     }
 }
