@@ -150,6 +150,7 @@ class HomeViewModel(
             is HomeAction.RejectRequest -> rejectBooking(action.bookingId)
             is HomeAction.OpenTrip -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
             is HomeAction.OpenBooking -> emit(HomeEvent.NavigateToTripDetailPassenger(action.tripId))
+            HomeAction.DismissBookingActionError -> _state.update { it.copy(error = null) }
         }
     }
 

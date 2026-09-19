@@ -16,4 +16,5 @@ sealed class HomeAction {
     data class RejectRequest(val bookingId: String) : HomeAction()
     data class OpenTrip(val tripId: String) : HomeAction()
     data class OpenBooking(val tripId: String) : HomeAction()
+    data object DismissBookingActionError : HomeAction()
 }

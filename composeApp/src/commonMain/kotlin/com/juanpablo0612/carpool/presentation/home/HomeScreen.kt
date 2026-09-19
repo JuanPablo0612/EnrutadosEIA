@@ -123,7 +123,7 @@ internal fun HomeContent(
                             .padding(top = Spacing.lg),
                     )
                 }
-                state.error != null -> {
+                state.error is HomeError.LoadFailed -> {
                     ErrorState(
                         description = stringResource(state.error.asStringResource()),
                         onRetry = { onAction(HomeAction.Refresh) },

@@ -11,7 +11,6 @@ data class HomeUiState(
     val isDualRole: Boolean = false,
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
-    val isOffline: Boolean = false,
     val nextTrip: Trip? = null,
     val nextBooking: Booking? = null,
     val pendingRequests: List<Booking> = emptyList(),

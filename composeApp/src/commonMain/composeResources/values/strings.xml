@@ -223,7 +223,6 @@
     <!-- State components -->
     <string name="error_state_title">Something went wrong</string>
     <string name="error_state_retry">Retry</string>
-    <string name="offline_banner_message">No internet connection</string>
 
     <!-- Logout confirm dialog -->
     <string name="logout_confirm_title">Log out</string>

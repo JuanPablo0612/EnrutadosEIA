@@ -41,8 +41,8 @@ import org.jetbrains.compose.resources.stringResource
  * and background were the same hue separated only by an alpha composite, which fails 4.5:1 for
  * several of the six statuses (`extended.warning` and `colorScheme.outline` most likely; see the
  * repo audit that prompted this rewrite). Every status now resolves to a real, paired M3
- * `*Container`/`on*Container` role — the same pattern already used correctly in [OfflineBanner] —
- * which Material's colour generation guarantees meets contrast on its own. The border adds a
+ * `*Container`/`on*Container` role, which Material's colour generation guarantees meets contrast
+ * on its own. The border adds a
  * visible edge independent of contrast, since a badge can render on a same-hue parent (e.g.
  * inside [HighlightCard]'s primary-container hero).
  *

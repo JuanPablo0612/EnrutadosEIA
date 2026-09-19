@@ -5,18 +5,24 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.presentation.booking.asStringResource
 import com.juanpablo0612.carpool.presentation.home.HomeAction
+import com.juanpablo0612.carpool.presentation.home.HomeError
 import com.juanpablo0612.carpool.presentation.home.HomeUiState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import kotlin.time.Clock
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HomeDashboard(
@@ -29,8 +35,17 @@ internal fun HomeDashboard(
         contentPadding = PaddingValues(bottom = Spacing.xxl),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        item(key = "offline_banner") {
-            OfflineBanner(isOffline = state.isOffline)
+        val bookingActionError = (state.error as? HomeError.BookingAction)?.error
+        if (bookingActionError != null) {
+            item(key = "booking_action_error") {
+                ErrorMessage(
+                    message = stringResource(bookingActionError.asStringResource()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg)
+                        .clickable { onAction(HomeAction.DismissBookingActionError) },
+                )
+            }
         }
 
         state.user?.let { user ->
