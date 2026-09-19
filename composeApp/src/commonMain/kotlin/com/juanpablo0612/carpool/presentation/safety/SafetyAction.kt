@@ -11,5 +11,7 @@ sealed class SafetyAction {
     data object OnDismissRemoveContact : SafetyAction()
     data class OnToggleAutoShare(val enabled: Boolean) : SafetyAction()
     data class OnToggleVibrateSos(val enabled: Boolean) : SafetyAction()
+    data object OnRetry : SafetyAction()
+    data object OnDismissActionError : SafetyAction()
     data object OnBackClick : SafetyAction()
 }

@@ -18,6 +18,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.safety.SafetyContactFieldError
+import com.juanpablo0612.carpool.presentation.safety.SafetyError
+import com.juanpablo0612.carpool.presentation.safety.asStringResource
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.safety_add_contact_title
@@ -34,6 +37,7 @@ internal fun AddContactDialog(
     phone: String,
     nameError: SafetyContactFieldError?,
     phoneError: SafetyContactFieldError?,
+    saveError: SafetyError?,
     isSaving: Boolean,
     onNameChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
@@ -73,6 +77,9 @@ internal fun AddContactDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+                if (saveError != null) {
+                    ErrorMessage(message = stringResource(saveError.asStringResource()))
+                }
             }
         },
         confirmButton = {

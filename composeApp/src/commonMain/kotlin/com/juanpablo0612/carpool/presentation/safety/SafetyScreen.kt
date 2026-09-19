@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.presentation.safety
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +20,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.safety.components.AddContactDialog
@@ -31,9 +29,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
+import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.call_24px
+import enrutadoseia.composeapp.generated.resources.error_action_failed
 import enrutadoseia.composeapp.generated.resources.safety_add_contact
 import enrutadoseia.composeapp.generated.resources.safety_add_contact_title
 import enrutadoseia.composeapp.generated.resources.safety_auto_share
@@ -93,9 +95,13 @@ fun SafetyContent(
         }
     ) { padding ->
         if (state.isLoading) {
-            Box(Modifier.fillMaxSize().padding(padding), Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
+        } else if (state.error != null) {
+            ErrorState(
+                description = stringResource(state.error.asStringResource()),
+                onRetry = { onAction(SafetyAction.OnRetry) },
+                modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)
+            )
         } else {
             Column(
                 modifier = Modifier
@@ -104,6 +110,16 @@ fun SafetyContent(
                     .verticalScroll(rememberScrollState())
                     .imePadding()
             ) {
+                if (state.actionError) {
+                    ErrorMessage(
+                        message = stringResource(Res.string.error_action_failed),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .clickable { onAction(SafetyAction.OnDismissActionError) }
+                    )
+                }
+
                 Text(
                     text = stringResource(Res.string.safety_description),
                     style = MaterialTheme.typography.bodyMedium,
@@ -184,6 +200,7 @@ fun SafetyContent(
                     phone = state.newContactPhone,
                     nameError = state.newContactNameError,
                     phoneError = state.newContactPhoneError,
+                    saveError = state.saveError,
                     isSaving = state.isSaving,
                     onNameChange = { onAction(SafetyAction.OnContactNameChange(it)) },
                     onPhoneChange = { onAction(SafetyAction.OnContactPhoneChange(it)) },

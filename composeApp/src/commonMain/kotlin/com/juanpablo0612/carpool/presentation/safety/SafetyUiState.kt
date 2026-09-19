@@ -13,7 +13,10 @@ data class SafetyUiState(
     val newContactPhoneError: SafetyContactFieldError? = null,
     val pendingRemoveContactId: String? = null,
     val isLoading: Boolean = true,
-    val isSaving: Boolean = false
+    val isSaving: Boolean = false,
+    val error: SafetyError? = null,
+    val saveError: SafetyError? = null,
+    val actionError: Boolean = false
 ) {
     val canAddContact: Boolean get() = contacts.size < 2
 }

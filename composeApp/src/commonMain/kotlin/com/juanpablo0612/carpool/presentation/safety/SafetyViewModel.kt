@@ -34,9 +34,15 @@ class SafetyViewModel(
     }
 
     private fun loadData() {
+        _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             val contactsResult = safetyRepository.getEmergencyContacts(userId)
             val settingsResult = safetyRepository.getSafetySettings(userId)
+            val failure = contactsResult.exceptionOrNull() ?: settingsResult.exceptionOrNull()
+            if (failure != null) {
+                _state.update { it.copy(isLoading = false, error = failure.toSafetyError()) }
+                return@launch
+            }
             _state.update { state ->
                 state.copy(
                     contacts = contactsResult.getOrDefault(emptyList()),
@@ -50,7 +56,16 @@ class SafetyViewModel(
     fun onAction(action: SafetyAction) {
         when (action) {
             SafetyAction.OnAddContactClick ->
-                _state.update { it.copy(showAddDialog = true, newContactName = "", newContactPhone = "", newContactNameError = null, newContactPhoneError = null) }
+                _state.update {
+                    it.copy(
+                        showAddDialog = true,
+                        newContactName = "",
+                        newContactPhone = "",
+                        newContactNameError = null,
+                        newContactPhoneError = null,
+                        saveError = null
+                    )
+                }
             SafetyAction.OnDismissAddDialog ->
                 _state.update { it.copy(showAddDialog = false) }
             is SafetyAction.OnContactNameChange ->
@@ -68,6 +83,8 @@ class SafetyViewModel(
             SafetyAction.OnDismissRemoveContact -> _state.update { it.copy(pendingRemoveContactId = null) }
             is SafetyAction.OnToggleAutoShare -> updateSettings(autoShare = action.enabled)
             is SafetyAction.OnToggleVibrateSos -> updateSettings(vibrateSos = action.enabled)
+            SafetyAction.OnRetry -> loadData()
+            SafetyAction.OnDismissActionError -> _state.update { it.copy(actionError = false) }
             SafetyAction.OnBackClick -> viewModelScope.launch { _events.emit(SafetyEvent.NavigateBack) }
         }
     }
@@ -88,14 +105,14 @@ class SafetyViewModel(
         if (hasError) return
 
         viewModelScope.launch {
-            _state.update { it.copy(isSaving = true) }
+            _state.update { it.copy(isSaving = true, saveError = null) }
             addEmergencyContactUseCase(userId, name, phone, state.contacts.size)
                 .onSuccess {
                     val updated = safetyRepository.getEmergencyContacts(userId).getOrDefault(state.contacts)
                     _state.update { it.copy(contacts = updated, showAddDialog = false, isSaving = false) }
                 }
-                .onFailure {
-                    _state.update { it.copy(isSaving = false) }
+                .onFailure { throwable ->
+                    _state.update { it.copy(isSaving = false, saveError = throwable.toSafetyError()) }
                 }
         }
     }
@@ -106,6 +123,9 @@ class SafetyViewModel(
                 .onSuccess {
                     _state.update { it.copy(contacts = it.contacts.filter { c -> c.id != contactId }) }
                 }
+                .onFailure {
+                    _state.update { it.copy(actionError = true) }
+                }
         }
     }
 
@@ -113,10 +133,16 @@ class SafetyViewModel(
         autoShare: Boolean = _state.value.settings.autoShareTrip,
         vibrateSos: Boolean = _state.value.settings.vibrateSos
     ) {
+        val previousSettings = _state.value.settings
         val newSettings = SafetySettings(autoShareTrip = autoShare, vibrateSos = vibrateSos)
         _state.update { it.copy(settings = newSettings) }
         viewModelScope.launch {
             safetyRepository.updateSafetySettings(userId, newSettings)
+                .onFailure {
+                    // Revert the optimistic toggle so the switch doesn't silently lie about
+                    // what's actually persisted.
+                    _state.update { it.copy(settings = previousSettings, actionError = true) }
+                }
         }
     }
 }
