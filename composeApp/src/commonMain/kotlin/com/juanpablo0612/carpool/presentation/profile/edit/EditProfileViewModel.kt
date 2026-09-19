@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
+import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -34,6 +36,7 @@ class EditProfileViewModel(
                     name = user?.name ?: "",
                     phone = user?.phone ?: "",
                     bio = user?.bio ?: "",
+                    existingPhotoUrl = user?.photoUrl?.ifBlank { null },
                     isLoading = false
                 )
             }
@@ -45,12 +48,13 @@ class EditProfileViewModel(
             is EditProfileAction.OnNameChange -> _state.update {
                 it.copy(name = action.name, nameError = null)
             }
-            is EditProfileAction.OnPhoneChange -> _state.update { it.copy(phone = action.phone) }
+            is EditProfileAction.OnPhoneChange -> _state.update { it.copy(phone = action.phone, phoneError = null) }
             is EditProfileAction.OnBioChange -> {
                 val bio = action.bio
                 val error = if (bio.length > 200) EditProfileFieldError.BioTooLong else null
                 _state.update { it.copy(bio = bio, bioError = error) }
             }
+            is EditProfileAction.OnPhotoSelected -> _state.update { it.copy(photoFile = action.file, photoError = false) }
             EditProfileAction.OnSaveClick -> save()
         }
     }
@@ -61,13 +65,26 @@ class EditProfileViewModel(
             _state.update { it.copy(nameError = EditProfileFieldError.NameEmpty) }
             return
         }
+        val phoneDigits = state.phone.filter { it.isDigit() }
+        if (phoneDigits.isNotEmpty() && (phoneDigits.length != 10 || !phoneDigits.startsWith("3"))) {
+            _state.update { it.copy(phoneError = EditProfileFieldError.PhoneInvalid) }
+            return
+        }
         viewModelScope.launch {
-            _state.update { it.copy(isSaving = true) }
+            _state.update { it.copy(isSaving = true, error = null, photoError = false) }
+            val photoBytes = try {
+                state.photoFile?.readBytes()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _state.update { it.copy(isSaving = false, photoError = true) }
+                return@launch
+            }
             authRepository.updateProfile(
                 name = state.name.trim(),
-                phone = state.phone.trim().ifBlank { null },
+                phone = phoneDigits.ifBlank { null },
                 bio = state.bio.trim().ifBlank { null },
-                photoUrl = null
+                photoBytes = photoBytes
             ).fold(
                 onSuccess = { updatedUser ->
                     userSession.setUser(updatedUser)

@@ -622,6 +622,8 @@
     <string name="edit_profile_bio_counter">%1$d / 200</string>
     <string name="edit_profile_save_button">Save changes</string>
     <string name="edit_profile_error_name_empty">Name cannot be empty</string>
+    <string name="edit_profile_error_phone_invalid">Enter a valid 10-digit phone number</string>
+    <string name="edit_profile_photo_error">Couldn\'t read that photo. Please pick another one.</string>
     <string name="edit_profile_error_bio_too_long">Maximum 200 characters</string>
 
     <!-- Rating -->

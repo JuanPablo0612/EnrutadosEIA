@@ -19,7 +19,7 @@ interface AuthRemoteDataSource {
     fun getCurrentUserId(): String?
     suspend fun getCurrentUser(): UserDto
     suspend fun getPublicProfile(userId: String): UserDto
-    suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): UserDto
+    suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDto
     suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): UserDto
     suspend fun deleteAccount()
 }

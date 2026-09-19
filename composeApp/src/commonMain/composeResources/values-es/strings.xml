@@ -528,6 +528,8 @@
     <string name="edit_profile_bio_counter">%1$d / 200</string>
     <string name="edit_profile_save_button">Guardar cambios</string>
     <string name="edit_profile_error_name_empty">El nombre no puede estar vacío</string>
+    <string name="edit_profile_error_phone_invalid">Ingresa un número de teléfono válido de 10 dígitos</string>
+    <string name="edit_profile_photo_error">No pudimos leer esa foto. Elige otra.</string>
     <string name="edit_profile_error_bio_too_long">Máximo 200 caracteres</string>
 
     <!-- Calificación -->

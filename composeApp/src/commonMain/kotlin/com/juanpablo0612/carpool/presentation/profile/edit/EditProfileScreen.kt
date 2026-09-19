@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.profile.edit
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,39 +11,64 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
-import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
+import com.juanpablo0612.carpool.presentation.auth.register.components.NameTextField
+import com.juanpablo0612.carpool.presentation.auth.register.components.PhoneTextField
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
+import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.full_name_placeholder
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_counter
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_placeholder
 import enrutadoseia.composeapp.generated.resources.edit_profile_name_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_phone_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_phone_placeholder
+import enrutadoseia.composeapp.generated.resources.edit_profile_photo_error
 import enrutadoseia.composeapp.generated.resources.edit_profile_save_button
 import enrutadoseia.composeapp.generated.resources.edit_profile_title
+import enrutadoseia.composeapp.generated.resources.photo_camera_24px
+import enrutadoseia.composeapp.generated.resources.register_photo_action_camera
+import enrutadoseia.composeapp.generated.resources.register_photo_action_gallery
+import enrutadoseia.composeapp.generated.resources.register_photo_placeholder
+import enrutadoseia.composeapp.generated.resources.vehicle_change_photo
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun EditProfileScreen(
@@ -67,6 +94,15 @@ fun EditProfileContent(
     onAction: (EditProfileAction) -> Unit,
     onBackClick: () -> Unit
 ) {
+    var showImageSourceSheet by remember { mutableStateOf(false) }
+
+    val photoPicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        onAction(EditProfileAction.OnPhotoSelected(file))
+    }
+    val cameraLauncher = rememberCameraPickerLauncher { file ->
+        onAction(EditProfileAction.OnPhotoSelected(file))
+    }
+
     Scaffold(
         topBar = {
             CarpoolBackTopBar(
@@ -76,63 +112,96 @@ fun EditProfileContent(
         }
     ) { padding ->
         if (state.isLoading) {
-            Box(Modifier.fillMaxSize().padding(padding), Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
         } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = Spacing.screenHorizontal)
                     .verticalScroll(rememberScrollState())
                     .imePadding(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg)
             ) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(Spacing.sm))
 
-                OutlinedTextField(
+                Box(
+                    modifier = Modifier
+                        // Component-intrinsic avatar diameter, not a spacing step.
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .clickable { showImageSourceSheet = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    val photoModel = state.photoFile ?: state.existingPhotoUrl
+                    if (photoModel != null) {
+                        AsyncImage(
+                            model = photoModel,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.photo_camera_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            // Component-intrinsic icon size, not a spacing step.
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                }
+
+                TextButton(onClick = { showImageSourceSheet = true }) {
+                    Text(
+                        text = stringResource(
+                            if (state.photoFile != null || state.existingPhotoUrl != null) {
+                                Res.string.vehicle_change_photo
+                            } else {
+                                Res.string.register_photo_placeholder
+                            }
+                        )
+                    )
+                }
+
+                if (state.photoError) {
+                    ErrorMessage(message = stringResource(Res.string.edit_profile_photo_error))
+                }
+
+                NameTextField(
                     value = state.name,
                     onValueChange = { onAction(EditProfileAction.OnNameChange(it)) },
-                    label = { Text(stringResource(Res.string.edit_profile_name_label)) },
-                    isError = state.nameError != null,
-                    supportingText = state.nameError?.let { { Text(stringResource(it.asStringResource())) } },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Next
-                    ),
-                    singleLine = true,
+                    label = stringResource(Res.string.edit_profile_name_label),
+                    placeholder = stringResource(Res.string.full_name_placeholder),
+                    errorMessage = state.nameError?.asStringResource()?.let { stringResource(it) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                OutlinedTextField(
+                PhoneTextField(
                     value = state.phone,
                     onValueChange = { onAction(EditProfileAction.OnPhoneChange(it)) },
-                    label = { Text(stringResource(Res.string.edit_profile_phone_label)) },
-                    placeholder = { Text(stringResource(Res.string.edit_profile_phone_placeholder)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Next
-                    ),
-                    singleLine = true,
+                    label = stringResource(Res.string.edit_profile_phone_label),
+                    placeholder = stringResource(Res.string.edit_profile_phone_placeholder),
+                    errorMessage = state.phoneError?.asStringResource()?.let { stringResource(it) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                OutlinedTextField(
+                CarpoolTextField(
                     value = state.bio,
                     onValueChange = { onAction(EditProfileAction.OnBioChange(it)) },
-                    label = { Text(stringResource(Res.string.edit_profile_bio_label)) },
-                    placeholder = { Text(stringResource(Res.string.edit_profile_bio_placeholder)) },
-                    isError = state.bioError != null,
+                    label = stringResource(Res.string.edit_profile_bio_label),
+                    placeholder = stringResource(Res.string.edit_profile_bio_placeholder),
+                    errorMessage = state.bioError?.let { stringResource(it.asStringResource()) },
                     supportingText = {
                         Text(
-                            text = state.bioError?.let { stringResource(it.asStringResource()) }
-                                ?: stringResource(Res.string.edit_profile_bio_counter, state.bio.length),
-                            color = if (state.bioError != null) MaterialTheme.colorScheme.error
-                            else MaterialTheme.colorScheme.onSurfaceVariant
+                            text = stringResource(Res.string.edit_profile_bio_counter, state.bio.length),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
-                    maxLines = 4,
+                    singleLine = false,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Done
@@ -144,16 +213,52 @@ fun EditProfileContent(
                     ErrorMessage(message = stringResource(it.asStringResource()))
                 }
 
-                Button(
+                PrimaryButton(
+                    text = stringResource(Res.string.edit_profile_save_button),
                     onClick = { onAction(EditProfileAction.OnSaveClick) },
                     enabled = !state.isSaving,
+                    isLoading = state.isSaving,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(Spacing.lg))
+            }
+        }
+    }
+
+    if (showImageSourceSheet) {
+        ModalBottomSheet(onDismissRequest = { showImageSourceSheet = false }) {
+            Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg)) {
+                Text(
+                    text = stringResource(Res.string.register_photo_placeholder),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
+                Spacer(modifier = Modifier.height(Spacing.lg))
+                TextButton(
+                    onClick = {
+                        cameraLauncher.launch()
+                        showImageSourceSheet = false
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (state.isSaving) CircularProgressIndicator(modifier = Modifier.padding(4.dp))
-                    else Text(stringResource(Res.string.edit_profile_save_button))
+                    Text(
+                        text = stringResource(Res.string.register_photo_action_camera),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-
-                Spacer(Modifier.height(16.dp))
+                TextButton(
+                    onClick = {
+                        photoPicker.launch()
+                        showImageSourceSheet = false
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(Res.string.register_photo_action_gallery),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Spacer(modifier = Modifier.height(Spacing.lg))
             }
         }
     }

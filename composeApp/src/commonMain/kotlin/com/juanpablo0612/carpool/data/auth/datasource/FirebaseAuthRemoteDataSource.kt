@@ -100,14 +100,24 @@ class FirebaseAuthRemoteDataSource(
         return snapshot.data(UserDto.serializer())
     }
 
-    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): UserDto {
+    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDto {
         val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
         val updates = mutableMapOf<String, Any?>(
             "name" to name,
             "phone" to phone,
             "bio" to bio
         )
-        if (photoUrl != null) updates["photoUrl"] = photoUrl
+        if (photoBytes != null) {
+            // Mirrors signUp()'s compress-then-upload-to-users/{uid}/profile.jpg flow.
+            val compressed = FileKit.compressImage(
+                bytes = photoBytes,
+                quality = 80,
+                imageFormat = ImageFormat.JPEG
+            )
+            val ref = storage.reference.child("users/$userId/profile.jpg")
+            ref.upload(compressed)
+            updates["photoUrl"] = ref.getDownloadUrl()
+        }
         firestore.collection("users").document(userId).update(updates)
         val snapshot = firestore.collection("users").document(userId).get()
         return snapshot.data(UserDto.serializer())

@@ -92,9 +92,9 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoUrl: String?): Result<User> {
+    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User> {
         return try {
-            val dto = remoteDataSource.updateProfile(name, phone, bio, photoUrl)
+            val dto = remoteDataSource.updateProfile(name, phone, bio, photoBytes)
             Result.success(dto.toDomain())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
