@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.safety.components.AddContactDialog
 import com.juanpablo0612.carpool.presentation.safety.components.ContactItem
 import com.juanpablo0612.carpool.presentation.safety.components.SectionHeader
@@ -32,6 +31,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.call_24px
@@ -100,7 +100,7 @@ fun SafetyContent(
             ErrorState(
                 description = stringResource(state.error.asStringResource()),
                 onRetry = { onAction(SafetyAction.OnRetry) },
-                modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)
+                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
             )
         } else {
             Column(
@@ -115,7 +115,7 @@ fun SafetyContent(
                         message = stringResource(Res.string.error_action_failed),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                             .clickable { onAction(SafetyAction.OnDismissActionError) }
                     )
                 }
@@ -124,7 +124,7 @@ fun SafetyContent(
                     text = stringResource(Res.string.safety_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                 )
 
                 SectionHeader(stringResource(Res.string.safety_contacts_section))
@@ -140,7 +140,7 @@ fun SafetyContent(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 24.dp)
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xl)
                     )
                 } else {
                     state.contacts.forEach { contact ->
@@ -153,7 +153,7 @@ fun SafetyContent(
                     if (state.canAddContact) {
                         TextButton(
                             onClick = { onAction(SafetyAction.OnAddContactClick) },
-                            modifier = Modifier.padding(horizontal = 8.dp)
+                            modifier = Modifier.padding(horizontal = Spacing.sm)
                         ) {
                             Text(stringResource(Res.string.safety_add_contact))
                         }
@@ -162,12 +162,12 @@ fun SafetyContent(
                             text = stringResource(Res.string.safety_max_contacts_reached),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
                         )
                     }
                 }
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(Spacing.sm))
 
                 SectionHeader(stringResource(Res.string.safety_settings_section))
 
