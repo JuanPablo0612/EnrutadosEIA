@@ -55,6 +55,7 @@
     <string name="place_selector_title_waypoint">Selecciona una parada</string>
     <string name="place_selector_title_my_places">Mis lugares</string>
     <string name="place_selector_search_hint">Busca una dirección o lugar...</string>
+    <string name="cd_clear_search">Borrar búsqueda</string>
     <string name="place_selector_current_location">Usar mi ubicación actual</string>
     <string name="place_selector_current_location_name">Mi ubicación actual</string>
     <string name="place_selector_resolving_location">Obteniendo ubicación...</string>

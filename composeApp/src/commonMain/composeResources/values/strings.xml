@@ -141,6 +141,7 @@
     <string name="place_selector_title_waypoint">Select a stop</string>
     <string name="place_selector_title_my_places">My places</string>
     <string name="place_selector_search_hint">Search an address or place...</string>
+    <string name="cd_clear_search">Clear search</string>
     <string name="place_selector_current_location">Use my current location</string>
     <string name="place_selector_current_location_name">My current location</string>
     <string name="place_selector_resolving_location">Getting location...</string>

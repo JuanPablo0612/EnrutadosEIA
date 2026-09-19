@@ -36,7 +36,9 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.cd_add_place
+import enrutadoseia.composeapp.generated.resources.cd_clear_search
 import enrutadoseia.composeapp.generated.resources.cd_delete_place
+import enrutadoseia.composeapp.generated.resources.close_24px
 import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.delete_place_confirm_body
 import enrutadoseia.composeapp.generated.resources.delete_place_confirm_title
@@ -126,6 +128,16 @@ fun PlaceSelectorContent(
                     leadingIcon = {
                         Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
                     },
+                    trailingIcon = if (state.searchQuery.isNotEmpty()) {
+                        {
+                            IconButton(onClick = { onAction(PlaceSelectorAction.OnQueryChange("")) }) {
+                                Icon(
+                                    vectorResource(Res.drawable.close_24px),
+                                    contentDescription = stringResource(Res.string.cd_clear_search),
+                                )
+                            }
+                        }
+                    } else null,
                     singleLine = true,
                 )
             }
