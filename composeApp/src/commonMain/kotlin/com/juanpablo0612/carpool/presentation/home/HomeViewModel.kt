@@ -170,19 +170,25 @@ class HomeViewModel(
     }
 
     private fun confirmBooking(bookingId: String) {
+        if (bookingId in _state.value.processingBookingIds) return
         val tripId = _state.value.pendingRequests.firstOrNull { it.id == bookingId }?.tripId ?: return
+        _state.update { it.copy(processingBookingIds = it.processingBookingIds + bookingId) }
         viewModelScope.launch {
             confirmBookingUseCase(bookingId, tripId).onFailure { e ->
                 _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
             }
+            _state.update { it.copy(processingBookingIds = it.processingBookingIds - bookingId) }
         }
     }
 
     private fun rejectBooking(bookingId: String) {
+        if (bookingId in _state.value.processingBookingIds) return
+        _state.update { it.copy(processingBookingIds = it.processingBookingIds + bookingId) }
         viewModelScope.launch {
             rejectBookingUseCase(bookingId).onFailure { e ->
                 _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
             }
+            _state.update { it.copy(processingBookingIds = it.processingBookingIds - bookingId) }
         }
     }
 

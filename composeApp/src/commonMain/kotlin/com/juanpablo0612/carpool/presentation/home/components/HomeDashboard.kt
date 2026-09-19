@@ -98,6 +98,7 @@ internal fun HomeDashboard(
                         onAccept = { onAction(HomeAction.AcceptRequest(it)) },
                         onReject = { onAction(HomeAction.OnRejectRequestClick(it)) },
                         onSeeAll = { onAction(HomeAction.OpenAllRequests) },
+                        processingIds = state.processingBookingIds,
                         modifier = Modifier.padding(horizontal = Spacing.lg),
                     )
                 }
@@ -112,7 +113,9 @@ internal fun HomeDashboard(
             )
         }
 
-        if (state.tripsThisMonth >= 3) {
+        // Was gated at >= 3 trips, hiding stats entirely for new/low-volume drivers even when
+        // they had 1-2 real trips this month worth showing.
+        if (state.tripsThisMonth > 0) {
             item(key = "stats") {
                 StatsSection(
                     tripsThisMonth = state.tripsThisMonth,

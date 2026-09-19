@@ -20,4 +20,5 @@ data class HomeUiState(
     val passengersThisMonth: Int = 0,
     val error: HomeError? = null,
     val pendingRejectBookingId: String? = null,
+    val processingBookingIds: Set<String> = emptySet(),
 )
