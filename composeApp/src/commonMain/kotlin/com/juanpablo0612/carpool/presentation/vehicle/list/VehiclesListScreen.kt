@@ -97,7 +97,7 @@ fun VehiclesListContent(
             confirmText = stringResource(Res.string.vehicle_delete_blocked_ok),
             onConfirm = { onAction(VehiclesListAction.OnDismissBlockedDialog) },
             onDismiss = { onAction(VehiclesListAction.OnDismissBlockedDialog) },
-            dismissText = ""
+            showDismissButton = false
         )
     }
 

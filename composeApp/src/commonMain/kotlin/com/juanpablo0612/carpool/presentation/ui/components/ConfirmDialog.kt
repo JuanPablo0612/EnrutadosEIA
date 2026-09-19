@@ -20,6 +20,7 @@ fun ConfirmDialog(
     onDismiss: () -> Unit,
     isDestructive: Boolean = false,
     dismissText: String = stringResource(Res.string.cancel),
+    showDismissButton: Boolean = true,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -37,10 +38,12 @@ fun ConfirmDialog(
                 Text(confirmText)
             }
         },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(dismissText)
+        dismissButton = if (showDismissButton) {
+            {
+                TextButton(onClick = onDismiss) {
+                    Text(dismissText)
+                }
             }
-        }
+        } else null
     )
 }
