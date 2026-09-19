@@ -555,6 +555,8 @@
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
     <string name="chat_send_failed">No se pudo enviar el mensaje. Inténtalo de nuevo.</string>
+    <string name="chat_empty_title">Aún no hay mensajes</string>
+    <string name="chat_empty_description">Saluda para iniciar la conversación.</string>
 
     <!-- Seguimiento de viaje -->
     <string name="trip_tracking_title">Viaje en curso</string>

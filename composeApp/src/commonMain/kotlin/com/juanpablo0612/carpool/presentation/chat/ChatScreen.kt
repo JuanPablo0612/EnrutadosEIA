@@ -27,12 +27,18 @@ import com.juanpablo0612.carpool.presentation.chat.components.MessageBubble
 import com.juanpablo0612.carpool.presentation.chat.components.QuickRepliesRow
 import com.juanpablo0612.carpool.presentation.chat.components.ReadOnlyBanner
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.chat_default_title
+import enrutadoseia.composeapp.generated.resources.chat_empty_description
+import enrutadoseia.composeapp.generated.resources.chat_empty_title
 import enrutadoseia.composeapp.generated.resources.chat_send_failed
+import enrutadoseia.composeapp.generated.resources.mail_24px
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun ChatScreen(
@@ -98,14 +104,28 @@ fun ChatContent(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (state.isLoading) {
-                    item {
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                when {
+                    state.isLoading -> item {
+                        Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
                         }
                     }
-                } else {
-                    items(state.messages, key = { it.id }) { message ->
+                    state.error != null -> item {
+                        ErrorState(
+                            description = stringResource(state.error.asStringResource()),
+                            onRetry = { onAction(ChatAction.OnRetryLoad) },
+                            modifier = Modifier.fillParentMaxSize(),
+                        )
+                    }
+                    state.messages.isEmpty() -> item {
+                        EmptyState(
+                            icon = vectorResource(Res.drawable.mail_24px),
+                            title = stringResource(Res.string.chat_empty_title),
+                            description = stringResource(Res.string.chat_empty_description),
+                            modifier = Modifier.fillParentMaxSize(),
+                        )
+                    }
+                    else -> items(state.messages, key = { it.id }) { message ->
                         MessageBubble(
                             message = message,
                             isOwn = message.senderId == state.currentUserId

@@ -6,4 +6,5 @@ sealed class ChatAction {
     data object OnSendClick : ChatAction()
     data object OnBackClick : ChatAction()
     data object OnDismissSendError : ChatAction()
+    data object OnRetryLoad : ChatAction()
 }

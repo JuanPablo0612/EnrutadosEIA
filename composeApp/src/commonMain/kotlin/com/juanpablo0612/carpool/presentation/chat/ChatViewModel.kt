@@ -47,14 +47,15 @@ class ChatViewModel(
     }
 
     private fun loadMessages() {
+        _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             chatRepository.getMessages(bookingId)
                 .onEach { messages ->
-                    _state.update { it.copy(messages = messages, isLoading = false) }
+                    _state.update { it.copy(messages = messages, isLoading = false, error = null) }
                     val userId = authRepository.getCurrentUserId() ?: return@onEach
                     chatRepository.markMessagesRead(bookingId, userId)
                 }
-                .catch { _state.update { it.copy(isLoading = false) } }
+                .catch { _state.update { it.copy(isLoading = false, error = ChatError.Unknown) } }
                 .collect {}
         }
     }
@@ -84,6 +85,7 @@ class ChatViewModel(
             }
             ChatAction.OnBackClick -> viewModelScope.launch { _events.emit(ChatEvent.NavigateBack) }
             ChatAction.OnDismissSendError -> _state.update { it.copy(sendFailed = false) }
+            ChatAction.OnRetryLoad -> loadMessages()
         }
     }
 

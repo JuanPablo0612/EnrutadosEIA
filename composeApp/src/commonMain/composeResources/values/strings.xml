@@ -649,6 +649,8 @@
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
     <string name="chat_send_failed">Message couldn\'t be sent. Try again.</string>
+    <string name="chat_empty_title">No messages yet</string>
+    <string name="chat_empty_description">Say hi to get the conversation started.</string>
 
     <!-- Trip tracking -->
     <string name="trip_tracking_title">Trip in progress</string>
