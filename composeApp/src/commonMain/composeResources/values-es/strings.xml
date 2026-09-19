@@ -124,10 +124,6 @@
     <string name="error_vehicle_model_required">El modelo es obligatorio</string>
     <string name="error_vehicle_license_plate_required">La placa es obligatoria</string>
     <string name="error_vehicle_color_required">El color es obligatorio</string>
-    <string name="error_vehicle_year_required">El año es obligatorio</string>
-    <string name="error_vehicle_year_invalid">Ingresa un año válido (p.ej. 2024)</string>
-    <string name="error_vehicle_seats_required">El número de asientos es obligatorio</string>
-    <string name="error_vehicle_seats_invalid">Los asientos deben estar entre 1 y 8</string>
     <!-- Route Detail -->
     <string name="route_detail_title">Detalles de la Ruta</string>
     <string name="error_route_not_found">Ruta no encontrada</string>

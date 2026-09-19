@@ -86,10 +86,6 @@
     <string name="error_vehicle_model_required">Model is required</string>
     <string name="error_vehicle_license_plate_required">License plate is required</string>
     <string name="error_vehicle_color_required">Color is required</string>
-    <string name="error_vehicle_year_required">Year is required</string>
-    <string name="error_vehicle_year_invalid">Please enter a valid year (e.g. 2024)</string>
-    <string name="error_vehicle_seats_required">Number of seats is required</string>
-    <string name="error_vehicle_seats_invalid">Seats must be between 1 and 8</string>
     <!-- Route Detail -->
     <string name="route_detail_title">Route Details</string>
     <string name="error_route_not_found">Route not found</string>
