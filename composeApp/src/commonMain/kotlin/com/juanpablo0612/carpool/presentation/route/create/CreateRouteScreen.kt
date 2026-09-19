@@ -26,6 +26,7 @@ import com.juanpablo0612.carpool.presentation.route.create.components.RouteStopI
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.route.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -180,7 +181,10 @@ fun CreateRouteContent(
                         .fillMaxWidth()
                         .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
                     singleLine = true,
-                    isError = state.error is CreateRouteError.NameRequired
+                    isError = state.error is CreateRouteError.NameRequired,
+                    supportingText = if (state.error is CreateRouteError.NameRequired) {
+                        { Text(stringResource(state.error.asStringResource())) }
+                    } else null
                 )
             }
 
@@ -265,13 +269,15 @@ fun CreateRouteContent(
                 }
             }
 
-            // Error
+            // General error — field-specific errors (e.g. NameRequired) are shown inline on
+            // their own field instead, via supportingText.
             item {
-                if (state.error != null) {
-                    Text(
-                        text = stringResource(state.error.asStringResource()),
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(Spacing.lg)
+                if (state.error != null && state.error !is CreateRouteError.NameRequired) {
+                    ErrorMessage(
+                        message = stringResource(state.error.asStringResource()),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                     )
                 }
             }
