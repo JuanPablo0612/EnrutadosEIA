@@ -591,6 +591,7 @@
     <string name="profile_language_value">Español</string>
     <string name="profile_theme">Tema</string>
     <string name="profile_theme_value">Sistema</string>
+    <string name="profile_setting_coming_soon">Coming soon</string>
     <string name="profile_privacy">Privacidad y datos</string>
     <string name="profile_help">Help center</string>
     <string name="profile_terms">Términos y condiciones</string>

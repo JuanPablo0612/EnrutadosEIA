@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.profile.components.ActiveRolesDialog
@@ -35,6 +36,7 @@ import com.juanpablo0612.carpool.presentation.profile.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.profile.components.UserHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.Alpha
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
@@ -52,6 +54,7 @@ import enrutadoseia.composeapp.generated.resources.profile_config_section
 import enrutadoseia.composeapp.generated.resources.profile_delete_account
 import enrutadoseia.composeapp.generated.resources.profile_language
 import enrutadoseia.composeapp.generated.resources.profile_language_value
+import enrutadoseia.composeapp.generated.resources.profile_setting_coming_soon
 import enrutadoseia.composeapp.generated.resources.profile_my_account_section
 import enrutadoseia.composeapp.generated.resources.profile_notifications_settings
 import enrutadoseia.composeapp.generated.resources.profile_safety
@@ -206,25 +209,32 @@ fun ProfileContent(
                     icon = { Icon(vectorResource(Res.drawable.shield_24px), null) },
                     onClick = { onAction(ProfileAction.OnSafetyClick) }
                 )
+                // Not yet interactive (no language/theme override feature exists) — dimmed and
+                // labeled "coming soon" instead of looking identical to the tappable rows above,
+                // which read as broken since tapping them did nothing.
                 ListItem(
                     headlineContent = { Text(stringResource(Res.string.profile_language)) },
+                    supportingContent = { Text(stringResource(Res.string.profile_setting_coming_soon)) },
                     trailingContent = {
                         Text(
                             text = stringResource(Res.string.profile_language_value),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
+                    },
+                    modifier = Modifier.alpha(Alpha.DEEMPHASIS)
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(Res.string.profile_theme)) },
+                    supportingContent = { Text(stringResource(Res.string.profile_setting_coming_soon)) },
                     trailingContent = {
                         Text(
                             text = stringResource(Res.string.profile_theme_value),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
+                    },
+                    modifier = Modifier.alpha(Alpha.DEEMPHASIS)
                 )
 
                 HorizontalDivider()
