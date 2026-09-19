@@ -65,6 +65,7 @@
     <string name="place_selector_empty_my_places_title">Aún no tienes lugares guardados</string>
     <string name="place_selector_empty_my_places_description">Los lugares que guardes aparecerán aquí para un acceso rápido.</string>
     <string name="place_selector_location_error">No pudimos obtener tu ubicación actual. Inténtalo de nuevo.</string>
+    <string name="place_selector_delete_failed">No pudimos eliminar este lugar. Inténtalo de nuevo.</string>
 
     <string name="error_email_empty">El correo no puede estar vacío</string>
     <string name="error_email_invalid">Ingresa un correo electrónico válido</string>

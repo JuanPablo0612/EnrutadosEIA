@@ -114,18 +114,22 @@ fun PlaceSelectorContent(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = { onAction(PlaceSelectorAction.OnQueryChange(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
-                placeholder = { Text(stringResource(Res.string.place_selector_search_hint)) },
-                leadingIcon = {
-                    Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
-                },
-                singleLine = true,
-            )
+            val isBrowseOnly = state.mode == PlaceSelectorMode.MyPlaces
+
+            if (!isBrowseOnly) {
+                OutlinedTextField(
+                    value = state.searchQuery,
+                    onValueChange = { onAction(PlaceSelectorAction.OnQueryChange(it)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                    placeholder = { Text(stringResource(Res.string.place_selector_search_hint)) },
+                    leadingIcon = {
+                        Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
+                    },
+                    singleLine = true,
+                )
+            }
 
             state.error?.let { error ->
                 ErrorMessage(
@@ -137,38 +141,41 @@ fun PlaceSelectorContent(
             }
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                // Current location row — always visible
-                item {
-                    when {
-                        state.isResolvingLocation -> {
-                            ListItem(
-                                headlineContent = { Text(stringResource(Res.string.place_selector_resolving_location)) },
-                                leadingContent = { CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs)) },
-                            )
+                // Current location row — only relevant when picking a place, not when
+                // browsing/managing saved places.
+                if (!isBrowseOnly) {
+                    item {
+                        when {
+                            state.isResolvingLocation -> {
+                                ListItem(
+                                    headlineContent = { Text(stringResource(Res.string.place_selector_resolving_location)) },
+                                    leadingContent = { CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs)) },
+                                )
+                            }
+                            !state.locationPermissionGranted -> {
+                                PlaceRow(
+                                    icon = vectorResource(Res.drawable.location_on_24px),
+                                    name = stringResource(Res.string.place_selector_current_location),
+                                    address = null,
+                                    trailing = {
+                                        TextButton(onClick = { onAction(PlaceSelectorAction.RequestLocationPermission) }) {
+                                            Text(stringResource(Res.string.place_selector_allow_location))
+                                        }
+                                    },
+                                    onClick = {},
+                                )
+                            }
+                            else -> {
+                                PlaceRow(
+                                    icon = vectorResource(Res.drawable.location_on_24px),
+                                    name = stringResource(Res.string.place_selector_current_location),
+                                    address = state.currentLocation?.address,
+                                    onClick = { onAction(PlaceSelectorAction.UseCurrentLocation) },
+                                )
+                            }
                         }
-                        !state.locationPermissionGranted -> {
-                            PlaceRow(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                name = stringResource(Res.string.place_selector_current_location),
-                                address = null,
-                                trailing = {
-                                    TextButton(onClick = { onAction(PlaceSelectorAction.RequestLocationPermission) }) {
-                                        Text(stringResource(Res.string.place_selector_allow_location))
-                                    }
-                                },
-                                onClick = {},
-                            )
-                        }
-                        else -> {
-                            PlaceRow(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                name = stringResource(Res.string.place_selector_current_location),
-                                address = state.currentLocation?.address,
-                                onClick = { onAction(PlaceSelectorAction.UseCurrentLocation) },
-                            )
-                        }
+                        HorizontalDivider()
                     }
-                    HorizontalDivider()
                 }
 
                 // My places and EIA sections — hidden while searching
@@ -218,17 +225,20 @@ fun PlaceSelectorContent(
                         }
                     }
 
-                    item {
-                        SectionHeader(title = stringResource(Res.string.place_selector_section_eia))
-                    }
-                    items(state.campusPlaces, key = { it.id }) { place ->
-                        PlaceRow(
-                            icon = vectorResource(Res.drawable.location_on_24px),
-                            name = place.name,
-                            address = place.address,
-                            onClick = { onPlaceSelected(place) },
-                        )
-                        HorizontalDivider()
+                    // EIA campus presets — only relevant when picking a place.
+                    if (!isBrowseOnly) {
+                        item {
+                            SectionHeader(title = stringResource(Res.string.place_selector_section_eia))
+                        }
+                        items(state.campusPlaces, key = { it.id }) { place ->
+                            PlaceRow(
+                                icon = vectorResource(Res.drawable.location_on_24px),
+                                name = place.name,
+                                address = place.address,
+                                onClick = { onPlaceSelected(place) },
+                            )
+                            HorizontalDivider()
+                        }
                     }
                 }
 
