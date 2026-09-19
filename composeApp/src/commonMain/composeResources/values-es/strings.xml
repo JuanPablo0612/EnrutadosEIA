@@ -665,6 +665,9 @@
     <string name="cancel_confirm_title">¿Cancelar reserva?</string>
     <string name="cancel_confirm_body">Siempre puedes buscar otro viaje.</string>
     <string name="cancel_confirm_button">Cancelar reserva</string>
+    <string name="cancel_pending_confirm_title">¿Retirar solicitud?</string>
+    <string name="cancel_pending_confirm_body">El conductor ya no verá esta solicitud.</string>
+    <string name="cancel_pending_confirm_button">Retirar solicitud</string>
 
     <!-- VehiclesList - encabezado y FAB -->
     <string name="vehicles_list_subtitle">Vehículos que usas para ofrecer cupos</string>

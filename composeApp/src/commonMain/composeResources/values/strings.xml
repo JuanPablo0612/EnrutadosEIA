@@ -466,6 +466,9 @@
     <string name="cancel_confirm_title">Cancel booking?</string>
     <string name="cancel_confirm_body">You can always find another trip.</string>
     <string name="cancel_confirm_button">Cancel booking</string>
+    <string name="cancel_pending_confirm_title">Withdraw request?</string>
+    <string name="cancel_pending_confirm_body">The driver will no longer see this request.</string>
+    <string name="cancel_pending_confirm_button">Withdraw request</string>
 
     <!-- VehicleCard - indicators -->
     <string name="vehicle_primary_indicator">Primary vehicle</string>

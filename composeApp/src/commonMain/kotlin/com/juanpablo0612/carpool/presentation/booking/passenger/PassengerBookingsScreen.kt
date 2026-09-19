@@ -48,6 +48,9 @@ import enrutadoseia.composeapp.generated.resources.bookmarks_24px
 import enrutadoseia.composeapp.generated.resources.cancel_confirm_body
 import enrutadoseia.composeapp.generated.resources.cancel_confirm_button
 import enrutadoseia.composeapp.generated.resources.cancel_confirm_title
+import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_body
+import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_button
+import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_title
 import enrutadoseia.composeapp.generated.resources.passenger_bookings_title
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
@@ -163,10 +166,19 @@ fun PassengerBookingsContent(
     }
 
     state.showCancelConfirmFor?.let { bookingId ->
+        // Withdrawing a still-pending request and cancelling an already-confirmed seat have
+        // different real-world consequences, so they get different copy.
+        val isPending = state.bookings.firstOrNull { it.id == bookingId }?.status is BookingStatus.Pending
         ConfirmDialog(
-            title = stringResource(Res.string.cancel_confirm_title),
-            description = stringResource(Res.string.cancel_confirm_body),
-            confirmText = stringResource(Res.string.cancel_confirm_button),
+            title = stringResource(
+                if (isPending) Res.string.cancel_pending_confirm_title else Res.string.cancel_confirm_title
+            ),
+            description = stringResource(
+                if (isPending) Res.string.cancel_pending_confirm_body else Res.string.cancel_confirm_body
+            ),
+            confirmText = stringResource(
+                if (isPending) Res.string.cancel_pending_confirm_button else Res.string.cancel_confirm_button
+            ),
             onConfirm = { onAction(PassengerBookingsAction.OnConfirmCancel(bookingId)) },
             onDismiss = { onAction(PassengerBookingsAction.OnDismissCancelDialog) },
             isDestructive = true

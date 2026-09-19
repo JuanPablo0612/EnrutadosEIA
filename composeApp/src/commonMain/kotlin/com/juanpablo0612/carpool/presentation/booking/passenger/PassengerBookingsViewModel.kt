@@ -93,12 +93,19 @@ class PassengerBookingsViewModel(
             }
 
             is PassengerBookingsAction.OnRateBooking -> viewModelScope.launch {
+                // The screen resolves rateeName from the ViewModel's driverNames cache, which is
+                // populated by a separate async fetch that can still be in flight when the user
+                // taps Rate — re-resolve authoritatively here instead of trusting a possibly-empty
+                // value that raced the fetch.
+                val rateeName = _state.value.driverNames[action.rateeId]
+                    ?: authRepository.getPublicProfile(action.rateeId).getOrNull()?.name
+                    ?: action.rateeName
                 _events.emit(
                     PassengerBookingsEvent.NavigateToRating(
                         bookingId = action.bookingId,
                         tripId = action.tripId,
                         rateeId = action.rateeId,
-                        rateeName = action.rateeName
+                        rateeName = rateeName
                     )
                 )
             }
