@@ -26,17 +26,29 @@ import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
+import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.date_of_connector
+import enrutadoseia.composeapp.generated.resources.day_names_short
 import enrutadoseia.composeapp.generated.resources.inbox_24px
+import enrutadoseia.composeapp.generated.resources.month_names
+import enrutadoseia.composeapp.generated.resources.time_am
+import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.trip_passengers_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.trip_passengers_empty_title
 import enrutadoseia.composeapp.generated.resources.trip_passengers_section_confirmed
 import enrutadoseia.composeapp.generated.resources.trip_passengers_section_pending
 import enrutadoseia.composeapp.generated.resources.trip_passengers_title
+import kotlin.time.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -103,6 +115,36 @@ fun TripPassengersContent(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // The top bar's title is static ("Passengers"), so without this the driver has no
+            // on-screen way to tell which trip's passenger list they're looking at. Every booking
+            // already carries denormalized origin/destination/departureTime, so the first one
+            // available doubles as the trip context — no extra trip fetch needed.
+            (state.pending.firstOrNull() ?: state.confirmed.firstOrNull())?.let { item ->
+                val local = Instant.fromEpochMilliseconds(item.booking.departureTime)
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                val dayNamesShort = stringArrayResource(Res.array.day_names_short)
+                val monthNames = stringArrayResource(Res.array.month_names)
+                val dateConnector = stringResource(Res.string.date_of_connector)
+                val amMarker = stringResource(Res.string.time_am)
+                val pmMarker = stringResource(Res.string.time_pm)
+                val timeStr = formatShortTime(local.hour, local.minute, amMarker, pmMarker)
+                val dateStr = formatLongDate(
+                    local.year, local.monthNumber, local.dayOfMonth,
+                    dayNamesShort.toList(), monthNames.toList(), dateConnector
+                )
+                Column(modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)) {
+                    RouteLineRow(
+                        origin = item.booking.originName,
+                        destination = item.booking.destinationName,
+                    )
+                    Text(
+                        text = "$dateStr · $timeStr",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             state.error?.let { error ->
                 ErrorMessage(
                     message = stringResource(error.asStringResource()),
