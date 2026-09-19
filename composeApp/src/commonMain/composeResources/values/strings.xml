@@ -720,6 +720,7 @@
     <string name="safety_vibrate_sos_desc">Enables vibration when pressing the SOS button</string>
     <string name="safety_error_name_empty">Name cannot be empty</string>
     <string name="safety_error_phone_empty">Phone number cannot be empty</string>
+    <string name="safety_error_phone_invalid">Enter a valid 10-digit phone number</string>
     <string name="safety_add_contact_title">Add emergency contact</string>
 
     <!-- DateTime formatting -->

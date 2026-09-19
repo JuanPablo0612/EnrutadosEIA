@@ -621,6 +621,7 @@
     <string name="safety_vibrate_sos_desc">Activa la vibración al presionar el botón SOS</string>
     <string name="safety_error_name_empty">El nombre no puede estar vacío</string>
     <string name="safety_error_phone_empty">El teléfono no puede estar vacío</string>
+    <string name="safety_error_phone_invalid">Ingresa un número de teléfono válido de 10 dígitos</string>
     <string name="safety_add_contact_title">Agregar contacto de emergencia</string>
 
     <!-- SearchRoutes rediseño -->

@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -158,12 +159,22 @@ fun SafetyContent(
                             Text(stringResource(Res.string.safety_add_contact))
                         }
                     } else {
-                        Text(
-                            text = stringResource(Res.string.safety_max_contacts_reached),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
-                        )
+                        // Was plain bodySmall/onSurfaceVariant text — easy to miss next to the
+                        // "Add contact" button it replaces. A tonal surface (matching the app's
+                        // badge convention) makes it read as a real, noticed state.
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.safety_max_contacts_reached),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs)
+                            )
+                        }
                     }
                 }
 

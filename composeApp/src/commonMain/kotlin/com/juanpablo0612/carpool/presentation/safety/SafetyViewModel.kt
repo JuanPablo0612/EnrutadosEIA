@@ -98,8 +98,15 @@ class SafetyViewModel(
             _state.update { it.copy(newContactNameError = SafetyContactFieldError.NameEmpty) }
             hasError = true
         }
+        val phoneDigits = phone.filter { it.isDigit() }
         if (phone.isBlank()) {
             _state.update { it.copy(newContactPhoneError = SafetyContactFieldError.PhoneEmpty) }
+            hasError = true
+        } else if (phoneDigits.length != 10 || !phoneDigits.startsWith("3")) {
+            // A garbage number is a real safety gap for an *emergency* contact, so this is
+            // checked beyond presence — matches the Colombian mobile format used elsewhere
+            // (Register, Edit Profile).
+            _state.update { it.copy(newContactPhoneError = SafetyContactFieldError.PhoneInvalid) }
             hasError = true
         }
         if (hasError) return
