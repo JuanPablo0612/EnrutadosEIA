@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cd_delete_notification
 import enrutadoseia.composeapp.generated.resources.delete_24px
@@ -23,10 +24,11 @@ internal fun DeleteNotificationBackground() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 2.dp)
+            // 2dp: matches NotificationItem's own fine visual gap, below the 4dp scale step.
+            .padding(horizontal = Spacing.screenHorizontal, vertical = 2.dp)
             .clip(CardDefaults.shape)
             .background(MaterialTheme.colorScheme.errorContainer)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp), // aligns the icon within the revealed background, not on the spacing scale
         contentAlignment = Alignment.CenterEnd
     ) {
         Icon(

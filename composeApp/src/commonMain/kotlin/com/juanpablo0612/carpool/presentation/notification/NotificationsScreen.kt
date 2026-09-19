@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.notification.components.SwipeToDeleteNotification
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
@@ -27,6 +26,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.bookmarks_24px
@@ -100,7 +100,7 @@ fun NotificationsContent(
                     message = stringResource(Res.string.error_action_failed),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                         .clickable { onAction(NotificationsAction.OnDismissActionError) }
                 )
             }
@@ -114,7 +114,7 @@ fun NotificationsContent(
                         ErrorState(
                             description = stringResource(state.error.asStringResource()),
                             onRetry = { onAction(NotificationsAction.OnRetry) },
-                            modifier = Modifier.fillMaxSize().padding(16.dp)
+                            modifier = Modifier.fillMaxSize().padding(Spacing.lg)
                         )
                     }
                     state.notifications.isEmpty() -> {
@@ -128,8 +128,8 @@ fun NotificationsContent(
                     else -> {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                            contentPadding = PaddingValues(vertical = Spacing.sm),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.xs)
                         ) {
                             items(state.notifications, key = { it.id }) { notification ->
                                 SwipeToDeleteNotification(

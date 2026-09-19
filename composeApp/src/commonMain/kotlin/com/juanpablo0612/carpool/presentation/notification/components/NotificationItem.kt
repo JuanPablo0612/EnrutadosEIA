@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -28,7 +29,7 @@ internal fun NotificationItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 2.dp),
+            .padding(horizontal = Spacing.screenHorizontal, vertical = 2.dp), // 2dp: fine visual gap, below the 4dp scale step
         colors = CardDefaults.cardColors(
             containerColor = if (!notification.isRead)
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
@@ -36,8 +37,8 @@ internal fun NotificationItem(
         )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(Spacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
             verticalAlignment = Alignment.Top
         ) {
             Column(modifier = Modifier.weight(1f)) {
