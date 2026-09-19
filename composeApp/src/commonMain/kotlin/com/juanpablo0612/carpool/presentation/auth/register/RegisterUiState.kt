@@ -17,6 +17,7 @@ data class RegisterUiState(
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
     val photoFile: PlatformFile? = null,
+    val photoError: Boolean = false,
     val phone: String = "",
     val phoneError: ValidationError? = null,
     val isPassenger: Boolean = false,

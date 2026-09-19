@@ -278,6 +278,7 @@
     <string name="register_step_3_title">Tu rol</string>
     <string name="register_step_indicator">Paso %1$d de %2$d</string>
     <string name="register_photo_placeholder">Agregar foto de perfil (opcional)</string>
+    <string name="register_photo_error">No pudimos leer esa foto. Elige otra.</string>
     <string name="register_photo_action_camera">Cámara</string>
     <string name="register_photo_action_gallery">Galería</string>
     <string name="register_phone_label">Número de teléfono</string>

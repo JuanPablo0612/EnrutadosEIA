@@ -9,6 +9,7 @@ import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -34,7 +35,7 @@ class RegisterViewModel(
             is RegisterAction.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = action.confirmPassword, confirmPasswordError = null) }
             RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
-            is RegisterAction.OnPhotoSelected -> _uiState.update { it.copy(photoFile = action.file) }
+            is RegisterAction.OnPhotoSelected -> _uiState.update { it.copy(photoFile = action.file, photoError = false) }
             is RegisterAction.OnPhoneChanged -> _uiState.update { it.copy(phone = action.phone, phoneError = null) }
             is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger, roleError = null) }
             is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver, roleError = null) }
@@ -92,8 +93,17 @@ class RegisterViewModel(
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            val photoBytes = state.photoFile?.readBytes()
+            _uiState.update { it.copy(isLoading = true, error = null, photoError = false) }
+            val photoBytes = try {
+                state.photoFile?.readBytes()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Step back to the photo step so the error is actually visible — it renders
+                // there, not on step 3 where the failure is discovered.
+                _uiState.update { it.copy(isLoading = false, photoError = true, currentStep = 2) }
+                return@launch
+            }
             authRepository.register(
                 email = state.email,
                 password = state.password,

@@ -278,6 +278,7 @@
     <string name="register_step_3_title">Your role</string>
     <string name="register_step_indicator">Step %1$d of %2$d</string>
     <string name="register_photo_placeholder">Add profile photo (optional)</string>
+    <string name="register_photo_error">Couldn\'t read that photo. Please pick another one.</string>
     <string name="register_photo_action_camera">Camera</string>
     <string name="register_photo_action_gallery">Gallery</string>
     <string name="register_phone_label">Phone number</string>

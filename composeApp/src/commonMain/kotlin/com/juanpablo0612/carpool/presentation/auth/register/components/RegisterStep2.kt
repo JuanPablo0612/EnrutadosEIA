@@ -34,6 +34,7 @@ import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterAction
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterUiState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -43,6 +44,7 @@ import enrutadoseia.composeapp.generated.resources.register_phone_label
 import enrutadoseia.composeapp.generated.resources.register_phone_placeholder
 import enrutadoseia.composeapp.generated.resources.register_photo_action_camera
 import enrutadoseia.composeapp.generated.resources.register_photo_action_gallery
+import enrutadoseia.composeapp.generated.resources.register_photo_error
 import enrutadoseia.composeapp.generated.resources.register_photo_placeholder
 import enrutadoseia.composeapp.generated.resources.vehicle_change_photo
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -107,6 +109,11 @@ internal fun RegisterStep2(
                     else Res.string.register_photo_placeholder
                 )
             )
+        }
+
+        if (state.photoError) {
+            ErrorMessage(message = stringResource(Res.string.register_photo_error))
+            Spacer(modifier = Modifier.height(Spacing.sm))
         }
 
         Spacer(modifier = Modifier.height(Spacing.xl))
