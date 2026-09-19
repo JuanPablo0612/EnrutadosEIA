@@ -30,7 +30,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.bookmarks_24px
-import enrutadoseia.composeapp.generated.resources.error_action_failed
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all_confirm_body
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all_confirm_title
@@ -95,9 +94,9 @@ fun NotificationsContent(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            if (state.actionError) {
+            state.actionError?.let { error ->
                 ErrorMessage(
-                    message = stringResource(Res.string.error_action_failed),
+                    message = stringResource(error.asStringResource()),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
@@ -134,7 +133,7 @@ fun NotificationsContent(
                             items(state.notifications, key = { it.id }) { notification ->
                                 SwipeToDeleteNotification(
                                     notification = notification,
-                                    actionError = state.actionError,
+                                    actionError = state.actionError is NotificationActionError.DeleteFailed,
                                     onDismiss = { onAction(NotificationsAction.OnDismiss(notification.id)) },
                                     onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
                                 )

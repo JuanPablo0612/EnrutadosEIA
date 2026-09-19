@@ -691,6 +691,8 @@
     <string name="notifications_empty_title">No notifications</string>
     <string name="notifications_empty_subtitle">Your trip and booking notifications will appear here.</string>
     <string name="notifications_clear_all">Borrar todo</string>
+    <string name="notification_delete_failed">Couldn\'t delete that notification. Please try again.</string>
+    <string name="notification_clear_all_failed">Couldn\'t clear your notifications. Please try again.</string>
     <string name="notification_booking_accepted_title">Booking confirmed</string>
     <string name="notification_booking_accepted_body">The driver accepted your request. Have a great trip!</string>
     <string name="notification_booking_rejected_title">Booking rejected</string>

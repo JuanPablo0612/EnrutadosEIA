@@ -58,7 +58,7 @@ class NotificationsViewModel(
             is NotificationsAction.OnDismiss -> {
                 viewModelScope.launch {
                     notificationRepository.delete(userId, action.id)
-                        .onFailure { _state.update { it.copy(actionError = true) } }
+                        .onFailure { _state.update { it.copy(actionError = NotificationActionError.DeleteFailed) } }
                 }
             }
             NotificationsAction.OnClearAllClick -> _state.update { it.copy(showClearAllDialog = true) }
@@ -67,11 +67,11 @@ class NotificationsViewModel(
                 _state.update { it.copy(showClearAllDialog = false) }
                 viewModelScope.launch {
                     notificationRepository.clearAll(userId)
-                        .onFailure { _state.update { it.copy(actionError = true) } }
+                        .onFailure { _state.update { it.copy(actionError = NotificationActionError.ClearAllFailed) } }
                 }
             }
             NotificationsAction.OnRetry -> loadNotifications()
-            NotificationsAction.OnDismissActionError -> _state.update { it.copy(actionError = false) }
+            NotificationsAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
             NotificationsAction.OnBackClick -> {
                 viewModelScope.launch { _events.emit(NotificationsEvent.NavigateBack) }
             }

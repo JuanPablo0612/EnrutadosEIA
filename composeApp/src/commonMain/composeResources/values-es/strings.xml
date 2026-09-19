@@ -592,6 +592,8 @@
     <string name="notifications_empty_title">Sin notificaciones</string>
     <string name="notifications_empty_subtitle">Aquí aparecerán tus notificaciones de viajes y reservas.</string>
     <string name="notifications_clear_all">Borrar todo</string>
+    <string name="notification_delete_failed">No pudimos eliminar esa notificación. Inténtalo de nuevo.</string>
+    <string name="notification_clear_all_failed">No pudimos borrar tus notificaciones. Inténtalo de nuevo.</string>
     <string name="notification_booking_accepted_title">Reserva confirmada</string>
     <string name="notification_booking_accepted_body">El conductor aceptó tu reserva. ¡Que tengas buen viaje!</string>
     <string name="notification_booking_rejected_title">Reserva rechazada</string>

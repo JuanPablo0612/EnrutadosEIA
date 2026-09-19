@@ -7,7 +7,7 @@ data class NotificationsUiState(
     val isLoading: Boolean = true,
     val error: NotificationError? = null,
     val showClearAllDialog: Boolean = false,
-    val actionError: Boolean = false
+    val actionError: NotificationActionError? = null
 ) {
     val unreadCount: Int get() = notifications.count { !it.isRead }
 }
