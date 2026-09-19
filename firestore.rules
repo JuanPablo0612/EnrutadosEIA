@@ -35,12 +35,15 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------------------------
-    // places/{placeId} — saved addresses (e.g. "Casa") are private to their owner. Both
-    // getSavedPlaces and searchPlaces now issue `where("ownerId", "==", ownerId)`, which this
-    // rule can verify statically.
+    // places/{placeId} — saved addresses (e.g. "Casa") are private to their owner by default.
+    // getSavedPlaces issues `where("ownerId", "==", ownerId)`; getCommunityPlaces issues
+    // `where("isShared", "==", true)` for places their owner opted to share — both are provable
+    // statically against this rule.
     // ---------------------------------------------------------------------------------------
     match /places/{placeId} {
-      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid || resource.data.isShared == true
+      );
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
@@ -88,11 +91,16 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------------------------
-    // routes/{routeId} — recurring route templates. Same "browsable, owner-writes" shape as
-    // trips. getUserRoutes() scopes driverId server-side.
+    // routes/{routeId} — recurring route templates, private to their driver unless opted into
+    // the community. Unlike trips (an intentionally open marketplace), a route's origin/
+    // destination can reveal a driver's home address, so reads require either ownership or
+    // isShared == true. getUserRoutes() scopes driverId server-side; getCommunityRoutes() issues
+    // `where("isShared", "==", true)` — both are provable statically against this rule.
     // ---------------------------------------------------------------------------------------
     match /routes/{routeId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && (
+        resource.data.driverId == request.auth.uid || resource.data.isShared == true
+      );
       allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.driverId == request.auth.uid;
     }

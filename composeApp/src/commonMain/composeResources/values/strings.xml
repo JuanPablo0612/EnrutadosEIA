@@ -118,6 +118,8 @@
     <string name="add_place_type_label">What type of place is it?</string>
     <string name="add_place_map_tip">If the pin is not in the exact location, drag it to adjust.</string>
     <string name="add_place_address_hint">Type an address...</string>
+    <string name="add_place_share_label">Share with community</string>
+    <string name="add_place_share_description">Other users will be able to see and reuse this place</string>
 
     <!-- Place Types -->
     <string name="place_type_home">Home</string>
@@ -150,11 +152,14 @@
     <string name="place_selector_allow_location">Allow →</string>
     <string name="place_selector_section_my_places">My places</string>
     <string name="place_selector_section_eia">EIA Campuses</string>
+    <string name="place_selector_section_community">Community</string>
     <string name="place_selector_section_results">Results</string>
     <string name="place_selector_empty_my_places_title">No saved places yet</string>
     <string name="place_selector_empty_my_places_description">Places you save will show up here for quick access.</string>
     <string name="place_selector_location_error">Couldn\'t get your current location. Please try again.</string>
     <string name="place_selector_delete_failed">Couldn\'t delete this place. Please try again.</string>
+    <string name="place_selector_add_to_my_places_failed">Couldn\'t add this place to your list. Please try again.</string>
+    <string name="cd_add_to_my_places">Add to my places</string>
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">Hello, %1$s!</string>
@@ -336,6 +341,11 @@
     <string name="recurrence_section_title">Recurrence (optional)</string>
     <string name="departure_time_not_set">No time set</string>
 
+    <!-- Sharing section -->
+    <string name="sharing_section_title">Sharing</string>
+    <string name="create_route_share_label">Share with community</string>
+    <string name="create_route_share_description">Other drivers will be able to see and reuse this route</string>
+
     <!-- Day abbreviations (single letter chips) -->
     <string name="day_abbr_mon">M</string>
     <string name="day_abbr_tue">T</string>
@@ -368,6 +378,15 @@
     <string name="route_menu_edit">Edit</string>
     <string name="route_menu_duplicate">Duplicate</string>
     <string name="route_menu_delete">Delete</string>
+
+    <!-- Community Routes -->
+    <string name="cd_community_routes">Community routes</string>
+    <string name="community_routes_title">Community Routes</string>
+    <string name="community_routes_subtitle">Routes shared by other drivers</string>
+    <string name="community_routes_empty_title">No shared routes yet</string>
+    <string name="community_routes_empty_description">When a driver shares a route with the community, it will show up here for you to reuse.</string>
+    <string name="community_routes_reuse_button">Use this route</string>
+    <string name="error_route_reuse_failed">Couldn\'t use this route. Please try again.</string>
 
     <!-- CreateTrip - date quick-select -->
     <string name="date_today">Today</string>

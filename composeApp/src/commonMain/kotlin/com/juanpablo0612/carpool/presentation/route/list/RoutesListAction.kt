@@ -11,4 +11,5 @@ sealed class RoutesListAction {
     data object OnRetry : RoutesListAction()
     data object OnDismissActionError : RoutesListAction()
     data object OnBackClick : RoutesListAction()
+    data object OnCommunityRoutesClick : RoutesListAction()
 }

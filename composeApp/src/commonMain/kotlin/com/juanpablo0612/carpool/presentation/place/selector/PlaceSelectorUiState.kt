@@ -7,6 +7,7 @@ data class PlaceSelectorUiState(
     val mode: PlaceSelectorMode = PlaceSelectorMode.Origin,
     val searchQuery: String = "",
     val savedPlaces: List<Place> = emptyList(),
+    val communityPlaces: List<Place> = emptyList(),
     val campusPlaces: List<Place> = Place.campusPresets,
     val currentLocation: Place? = null,
     val isResolvingLocation: Boolean = false,

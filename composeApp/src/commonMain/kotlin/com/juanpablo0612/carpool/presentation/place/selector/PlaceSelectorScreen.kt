@@ -36,6 +36,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.cd_add_place
+import enrutadoseia.composeapp.generated.resources.cd_add_to_my_places
 import enrutadoseia.composeapp.generated.resources.cd_clear_search
 import enrutadoseia.composeapp.generated.resources.cd_delete_place
 import enrutadoseia.composeapp.generated.resources.close_24px
@@ -50,6 +51,7 @@ import enrutadoseia.composeapp.generated.resources.place_selector_empty_my_place
 import enrutadoseia.composeapp.generated.resources.place_selector_no_results
 import enrutadoseia.composeapp.generated.resources.place_selector_resolving_location
 import enrutadoseia.composeapp.generated.resources.place_selector_search_hint
+import enrutadoseia.composeapp.generated.resources.place_selector_section_community
 import enrutadoseia.composeapp.generated.resources.place_selector_section_eia
 import enrutadoseia.composeapp.generated.resources.place_selector_section_my_places
 import enrutadoseia.composeapp.generated.resources.place_selector_section_results
@@ -230,6 +232,35 @@ fun PlaceSelectorContent(
                                         )
                                     }
                                 },
+                                onClick = { onPlaceSelected(place) },
+                            )
+                            HorizontalDivider()
+                        }
+                    }
+
+                    // Community places — shared by other users, shown both while picking a
+                    // place and while browsing/managing saved places. Hidden entirely when
+                    // empty since it's a discovery bonus, not a primary flow.
+                    if (state.communityPlaces.isNotEmpty()) {
+                        item {
+                            SectionHeader(title = stringResource(Res.string.place_selector_section_community))
+                        }
+                        items(state.communityPlaces, key = { it.id }) { place ->
+                            PlaceRow(
+                                icon = vectorResource(Res.drawable.location_on_24px),
+                                name = place.name,
+                                address = place.address,
+                                trailing = if (isBrowseOnly) {
+                                    {
+                                        IconButton(onClick = { onAction(PlaceSelectorAction.OnAddToMyPlaces(place)) }) {
+                                            Icon(
+                                                vectorResource(Res.drawable.add_24px),
+                                                contentDescription = stringResource(Res.string.cd_add_to_my_places),
+                                                tint = MaterialTheme.colorScheme.primary,
+                                            )
+                                        }
+                                    }
+                                } else null,
                                 onClick = { onPlaceSelected(place) },
                             )
                             HorizontalDivider()

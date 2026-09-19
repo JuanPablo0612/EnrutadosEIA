@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
+import com.juanpablo0612.carpool.domain.route.usecase.DuplicateRouteUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import kotlinx.datetime.Instant
 class RoutesListViewModel(
     private val routeRepository: RouteRepository,
     private val tripRepository: TripRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val duplicateRouteUseCase: DuplicateRouteUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoutesListUiState())
@@ -85,6 +87,9 @@ class RoutesListViewModel(
             RoutesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateBack)
             }
+            RoutesListAction.OnCommunityRoutesClick -> viewModelScope.launch {
+                _events.emit(RoutesListEvent.NavigateToCommunityRoutes)
+            }
         }
     }
 
@@ -95,7 +100,7 @@ class RoutesListViewModel(
         val route = _state.value.routes.find { it.route.id == routeId }?.route ?: return
         _state.update { it.copy(duplicatingRouteId = routeId, actionError = null) }
         viewModelScope.launch {
-            routeRepository.createRoute(route.copy(id = "", name = "${route.name} (copia)"))
+            duplicateRouteUseCase(route, nameOverride = "${route.name} (copia)")
                 .onSuccess {
                     _state.update { it.copy(duplicatingRouteId = null) }
                 }

@@ -36,7 +36,7 @@ private const val MAP_PICK_RESULT_KEY = "map_pick_result"
  * leaving a dual-role user's bottom bar/theme desynced from the screen they land on.
  */
 private fun Route.requiredRoleOrNull(): UserRole? = when (this) {
-    is Route.Home, is Route.RoutesList, is Route.CreateRoute, is Route.RouteDetail,
+    is Route.Home, is Route.RoutesList, is Route.CommunityRoutes, is Route.CreateRoute, is Route.RouteDetail,
     is Route.CreateTrip, is Route.DriverTrips, is Route.TripPassengers, is Route.VehiclesList,
     is Route.RegisterVehicle, is Route.DriverBookingRequests, is Route.PassengerProfile -> UserRole.Driver
 
@@ -263,6 +263,7 @@ fun AppNavigation(
                     onNavigateToCreateTrip = { routeId -> navController.navigate(Route.CreateTrip(routeId)) },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
+                    onNavigateToCommunityRoutes = { navController.navigate(Route.CommunityRoutes) },
                     onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
                     onNavigateToSearchTrips = { switchActiveRole(UserRole.Passenger) },

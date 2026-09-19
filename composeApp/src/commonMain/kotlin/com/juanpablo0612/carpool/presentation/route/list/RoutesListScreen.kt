@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.cd_community_routes
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.route_delete_confirm_button
 import enrutadoseia.composeapp.generated.resources.route_delete_confirm_description
@@ -44,6 +46,7 @@ import enrutadoseia.composeapp.generated.resources.routes_empty_title
 import enrutadoseia.composeapp.generated.resources.routes_list_new_route
 import enrutadoseia.composeapp.generated.resources.routes_list_subtitle
 import enrutadoseia.composeapp.generated.resources.routes_list_title
+import enrutadoseia.composeapp.generated.resources.search_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -53,6 +56,7 @@ fun RoutesListScreen(
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
     onNavigateToCreateTrip: (String) -> Unit,
+    onNavigateToCommunityRoutes: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -63,6 +67,7 @@ fun RoutesListScreen(
             is RoutesListEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
             is RoutesListEvent.NavigateToCreateTrip -> onNavigateToCreateTrip(event.routeId)
             RoutesListEvent.NavigateBack -> onBackClick()
+            RoutesListEvent.NavigateToCommunityRoutes -> onNavigateToCommunityRoutes()
         }
     }
 
@@ -95,6 +100,14 @@ fun RoutesListContent(
                 title = stringResource(Res.string.routes_list_title),
                 subtitle = stringResource(Res.string.routes_list_subtitle),
                 onBack = { onAction(RoutesListAction.OnBackClick) },
+                actions = {
+                    IconButton(onClick = { onAction(RoutesListAction.OnCommunityRoutesClick) }) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.search_24px),
+                            contentDescription = stringResource(Res.string.cd_community_routes)
+                        )
+                    }
+                },
             )
         },
         floatingActionButton = {

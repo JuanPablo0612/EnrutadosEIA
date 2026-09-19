@@ -35,4 +35,9 @@ class PlaceRepositoryImpl(
         return remoteDataSource.getSavedPlaces(ownerId)
             .map { list -> list.map { it.toDomain() } }
     }
+
+    override fun getCommunityPlaces(): Flow<List<Place>> {
+        return remoteDataSource.getCommunityPlaces()
+            .map { list -> list.map { it.toDomain() } }
+    }
 }

@@ -33,6 +33,17 @@ class FirebasePlaceRemoteDataSource(
             }
     }
 
+    override fun getCommunityPlaces(): Flow<List<PlaceDto>> {
+        return firestore.collection(COLLECTION_NAME)
+            .where { "isShared" equalTo true }
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents.map { doc ->
+                    doc.data(PlaceDto.serializer())
+                }
+            }
+    }
+
     companion object {
         private const val COLLECTION_NAME = "places"
     }

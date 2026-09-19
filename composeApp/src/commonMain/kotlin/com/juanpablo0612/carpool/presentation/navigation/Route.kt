@@ -32,6 +32,9 @@ sealed interface Route {
     data object RoutesList : Route
 
     @Serializable
+    data object CommunityRoutes : Route
+
+    @Serializable
     data object VehiclesList : Route
 
     @Serializable

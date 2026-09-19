@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,10 +28,12 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -51,6 +54,8 @@ import enrutadoseia.composeapp.generated.resources.add_new_place_title
 import enrutadoseia.composeapp.generated.resources.add_place_address_hint
 import enrutadoseia.composeapp.generated.resources.add_place_map_tip
 import enrutadoseia.composeapp.generated.resources.add_place_pick_on_map
+import enrutadoseia.composeapp.generated.resources.add_place_share_description
+import enrutadoseia.composeapp.generated.resources.add_place_share_label
 import enrutadoseia.composeapp.generated.resources.add_place_type_label
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.place_name_label
@@ -226,6 +231,24 @@ fun AddPlaceContent(
                     text = stringResource(Res.string.add_place_map_tip),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(stringResource(Res.string.add_place_share_label), style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        stringResource(Res.string.add_place_share_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = state.isShared,
+                    onCheckedChange = { onAction(AddPlaceAction.OnToggleShared) },
                 )
             }
 

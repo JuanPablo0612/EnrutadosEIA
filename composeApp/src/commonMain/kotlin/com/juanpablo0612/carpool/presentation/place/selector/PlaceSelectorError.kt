@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.place.selector
 
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_suggestion_unavailable
+import enrutadoseia.composeapp.generated.resources.place_selector_add_to_my_places_failed
 import enrutadoseia.composeapp.generated.resources.place_selector_delete_failed
 import enrutadoseia.composeapp.generated.resources.place_selector_location_error
 import org.jetbrains.compose.resources.StringResource
@@ -15,10 +16,12 @@ sealed class PlaceSelectorError {
     data object LocationUnavailable : PlaceSelectorError()
     data object SuggestionUnavailable : PlaceSelectorError()
     data object DeleteFailed : PlaceSelectorError()
+    data object AddToMyPlacesFailed : PlaceSelectorError()
 
     fun asStringResource(): StringResource = when (this) {
         LocationUnavailable -> Res.string.place_selector_location_error
         SuggestionUnavailable -> Res.string.error_suggestion_unavailable
         DeleteFailed -> Res.string.place_selector_delete_failed
+        AddToMyPlacesFailed -> Res.string.place_selector_add_to_my_places_failed
     }
 }

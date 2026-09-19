@@ -7,4 +7,5 @@ interface PlaceRemoteDataSource {
     suspend fun createPlace(place: PlaceDto): PlaceDto
     suspend fun deletePlace(placeId: String)
     fun getSavedPlaces(ownerId: String): Flow<List<PlaceDto>>
+    fun getCommunityPlaces(): Flow<List<PlaceDto>>
 }

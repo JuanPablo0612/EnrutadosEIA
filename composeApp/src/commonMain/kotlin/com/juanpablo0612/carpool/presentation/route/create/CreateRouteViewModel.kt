@@ -53,6 +53,7 @@ class CreateRouteViewModel(
             is CreateRouteAction.OnSetDepartureTime -> _state.update {
                 it.copy(typicalDepartureTime = action.time)
             }
+            CreateRouteAction.OnToggleShared -> _state.update { it.copy(isShared = !it.isShared) }
             CreateRouteAction.OnSaveClick -> createRoute()
             CreateRouteAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(CreateRouteEvent.NavigateBack)
@@ -107,7 +108,8 @@ class CreateRouteViewModel(
                 waypoints = currentState.waypoints,
                 name = currentState.name,
                 recurringDays = currentState.recurringDays,
-                typicalDepartureTime = currentState.typicalDepartureTime
+                typicalDepartureTime = currentState.typicalDepartureTime,
+                isShared = currentState.isShared
             )
             routeRepository.createRoute(route)
                 .onSuccess {

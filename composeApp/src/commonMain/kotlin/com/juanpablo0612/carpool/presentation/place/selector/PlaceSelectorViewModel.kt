@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.place.model.AutocompleteSuggestion
 import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.domain.place.repository.PlaceRepository
 import com.juanpablo0612.carpool.domain.place.service.LocationService
 import com.juanpablo0612.carpool.domain.place.service.PlacesSearchService
+import com.juanpablo0612.carpool.domain.place.usecase.CreatePlaceUseCase
 import com.juanpablo0612.carpool.domain.place.usecase.DeletePlaceUseCase
 import com.juanpablo0612.carpool.domain.place.usecase.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.presentation.place.add.components.LocationPermissionRequester
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,6 +39,8 @@ sealed class PlaceSelectorEvent {
 class PlaceSelectorViewModel(
     mode: String,
     private val getSavedPlacesUseCase: GetSavedPlacesUseCase,
+    private val placeRepository: PlaceRepository,
+    private val createPlaceUseCase: CreatePlaceUseCase,
     private val locationService: LocationService,
     private val placesSearchService: PlacesSearchService,
     private val deletePlaceUseCase: DeletePlaceUseCase,
@@ -63,15 +68,18 @@ class PlaceSelectorViewModel(
     private var searchJob: Job? = null
 
     init {
-        loadSavedPlaces()
+        loadPlaces()
     }
 
-    private fun loadSavedPlaces() {
+    private fun loadPlaces() {
         getPlacesJob?.cancel()
         getPlacesJob = viewModelScope.launch {
-            getSavedPlacesUseCase()
-                .onEach { places ->
-                    _state.update { it.copy(savedPlaces = places) }
+            combine(getSavedPlacesUseCase(), placeRepository.getCommunityPlaces()) { saved, community ->
+                val savedIds = saved.map { it.id }.toSet()
+                saved to community.filterNot { it.id in savedIds }
+            }
+                .onEach { (saved, community) ->
+                    _state.update { it.copy(savedPlaces = saved, communityPlaces = community) }
                 }
                 .collect()
         }
@@ -102,6 +110,7 @@ class PlaceSelectorViewModel(
             PlaceSelectorAction.OnCancelDelete ->
                 _state.update { it.copy(isConfirmingDelete = null) }
             PlaceSelectorAction.OnConfirmDelete -> deleteCurrentPlace()
+            is PlaceSelectorAction.OnAddToMyPlaces -> addToMyPlaces(action.place)
         }
     }
 
@@ -111,6 +120,14 @@ class PlaceSelectorViewModel(
         viewModelScope.launch {
             deletePlaceUseCase(place).onFailure {
                 _state.update { it.copy(error = PlaceSelectorError.DeleteFailed) }
+            }
+        }
+    }
+
+    private fun addToMyPlaces(place: Place) {
+        viewModelScope.launch {
+            createPlaceUseCase(place.copy(id = "", isShared = false)).onFailure {
+                _state.update { it.copy(error = PlaceSelectorError.AddToMyPlacesFailed) }
             }
         }
     }

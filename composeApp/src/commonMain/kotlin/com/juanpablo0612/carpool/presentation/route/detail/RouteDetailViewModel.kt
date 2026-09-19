@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
+import com.juanpablo0612.carpool.domain.route.usecase.DuplicateRouteUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
 import com.juanpablo0612.carpool.presentation.route.create.SelectionTarget
@@ -20,7 +21,8 @@ import kotlinx.datetime.Instant
 class RouteDetailViewModel(
     private val routeId: String,
     private val routeRepository: RouteRepository,
-    private val tripRepository: TripRepository
+    private val tripRepository: TripRepository,
+    private val duplicateRouteUseCase: DuplicateRouteUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailUiState())
@@ -94,6 +96,7 @@ class RouteDetailViewModel(
             }
             is RouteDetailAction.OnPlaceSelectedFromResult -> onDraftPlaceSelected(action.place)
             RouteDetailAction.OnCancelSelection -> updateDraft { it.copy(selectionTarget = null) }
+            RouteDetailAction.OnToggleShared -> updateDraft { it.copy(isShared = !it.isShared) }
         }
     }
 
@@ -108,7 +111,8 @@ class RouteDetailViewModel(
                     destination = route.destination,
                     waypoints = route.waypoints,
                     recurringDays = route.recurringDays,
-                    typicalDepartureTime = route.typicalDepartureTime
+                    typicalDepartureTime = route.typicalDepartureTime,
+                    isShared = route.isShared
                 )
             )
         }
@@ -128,7 +132,8 @@ class RouteDetailViewModel(
                 destination = destination,
                 waypoints = draft.waypoints,
                 recurringDays = draft.recurringDays,
-                typicalDepartureTime = draft.typicalDepartureTime
+                typicalDepartureTime = draft.typicalDepartureTime,
+                isShared = draft.isShared
             )
             routeRepository.updateRoute(updatedRoute)
                 .onSuccess {
@@ -158,7 +163,7 @@ class RouteDetailViewModel(
         val route = _state.value.route ?: return
         _state.update { it.copy(isDuplicating = true) }
         viewModelScope.launch {
-            routeRepository.createRoute(route.copy(id = "", name = "${route.name} (copia)"))
+            duplicateRouteUseCase(route, nameOverride = "${route.name} (copia)")
                 .onSuccess {
                     _state.update { it.copy(isDuplicating = false) }
                     _events.emit(RouteDetailEvent.NavigateBack)

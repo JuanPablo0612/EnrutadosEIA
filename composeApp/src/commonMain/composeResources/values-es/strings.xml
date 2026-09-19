@@ -64,11 +64,14 @@
     <string name="place_selector_allow_location">Permitir →</string>
     <string name="place_selector_section_my_places">Mis lugares</string>
     <string name="place_selector_section_eia">Sedes EIA</string>
+    <string name="place_selector_section_community">Comunidad</string>
     <string name="place_selector_section_results">Resultados</string>
     <string name="place_selector_empty_my_places_title">Aún no tienes lugares guardados</string>
     <string name="place_selector_empty_my_places_description">Los lugares que guardes aparecerán aquí para un acceso rápido.</string>
     <string name="place_selector_location_error">No pudimos obtener tu ubicación actual. Inténtalo de nuevo.</string>
     <string name="place_selector_delete_failed">No pudimos eliminar este lugar. Inténtalo de nuevo.</string>
+    <string name="place_selector_add_to_my_places_failed">No pudimos añadir este lugar a tu lista. Inténtalo de nuevo.</string>
+    <string name="cd_add_to_my_places">Añadir a mis lugares</string>
 
     <string name="error_email_empty">El correo no puede estar vacío</string>
     <string name="error_email_invalid">Ingresa un correo electrónico válido</string>
@@ -155,6 +158,8 @@
 
     <!-- Add Place -->
     <string name="error_place_name_required">El nombre del lugar es obligatorio</string>
+    <string name="add_place_share_label">Compartir con la comunidad</string>
+    <string name="add_place_share_description">Otros usuarios podrán ver y reutilizar este lugar</string>
 
     <!-- Role Selector -->
     <string name="role_selector_greeting">¡Hola, %1$s!</string>
@@ -336,6 +341,11 @@
     <string name="recurrence_section_title">Recurrencia (opcional)</string>
     <string name="departure_time_not_set">Sin hora configurada</string>
 
+    <!-- Sección de compartir -->
+    <string name="sharing_section_title">Compartir</string>
+    <string name="create_route_share_label">Compartir con la comunidad</string>
+    <string name="create_route_share_description">Otros conductores podrán ver y reutilizar esta ruta</string>
+
     <!-- Abreviaciones de días (chips de una letra) -->
     <string name="day_abbr_mon">L</string>
     <string name="day_abbr_tue">M</string>
@@ -368,6 +378,15 @@
     <string name="route_menu_edit">Editar</string>
     <string name="route_menu_duplicate">Duplicar</string>
     <string name="route_menu_delete">Eliminar</string>
+
+    <!-- Rutas de la comunidad -->
+    <string name="cd_community_routes">Rutas de la comunidad</string>
+    <string name="community_routes_title">Rutas de la Comunidad</string>
+    <string name="community_routes_subtitle">Rutas compartidas por otros conductores</string>
+    <string name="community_routes_empty_title">Aún no hay rutas compartidas</string>
+    <string name="community_routes_empty_description">Cuando un conductor comparta una ruta con la comunidad, aparecerá aquí para que la reutilices.</string>
+    <string name="community_routes_reuse_button">Usar esta ruta</string>
+    <string name="error_route_reuse_failed">No pudimos usar esta ruta. Inténtalo de nuevo.</string>
 
     <!-- CreateTrip - selección rápida de fecha -->
     <string name="date_today">Hoy</string>

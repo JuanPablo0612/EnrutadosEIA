@@ -14,6 +14,7 @@ sealed class AddPlaceAction {
     data class SelectMapPoi(val poi: MapPointOfInterest) : AddPlaceAction()
     data object OnSaveClick : AddPlaceAction()
     data object OnBackClick : AddPlaceAction()
+    data object OnToggleShared : AddPlaceAction()
     data object PickOnMap : AddPlaceAction()
     data class OnMapPickResult(
         val latitude: Double,

@@ -31,7 +31,7 @@ val placeModule = module {
     factoryOf(::GetSavedPlacesUseCase)
     factoryOf(::CreatePlaceUseCase)
     factoryOf(::DeletePlaceUseCase)
-    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get(), get()) }
+    viewModel { (mode: String) -> PlaceSelectorViewModel(mode, get(), get(), get(), get(), get(), get(), get()) }
     viewModel { AddPlaceViewModel(get(), get()) }
     viewModel { (lat: Double, lon: Double) -> MapPickerViewModel(lat, lon, get(), get(), get()) }
 }

@@ -28,4 +28,5 @@ sealed class RouteDetailAction {
     data class OnRemoveWaypoint(val index: Int) : RouteDetailAction()
     data class OnPlaceSelectedFromResult(val place: Place) : RouteDetailAction()
     data object OnCancelSelection : RouteDetailAction()
+    data object OnToggleShared : RouteDetailAction()
 }

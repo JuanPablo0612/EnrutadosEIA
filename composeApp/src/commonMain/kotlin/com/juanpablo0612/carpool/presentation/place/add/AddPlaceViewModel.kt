@@ -67,6 +67,7 @@ class AddPlaceViewModel(
                 Coordinates(action.latitude, action.longitude),
                 placeName = action.placeName,
             )
+            AddPlaceAction.OnToggleShared -> _state.update { it.copy(isShared = !it.isShared) }
         }
     }
 
@@ -186,6 +187,7 @@ class AddPlaceViewModel(
                 latitude = s.coordinates.latitude,
                 longitude = s.coordinates.longitude,
                 type = s.type ?: PlaceType.Other,
+                isShared = s.isShared,
             )
             createPlaceUseCase(place)
                 .onSuccess {

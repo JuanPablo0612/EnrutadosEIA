@@ -15,6 +15,7 @@ sealed class CreateRouteAction {
     data object OnDestinationClick : CreateRouteAction()
     data object OnAddWaypointClick : CreateRouteAction()
     data object OnCancelSelection : CreateRouteAction()
+    data object OnToggleShared : CreateRouteAction()
     data object OnSaveClick : CreateRouteAction()
     data object OnBackClick : CreateRouteAction()
 }

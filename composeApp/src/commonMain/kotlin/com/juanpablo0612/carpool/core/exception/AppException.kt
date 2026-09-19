@@ -26,6 +26,7 @@ sealed class AppException : Exception() {
     }
 
     sealed class RouteException : AppException() {
+        data object NotAuthenticated : RouteException()
         data object Unknown : RouteException()
     }
 

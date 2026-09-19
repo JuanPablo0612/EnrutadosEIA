@@ -15,7 +15,8 @@ data class RouteDto(
     val waypoints: List<PlaceDto> = emptyList(),
     val name: String = "",
     val recurringDays: List<String> = emptyList(),
-    val typicalDepartureTime: String? = null
+    val typicalDepartureTime: String? = null,
+    val isShared: Boolean = false,
 ) {
     fun toDomain(): Route = Route(
         id = id,
@@ -30,7 +31,8 @@ data class RouteDto(
                 val parts = s.split(":")
                 LocalTime(parts[0].toInt(), parts[1].toInt())
             }.getOrNull()
-        }
+        },
+        isShared = isShared,
     )
 
     companion object {
@@ -44,7 +46,8 @@ data class RouteDto(
             recurringDays = route.recurringDays.map { it.name },
             typicalDepartureTime = route.typicalDepartureTime?.let { t ->
                 "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
-            }
+            },
+            isShared = route.isShared,
         )
     }
 }

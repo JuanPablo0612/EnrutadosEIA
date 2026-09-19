@@ -9,6 +9,7 @@ data class Place(
     val type: PlaceType = PlaceType.Other,
     val isCampusPreset: Boolean = false,
     val ownerId: String = "",
+    val isShared: Boolean = false,
 ) {
     companion object {
         val EIA_LAS_PALMAS = Place(

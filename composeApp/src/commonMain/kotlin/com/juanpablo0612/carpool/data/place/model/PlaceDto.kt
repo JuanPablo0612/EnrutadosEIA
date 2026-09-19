@@ -14,6 +14,7 @@ data class PlaceDto(
     val type: String = "OTHER",
     val isCampusPreset: Boolean = false,
     val ownerId: String = "",
+    val isShared: Boolean = false,
 ) {
     fun toDomain() = Place(
         id = id,
@@ -30,6 +31,7 @@ data class PlaceDto(
         },
         isCampusPreset = isCampusPreset,
         ownerId = ownerId,
+        isShared = isShared,
     )
 
     companion object {
@@ -48,6 +50,7 @@ data class PlaceDto(
             },
             isCampusPreset = p.isCampusPreset,
             ownerId = p.ownerId,
+            isShared = p.isShared,
         )
     }
 }
