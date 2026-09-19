@@ -9,6 +9,7 @@ sealed class VehiclesListAction {
     data object OnConfirmDelete : VehiclesListAction()
     data object OnDismissDeleteDialog : VehiclesListAction()
     data object OnDismissBlockedDialog : VehiclesListAction()
+    data object OnViewBlockingTrip : VehiclesListAction()
     data object OnAddVehicle : VehiclesListAction()
     data object OnBackClick : VehiclesListAction()
     data object OnDismissActionError : VehiclesListAction()

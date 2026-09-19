@@ -34,13 +34,13 @@ import com.juanpablo0612.carpool.presentation.vehicle.list.components.VehicleCar
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
-import enrutadoseia.composeapp.generated.resources.error_action_failed
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_description
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_title
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_confirm_description
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_confirm_title
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_confirm_button
 import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_ok
+import enrutadoseia.composeapp.generated.resources.vehicle_delete_blocked_view_trip
 import enrutadoseia.composeapp.generated.resources.vehicles_add_fab
 import enrutadoseia.composeapp.generated.resources.vehicles_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.vehicles_empty_title
@@ -54,6 +54,7 @@ fun VehiclesListScreen(
     viewModel: VehiclesListViewModel,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToEditVehicle: (String) -> Unit,
+    onNavigateToTripDetail: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -62,6 +63,7 @@ fun VehiclesListScreen(
         when (event) {
             VehiclesListEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
             is VehiclesListEvent.NavigateToEditVehicle -> onNavigateToEditVehicle(event.vehicleId)
+            is VehiclesListEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
             VehiclesListEvent.NavigateBack -> onBackClick()
         }
     }
@@ -90,13 +92,16 @@ fun VehiclesListContent(
     }
 
     if (state.deleteBlockedVehicle != null) {
+        // The blocking trip's id is known (see VehiclesListViewModel.OnDeleteRequest), so this
+        // doubles as a real "go fix it" action instead of a dead end — dismiss stays as a plain
+        // acknowledgement.
         ConfirmDialog(
             title = stringResource(Res.string.vehicle_delete_blocked_title),
             description = stringResource(Res.string.vehicle_delete_blocked_description),
-            confirmText = stringResource(Res.string.vehicle_delete_blocked_ok),
-            onConfirm = { onAction(VehiclesListAction.OnDismissBlockedDialog) },
+            confirmText = stringResource(Res.string.vehicle_delete_blocked_view_trip),
+            dismissText = stringResource(Res.string.vehicle_delete_blocked_ok),
+            onConfirm = { onAction(VehiclesListAction.OnViewBlockingTrip) },
             onDismiss = { onAction(VehiclesListAction.OnDismissBlockedDialog) },
-            showDismissButton = false
         )
     }
 
@@ -124,9 +129,9 @@ fun VehiclesListContent(
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (state.actionError) {
+            state.actionError?.let { error ->
                 ErrorMessage(
-                    message = stringResource(Res.string.error_action_failed),
+                    message = stringResource(error.asStringResource()),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)

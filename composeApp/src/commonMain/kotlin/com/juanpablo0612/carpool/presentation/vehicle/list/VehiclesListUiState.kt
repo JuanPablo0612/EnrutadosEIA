@@ -7,5 +7,7 @@ data class VehiclesListUiState(
     val vehicles: List<Vehicle> = emptyList(),
     val vehicleToDelete: Vehicle? = null,
     val deleteBlockedVehicle: Vehicle? = null,
-    val actionError: Boolean = false,
+    /** The active trip that's blocking deletion, so "View trip" can jump straight to it. */
+    val deleteBlockedTripId: String? = null,
+    val actionError: VehiclesListError? = null,
 )

@@ -688,6 +688,7 @@
     <string name="vehicle_delete_blocked_title">No puedes eliminar este vehículo</string>
     <string name="vehicle_delete_blocked_description">Tiene viajes activos. Cancélalos o cámbiales el vehículo antes de eliminar este.</string>
     <string name="vehicle_delete_blocked_ok">Entendido</string>
+    <string name="vehicle_delete_blocked_view_trip">Ver viaje</string>
 
     <!-- RegisterVehicle / EditVehicle -->
     <string name="edit_vehicle_title">Editar vehículo</string>
@@ -786,6 +787,8 @@
 
     <!-- Fallo de acción genérico -->
     <string name="error_action_failed">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="error_vehicle_delete_failed">No pudimos eliminar el vehículo. Inténtalo de nuevo.</string>
+    <string name="error_vehicle_set_primary_failed">No pudimos establecerlo como tu vehículo principal. Inténtalo de nuevo.</string>
     <string-array name="day_names_short">
         <item>lun.</item>
         <item>mar.</item>

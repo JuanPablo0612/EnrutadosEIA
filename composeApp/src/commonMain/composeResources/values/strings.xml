@@ -485,6 +485,7 @@
     <string name="vehicle_delete_blocked_title">You can\'t delete this vehicle</string>
     <string name="vehicle_delete_blocked_description">It has active trips. Cancel them or change their vehicle before deleting this one.</string>
     <string name="vehicle_delete_blocked_ok">Entendido</string>
+    <string name="vehicle_delete_blocked_view_trip">View trip</string>
 
     <!-- RegisterVehicle / EditVehicle -->
     <string name="edit_vehicle_title">Edit vehicle</string>
@@ -786,6 +787,8 @@
 
     <!-- Generic action failure -->
     <string name="error_action_failed">Something went wrong. Please try again.</string>
+    <string name="error_vehicle_delete_failed">Couldn\'t delete the vehicle. Please try again.</string>
+    <string name="error_vehicle_set_primary_failed">Couldn\'t set this as your primary vehicle. Please try again.</string>
     <string-array name="day_names_short">
         <item>Mon.</item>
         <item>Tue.</item>

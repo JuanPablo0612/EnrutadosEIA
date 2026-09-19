@@ -149,6 +149,7 @@ fun NavGraphBuilder.driverNavGraph(
             viewModel = viewModel,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
             onNavigateToEditVehicle = onNavigateToEditVehicle,
+            onNavigateToTripDetail = onNavigateToTripDetail,
             onBackClick = onNavigateBack
         )
     }

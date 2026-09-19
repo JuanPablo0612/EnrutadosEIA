@@ -57,7 +57,7 @@ class VehiclesListViewModel(
                 val userId = authRepository.getCurrentUserId() ?: return
                 viewModelScope.launch {
                     vehicleRepository.setPrimaryVehicle(userId, action.vehicleId)
-                        .onFailure { _state.update { it.copy(actionError = true) } }
+                        .onFailure { _state.update { it.copy(actionError = VehiclesListError.SetPrimaryFailed) } }
                 }
             }
 
@@ -67,7 +67,9 @@ class VehiclesListViewModel(
                     val activeTrips = tripRepository.getDriverTrips(driverId).first()
                         .filter { it.vehicleId == action.vehicle.id && it.status == TripStatus.Active }
                     if (activeTrips.isNotEmpty()) {
-                        _state.update { it.copy(deleteBlockedVehicle = action.vehicle) }
+                        _state.update {
+                            it.copy(deleteBlockedVehicle = action.vehicle, deleteBlockedTripId = activeTrips.first().id)
+                        }
                     } else {
                         _state.update { it.copy(vehicleToDelete = action.vehicle) }
                     }
@@ -79,7 +81,7 @@ class VehiclesListViewModel(
                 _state.update { it.copy(vehicleToDelete = null) }
                 viewModelScope.launch {
                     vehicleRepository.deleteVehicle(vehicle.id, vehicle.driverId)
-                        .onFailure { _state.update { it.copy(actionError = true) } }
+                        .onFailure { _state.update { it.copy(actionError = VehiclesListError.DeleteFailed) } }
                 }
             }
 
@@ -87,7 +89,15 @@ class VehiclesListViewModel(
                 _state.update { it.copy(vehicleToDelete = null) }
 
             VehiclesListAction.OnDismissBlockedDialog ->
-                _state.update { it.copy(deleteBlockedVehicle = null) }
+                _state.update { it.copy(deleteBlockedVehicle = null, deleteBlockedTripId = null) }
+
+            VehiclesListAction.OnViewBlockingTrip -> {
+                val tripId = _state.value.deleteBlockedTripId ?: return
+                _state.update { it.copy(deleteBlockedVehicle = null, deleteBlockedTripId = null) }
+                viewModelScope.launch {
+                    _events.emit(VehiclesListEvent.NavigateToTripDetail(tripId))
+                }
+            }
 
             VehiclesListAction.OnAddVehicle -> viewModelScope.launch {
                 _events.emit(VehiclesListEvent.NavigateToRegisterVehicle)
@@ -97,7 +107,7 @@ class VehiclesListViewModel(
                 _events.emit(VehiclesListEvent.NavigateBack)
             }
 
-            VehiclesListAction.OnDismissActionError -> _state.update { it.copy(actionError = false) }
+            VehiclesListAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
         }
     }
 }
