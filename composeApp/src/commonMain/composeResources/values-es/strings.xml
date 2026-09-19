@@ -504,9 +504,12 @@
     <string name="profile_delete_account">Eliminar cuenta</string>
     <string name="profile_delete_account_confirm_title">¿Eliminar tu cuenta?</string>
     <string name="profile_delete_account_confirm_desc">Tus datos serán eliminados de forma permanente. Esta acción no se puede deshacer. Escribe tu nombre para confirmar.</string>
+    <string name="profile_delete_account_confirm_desc_email">Tus datos serán eliminados de forma permanente. Esta acción no se puede deshacer. Escribe tu correo para confirmar.</string>
     <string name="profile_delete_account_confirm_button">Eliminar cuenta</string>
     <string name="profile_delete_account_name_hint">Escribe tu nombre</string>
+    <string name="profile_delete_account_name_hint_email">Escribe tu correo</string>
     <string name="profile_delete_account_name_mismatch">El nombre no coincide</string>
+    <string name="profile_delete_account_email_mismatch">El correo no coincide</string>
 
     <!-- Diálogo de roles activos -->
     <string name="active_roles_title">Roles activos</string>

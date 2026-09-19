@@ -598,9 +598,12 @@
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
     <string name="profile_delete_account_confirm_desc">Your data will be permanently deleted. This action cannot be undone. Type your name to confirm.</string>
+    <string name="profile_delete_account_confirm_desc_email">Your data will be permanently deleted. This action cannot be undone. Type your email to confirm.</string>
     <string name="profile_delete_account_confirm_button">Delete account</string>
     <string name="profile_delete_account_name_hint">Type your name</string>
+    <string name="profile_delete_account_name_hint_email">Type your email</string>
     <string name="profile_delete_account_name_mismatch">The name doesn\'t match</string>
+    <string name="profile_delete_account_email_mismatch">The email doesn\'t match</string>
 
     <!-- Active roles dialog -->
     <string name="active_roles_title">Roles activos</string>
