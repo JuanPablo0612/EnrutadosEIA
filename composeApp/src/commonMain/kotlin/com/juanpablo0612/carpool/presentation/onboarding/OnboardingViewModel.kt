@@ -30,6 +30,7 @@ class OnboardingViewModel(
                     _state.update { it.copy(currentPage = current + 1) }
                 }
             }
+            is OnboardingAction.OnPageChanged -> _state.update { it.copy(currentPage = action.page) }
             OnboardingAction.OnSkip, OnboardingAction.OnFinish -> finish()
         }
     }

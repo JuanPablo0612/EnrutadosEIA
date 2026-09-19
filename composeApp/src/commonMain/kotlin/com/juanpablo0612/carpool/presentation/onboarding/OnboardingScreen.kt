@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.onboarding
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,8 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,8 +69,20 @@ fun OnboardingContent(
 ) {
     val pagerState = rememberPagerState(initialPage = state.currentPage) { state.totalPages }
 
+    // Two-way sync: ViewModel-driven page changes (Next/Skip) animate the pager, and user
+    // swipes on the pager report back so the dot indicator / Skip visibility / final-page
+    // button stay in sync with what's actually on screen.
     LaunchedEffect(state.currentPage) {
-        pagerState.animateScrollToPage(state.currentPage)
+        if (pagerState.currentPage != state.currentPage) {
+            pagerState.animateScrollToPage(state.currentPage)
+        }
+    }
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            if (page != state.currentPage) {
+                onAction(OnboardingAction.OnPageChanged(page))
+            }
+        }
     }
 
     Scaffold { padding ->
@@ -84,17 +97,21 @@ fun OnboardingContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                AnimatedVisibility(state.currentPage < state.totalPages - 1) {
-                    TextButton(onClick = { onAction(OnboardingAction.OnSkip) }) {
-                        Text(stringResource(Res.string.onboarding_skip))
-                    }
+                // Space is reserved (not collapsed via AnimatedVisibility) so the row doesn't
+                // shift when Skip disappears on the last page.
+                val showSkip = state.currentPage < state.totalPages - 1
+                TextButton(
+                    onClick = { onAction(OnboardingAction.OnSkip) },
+                    enabled = showSkip,
+                    modifier = Modifier.alpha(if (showSkip) 1f else 0f)
+                ) {
+                    Text(stringResource(Res.string.onboarding_skip))
                 }
             }
 
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.weight(1f),
-                userScrollEnabled = false
             ) { page ->
                 OnboardingSlide(page = page)
             }
