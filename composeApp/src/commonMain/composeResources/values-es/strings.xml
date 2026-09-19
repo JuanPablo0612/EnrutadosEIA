@@ -127,6 +127,7 @@
     <!-- Route Detail -->
     <string name="route_detail_title">Detalles de la Ruta</string>
     <string name="error_route_not_found">Ruta no encontrada</string>
+    <string name="error_passenger_profile_not_found">No pudimos cargar este perfil. Inténtalo de nuevo.</string>
 
     <!-- Vehicle Detail -->
 

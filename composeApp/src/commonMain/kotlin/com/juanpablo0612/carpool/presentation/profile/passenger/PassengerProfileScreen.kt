@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.error_passenger_profile_not_found
 import enrutadoseia.composeapp.generated.resources.profile_title
 import org.jetbrains.compose.resources.stringResource
 
@@ -33,12 +35,13 @@ fun PassengerProfileScreen(
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    PassengerProfileContent(state = state, onBackClick = onBackClick)
+    PassengerProfileContent(state = state, onRetry = viewModel::retry, onBackClick = onBackClick)
 }
 
 @Composable
 fun PassengerProfileContent(
     state: PassengerProfileUiState,
+    onRetry: () -> Unit = {},
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -51,6 +54,11 @@ fun PassengerProfileContent(
     ) { padding ->
         when {
             state.isLoading -> DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
+            state.error || state.profile == null -> ErrorState(
+                description = stringResource(Res.string.error_passenger_profile_not_found),
+                onRetry = onRetry,
+                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
+            )
             else -> {
                 val profile = state.profile
                 Column(
@@ -60,24 +68,22 @@ fun PassengerProfileContent(
                         .padding(Spacing.lg),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (profile != null) {
-                        UserAvatar(name = profile.name, photoUrl = profile.photoUrl, size = 96.dp)
-                        Spacer(modifier = Modifier.height(Spacing.sm))
+                    UserAvatar(name = profile.name, photoUrl = profile.photoUrl, size = 96.dp)
+                    Spacer(modifier = Modifier.height(Spacing.sm))
+                    Text(
+                        text = profile.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    profile.bio?.takeIf { it.isNotBlank() }?.let { bio ->
+                        Spacer(modifier = Modifier.height(Spacing.xs))
                         Text(
-                            text = profile.name,
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.fillMaxWidth(),
+                            text = bio,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
-                        profile.bio?.takeIf { it.isNotBlank() }?.let { bio ->
-                            Spacer(modifier = Modifier.height(Spacing.xs))
-                            Text(
-                                text = bio,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center
-                            )
-                        }
                     }
                 }
             }

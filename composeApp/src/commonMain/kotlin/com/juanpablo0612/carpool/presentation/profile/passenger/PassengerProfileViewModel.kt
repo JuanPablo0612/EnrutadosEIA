@@ -10,17 +10,29 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PassengerProfileViewModel(
-    userId: String,
-    authRepository: AuthRepository
+    private val userId: String,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PassengerProfileUiState())
     val state: StateFlow<PassengerProfileUiState> = _state.asStateFlow()
 
     init {
+        loadProfile()
+    }
+
+    fun retry() = loadProfile()
+
+    private fun loadProfile() {
+        _state.update { it.copy(isLoading = true, error = false) }
         viewModelScope.launch {
-            val profile = authRepository.getPublicProfile(userId).getOrNull()
-            _state.update { it.copy(isLoading = false, profile = profile) }
+            authRepository.getPublicProfile(userId)
+                .onSuccess { profile ->
+                    _state.update { it.copy(isLoading = false, profile = profile, error = false) }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false, profile = null, error = true) }
+                }
         }
     }
 }

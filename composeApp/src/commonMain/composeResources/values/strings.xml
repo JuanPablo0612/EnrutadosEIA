@@ -89,6 +89,7 @@
     <!-- Route Detail -->
     <string name="route_detail_title">Route Details</string>
     <string name="error_route_not_found">Route not found</string>
+    <string name="error_passenger_profile_not_found">We couldn\'t load this profile. Please try again.</string>
 
     <!-- Vehicle Detail -->
 
