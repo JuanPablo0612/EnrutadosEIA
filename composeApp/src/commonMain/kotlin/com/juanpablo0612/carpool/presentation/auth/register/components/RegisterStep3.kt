@@ -88,6 +88,7 @@ internal fun RegisterStep3(
         PrimaryButton(
             text = stringResource(Res.string.create_account_button),
             onClick = { onAction(RegisterAction.OnRegisterClicked) },
+            enabled = (state.isPassenger || state.isDriver) && !state.isLoading,
             isLoading = state.isLoading,
             trailingIcon = vectorResource(Res.drawable.arrow_forward_24px)
         )
