@@ -21,8 +21,11 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_confirm_button
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_confirm_desc
+import enrutadoseia.composeapp.generated.resources.profile_delete_account_confirm_desc_email
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_confirm_title
+import enrutadoseia.composeapp.generated.resources.profile_delete_account_email_mismatch
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_name_hint
+import enrutadoseia.composeapp.generated.resources.profile_delete_account_name_hint_email
 import enrutadoseia.composeapp.generated.resources.profile_delete_account_name_mismatch
 import org.jetbrains.compose.resources.stringResource
 
@@ -30,6 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun DeleteAccountDialog(
     nameInput: String,
     expectedName: String,
+    usingEmailFallback: Boolean,
     isLoading: Boolean,
     error: AuthError?,
     onNameChange: (String) -> Unit,
@@ -41,14 +45,33 @@ internal fun DeleteAccountDialog(
         title = { Text(stringResource(Res.string.profile_delete_account_confirm_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(stringResource(Res.string.profile_delete_account_confirm_desc))
+                Text(
+                    stringResource(
+                        if (usingEmailFallback) Res.string.profile_delete_account_confirm_desc_email
+                        else Res.string.profile_delete_account_confirm_desc
+                    )
+                )
                 OutlinedTextField(
                     value = nameInput,
                     onValueChange = onNameChange,
-                    placeholder = { Text(stringResource(Res.string.profile_delete_account_name_hint)) },
+                    placeholder = {
+                        Text(
+                            stringResource(
+                                if (usingEmailFallback) Res.string.profile_delete_account_name_hint_email
+                                else Res.string.profile_delete_account_name_hint
+                            )
+                        )
+                    },
                     isError = nameInput.isNotEmpty() && nameInput != expectedName,
                     supportingText = if (nameInput.isNotEmpty() && nameInput != expectedName) {
-                        { Text(stringResource(Res.string.profile_delete_account_name_mismatch)) }
+                        {
+                            Text(
+                                stringResource(
+                                    if (usingEmailFallback) Res.string.profile_delete_account_email_mismatch
+                                    else Res.string.profile_delete_account_name_mismatch
+                                )
+                            )
+                        }
                     } else null,
                     singleLine = true
                 )
@@ -60,7 +83,7 @@ internal fun DeleteAccountDialog(
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                enabled = nameInput == expectedName && !isLoading,
+                enabled = expectedName.isNotBlank() && nameInput == expectedName && !isLoading,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )

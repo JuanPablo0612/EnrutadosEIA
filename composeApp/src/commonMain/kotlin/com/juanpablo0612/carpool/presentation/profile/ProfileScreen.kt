@@ -125,9 +125,11 @@ fun ProfileContent(
     }
 
     if (state.showDeleteAccountDialog) {
+        val trimmedName = state.user?.name?.takeIf { it.isNotBlank() }
         DeleteAccountDialog(
             nameInput = state.deleteAccountNameInput,
-            expectedName = state.user?.name ?: "",
+            expectedName = trimmedName ?: state.user?.email ?: "",
+            usingEmailFallback = trimmedName == null,
             isLoading = state.isDeleting,
             error = state.deleteAccountError,
             onNameChange = { onAction(ProfileAction.OnDeleteAccountNameChange(it)) },
