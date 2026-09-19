@@ -18,6 +18,7 @@ sealed class RegisterVehicleAction {
     data class OnTypeSelected(val type: VehicleType?) : RegisterVehicleAction()
     data object OnShowPhotoSheet : RegisterVehicleAction()
     data object OnDismissPhotoSheet : RegisterVehicleAction()
+    data object OnRemovePhoto : RegisterVehicleAction()
     data object OnSaveClick : RegisterVehicleAction()
     data object OnBackClick : RegisterVehicleAction()
 }

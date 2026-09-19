@@ -43,10 +43,12 @@ import com.juanpablo0612.carpool.presentation.vehicle.register.components.Vehicl
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleYearSection
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_vehicle_title
 import enrutadoseia.composeapp.generated.resources.vehicle_photo_choose_gallery
+import enrutadoseia.composeapp.generated.resources.vehicle_photo_remove
 import enrutadoseia.composeapp.generated.resources.vehicle_photo_section
 import enrutadoseia.composeapp.generated.resources.vehicle_photo_take_photo
 import enrutadoseia.composeapp.generated.resources.vehicle_save_button
@@ -154,6 +156,28 @@ fun RegisterVehicleContent(
                         stringResource(Res.string.vehicle_photo_choose_gallery),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                     )
+                }
+                if (state.photoFile != null || state.existingPhotoUrl != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable { onAction(RegisterVehicleAction.OnRemovePhoto) }
+                            .padding(vertical = Spacing.lg),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.delete_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(Modifier.width(Spacing.lg))
+                        Text(
+                            stringResource(Res.string.vehicle_photo_remove),
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }

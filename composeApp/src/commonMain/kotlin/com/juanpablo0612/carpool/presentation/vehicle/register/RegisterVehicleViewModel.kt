@@ -87,7 +87,10 @@ class RegisterVehicleViewModel(
 
             is RegisterVehicleAction.OnPlateChanged -> {
                 val raw = action.plate.uppercase().filter { it.isLetterOrDigit() }.take(6)
-                _state.update { it.copy(plate = raw, plateError = false) }
+                // Only judge once the plate is at its full length — flagging an error mid-type
+                // (e.g. after 2 characters) would be premature and annoying.
+                val error = raw.length == 6 && !PLATE_REGEX.matches(raw)
+                _state.update { it.copy(plate = raw, plateError = error) }
             }
 
             is RegisterVehicleAction.OnColorSelected ->
@@ -120,6 +123,9 @@ class RegisterVehicleViewModel(
 
             RegisterVehicleAction.OnDismissPhotoSheet ->
                 _state.update { it.copy(showPhotoSheet = false) }
+
+            RegisterVehicleAction.OnRemovePhoto ->
+                _state.update { it.copy(photoFile = null, existingPhotoUrl = null, showPhotoSheet = false) }
 
             RegisterVehicleAction.OnSaveClick -> saveVehicle()
 

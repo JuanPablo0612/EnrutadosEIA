@@ -695,6 +695,7 @@
     <string name="vehicle_photo_hint">La foto ayuda a tus pasajeros a reconocer tu carro.</string>
     <string name="vehicle_photo_take_photo">Tomar foto</string>
     <string name="vehicle_photo_choose_gallery">Elegir de galería</string>
+    <string name="vehicle_photo_remove">Quitar foto</string>
     <string name="vehicle_brand_other">Otro</string>
     <string name="vehicle_color_white">Blanco</string>
     <string name="vehicle_color_black">Negro</string>
