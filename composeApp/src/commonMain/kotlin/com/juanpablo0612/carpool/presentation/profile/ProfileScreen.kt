@@ -27,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.profile.components.ActiveRolesDialog
 import com.juanpablo0612.carpool.presentation.profile.components.DeleteAccountDialog
@@ -36,6 +35,7 @@ import com.juanpablo0612.carpool.presentation.profile.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.profile.components.UserHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_road_24px
@@ -232,15 +232,15 @@ fun ProfileContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
                     OutlinedButton(
                         onClick = { onAction(ProfileAction.OnLogoutClick) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(vectorResource(Res.drawable.logout_24px), null)
-                        Spacer(Modifier.size(8.dp))
+                        Spacer(Modifier.size(Spacing.sm))
                         Text(stringResource(Res.string.logout_title))
                     }
                     TextButton(
@@ -254,7 +254,7 @@ fun ProfileContent(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Spacing.lg))
             }
         }
     }

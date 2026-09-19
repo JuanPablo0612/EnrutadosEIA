@@ -5,7 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 
 @Composable
 internal fun SectionHeader(title: String) {
@@ -13,6 +13,6 @@ internal fun SectionHeader(title: String) {
         text = title,
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
     )
 }
