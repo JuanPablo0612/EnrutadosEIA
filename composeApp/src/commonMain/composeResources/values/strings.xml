@@ -612,6 +612,9 @@
     <string name="active_roles_passenger">Passenger</string>
     <string name="active_roles_min_one">You must have at least one active role.</string>
     <string name="active_roles_close">Cerrar</string>
+    <string name="active_roles_disable_confirm_title">Switch roles?</string>
+    <string name="active_roles_disable_confirm_body">You\'re currently active in this role. Turning it off will switch you to your other role right away.</string>
+    <string name="active_roles_disable_confirm_button">Switch role</string>
 
     <!-- Edit profile -->
     <string name="edit_profile_title">Edit profile</string>

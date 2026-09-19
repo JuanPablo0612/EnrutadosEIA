@@ -121,6 +121,7 @@ fun ProfileContent(
     if (state.showActiveRolesDialog) {
         ActiveRolesDialog(
             user = state.user,
+            activeRole = state.activeRole,
             blocked = state.blockedRoleToggle,
             onToggleRole = { role, enabled -> onAction(ProfileAction.OnToggleRole(role, enabled)) },
             onDismiss = { onAction(ProfileAction.OnActiveRolesDismissed) }

@@ -518,6 +518,9 @@
     <string name="active_roles_passenger">Pasajero</string>
     <string name="active_roles_min_one">Debes tener al menos un rol activo.</string>
     <string name="active_roles_close">Cerrar</string>
+    <string name="active_roles_disable_confirm_title">¿Cambiar de rol?</string>
+    <string name="active_roles_disable_confirm_body">Actualmente estás activo en este rol. Desactivarlo te cambiará de inmediato a tu otro rol.</string>
+    <string name="active_roles_disable_confirm_button">Cambiar de rol</string>
 
     <!-- Editar perfil -->
     <string name="edit_profile_title">Editar perfil</string>
