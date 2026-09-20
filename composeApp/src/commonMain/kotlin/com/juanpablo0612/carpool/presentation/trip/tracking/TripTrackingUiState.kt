@@ -12,6 +12,7 @@ data class TripTrackingUiState(
     val isLoading: Boolean = true,
     val isCompletingTrip: Boolean = false,
     val showCompleteTripDialog: Boolean = false,
+    val pendingDropOffPassengerId: String? = null,
     val showSosDialog: Boolean = false,
     /** True once the SOS dialog has detected the user has no stored emergency contacts to share with. */
     val sosNoContacts: Boolean = false,

@@ -3,7 +3,6 @@ package com.juanpablo0612.carpool.presentation.route.search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,6 +43,8 @@ import enrutadoseia.composeapp.generated.resources.search_24px
 import enrutadoseia.composeapp.generated.resources.search_adjust_button
 import enrutadoseia.composeapp.generated.resources.search_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.search_empty_title
+import enrutadoseia.composeapp.generated.resources.search_prompt_subtitle
+import enrutadoseia.composeapp.generated.resources.search_prompt_title
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -169,6 +172,13 @@ fun SearchRoutesContent(
 
             HorizontalDivider()
 
+            val pullRefreshState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = state.isRefreshing,
+                onRefresh = { onAction(SearchRoutesAction.Refresh) },
+                state = pullRefreshState,
+                modifier = Modifier.fillMaxSize(),
+            ) {
             when {
                 state.isLoading -> ListSkeleton(
                     modifier = Modifier
@@ -205,7 +215,13 @@ fun SearchRoutesContent(
                     }
                 }
 
-                else -> Spacer(modifier = Modifier.fillMaxSize())
+                else -> EmptyState(
+                    icon = vectorResource(Res.drawable.search_24px),
+                    title = stringResource(Res.string.search_prompt_title),
+                    description = stringResource(Res.string.search_prompt_subtitle),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
             }
         }
     }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -67,22 +69,29 @@ fun CommunityRoutesContent(
             )
         }
     ) { padding ->
+        val pullRefreshState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(CommunityRoutesAction.Refresh) },
+            state = pullRefreshState,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
         when {
-            state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
+            state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
             state.error != null -> ErrorState(
                 description = stringResource(state.error.asStringResource()),
                 onRetry = { onAction(CommunityRoutesAction.OnRetry) },
-                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
+                modifier = Modifier.fillMaxSize().padding(Spacing.lg)
             )
             state.routes.isEmpty() -> EmptyState(
                 icon = vectorResource(Res.drawable.location_on_24px),
                 title = stringResource(Res.string.community_routes_empty_title),
                 description = stringResource(Res.string.community_routes_empty_description),
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.fillMaxSize(),
             )
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(Spacing.lg),
                     verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
@@ -105,6 +114,7 @@ fun CommunityRoutesContent(
                     }
                 }
             }
+        }
         }
     }
 }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,6 +45,17 @@ class NotificationsViewModel(
         }
     }
 
+    // The list is already live via the persistent collector started in init — pull-to-refresh
+    // just needs a one-shot fetch to resolve the refreshing indicator, not a second subscription.
+    private fun refresh() {
+        _state.update { it.copy(isRefreshing = true) }
+        viewModelScope.launch {
+            runCatching { notificationRepository.getNotifications(userId).first() }
+                .onSuccess { notifications -> _state.update { it.copy(notifications = notifications) } }
+            _state.update { it.copy(isRefreshing = false) }
+        }
+    }
+
     fun onAction(action: NotificationsAction) {
         when (action) {
             is NotificationsAction.OnNotificationClick -> {
@@ -55,9 +67,13 @@ class NotificationsViewModel(
                     }
                 }
             }
-            is NotificationsAction.OnDismiss -> {
+            is NotificationsAction.OnSwipeToDelete -> _state.update { it.copy(pendingDeleteId = action.id) }
+            NotificationsAction.OnDismissDeleteConfirm -> _state.update { it.copy(pendingDeleteId = null) }
+            NotificationsAction.OnConfirmDelete -> {
+                val id = _state.value.pendingDeleteId ?: return
+                _state.update { it.copy(pendingDeleteId = null) }
                 viewModelScope.launch {
-                    notificationRepository.delete(userId, action.id)
+                    notificationRepository.delete(userId, id)
                         .onFailure { _state.update { it.copy(actionError = NotificationActionError.DeleteFailed) } }
                 }
             }
@@ -71,6 +87,7 @@ class NotificationsViewModel(
                 }
             }
             NotificationsAction.OnRetry -> loadNotifications()
+            NotificationsAction.Refresh -> refresh()
             NotificationsAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
             NotificationsAction.OnBackClick -> {
                 viewModelScope.launch { _events.emit(NotificationsEvent.NavigateBack) }

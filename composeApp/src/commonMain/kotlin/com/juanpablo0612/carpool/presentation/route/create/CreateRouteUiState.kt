@@ -13,11 +13,17 @@ data class CreateRouteUiState(
     val typicalDepartureTime: LocalTime? = null,
     val isShared: Boolean = false,
     val isLoading: Boolean = false,
+    val isSaved: Boolean = false,
+    val showDiscardConfirm: Boolean = false,
     val error: CreateRouteError? = null,
     val selectionTarget: SelectionTarget? = null
 ) {
     val isValid: Boolean
         get() = name.isNotBlank() && origin != null && destination != null
+
+    val isDirty: Boolean
+        get() = name.isNotBlank() || origin != null || destination != null || waypoints.isNotEmpty() ||
+            recurringDays.isNotEmpty() || typicalDepartureTime != null || isShared
 }
 
 sealed class SelectionTarget {

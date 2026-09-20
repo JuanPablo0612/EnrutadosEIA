@@ -24,11 +24,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.FormProgressIndicator
+import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -44,7 +48,12 @@ import com.juanpablo0612.carpool.presentation.vehicle.register.components.Vehicl
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.discard_changes_body
+import enrutadoseia.composeapp.generated.resources.discard_changes_confirm
+import enrutadoseia.composeapp.generated.resources.discard_changes_title
 import enrutadoseia.composeapp.generated.resources.edit_vehicle_title
+import enrutadoseia.composeapp.generated.resources.form_progress_label
+import enrutadoseia.composeapp.generated.resources.notice_vehicle_saved
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_vehicle_title
 import enrutadoseia.composeapp.generated.resources.vehicle_photo_choose_gallery
@@ -59,6 +68,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
+@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun RegisterVehicleScreen(
     viewModel: RegisterVehicleViewModel,
@@ -72,6 +82,10 @@ fun RegisterVehicleScreen(
             RegisterVehicleEvent.VehicleRegistered -> onVehicleRegistered()
             RegisterVehicleEvent.NavigateBack -> onBackClick()
         }
+    }
+
+    BackHandler {
+        viewModel.onAction(RegisterVehicleAction.OnBackClick)
     }
 
     RegisterVehicleContent(
@@ -91,6 +105,17 @@ fun RegisterVehicleContent(
     }
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         if (file != null) onAction(RegisterVehicleAction.OnPhotoSelected(file))
+    }
+
+    if (state.showDiscardConfirm) {
+        ConfirmDialog(
+            title = stringResource(Res.string.discard_changes_title),
+            description = stringResource(Res.string.discard_changes_body),
+            confirmText = stringResource(Res.string.discard_changes_confirm),
+            onConfirm = { onAction(RegisterVehicleAction.OnConfirmDiscard) },
+            onDismiss = { onAction(RegisterVehicleAction.OnDismissDiscardConfirm) },
+            isDestructive = true
+        )
     }
 
     // Photo source bottom sheet
@@ -199,6 +224,20 @@ fun RegisterVehicleContent(
             contentPadding = PaddingValues(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg),
         ) {
 
+            item {
+                val completed = listOf(
+                    state.brand.isNotBlank(),
+                    state.model.isNotBlank(),
+                    RegisterVehicleUiState.PLATE_REGEX.matches(state.plate),
+                    state.effectiveColor.isNotBlank()
+                ).count { it }
+                FormProgressIndicator(
+                    completedSections = completed,
+                    totalSections = 4,
+                    label = stringResource(Res.string.form_progress_label, completed, 4)
+                )
+            }
+
             // 1. Photo
             item {
                 VehiclePhotoSection(
@@ -284,6 +323,13 @@ fun RegisterVehicleContent(
                 }
             }
 
+            if (state.isSaved) {
+                item {
+                    SuccessMessage(message = stringResource(Res.string.notice_vehicle_saved))
+                    Spacer(Modifier.height(Spacing.lg))
+                }
+            }
+
             // Save button
             item {
                 Spacer(Modifier.height(Spacing.sm))
@@ -293,7 +339,7 @@ fun RegisterVehicleContent(
                     else
                         stringResource(Res.string.vehicle_save_button),
                     onClick = { onAction(RegisterVehicleAction.OnSaveClick) },
-                    enabled = state.isValid,
+                    enabled = state.isValid && !state.isSaved,
                     isLoading = state.isSaving
                 )
                 Spacer(Modifier.height(Spacing.xl))

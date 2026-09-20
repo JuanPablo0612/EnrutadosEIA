@@ -51,6 +51,7 @@ import enrutadoseia.composeapp.generated.resources.place_selector_empty_my_place
 import enrutadoseia.composeapp.generated.resources.place_selector_no_results
 import enrutadoseia.composeapp.generated.resources.place_selector_resolving_location
 import enrutadoseia.composeapp.generated.resources.place_selector_search_hint
+import enrutadoseia.composeapp.generated.resources.place_selector_community_badge
 import enrutadoseia.composeapp.generated.resources.place_selector_section_community
 import enrutadoseia.composeapp.generated.resources.place_selector_section_eia
 import enrutadoseia.composeapp.generated.resources.place_selector_section_my_places
@@ -250,6 +251,7 @@ fun PlaceSelectorContent(
                                 icon = vectorResource(Res.drawable.location_on_24px),
                                 name = place.name,
                                 address = place.address,
+                                badgeText = stringResource(Res.string.place_selector_community_badge),
                                 trailing = if (isBrowseOnly) {
                                     {
                                         IconButton(onClick = { onAction(PlaceSelectorAction.OnAddToMyPlaces(place)) }) {

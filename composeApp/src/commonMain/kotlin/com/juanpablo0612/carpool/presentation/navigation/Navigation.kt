@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -18,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.driverNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
@@ -52,8 +54,23 @@ fun AppNavigation(
 ) {
     val userSession = koinInject<UserSession>()
     val authRepository = koinInject<AuthRepository>()
+    val notificationRepository = koinInject<NotificationRepository>()
     val scope = rememberCoroutineScope()
     val activeRole by userSession.activeRole.collectAsState()
+    val currentUser by userSession.user.collectAsState()
+
+    // The only unread-item signal anywhere in the nav chrome — otherwise a user has to drill into
+    // Profile > Notifications just to find out whether anything is new.
+    val unreadNotificationCount by produceState(initialValue = 0, currentUser?.id) {
+        val userId = currentUser?.id
+        if (userId.isNullOrBlank()) {
+            value = 0
+        } else {
+            notificationRepository.getNotifications(userId).collect { notifications ->
+                value = notifications.count { !it.isRead }
+            }
+        }
+    }
 
     val navBackstackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackstackEntry?.destination
@@ -118,6 +135,7 @@ fun AppNavigation(
                     BottomNavigationBar(
                         currentDestination = currentDestination,
                         items = currentBottomNavItems,
+                        badgeCounts = mapOf(Route.Profile::class to unreadNotificationCount),
                         onNavigate = { route ->
                             navController.navigate(route) {
                                 // Anchor on the same signal that picked currentBottomNavItems
@@ -248,7 +266,8 @@ fun AppNavigation(
                     onNavigateToRegister = { navController.navigate(Route.Register) },
                     onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                     onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    canNavigateBack = { navController.previousBackStackEntry != null }
                 )
 
                 driverNavGraph(
@@ -295,7 +314,12 @@ fun AppNavigation(
                         navController.navigate(Route.TripDetailPassenger(tripId))
                     },
                     onNavigateToPassengerBookings = {
-                        navController.navigate(Route.PassengerBookings)
+                        // Pop the trip-detail screen the booking was created from instead of
+                        // stacking on top of it, so back from Bookings doesn't return to a
+                        // trip the passenger just booked.
+                        navController.navigate(Route.PassengerBookings) {
+                            popUpTo<Route.TripDetailPassenger> { inclusive = true }
+                        }
                     },
                     onNavigateToTripTracking = { tripId ->
                         navController.navigate(Route.TripTracking(tripId))
@@ -308,6 +332,16 @@ fun AppNavigation(
                         )
                     },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                    onNavigateToSearchTrips = {
+                        navController.navigate(Route.PassengerHome) {
+                            popUpTo<Route.PassengerHome> { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
+                    },
                     onNavigateBack = { navController.popBackStack() }
                 )
 

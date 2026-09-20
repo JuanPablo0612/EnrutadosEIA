@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleUiState.Companion.PLATE_REGEX
 import io.github.vinceglb.filekit.readBytes
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val SAVED_BANNER_DURATION_MS = 900L
 
 class RegisterVehicleViewModel(
     private val vehicleId: String?,
@@ -31,6 +34,8 @@ class RegisterVehicleViewModel(
     init {
         if (vehicleId != null) {
             loadVehicle(vehicleId)
+        } else {
+            _state.update { it.copy(initialSnapshot = it.snapshot) }
         }
     }
 
@@ -57,6 +62,7 @@ class RegisterVehicleViewModel(
                         isPrimary = vehicle.isPrimary,
                     )
                 }
+                _state.update { it.copy(initialSnapshot = it.snapshot) }
             }
         }
     }
@@ -129,9 +135,21 @@ class RegisterVehicleViewModel(
 
             RegisterVehicleAction.OnSaveClick -> saveVehicle()
 
-            RegisterVehicleAction.OnBackClick -> viewModelScope.launch {
-                _events.emit(RegisterVehicleEvent.NavigateBack)
+            RegisterVehicleAction.OnBackClick -> {
+                if (_state.value.isDirty) {
+                    _state.update { it.copy(showDiscardConfirm = true) }
+                } else {
+                    viewModelScope.launch { _events.emit(RegisterVehicleEvent.NavigateBack) }
+                }
             }
+
+            RegisterVehicleAction.OnConfirmDiscard -> {
+                _state.update { it.copy(showDiscardConfirm = false) }
+                viewModelScope.launch { _events.emit(RegisterVehicleEvent.NavigateBack) }
+            }
+
+            RegisterVehicleAction.OnDismissDiscardConfirm ->
+                _state.update { it.copy(showDiscardConfirm = false) }
         }
     }
 
@@ -190,7 +208,8 @@ class RegisterVehicleViewModel(
 
             result
                 .onSuccess {
-                    _state.update { it.copy(isSaving = false) }
+                    _state.update { it.copy(isSaving = false, isSaved = true) }
+                    delay(SAVED_BANNER_DURATION_MS)
                     _events.emit(RegisterVehicleEvent.VehicleRegistered)
                 }
                 .onFailure {

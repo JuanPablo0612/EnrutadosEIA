@@ -9,7 +9,10 @@ sealed class RoutesListAction {
     data object OnConfirmDelete : RoutesListAction()
     data object OnDismissDelete : RoutesListAction()
     data object OnRetry : RoutesListAction()
+    data object OnRefresh : RoutesListAction()
+    data class OnSearchQueryChanged(val query: String) : RoutesListAction()
     data object OnDismissActionError : RoutesListAction()
+    data object OnDismissDuplicateSuccess : RoutesListAction()
     data object OnBackClick : RoutesListAction()
     data object OnCommunityRoutesClick : RoutesListAction()
 }

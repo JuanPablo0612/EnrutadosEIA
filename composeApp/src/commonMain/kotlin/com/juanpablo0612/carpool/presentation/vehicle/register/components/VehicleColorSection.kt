@@ -12,6 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.error
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
@@ -53,7 +55,18 @@ internal fun VehicleColorSection(
         "Azul" to stringResource(Res.string.vehicle_color_blue),
         "Otro" to stringResource(Res.string.vehicle_color_other),
     )
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+    val colorErrorText = stringResource(Res.string.error_vehicle_color_required)
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        // The chip group has no text field to attach supportingText to, so the error is
+        // announced via the semantics error() property instead of a detached, unassociated
+        // Text below it — otherwise a screen reader never connects the two.
+        modifier = if (colorError && !isCustomColor) {
+            Modifier.semantics { error(colorErrorText) }
+        } else {
+            Modifier
+        }
+    ) {
         colorLabels.forEach { (value, label) ->
             FilterChip(
                 selected = color == value,

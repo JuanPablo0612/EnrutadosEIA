@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val SAVED_BANNER_DURATION_MS = 900L
 
 class CreateRouteViewModel(
     private val routeRepository: RouteRepository,
@@ -55,9 +58,18 @@ class CreateRouteViewModel(
             }
             CreateRouteAction.OnToggleShared -> _state.update { it.copy(isShared = !it.isShared) }
             CreateRouteAction.OnSaveClick -> createRoute()
-            CreateRouteAction.OnBackClick -> viewModelScope.launch {
-                _events.emit(CreateRouteEvent.NavigateBack)
+            CreateRouteAction.OnBackClick -> {
+                if (_state.value.isDirty) {
+                    _state.update { it.copy(showDiscardConfirm = true) }
+                } else {
+                    viewModelScope.launch { _events.emit(CreateRouteEvent.NavigateBack) }
+                }
             }
+            CreateRouteAction.OnConfirmDiscard -> {
+                _state.update { it.copy(showDiscardConfirm = false) }
+                viewModelScope.launch { _events.emit(CreateRouteEvent.NavigateBack) }
+            }
+            CreateRouteAction.OnDismissDiscardConfirm -> _state.update { it.copy(showDiscardConfirm = false) }
         }
     }
 
@@ -113,7 +125,10 @@ class CreateRouteViewModel(
             )
             routeRepository.createRoute(route)
                 .onSuccess {
-                    _state.update { it.copy(isLoading = false) }
+                    // Show a brief success confirmation before popping, so success reads
+                    // differently from just backing out of the form.
+                    _state.update { it.copy(isLoading = false, isSaved = true) }
+                    delay(SAVED_BANNER_DURATION_MS)
                     _events.emit(CreateRouteEvent.RouteCreated)
                 }
                 .onFailure {

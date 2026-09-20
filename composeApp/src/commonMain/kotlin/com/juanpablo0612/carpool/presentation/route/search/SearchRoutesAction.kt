@@ -16,4 +16,5 @@ sealed class SearchRoutesAction {
     data object OnShowDateTimeSheet : SearchRoutesAction()
     data object OnDismissDateTimeSheet : SearchRoutesAction()
     data class OnTripClick(val tripId: String) : SearchRoutesAction()
+    data object Refresh : SearchRoutesAction()
 }

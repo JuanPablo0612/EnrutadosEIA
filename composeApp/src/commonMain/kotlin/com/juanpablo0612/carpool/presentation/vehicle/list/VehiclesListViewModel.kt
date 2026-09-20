@@ -108,6 +108,16 @@ class VehiclesListViewModel(
             }
 
             VehiclesListAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
+
+            VehiclesListAction.Refresh -> {
+                val userId = authRepository.getCurrentUserId() ?: return
+                _state.update { it.copy(isRefreshing = true) }
+                viewModelScope.launch {
+                    runCatching { vehicleRepository.getUserVehicles(userId).first() }
+                        .onSuccess { vehicles -> _state.update { it.copy(vehicles = vehicles) } }
+                    _state.update { it.copy(isRefreshing = false) }
+                }
+            }
         }
     }
 }

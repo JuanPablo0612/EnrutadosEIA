@@ -54,8 +54,14 @@ fun RouteStopItem(
                     .size(12.dp) // dot-intrinsic size
                     .clip(CircleShape)
                     .background(
-                        if (place != null) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.outlineVariant
+                        when {
+                            // Locked stops get a muted dot regardless of whether a place is set,
+                            // so a read-only trajectory doesn't share the vivid primary-colored
+                            // dot that signals "tap me" on the editable version.
+                            isLocked -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            place != null -> MaterialTheme.colorScheme.primary
+                            else -> MaterialTheme.colorScheme.outlineVariant
+                        }
                     )
             )
 

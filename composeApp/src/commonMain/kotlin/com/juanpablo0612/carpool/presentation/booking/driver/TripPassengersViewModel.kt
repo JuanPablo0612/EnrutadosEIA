@@ -11,6 +11,7 @@ import com.juanpablo0612.carpool.domain.booking.usecase.GetBookingsForTripUseCas
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
 import com.juanpablo0612.carpool.presentation.booking.model.toBookingWithPassenger
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
@@ -38,6 +39,7 @@ class TripPassengersViewModel(
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val authRepository: AuthRepository,
     private val createNotificationUseCase: CreateNotificationUseCase,
+    private val tripRepository: TripRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TripPassengersUiState())
@@ -47,7 +49,17 @@ class TripPassengersViewModel(
     val events: SharedFlow<TripPassengersEvent> = _events.asSharedFlow()
 
     init {
+        loadTrip()
         loadBookings()
+    }
+
+    // Fetched directly from the trip itself rather than derived from the first pending/confirmed
+    // booking, so the trip-context header still renders even when a trip has zero bookings.
+    private fun loadTrip() {
+        viewModelScope.launch {
+            tripRepository.getTripById(tripId)
+                .onSuccess { trip -> _state.update { it.copy(trip = trip) } }
+        }
     }
 
     private fun loadBookings() {
@@ -72,6 +84,18 @@ class TripPassengersViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    // Bookings are already live via the persistent collector started in init — re-subscribing on
+    // every pull-to-refresh would stack up duplicate collectors. Only the trip needs a fresh
+    // one-shot fetch here; the refreshing indicator clears once that resolves.
+    private fun refresh() {
+        _state.update { it.copy(isRefreshing = true) }
+        viewModelScope.launch {
+            tripRepository.getTripById(tripId)
+                .onSuccess { trip -> _state.update { it.copy(trip = trip) } }
+            _state.update { it.copy(isRefreshing = false) }
         }
     }
 
@@ -120,6 +144,7 @@ class TripPassengersViewModel(
                 )
             }
             TripPassengersAction.DismissError -> _state.update { it.copy(error = null) }
+            TripPassengersAction.Refresh -> refresh()
         }
     }
 

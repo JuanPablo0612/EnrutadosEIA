@@ -12,8 +12,22 @@ data class RouteWithStats(
 data class RoutesListUiState(
     val routes: List<RouteWithStats> = emptyList(),
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
+    val searchQuery: String = "",
     val pendingDeleteRouteId: String? = null,
     val duplicatingRouteId: String? = null,
+    val showDuplicateSuccess: Boolean = false,
     val error: RoutesListError? = null,
     val actionError: RoutesListError? = null
-)
+) {
+    val filteredRoutes: List<RouteWithStats>
+        get() = if (searchQuery.isBlank()) {
+            routes
+        } else {
+            routes.filter {
+                it.route.name.contains(searchQuery, ignoreCase = true) ||
+                    it.route.origin.name.contains(searchQuery, ignoreCase = true) ||
+                    it.route.destination.name.contains(searchQuery, ignoreCase = true)
+            }
+        }
+}

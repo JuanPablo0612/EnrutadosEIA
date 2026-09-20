@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -64,9 +65,17 @@ internal fun NotificationItem(
 }
 
 private fun formatTimestamp(epochMs: Long): String {
-    val local = Instant.fromEpochMilliseconds(epochMs)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    val hour = local.hour.toString().padStart(2, '0')
-    val minute = local.minute.toString().padStart(2, '0')
-    return "$hour:$minute"
+    val timeZone = TimeZone.currentSystemDefault()
+    val local = Instant.fromEpochMilliseconds(epochMs).toLocalDateTime(timeZone)
+    val today = Clock.System.now().toLocalDateTime(timeZone).date
+    // Time-only timestamps made old notifications look like they'd just arrived when the app
+    // was reopened days later — show a date instead once it's not from today.
+    if (local.date == today) {
+        val hour = local.hour.toString().padStart(2, '0')
+        val minute = local.minute.toString().padStart(2, '0')
+        return "$hour:$minute"
+    }
+    val day = local.date.dayOfMonth.toString().padStart(2, '0')
+    val month = local.date.monthNumber.toString().padStart(2, '0')
+    return "$day/$month"
 }

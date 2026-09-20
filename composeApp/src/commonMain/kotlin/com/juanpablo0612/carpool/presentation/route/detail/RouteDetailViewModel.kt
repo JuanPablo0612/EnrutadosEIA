@@ -8,6 +8,7 @@ import com.juanpablo0612.carpool.domain.route.usecase.DuplicateRouteUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
 import com.juanpablo0612.carpool.presentation.route.create.SelectionTarget
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+
+private const val SAVED_BANNER_DURATION_MS = 900L
 
 class RouteDetailViewModel(
     private val routeId: String,
@@ -66,7 +69,17 @@ class RouteDetailViewModel(
                 _events.emit(RouteDetailEvent.NavigateBack)
             }
             RouteDetailAction.OnEditClick -> enterEditMode()
-            RouteDetailAction.OnCancelEdit -> _state.update { it.copy(isEditing = false, draft = null) }
+            RouteDetailAction.OnCancelEdit -> {
+                if (_state.value.isDraftDirty) {
+                    _state.update { it.copy(showDiscardEditConfirm = true) }
+                } else {
+                    _state.update { it.copy(isEditing = false, draft = null) }
+                }
+            }
+            RouteDetailAction.OnConfirmDiscardEdit -> _state.update {
+                it.copy(isEditing = false, draft = null, showDiscardEditConfirm = false)
+            }
+            RouteDetailAction.OnDismissDiscardEditConfirm -> _state.update { it.copy(showDiscardEditConfirm = false) }
             RouteDetailAction.OnSaveChangesClick -> saveChanges()
             RouteDetailAction.OnDeleteClick -> _state.update { it.copy(showDeleteConfirm = true) }
             RouteDetailAction.OnConfirmDelete -> deleteRoute()
@@ -137,7 +150,9 @@ class RouteDetailViewModel(
             )
             routeRepository.updateRoute(updatedRoute)
                 .onSuccess {
-                    _state.update { it.copy(isSaving = false, isEditing = false, draft = null, route = updatedRoute) }
+                    _state.update { it.copy(isSaving = false, isSaved = true, route = updatedRoute) }
+                    delay(SAVED_BANNER_DURATION_MS)
+                    _state.update { it.copy(isSaved = false, isEditing = false, draft = null) }
                 }
                 .onFailure {
                     _state.update { it.copy(isSaving = false, error = RouteDetailError.SaveFailed) }

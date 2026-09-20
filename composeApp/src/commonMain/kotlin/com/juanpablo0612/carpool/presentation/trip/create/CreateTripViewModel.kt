@@ -120,7 +120,14 @@ class CreateTripViewModel(
             is CreateTripAction.OnSetMessage -> _state.update {
                 it.copy(messageToPassengers = action.text.take(140))
             }
-            CreateTripAction.OnPublishClick -> publishTrip()
+            CreateTripAction.OnPublishClick -> {
+                if (_state.value.canPublish) _state.update { it.copy(showPublishConfirm = true) }
+            }
+            CreateTripAction.OnConfirmPublish -> {
+                _state.update { it.copy(showPublishConfirm = false) }
+                publishTrip()
+            }
+            CreateTripAction.OnDismissPublishConfirm -> _state.update { it.copy(showPublishConfirm = false) }
             CreateTripAction.OnNavigateToRegisterVehicle -> viewModelScope.launch {
                 _events.emit(CreateTripEvent.NavigateToRegisterVehicle)
             }

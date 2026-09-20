@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun SingleVehicleCard(
     vehicle: Vehicle,
-    onChangeClick: () -> Unit,
+    onChangeClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -48,8 +48,10 @@ internal fun SingleVehicleCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            TextButton(onClick = onChangeClick) {
-                Text(stringResource(Res.string.trip_change_vehicle))
+            if (onChangeClick != null) {
+                TextButton(onClick = onChangeClick) {
+                    Text(stringResource(Res.string.trip_change_vehicle))
+                }
             }
         }
     }

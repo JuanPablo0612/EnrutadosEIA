@@ -40,7 +40,8 @@ import org.jetbrains.compose.resources.vectorResource
 fun AuthTopBar(
     title: String,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showBackButton: Boolean = true
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -52,11 +53,13 @@ fun AuthTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = vectorResource(Res.drawable.arrow_back_24px),
-                    contentDescription = null
-                )
+            if (showBackButton) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.arrow_back_24px),
+                        contentDescription = null
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
+import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
@@ -23,7 +24,8 @@ class SearchRoutesViewModel(
     getAvailableTripsUseCase: GetAvailableTripsUseCase,
     private val vehicleRepository: VehicleRepository,
     private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val ratingRepository: RatingRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchRoutesUiState())
@@ -97,12 +99,14 @@ class SearchRoutesViewModel(
             is SearchRoutesAction.OnTripClick -> viewModelScope.launch {
                 _events.emit(SearchRoutesEvent.NavigateToTripDetail(action.tripId))
             }
+
+            SearchRoutesAction.Refresh -> search(isRefresh = true)
         }
     }
 
-    private fun search() {
+    private fun search(isRefresh: Boolean = false) {
         val state = _uiState.value
-        _uiState.update { it.copy(isSearching = true) }
+        _uiState.update { if (isRefresh) it.copy(isRefreshing = true) else it.copy(isSearching = true) }
         viewModelScope.launch {
             val filtered = allTrips.value.filter { trip ->
                 // An empty selected address must never match — trip.origin.address.contains("")
@@ -130,9 +134,12 @@ class SearchRoutesViewModel(
             // One driver publishing several trips must cost one profile read, not one per trip:
             // fetch each distinct driverId exactly once and hand every trip the cached result.
             val driverProfiles = mutableMapOf<String, PublicProfile?>()
+            val driverRatings = mutableMapOf<String, Double?>()
             for (driverId in filtered.map { it.driverId }.distinct()) {
                 driverProfiles[driverId] = authRepository.getPublicProfile(driverId)
                     .getOrNull() // a failed fetch degrades to null, it must never fail the search
+                driverRatings[driverId] = ratingRepository.getUserAverageRating(driverId)
+                    .getOrNull()
             }
 
             val results = filtered.mapNotNull { trip ->
@@ -150,11 +157,14 @@ class SearchRoutesViewModel(
                     trip = trip,
                     vehicle = vehicle,
                     availableSeats = availableSeats,
-                    driver = driverProfiles[trip.driverId]
+                    driver = driverProfiles[trip.driverId],
+                    driverAverageRating = driverRatings[trip.driverId]
                 )
             }
 
-            _uiState.update { it.copy(results = results, isSearching = false, hasSearched = true) }
+            _uiState.update {
+                it.copy(results = results, isSearching = false, isRefreshing = false, hasSearched = true)
+            }
         }
     }
 }

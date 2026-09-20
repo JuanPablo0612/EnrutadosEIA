@@ -65,6 +65,7 @@
     <string name="place_selector_section_my_places">Mis lugares</string>
     <string name="place_selector_section_eia">Sedes EIA</string>
     <string name="place_selector_section_community">Comunidad</string>
+    <string name="place_selector_community_badge">Comunidad</string>
     <string name="place_selector_section_results">Resultados</string>
     <string name="place_selector_empty_my_places_title">Aún no tienes lugares guardados</string>
     <string name="place_selector_empty_my_places_description">Los lugares que guardes aparecerán aquí para un acceso rápido.</string>
@@ -149,6 +150,8 @@
         <item quantity="other">%1$d cupos para pasajeros</item>
     </plurals>
     <string name="routes_list_title">Mis Rutas</string>
+    <string name="routes_search_placeholder">Buscar rutas</string>
+    <string name="routes_search_no_results">Ninguna ruta coincide con "%1$s"</string>
     <string name="routes_empty_title">Sin rutas aún</string>
     <string name="route_waypoints_count">%1$d paradas</string>
     <plurals name="trip_waypoint_count">
@@ -237,6 +240,8 @@
     <!-- Subtítulos de estado vacío -->
     <string name="search_empty_title">Sin viajes disponibles</string>
     <string name="search_empty_subtitle">Intenta otra búsqueda o vuelve más tarde</string>
+    <string name="search_prompt_title">Busca un viaje</string>
+    <string name="search_prompt_subtitle">Elige un origen, un destino y cuándo quieres viajar</string>
 
     <!-- Home Dashboard -->
     <string name="home_greeting_subtitle">¿Listo para tu viaje de hoy?</string>
@@ -311,6 +316,7 @@
 
     <!-- Selector de rol -->
     <string name="role_selector_remember_choice">Recordar mi elección</string>
+    <string name="role_selector_remember_choice_hint">Nos saltaremos esta pantalla la próxima vez e iremos directo al rol que elijas ahora</string>
     <string name="role_selector_driver_pending">%1$d solicitudes pendientes</string>
 
     <!-- Nuevos errores de validación -->
@@ -442,6 +448,8 @@
     <string name="driver_trips_upcoming_empty_subtitle">Publica tu próximo viaje y comparte el camino.</string>
     <string name="driver_trips_past_empty_title">Aún no has hecho viajes.</string>
     <string name="driver_trips_past_empty_subtitle">Cuando termines un viaje, aparecerá aquí.</string>
+    <string name="driver_trips_past_search_placeholder">Buscar viajes pasados</string>
+    <string name="driver_trips_past_search_no_results">Ningún viaje pasado coincide con "%1$s"</string>
     <string name="publish_trip_fab">Publicar viaje</string>
 
     <!-- DriverTrips - confirmación de cancelación -->
@@ -579,6 +587,8 @@
 
     <!-- Chat -->
     <string name="chat_default_title">Chat</string>
+    <string name="chat_date_today">Hoy</string>
+    <string name="chat_date_yesterday">Ayer</string>
     <string name="chat_input_hint">Escribe un mensaje…</string>
     <string name="chat_read_only_banner">Este viaje ha terminado. La conversación es solo lectura.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
@@ -627,6 +637,7 @@
     <!-- Seguridad -->
     <string name="safety_title">Seguridad</string>
     <string name="safety_description">Cuando empieza un viaje, le enviaremos automáticamente los detalles a tus contactos de emergencia (conductor, vehículo, ruta, ETA).</string>
+    <string name="safety_empty_contacts_description">Agrega a alguien a quien podamos contactar si algo no se siente bien durante un viaje — recibirá tu conductor, vehículo, ruta y hora estimada de llegada automáticamente.</string>
     <string name="safety_contacts_section">Mis contactos</string>
     <string name="safety_add_contact">+ Agregar contacto</string>
     <string name="safety_max_contacts_reached">Máximo 2 contactos</string>
@@ -684,6 +695,10 @@
     <string name="bookings_upcoming_empty_subtitle">Cuando reserves un cupo, aparecerá aquí</string>
     <string name="bookings_past_empty_title">Sin viajes pasados aún</string>
     <string name="bookings_past_empty_subtitle">Tus viajes completados aparecerán aquí</string>
+    <string name="bookings_search_trips_action">Buscar un viaje</string>
+    <string name="bookings_past_search_placeholder">Buscar viajes pasados</string>
+    <string name="bookings_past_search_no_results">Ningún viaje pasado coincide con tu búsqueda</string>
+    <string name="booking_action_message_driver">Mensaje al conductor</string>
     <string name="booking_status_subtitle_pending">Esperando confirmación del conductor</string>
     <string name="booking_status_subtitle_confirmed">Viaje confirmado</string>
     <string name="booking_status_subtitle_rejected">Solicitud rechazada</string>
@@ -785,10 +800,35 @@
     <string name="role_switch_to_driver">Cambiar a conductor</string>
     <string name="role_switch_to_passenger">Cambiar a pasajero</string>
     <string name="notice_route_created">Ruta creada</string>
+    <string name="notice_route_updated">Ruta actualizada</string>
+    <string name="notice_route_duplicated">Ruta duplicada</string>
     <string name="notice_trip_published">Viaje publicado</string>
     <string name="notice_vehicle_saved">Vehículo guardado</string>
     <string name="notice_place_saved">Lugar guardado</string>
     <string name="notice_profile_saved">Perfil actualizado</string>
+
+    <!-- Guardia de cambios sin guardar, reutilizada por cada formulario de creación/edición -->
+    <string name="discard_changes_title">¿Descartar los cambios?</string>
+    <string name="discard_changes_body">Perderás los cambios que hiciste.</string>
+    <string name="discard_changes_confirm">Descartar</string>
+
+    <!-- Confirmaciones de publicar/iniciar/completar para acciones difíciles de revertir -->
+    <string name="publish_trip_confirm_title">¿Publicar este viaje?</string>
+    <string name="publish_trip_confirm_body">Los pasajeros podrán ver y solicitar cupos en este viaje una vez publicado.</string>
+    <string name="publish_trip_confirm_button">Publicar</string>
+    <string name="trip_start_confirm_title">¿Iniciar este viaje?</string>
+    <string name="trip_start_confirm_body">Se notificará a los pasajeros que el viaje está en curso.</string>
+    <string name="trip_start_confirm_button">Iniciar</string>
+    <string name="passenger_dropped_off_confirm_title">¿Marcar como entregado?</string>
+    <string name="passenger_dropped_off_confirm_body">No podrás deshacer esto desde aquí.</string>
+    <string name="passenger_dropped_off_confirm_button">Marcar como entregado</string>
+    <string name="notification_delete_confirm_title">¿Eliminar notificación?</string>
+    <string name="notification_delete_confirm_body">Esto no se puede deshacer.</string>
+    <string name="notification_delete_confirm_button">Eliminar</string>
+    <string name="form_progress_label">%1$d de %2$d campos obligatorios completados</string>
+    <string name="booking_request_sent_notice">Solicitud enviada — el conductor confirmará pronto</string>
+    <string name="booking_history_search_placeholder">Buscar por nombre del pasajero</string>
+    <string name="safety_contacts_cap_hint">Hasta %1$d contactos</string>
 
     <plurals name="route_trips_count">
         <item quantity="one">%1$d viaje</item>

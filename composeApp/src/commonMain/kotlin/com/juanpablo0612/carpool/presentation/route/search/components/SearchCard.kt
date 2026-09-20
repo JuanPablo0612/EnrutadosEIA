@@ -1,16 +1,17 @@
 package com.juanpablo0612.carpool.presentation.route.search.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -18,16 +19,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesAction
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesUiState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -61,21 +62,12 @@ internal fun SearchCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    OutlinedTextField(
-                        value = state.origin?.name ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        placeholder = { Text(stringResource(Res.string.search_origin_placeholder)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                    // A readOnly OutlinedTextField still consumes a tap for focus before it ever
-                    // reaches a `.clickable` modifier on the same node — the field just highlighted
-                    // and never opened the picker. A transparent overlay on top intercepts the tap
-                    // first instead.
-                    TapOverlay(onClick = { onAction(SearchRoutesAction.OnPickOrigin) })
-                }
+                PickerField(
+                    value = state.origin?.name ?: "",
+                    placeholder = stringResource(Res.string.search_origin_placeholder),
+                    onClick = { onAction(SearchRoutesAction.OnPickOrigin) },
+                    modifier = Modifier.weight(1f)
+                )
                 IconButton(onClick = { onAction(SearchRoutesAction.OnSwapPlaces) }) {
                     Icon(
                         imageVector = vectorResource(Res.drawable.swap_horiz_24px),
@@ -87,31 +79,21 @@ internal fun SearchCard(
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = state.destination?.name ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    placeholder = { Text(stringResource(Res.string.search_destination_placeholder)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                TapOverlay(onClick = { onAction(SearchRoutesAction.OnPickDestination) })
-            }
+            PickerField(
+                value = state.destination?.name ?: "",
+                placeholder = stringResource(Res.string.search_destination_placeholder),
+                onClick = { onAction(SearchRoutesAction.OnPickDestination) },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
-                    onValueChange = {},
-                    readOnly = true,
-                    placeholder = { Text(stringResource(Res.string.search_date_placeholder)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                TapOverlay(onClick = { onAction(SearchRoutesAction.OnShowDateTimeSheet) })
-            }
+            PickerField(
+                value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
+                placeholder = stringResource(Res.string.search_date_placeholder),
+                onClick = { onAction(SearchRoutesAction.OnShowDateTimeSheet) },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(Spacing.sm))
 
@@ -141,18 +123,41 @@ internal fun SearchCard(
     }
 }
 
+// A read-only OutlinedTextField plus a transparent tap-catching overlay used to be the pattern
+// here — a readOnly text field still consumes the tap for focus before it ever reaches a
+// `.clickable` on the same node, so the field just highlighted and never opened the picker. A
+// plain clickable surface styled to look like an outlined field sidesteps the problem entirely
+// instead of working around it with an overlay.
 @Composable
-private fun BoxScope.TapOverlay(onClick: () -> Unit) {
+private fun PickerField(
+    value: String,
+    placeholder: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
-            .matchParentSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
+        modifier = modifier
+            .height(56.dp) // matches OutlinedTextField's default single-line height
+            .clip(RoundedCornerShape(4.dp))
+            .border(
+                BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                RoundedCornerShape(4.dp)
             )
-            .semantics { role = Role.Button }
-    )
+            .clickable(onClick = onClick)
+            .semantics { role = Role.Button },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = value.ifBlank { placeholder },
+            style = MaterialTheme.typography.bodyLarge,
+            color = if (value.isBlank()) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+            modifier = Modifier.padding(horizontal = Spacing.md)
+        )
+    }
 }
 
 internal fun formatEpochShort(epochMs: Long): String {

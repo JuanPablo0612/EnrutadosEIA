@@ -21,4 +21,6 @@ sealed class RegisterVehicleAction {
     data object OnRemovePhoto : RegisterVehicleAction()
     data object OnSaveClick : RegisterVehicleAction()
     data object OnBackClick : RegisterVehicleAction()
+    data object OnConfirmDiscard : RegisterVehicleAction()
+    data object OnDismissDiscardConfirm : RegisterVehicleAction()
 }

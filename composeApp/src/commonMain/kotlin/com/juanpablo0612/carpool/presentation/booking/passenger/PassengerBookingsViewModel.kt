@@ -6,6 +6,8 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
+import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,7 +24,9 @@ import kotlinx.coroutines.launch
 class PassengerBookingsViewModel(
     private val bookingRepository: BookingRepository,
     private val cancelBookingUseCase: CancelBookingUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val tripRepository: TripRepository,
+    private val vehicleRepository: VehicleRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PassengerBookingsUiState())
@@ -44,9 +49,30 @@ class PassengerBookingsViewModel(
                 .onEach { bookings ->
                     _state.update { it.copy(bookings = bookings, isLoading = false) }
                     resolveDriverNames(bookings)
+                    resolveVehicleSummaries(bookings)
                 }
                 .catch { _state.update { it.copy(isLoading = false) } }
                 .collect {}
+        }
+    }
+
+    // Booking carries no vehicleId of its own — the trip it's for does, so resolving "what car
+    // is this" means one hop through the trip rather than a Booking schema change. One fetch per
+    // distinct tripId not already cached, not per booking.
+    private fun resolveVehicleSummaries(bookings: List<Booking>) {
+        val missingTripIds = bookings.map { it.tripId }.distinct() - _state.value.vehicleSummaries.keys
+        if (missingTripIds.isEmpty()) return
+        viewModelScope.launch {
+            val resolved = mutableMapOf<String, String>()
+            for (tripId in missingTripIds) {
+                val trip = tripRepository.getTripById(tripId).getOrNull() ?: continue
+                val vehicle = vehicleRepository.getUserVehicles(trip.driverId).first()
+                    .find { it.id == trip.vehicleId } ?: continue
+                resolved[tripId] = "${vehicle.brand} ${vehicle.model} · ${vehicle.color}"
+            }
+            if (resolved.isNotEmpty()) {
+                _state.update { it.copy(vehicleSummaries = it.vehicleSummaries + resolved) }
+            }
         }
     }
 
@@ -109,6 +135,39 @@ class PassengerBookingsViewModel(
                     )
                 )
             }
+
+            PassengerBookingsAction.Refresh -> refresh()
+
+            is PassengerBookingsAction.OnPastSearchQueryChanged ->
+                _state.update { it.copy(pastSearchQuery = action.query) }
+
+            PassengerBookingsAction.OnSearchTripsClick -> viewModelScope.launch {
+                _events.emit(PassengerBookingsEvent.NavigateToSearchTrips)
+            }
+
+            is PassengerBookingsAction.OnMessageDriver -> viewModelScope.launch {
+                _events.emit(
+                    PassengerBookingsEvent.NavigateToChat(
+                        bookingId = action.bookingId,
+                        tripId = action.tripId,
+                        otherPartyName = action.driverName,
+                        isReadOnly = action.isReadOnly
+                    )
+                )
+            }
+        }
+    }
+
+    // The bookings list is already live via the persistent collector started in init — refresh
+    // just needs a one-shot fetch to resolve the pull-to-refresh indicator, not a second
+    // subscription stacked on top of it.
+    private fun refresh() {
+        val userId = authRepository.getCurrentUserId() ?: return
+        _state.update { it.copy(isRefreshing = true) }
+        viewModelScope.launch {
+            runCatching { bookingRepository.getPassengerBookings(userId).first() }
+                .onSuccess { bookings -> _state.update { it.copy(bookings = bookings) } }
+            _state.update { it.copy(isRefreshing = false) }
         }
     }
 

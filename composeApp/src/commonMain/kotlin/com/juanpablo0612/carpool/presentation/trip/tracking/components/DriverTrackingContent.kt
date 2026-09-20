@@ -28,10 +28,14 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.PassengerWithStatus
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingAction
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingUiState
 import com.juanpablo0612.carpool.presentation.trip.tracking.previewTrip
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.my_location_24px
+import enrutadoseia.composeapp.generated.resources.passenger_dropped_off_confirm_body
+import enrutadoseia.composeapp.generated.resources.passenger_dropped_off_confirm_button
+import enrutadoseia.composeapp.generated.resources.passenger_dropped_off_confirm_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_trip
 import enrutadoseia.composeapp.generated.resources.trip_tracking_passengers_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sharing_location
@@ -44,6 +48,16 @@ internal fun DriverTrackingContent(
     onAction: (TripTrackingAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    state.pendingDropOffPassengerId?.let {
+        ConfirmDialog(
+            title = stringResource(Res.string.passenger_dropped_off_confirm_title),
+            description = stringResource(Res.string.passenger_dropped_off_confirm_body),
+            confirmText = stringResource(Res.string.passenger_dropped_off_confirm_button),
+            onConfirm = { onAction(TripTrackingAction.OnConfirmDropOff) },
+            onDismiss = { onAction(TripTrackingAction.OnDismissDropOffConfirm) }
+        )
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(Spacing.lg),
@@ -80,7 +94,7 @@ internal fun DriverTrackingContent(
                 passenger = passenger,
                 isProcessing = passenger.passengerId in state.processingPassengerIds,
                 onMarkPickedUp = { onAction(TripTrackingAction.OnMarkPickedUp(passenger.passengerId)) },
-                onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOff(passenger.passengerId)) },
+                onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOffClick(passenger.passengerId)) },
                 onMessage = {
                     onAction(
                         TripTrackingAction.OnChatClick(

@@ -43,7 +43,6 @@ import enrutadoseia.composeapp.generated.resources.cd_more_options
 import enrutadoseia.composeapp.generated.resources.more_vert_24px
 import enrutadoseia.composeapp.generated.resources.route_menu_delete
 import enrutadoseia.composeapp.generated.resources.route_menu_duplicate
-import enrutadoseia.composeapp.generated.resources.route_menu_edit
 import enrutadoseia.composeapp.generated.resources.route_menu_publish_trip
 import enrutadoseia.composeapp.generated.resources.route_waypoints_count
 import kotlinx.datetime.TimeZone
@@ -57,7 +56,6 @@ fun RouteCard(
     routeWithStats: RouteWithStats,
     onClick: () -> Unit,
     onPublishTripClick: () -> Unit,
-    onEditClick: () -> Unit,
     onDuplicateClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -96,10 +94,6 @@ fun RouteCard(
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.route_menu_publish_trip)) },
                             onClick = { expanded = false; onPublishTripClick() }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.route_menu_edit)) },
-                            onClick = { expanded = false; onEditClick() }
                         )
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.route_menu_duplicate)) },

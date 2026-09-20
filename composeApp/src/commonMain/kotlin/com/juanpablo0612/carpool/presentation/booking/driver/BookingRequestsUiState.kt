@@ -6,7 +6,9 @@ import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 
 data class BookingRequestsUiState(
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val tab: DriverBookingsTab = DriverBookingsTab.Pending,
+    val historyQuery: String = "",
     val pending: List<BookingWithPassenger> = emptyList(),
     val confirmed: List<BookingWithPassenger> = emptyList(),
     val history: List<BookingWithPassenger> = emptyList(),
@@ -18,4 +20,11 @@ data class BookingRequestsUiState(
     val error: BookingError? = null,
     // Real state instead of smuggling a control signal through a snackbar string (4.2).
     val tripJustFilled: Boolean = false,
-)
+) {
+    val filteredHistory: List<BookingWithPassenger>
+        get() = if (historyQuery.isBlank()) {
+            history
+        } else {
+            history.filter { it.passenger.name.contains(historyQuery, ignoreCase = true) }
+        }
+}

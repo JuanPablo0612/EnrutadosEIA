@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
+import com.juanpablo0612.carpool.presentation.ui.components.DriverRatingBadge
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -28,6 +29,7 @@ import org.jetbrains.compose.resources.vectorResource
 internal fun DriverAndVehicleSection(
     driver: PublicProfile?,
     vehicle: Vehicle?,
+    driverAverageRating: Double? = null,
     modifier: Modifier = Modifier
 ) {
     val driverName = driver?.name?.takeIf { it.isNotBlank() }
@@ -43,10 +45,16 @@ internal fun DriverAndVehicleSection(
             UserAvatar(name = driverName, photoUrl = driver?.photoUrl, size = 36.dp) // avatar-intrinsic size
             Spacer(modifier = Modifier.size(Spacing.sm))
             Column {
-                Text(
-                    text = driverName,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = driverName,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    driverAverageRating?.let { rating ->
+                        Spacer(modifier = Modifier.size(Spacing.sm))
+                        DriverRatingBadge(averageRating = rating)
+                    }
+                }
                 vehicle?.let { v ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(

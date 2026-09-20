@@ -27,7 +27,10 @@ import com.juanpablo0612.carpool.presentation.route.create.components.SectionHea
 import com.juanpablo0612.carpool.presentation.route.create.components.SharingToggleRow
 import com.juanpablo0612.carpool.presentation.route.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.FormProgressIndicator
+import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -69,6 +72,12 @@ fun CreateRouteScreen(
     // back while it's open exits the whole create-route flow and discards the in-progress draft.
     BackHandler(enabled = state.selectionTarget != null) {
         viewModel.onAction(CreateRouteAction.OnCancelSelection)
+    }
+
+    // Route system back through the same dirty-check as the top-bar back arrow, so a swipe/
+    // gesture back can't silently discard a partially-filled draft either.
+    BackHandler(enabled = state.selectionTarget == null) {
+        viewModel.onAction(CreateRouteAction.OnBackClick)
     }
 
     val (activeSelectorState, activeSelectorViewModel) = when (state.selectionTarget) {
@@ -140,6 +149,17 @@ fun CreateRouteContent(
         initialMinute = state.typicalDepartureTime?.minute ?: 0
     )
 
+    if (state.showDiscardConfirm) {
+        ConfirmDialog(
+            title = stringResource(Res.string.discard_changes_title),
+            description = stringResource(Res.string.discard_changes_body),
+            confirmText = stringResource(Res.string.discard_changes_confirm),
+            onConfirm = { onAction(CreateRouteAction.OnConfirmDiscard) },
+            onDismiss = { onAction(CreateRouteAction.OnDismissDiscardConfirm) },
+            isDestructive = true
+        )
+    }
+
     if (showTimePicker) {
         TimePickerDialog(
             onCancel = { showTimePicker = false },
@@ -171,6 +191,20 @@ fun CreateRouteContent(
                 .imePadding(),
             contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
+            item {
+                val completed = listOf(
+                    state.name.isNotBlank(),
+                    state.origin != null,
+                    state.destination != null
+                ).count { it }
+                FormProgressIndicator(
+                    completedSections = completed,
+                    totalSections = 3,
+                    label = stringResource(Res.string.form_progress_label, completed, 3),
+                    modifier = Modifier.padding(vertical = Spacing.sm)
+                )
+            }
+
             // Route name field
             item {
                 OutlinedTextField(
@@ -295,6 +329,17 @@ fun CreateRouteContent(
                 }
             }
 
+            if (state.isSaved) {
+                item {
+                    SuccessMessage(
+                        message = stringResource(Res.string.notice_route_created),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                    )
+                }
+            }
+
             // Save button
             item {
                 Button(
@@ -302,7 +347,7 @@ fun CreateRouteContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(Spacing.lg),
-                    enabled = state.isValid && !state.isLoading
+                    enabled = state.isValid && !state.isLoading && !state.isSaved
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(

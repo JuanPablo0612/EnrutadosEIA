@@ -26,6 +26,7 @@ import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_cance
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_confirmed
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_pending
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_rejected
+import enrutadoseia.composeapp.generated.resources.booking_action_message_driver
 import enrutadoseia.composeapp.generated.resources.cancel_booking_button
 import enrutadoseia.composeapp.generated.resources.time_am
 import enrutadoseia.composeapp.generated.resources.time_pm
@@ -35,16 +36,20 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
-// TODO: show vehicle info once vehicleId is stored in Booking
-
 @Composable
 fun EnrichedBookingCard(
     booking: Booking,
+    // Booking carries no driver-name/vehicle field of its own — both are resolved by the caller
+    // (driverName via a profile lookup, vehicleSummary via the trip's vehicleId) and passed in,
+    // rather than making this card fetch anything itself.
+    driverName: String? = null,
+    vehicleSummary: String? = null,
     // Nullable like its siblings: the "Past" tab has nothing to cancel, and passing an empty
     // lambda there rendered a live-looking Cancel button that silently did nothing.
     onCancelClick: ((String) -> Unit)? = null,
     onTrackTrip: ((tripId: String) -> Unit)? = null,
     onRateBooking: ((bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit)? = null,
+    onMessageDriver: (() -> Unit)? = null,
     // Passed in rather than defaulted to `now`: a default read during composition makes this
     // composable non-idempotent and re-reads the clock on every recomposition.
     nowMs: Long,
@@ -68,6 +73,15 @@ fun EnrichedBookingCard(
         Spacer(modifier = Modifier.height(Spacing.xs))
 
         RouteLineRow(origin = booking.originName, destination = booking.destinationName)
+
+        if (driverName != null || vehicleSummary != null) {
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            Text(
+                text = listOfNotNull(driverName, vehicleSummary).joinToString(" · "),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
 
         val subtitle = statusSubtitle(booking.status)
         if (subtitle != null) {
@@ -99,6 +113,15 @@ fun EnrichedBookingCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = stringResource(Res.string.booking_action_rate))
+                }
+                Spacer(modifier = Modifier.height(Spacing.xs))
+            }
+            if (isConfirmed && !isPast && onMessageDriver != null) {
+                OutlinedButton(
+                    onClick = onMessageDriver,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(Res.string.booking_action_message_driver))
                 }
                 Spacer(modifier = Modifier.height(Spacing.xs))
             }

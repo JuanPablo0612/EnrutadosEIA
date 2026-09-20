@@ -23,9 +23,9 @@ val tripModule = module {
     // SearchRoutesViewModel lives in presentation/route/search/, but it queries trips and builds
     // TripResult from Trip + Vehicle + PublicProfile, so its dependencies are trip's, not
     // route's. Registration stays here; moving the screen itself is out of scope for this phase.
-    viewModel { SearchRoutesViewModel(get(), get(), get(), get()) }
+    viewModel { SearchRoutesViewModel(get(), get(), get(), get(), get()) }
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
-    viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
 }

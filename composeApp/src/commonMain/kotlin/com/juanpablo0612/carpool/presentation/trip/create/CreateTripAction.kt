@@ -17,6 +17,8 @@ sealed class CreateTripAction {
     data class OnSetContribution(val pesos: Int?) : CreateTripAction()
     data class OnSetMessage(val text: String) : CreateTripAction()
     data object OnPublishClick : CreateTripAction()
+    data object OnConfirmPublish : CreateTripAction()
+    data object OnDismissPublishConfirm : CreateTripAction()
     data object OnNavigateToRegisterVehicle : CreateTripAction()
     data object OnNavigateToVehiclesList : CreateTripAction()
     data object OnBackClick : CreateTripAction()

@@ -19,7 +19,8 @@ fun NavGraphBuilder.authNavGraph(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    canNavigateBack: () -> Boolean = { true }
 ) {
     composable<Route.Login> {
         val viewModel: LoginViewModel = koinViewModel()
@@ -29,7 +30,8 @@ fun NavGraphBuilder.authNavGraph(
             onNavigateToRegister = onNavigateToRegister,
             onForgotPasswordClick = onNavigateToForgotPassword,
             onNavigateToEmailVerification = onNavigateToEmailVerification,
-            onBackClick = onNavigateBack
+            onBackClick = onNavigateBack,
+            canNavigateBack = canNavigateBack()
         )
     }
 

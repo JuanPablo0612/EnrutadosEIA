@@ -104,6 +104,13 @@ fun RoleSelectorContent(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
+                Text(
+                    text = stringResource(Res.string.role_selector_remember_choice_hint),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    // Aligns under the label text, past the checkbox + spacer above it.
+                    modifier = Modifier.padding(start = 48.dp)
+                )
             }
         }
     }

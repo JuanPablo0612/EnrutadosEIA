@@ -105,6 +105,8 @@
         <item quantity="other">%1$d passenger seats</item>
     </plurals>
     <string name="routes_list_title">My Routes</string>
+    <string name="routes_search_placeholder">Search routes</string>
+    <string name="routes_search_no_results">No routes match "%1$s"</string>
     <string name="routes_empty_title">No routes yet</string>
     <string name="route_waypoints_count">%1$d stops</string>
     <plurals name="trip_waypoint_count">
@@ -153,6 +155,7 @@
     <string name="place_selector_section_my_places">My places</string>
     <string name="place_selector_section_eia">EIA Campuses</string>
     <string name="place_selector_section_community">Community</string>
+    <string name="place_selector_community_badge">Community</string>
     <string name="place_selector_section_results">Results</string>
     <string name="place_selector_empty_my_places_title">No saved places yet</string>
     <string name="place_selector_empty_my_places_description">Places you save will show up here for quick access.</string>
@@ -237,6 +240,8 @@
     <!-- Empty state subtitles -->
     <string name="search_empty_title">No trips available</string>
     <string name="search_empty_subtitle">Try a different search or check back later</string>
+    <string name="search_prompt_title">Search for a trip</string>
+    <string name="search_prompt_subtitle">Pick an origin, a destination, and when you want to travel</string>
 
     <!-- Home Dashboard -->
     <string name="home_greeting_subtitle">Ready for today\'s trip?</string>
@@ -311,6 +316,7 @@
 
     <!-- Role selector -->
     <string name="role_selector_remember_choice">Remember my choice</string>
+    <string name="role_selector_remember_choice_hint">Skip this screen next time and go straight to the role you pick now</string>
     <string name="role_selector_driver_pending">%1$d pending requests</string>
 
     <!-- New validation errors -->
@@ -480,6 +486,10 @@
     <string name="bookings_upcoming_empty_subtitle">Book a seat to see it here</string>
     <string name="bookings_past_empty_title">No past trips yet</string>
     <string name="bookings_past_empty_subtitle">Completed trips will appear here</string>
+    <string name="bookings_search_trips_action">Search for a trip</string>
+    <string name="bookings_past_search_placeholder">Search past trips</string>
+    <string name="bookings_past_search_no_results">No past trips match your search</string>
+    <string name="booking_action_message_driver">Message driver</string>
     <string name="booking_status_subtitle_pending">Waiting for driver confirmation</string>
     <string name="booking_status_subtitle_confirmed">Trip confirmed</string>
     <string name="booking_status_subtitle_rejected">Request rejected</string>
@@ -541,6 +551,8 @@
     <string name="driver_trips_upcoming_empty_subtitle">Publish your next trip and share the ride.</string>
     <string name="driver_trips_past_empty_title">No trips yet.</string>
     <string name="driver_trips_past_empty_subtitle">When you complete a trip, it will appear here.</string>
+    <string name="driver_trips_past_search_placeholder">Search past trips</string>
+    <string name="driver_trips_past_search_no_results">No past trips match "%1$s"</string>
     <string name="publish_trip_fab">Publish trip</string>
 
     <!-- DriverTrips - cancel confirmation -->
@@ -678,6 +690,8 @@
 
     <!-- Chat -->
     <string name="chat_default_title">Chat</string>
+    <string name="chat_date_today">Today</string>
+    <string name="chat_date_yesterday">Yesterday</string>
     <string name="chat_input_hint">Type a message…</string>
     <string name="chat_read_only_banner">This trip has ended. The conversation is read-only.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
@@ -726,6 +740,7 @@
     <!-- Safety -->
     <string name="safety_title">Seguridad</string>
     <string name="safety_description">When a trip starts, we\'ll automatically send the details to your emergency contacts (driver, vehicle, route, ETA).</string>
+    <string name="safety_empty_contacts_description">Add someone we can reach if something feels off during a trip — they\'ll get your driver, vehicle, route, and ETA automatically.</string>
     <string name="safety_contacts_section">Mis contactos</string>
     <string name="safety_add_contact">+ Add contact</string>
     <string name="safety_max_contacts_reached">Máximo 2 contactos</string>
@@ -785,10 +800,35 @@
     <string name="role_switch_to_driver">Switch to driver</string>
     <string name="role_switch_to_passenger">Switch to passenger</string>
     <string name="notice_route_created">Route created</string>
+    <string name="notice_route_updated">Route updated</string>
+    <string name="notice_route_duplicated">Route duplicated</string>
     <string name="notice_trip_published">Trip published</string>
     <string name="notice_vehicle_saved">Vehicle saved</string>
     <string name="notice_place_saved">Place saved</string>
     <string name="notice_profile_saved">Profile updated</string>
+
+    <!-- Unsaved-changes guard, reused by every create/edit form with a discard-on-back risk -->
+    <string name="discard_changes_title">Discard changes?</string>
+    <string name="discard_changes_body">You\'ll lose the changes you made.</string>
+    <string name="discard_changes_confirm">Discard</string>
+
+    <!-- Publish/start/complete confirmations for consequential, hard-to-reverse driver actions -->
+    <string name="publish_trip_confirm_title">Publish this trip?</string>
+    <string name="publish_trip_confirm_body">Passengers will be able to see and request seats on this trip once it\'s published.</string>
+    <string name="publish_trip_confirm_button">Publish</string>
+    <string name="trip_start_confirm_title">Start this trip?</string>
+    <string name="trip_start_confirm_body">Passengers will be notified that the trip is in progress.</string>
+    <string name="trip_start_confirm_button">Start</string>
+    <string name="passenger_dropped_off_confirm_title">Mark as dropped off?</string>
+    <string name="passenger_dropped_off_confirm_body">You won\'t be able to undo this from here.</string>
+    <string name="passenger_dropped_off_confirm_button">Mark dropped off</string>
+    <string name="notification_delete_confirm_title">Delete notification?</string>
+    <string name="notification_delete_confirm_body">This can\'t be undone.</string>
+    <string name="notification_delete_confirm_button">Delete</string>
+    <string name="form_progress_label">%1$d of %2$d required fields completed</string>
+    <string name="booking_request_sent_notice">Request sent — the driver will confirm shortly</string>
+    <string name="booking_history_search_placeholder">Search by passenger name</string>
+    <string name="safety_contacts_cap_hint">Up to %1$d contacts</string>
 
     <plurals name="route_trips_count">
         <item quantity="one">%1$d trip</item>

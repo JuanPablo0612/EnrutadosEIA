@@ -135,7 +135,6 @@ fun NavGraphBuilder.driverNavGraph(
         val viewModel: DriverTripsViewModel = koinViewModel()
         DriverTripsScreen(
             viewModel = viewModel,
-            onBackClick = onNavigateBack,
             onNavigateToRoutesList = onNavigateToRoutesList,
             onNavigateToTripDetail = onNavigateToTripDetail,
             onNavigateToPassengers = onNavigateToPassengers,

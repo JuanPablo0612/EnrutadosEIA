@@ -15,6 +15,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -128,7 +130,14 @@ fun VehiclesListContent(
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        val pullRefreshState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(VehiclesListAction.Refresh) },
+            state = pullRefreshState,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             state.actionError?.let { error ->
                 ErrorMessage(
                     message = stringResource(error.asStringResource()),
@@ -162,12 +171,16 @@ fun VehiclesListContent(
                                 onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
                                 onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
                                 onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
-                                onClick = null
+                                // The card used to look tappable (same styling as every other
+                                // list card in the app) but do nothing — wire it to the same
+                                // destination as the "Edit" menu item.
+                                onClick = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) }
                             )
                         }
                     }
                 }
             }
+        }
         }
     }
 }

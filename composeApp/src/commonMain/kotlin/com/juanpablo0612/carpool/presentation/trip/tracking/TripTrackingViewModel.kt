@@ -135,8 +135,15 @@ class TripTrackingViewModel(
         when (action) {
             is TripTrackingAction.OnMarkPickedUp ->
                 updatePassengerStatus(action.passengerId, PickupStatus.PickedUp)
-            is TripTrackingAction.OnMarkDroppedOff ->
-                updatePassengerStatus(action.passengerId, PickupStatus.DroppedOff)
+            is TripTrackingAction.OnMarkDroppedOffClick ->
+                _state.update { it.copy(pendingDropOffPassengerId = action.passengerId) }
+            TripTrackingAction.OnConfirmDropOff -> {
+                val passengerId = _state.value.pendingDropOffPassengerId
+                _state.update { it.copy(pendingDropOffPassengerId = null) }
+                if (passengerId != null) updatePassengerStatus(passengerId, PickupStatus.DroppedOff)
+            }
+            TripTrackingAction.OnDismissDropOffConfirm ->
+                _state.update { it.copy(pendingDropOffPassengerId = null) }
             TripTrackingAction.OnCompleteTripClick ->
                 _state.update { it.copy(showCompleteTripDialog = true) }
             TripTrackingAction.OnCompleteTripConfirm -> completeTrip()

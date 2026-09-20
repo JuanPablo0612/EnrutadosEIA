@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -35,6 +37,22 @@ class RoutesListViewModel(
         loadRoutes()
     }
 
+    private fun routesWithStatsFlow(userId: String): Flow<List<RouteWithStats>> =
+        combine(
+            routeRepository.getUserRoutes(userId),
+            tripRepository.getDriverTrips(userId)
+        ) { routes, trips ->
+            routes.map { route ->
+                val routeTrips = trips.filter { it.routeId == route.id }
+                RouteWithStats(
+                    route = route,
+                    tripsCount = routeTrips.size,
+                    lastUsedAt = routeTrips.maxOfOrNull { it.departureTime }
+                        ?.let { Instant.fromEpochMilliseconds(it) }
+                )
+            }
+        }
+
     private fun loadRoutes() {
         val userId = authRepository.getCurrentUserId() ?: run {
             _state.update { it.copy(isLoading = false) }
@@ -42,23 +60,30 @@ class RoutesListViewModel(
         }
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            combine(
-                routeRepository.getUserRoutes(userId),
-                tripRepository.getDriverTrips(userId)
-            ) { routes, trips ->
-                routes.map { route ->
-                    val routeTrips = trips.filter { it.routeId == route.id }
-                    RouteWithStats(
-                        route = route,
-                        tripsCount = routeTrips.size,
-                        lastUsedAt = routeTrips.maxOfOrNull { it.departureTime }
-                            ?.let { Instant.fromEpochMilliseconds(it) }
-                    )
-                }
-            }
+            routesWithStatsFlow(userId)
                 .catch { _state.update { it.copy(isLoading = false, error = RoutesListError.LoadFailed) } }
                 .collect { routesWithStats ->
                     _state.update { it.copy(routes = routesWithStats, isLoading = false, error = null) }
+                }
+        }
+    }
+
+    // The list above is a live Firestore listener already; a pull-to-refresh here doesn't need
+    // to re-subscribe it, just give the gesture a one-shot fetch to resolve so the spinner has
+    // something to wait on instead of spinning forever or (worse) flashing the full skeleton.
+    private fun refresh() {
+        val userId = authRepository.getCurrentUserId() ?: run {
+            _state.update { it.copy(isRefreshing = false) }
+            return
+        }
+        _state.update { it.copy(isRefreshing = true) }
+        viewModelScope.launch {
+            runCatching { routesWithStatsFlow(userId).first() }
+                .onSuccess { routesWithStats ->
+                    _state.update { it.copy(routes = routesWithStats, isRefreshing = false, error = null) }
+                }
+                .onFailure {
+                    _state.update { it.copy(isRefreshing = false) }
                 }
         }
     }
@@ -83,7 +108,10 @@ class RoutesListViewModel(
                 _state.update { it.copy(pendingDeleteRouteId = null) }
             }
             RoutesListAction.OnRetry -> loadRoutes()
+            RoutesListAction.OnRefresh -> refresh()
+            is RoutesListAction.OnSearchQueryChanged -> _state.update { it.copy(searchQuery = action.query) }
             RoutesListAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
+            RoutesListAction.OnDismissDuplicateSuccess -> _state.update { it.copy(showDuplicateSuccess = false) }
             RoutesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateBack)
             }
@@ -102,7 +130,7 @@ class RoutesListViewModel(
         viewModelScope.launch {
             duplicateRouteUseCase(route, nameOverride = "${route.name} (copia)")
                 .onSuccess {
-                    _state.update { it.copy(duplicatingRouteId = null) }
+                    _state.update { it.copy(duplicatingRouteId = null, showDuplicateSuccess = true) }
                 }
                 .onFailure {
                     _state.update {

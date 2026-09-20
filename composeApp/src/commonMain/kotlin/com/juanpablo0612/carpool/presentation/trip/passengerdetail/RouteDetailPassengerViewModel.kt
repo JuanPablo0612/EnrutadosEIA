@@ -9,6 +9,7 @@ import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationUseCase
+import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
@@ -17,6 +18,7 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notification_new_booking_request_body
 import enrutadoseia.composeapp.generated.resources.notification_new_booking_request_title
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -31,6 +33,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
+private const val BOOKING_SENT_BANNER_DURATION_MS = 900L
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class RouteDetailPassengerViewModel(
     private val tripId: String,
@@ -40,7 +44,8 @@ class RouteDetailPassengerViewModel(
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
     private val authRepository: AuthRepository,
-    private val createNotificationUseCase: CreateNotificationUseCase
+    private val createNotificationUseCase: CreateNotificationUseCase,
+    private val ratingRepository: RatingRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState())
@@ -95,6 +100,10 @@ class RouteDetailPassengerViewModel(
             val profile = authRepository.getPublicProfile(driverId).getOrNull()
             _state.update { it.copy(driver = profile) }
         }
+        viewModelScope.launch {
+            val rating = ratingRepository.getUserAverageRating(driverId).getOrNull()
+            _state.update { it.copy(driverAverageRating = rating) }
+        }
     }
 
     fun onAction(action: RouteDetailPassengerAction) {
@@ -140,7 +149,7 @@ class RouteDetailPassengerViewModel(
                 passengerMessage = _state.value.passengerMessage.ifBlank { null }
             )
                 .onSuccess {
-                    _state.update { it.copy(isBooking = false, alreadyRequested = true) }
+                    _state.update { it.copy(isBooking = false, alreadyRequested = true, bookingRequestSent = true) }
                     createNotificationUseCase(
                         userId = trip.driverId,
                         type = NotificationType.NewBookingRequest,
@@ -148,6 +157,9 @@ class RouteDetailPassengerViewModel(
                         body = getString(Res.string.notification_new_booking_request_body),
                         deepLink = NotificationDeepLink.bookingRequests()
                     )
+                    // Brief inline confirmation before navigating away, so "request sent"
+                    // isn't only communicated by an unannounced screen change.
+                    delay(BOOKING_SENT_BANNER_DURATION_MS)
                     _events.emit(RouteDetailPassengerEvent.NavigateToPassengerBookings)
                 }
                 .onFailure { throwable ->

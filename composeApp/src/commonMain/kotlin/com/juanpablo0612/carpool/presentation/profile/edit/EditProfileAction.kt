@@ -8,4 +8,7 @@ sealed class EditProfileAction {
     data class OnBioChange(val bio: String) : EditProfileAction()
     data class OnPhotoSelected(val file: PlatformFile?) : EditProfileAction()
     data object OnSaveClick : EditProfileAction()
+    data object OnBackClick : EditProfileAction()
+    data object OnConfirmDiscard : EditProfileAction()
+    data object OnDismissDiscardConfirm : EditProfileAction()
 }

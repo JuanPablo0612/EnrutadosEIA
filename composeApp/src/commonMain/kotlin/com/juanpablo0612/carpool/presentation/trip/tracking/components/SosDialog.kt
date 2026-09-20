@@ -2,16 +2,23 @@ package com.juanpablo0612.carpool.presentation.trip.tracking.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
@@ -47,11 +54,29 @@ internal fun SosDialog(
         title = { Text(stringResource(Res.string.trip_tracking_sos_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                SosActionRow(
-                    icon = vectorResource(Res.drawable.call_24px),
-                    label = stringResource(Res.string.trip_tracking_sos_call_emergency),
-                    onClick = onCallEmergency
-                )
+                // The single highest-stakes tap in the app gets a filled, high-contrast button
+                // instead of a plain list row identical in weight to the other SOS actions —
+                // deliberately still a single tap (no confirm gate), since speed matters in a
+                // real emergency.
+                Button(
+                    onClick = onCallEmergency,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.call_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onError
+                        )
+                        Text(
+                            text = stringResource(Res.string.trip_tracking_sos_call_emergency),
+                            color = MaterialTheme.colorScheme.onError,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = Spacing.sm)
+                        )
+                    }
+                }
                 SosActionRow(
                     icon = vectorResource(Res.drawable.my_location_24px),
                     label = stringResource(Res.string.trip_tracking_sos_share_location),

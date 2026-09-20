@@ -21,6 +21,7 @@ sealed class BookingRequestsAction {
         val rateeName: String
     ) : BookingRequestsAction()
     data object Refresh : BookingRequestsAction()
+    data class OnHistoryQueryChange(val query: String) : BookingRequestsAction()
     data object DismissError : BookingRequestsAction()
     data object DismissTripFilledNotice : BookingRequestsAction()
 }

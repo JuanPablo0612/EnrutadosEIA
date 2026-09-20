@@ -18,5 +18,9 @@ data class SafetyUiState(
     val saveError: SafetyError? = null,
     val actionError: Boolean = false
 ) {
-    val canAddContact: Boolean get() = contacts.size < 2
+    val canAddContact: Boolean get() = contacts.size < MAX_CONTACTS
+
+    companion object {
+        const val MAX_CONTACTS = 2
+    }
 }

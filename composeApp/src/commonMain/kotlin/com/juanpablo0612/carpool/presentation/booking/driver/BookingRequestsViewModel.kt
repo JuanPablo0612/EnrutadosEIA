@@ -61,17 +61,18 @@ class BookingRequestsViewModel(
         // live Firestore listener that would otherwise leak (3.8).
         bookingsJob?.cancel()
         val driverId = authRepository.getCurrentUserId() ?: run {
-            _state.update { it.copy(isLoading = false) }
+            _state.update { it.copy(isLoading = false, isRefreshing = false) }
             return
         }
         bookingsJob = viewModelScope.launch {
             bookingRepository.getAllDriverBookings(driverId)
-                .catch { _state.update { it.copy(isLoading = false) } }
+                .catch { _state.update { it.copy(isLoading = false, isRefreshing = false) } }
                 .collect { bookings ->
                     val items = bookings.map { it.toBookingWithPassenger() }
                     _state.update {
                         it.copy(
                             isLoading = false,
+                            isRefreshing = false,
                             pending = items
                                 .filter { b -> b.booking.status is BookingStatus.Pending }
                                 .sortedByDescending { b -> b.booking.createdAt },
@@ -139,7 +140,11 @@ class BookingRequestsViewModel(
                     )
                 )
             }
-            is BookingRequestsAction.Refresh -> loadBookings()
+            is BookingRequestsAction.Refresh -> {
+                _state.update { it.copy(isRefreshing = true) }
+                loadBookings()
+            }
+            is BookingRequestsAction.OnHistoryQueryChange -> _state.update { it.copy(historyQuery = action.query) }
             BookingRequestsAction.DismissError -> _state.update { it.copy(error = null) }
             BookingRequestsAction.DismissTripFilledNotice -> _state.update { it.copy(tripJustFilled = false) }
         }

@@ -26,6 +26,9 @@ data class RegisterVehicleUiState(
     val showYearDropdown: Boolean = false,
     val showPhotoSheet: Boolean = false,
     val isSaving: Boolean = false,
+    val isSaved: Boolean = false,
+    val showDiscardConfirm: Boolean = false,
+    val initialSnapshot: VehicleFormSnapshot? = null,
     val brandError: Boolean = false,
     val modelError: Boolean = false,
     val plateError: Boolean = false,
@@ -43,6 +46,25 @@ data class RegisterVehicleUiState(
             && effectiveColor.isNotBlank()
             && seatCount in 1..7
 
+    val snapshot: VehicleFormSnapshot
+        get() = VehicleFormSnapshot(
+            brand = brand,
+            isCustomBrand = isCustomBrand,
+            model = model,
+            plate = plate,
+            color = color,
+            isCustomColor = isCustomColor,
+            customColor = customColor,
+            year = year,
+            seatCount = seatCount,
+            type = type,
+            hasNewPhoto = photoFile != null,
+            existingPhotoUrl = existingPhotoUrl,
+        )
+
+    val isDirty: Boolean
+        get() = initialSnapshot != null && initialSnapshot != snapshot
+
     companion object {
         val PLATE_REGEX = Regex("^[A-Z]{3}[0-9]{3}$")
 
@@ -57,6 +79,21 @@ data class RegisterVehicleUiState(
         )
     }
 }
+
+data class VehicleFormSnapshot(
+    val brand: String,
+    val isCustomBrand: Boolean,
+    val model: String,
+    val plate: String,
+    val color: String,
+    val isCustomColor: Boolean,
+    val customColor: String,
+    val year: Int,
+    val seatCount: Int,
+    val type: VehicleType?,
+    val hasNewPhoto: Boolean,
+    val existingPhotoUrl: String?,
+)
 
 private fun currentYear(): Int =
     Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.year

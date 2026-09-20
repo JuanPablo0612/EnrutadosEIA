@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -28,19 +29,24 @@ class CommunityRoutesViewModel(
     private val _events = MutableSharedFlow<CommunityRoutesEvent>()
     val events: SharedFlow<CommunityRoutesEvent> = _events.asSharedFlow()
 
+    private var routesJob: Job? = null
+
     init {
         loadRoutes()
     }
 
-    private fun loadRoutes() {
-        _state.update { it.copy(isLoading = true, error = null) }
+    // Cancel any previous subscription first — otherwise a retry/refresh stacks a second live
+    // Firestore listener on top of the first instead of replacing it.
+    private fun loadRoutes(isRefresh: Boolean = false) {
+        routesJob?.cancel()
+        _state.update { if (isRefresh) it.copy(isRefreshing = true) else it.copy(isLoading = true, error = null) }
         val currentUserId = authRepository.getCurrentUserId()
-        viewModelScope.launch {
+        routesJob = viewModelScope.launch {
             routeRepository.getCommunityRoutes()
                 .map { routes -> routes.filter { it.driverId != currentUserId } }
-                .catch { _state.update { it.copy(isLoading = false, error = CommunityRoutesError.LoadFailed) } }
+                .catch { _state.update { it.copy(isLoading = false, isRefreshing = false, error = CommunityRoutesError.LoadFailed) } }
                 .collect { routes ->
-                    _state.update { it.copy(routes = routes, isLoading = false, error = null) }
+                    _state.update { it.copy(routes = routes, isLoading = false, isRefreshing = false, error = null) }
                 }
         }
     }
@@ -49,6 +55,7 @@ class CommunityRoutesViewModel(
         when (action) {
             is CommunityRoutesAction.OnReuseClick -> reuseRoute(action.routeId)
             CommunityRoutesAction.OnRetry -> loadRoutes()
+            CommunityRoutesAction.Refresh -> loadRoutes(isRefresh = true)
             CommunityRoutesAction.OnDismissActionError -> _state.update { it.copy(actionError = null) }
             CommunityRoutesAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(CommunityRoutesEvent.NavigateBack)

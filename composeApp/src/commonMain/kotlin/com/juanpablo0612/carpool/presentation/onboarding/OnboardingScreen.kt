@@ -15,6 +15,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +37,8 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.add_road_24px
+import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.onboarding_next
 import enrutadoseia.composeapp.generated.resources.onboarding_skip
 import enrutadoseia.composeapp.generated.resources.onboarding_slide1_body
@@ -44,7 +48,9 @@ import enrutadoseia.composeapp.generated.resources.onboarding_slide2_title
 import enrutadoseia.composeapp.generated.resources.onboarding_slide3_body
 import enrutadoseia.composeapp.generated.resources.onboarding_slide3_title
 import enrutadoseia.composeapp.generated.resources.onboarding_start
+import enrutadoseia.composeapp.generated.resources.search_24px
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun OnboardingScreen(
@@ -164,6 +170,11 @@ private fun OnboardingSlide(page: Int) {
         1 -> stringResource(Res.string.onboarding_slide2_title) to stringResource(Res.string.onboarding_slide2_body)
         else -> stringResource(Res.string.onboarding_slide3_title) to stringResource(Res.string.onboarding_slide3_body)
     }
+    val icon: ImageVector = when (page) {
+        0 -> vectorResource(Res.drawable.directions_car_24px)
+        1 -> vectorResource(Res.drawable.add_road_24px)
+        else -> vectorResource(Res.drawable.search_24px)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -180,9 +191,12 @@ private fun OnboardingSlide(page: Int) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = listOf("🚗", "🗺️", "🎯")[page],
-                style = MaterialTheme.typography.displayLarge
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                // Component-intrinsic illustration icon size, not a spacing step.
+                modifier = Modifier.size(96.dp)
             )
         }
 

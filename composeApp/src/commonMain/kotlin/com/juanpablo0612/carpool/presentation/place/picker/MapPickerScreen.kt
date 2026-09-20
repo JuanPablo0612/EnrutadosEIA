@@ -125,6 +125,7 @@ fun MapPickerContent(
                 PrimaryButton(
                     text = stringResource(Res.string.map_picker_confirm),
                     onClick = onConfirm,
+                    enabled = state.resolvedAddress != null && !state.isResolvingAddress,
                 )
             }
         }

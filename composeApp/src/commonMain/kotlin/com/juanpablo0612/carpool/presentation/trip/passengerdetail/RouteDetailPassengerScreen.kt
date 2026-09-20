@@ -39,10 +39,12 @@ import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.Tr
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.booking_request_sent_notice
 import enrutadoseia.composeapp.generated.resources.route_detail_passenger_title
 import org.jetbrains.compose.resources.stringResource
 
@@ -95,6 +97,7 @@ fun RouteDetailPassengerContent(
                             DriverAndVehicleSection(
                                 driver = state.driver,
                                 vehicle = state.vehicle,
+                                driverAverageRating = state.driverAverageRating,
                                 modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
                             )
                         }
@@ -146,6 +149,16 @@ fun RouteDetailPassengerContent(
                                     onAction = onAction,
                                     modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
                                 )
+                            }
+                            if (state.bookingRequestSent) {
+                                item {
+                                    SuccessMessage(
+                                        message = stringResource(Res.string.booking_request_sent_notice),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                                    )
+                                }
                             }
                         }
                         state.error?.let { error ->

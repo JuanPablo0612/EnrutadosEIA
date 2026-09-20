@@ -14,11 +14,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,6 +52,8 @@ import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.driver_trips_past_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.driver_trips_past_empty_title
+import enrutadoseia.composeapp.generated.resources.driver_trips_past_search_no_results
+import enrutadoseia.composeapp.generated.resources.driver_trips_past_search_placeholder
 import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_title
 import enrutadoseia.composeapp.generated.resources.nav_my_trips
@@ -58,6 +63,9 @@ import enrutadoseia.composeapp.generated.resources.tab_upcoming
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_body
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_button
 import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_title
+import enrutadoseia.composeapp.generated.resources.trip_start_confirm_body
+import enrutadoseia.composeapp.generated.resources.trip_start_confirm_button
+import enrutadoseia.composeapp.generated.resources.trip_start_confirm_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_button
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_title
@@ -68,7 +76,6 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun DriverTripsScreen(
     viewModel: DriverTripsViewModel,
-    onBackClick: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
@@ -78,7 +85,6 @@ fun DriverTripsScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            DriverTripsEvent.NavigateBack -> onBackClick()
             DriverTripsEvent.NavigateToRoutesList -> onNavigateToRoutesList()
             is DriverTripsEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
             is DriverTripsEvent.NavigateToPassengers -> onNavigateToPassengers(event.tripId)
@@ -118,6 +124,16 @@ fun DriverTripsContent(
         )
     }
 
+    state.pendingStartTripId?.let { tripId ->
+        ConfirmDialog(
+            title = stringResource(Res.string.trip_start_confirm_title),
+            description = stringResource(Res.string.trip_start_confirm_body),
+            confirmText = stringResource(Res.string.trip_start_confirm_button),
+            onConfirm = { onAction(DriverTripsAction.ConfirmStart(tripId)) },
+            onDismiss = { onAction(DriverTripsAction.DismissStart) }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(Res.string.nav_my_trips)) })
@@ -137,7 +153,14 @@ fun DriverTripsContent(
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        val pullRefreshState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(DriverTripsAction.Refresh) },
+            state = pullRefreshState,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             state.error?.let { error ->
                 ErrorMessage(
                     message = stringResource(error.asStringResource()),
@@ -160,6 +183,20 @@ fun DriverTripsContent(
                     text = { Text(stringResource(Res.string.tab_past)) }
                 )
             }
+
+            if (!isUpcoming && state.trips.isNotEmpty()) {
+                OutlinedTextField(
+                    value = state.pastSearchQuery,
+                    onValueChange = { onAction(DriverTripsAction.OnPastSearchQueryChanged(it)) },
+                    placeholder = { Text(stringResource(Res.string.driver_trips_past_search_placeholder)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                )
+            }
+
+            val visibleTrips = state.filteredTrips
 
             when {
                 state.isLoading -> ListSkeleton(
@@ -186,11 +223,17 @@ fun DriverTripsContent(
                         )
                     }
                 }
+                visibleTrips.isEmpty() -> EmptyState(
+                    icon = vectorResource(Res.drawable.directions_car_24px),
+                    title = stringResource(Res.string.driver_trips_past_search_no_results, state.pastSearchQuery),
+                    description = "",
+                    modifier = Modifier.fillMaxSize()
+                )
                 else -> {
                     val nowMs = rememberNowMs()
                     val grouped = if (isUpcoming) {
-                        remember(state.trips, nowMs) {
-                            groupByRelativeDate(state.trips, nowMs) { it.trip.departureTime }
+                        remember(visibleTrips, nowMs) {
+                            groupByRelativeDate(visibleTrips, nowMs) { it.trip.departureTime }
                         }
                     } else {
                         null
@@ -231,7 +274,7 @@ fun DriverTripsContent(
                                 }
                             }
                         } else {
-                            items(state.trips, key = { it.trip.id }) { ts ->
+                            items(visibleTrips, key = { it.trip.id }) { ts ->
                                 DriverTripCard(
                                     tripWithStats = ts,
                                     onStartTrip = { onAction(DriverTripsAction.StartTrip(ts.trip.id)) },
@@ -246,6 +289,7 @@ fun DriverTripsContent(
                     }
                 }
             }
+        }
         }
     }
 }

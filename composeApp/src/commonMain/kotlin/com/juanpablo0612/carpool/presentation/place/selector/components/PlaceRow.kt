@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +23,10 @@ fun PlaceRow(
     name: String,
     address: String?,
     trailing: @Composable (() -> Unit)? = null,
+    // Shown as a small tag next to the name — e.g. distinguishing a community place from the
+    // user's own saved ones, which otherwise render identically save for the section header
+    // above them.
+    badgeText: String? = null,
     onClick: () -> Unit,
 ) {
     Row(
@@ -38,7 +43,23 @@ fun PlaceRow(
         )
         Spacer(modifier = Modifier.width(Spacing.md))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = name, style = MaterialTheme.typography.bodyLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = name, style = MaterialTheme.typography.bodyLarge)
+                if (badgeText != null) {
+                    Spacer(modifier = Modifier.width(Spacing.xs))
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall,
+                    ) {
+                        Text(
+                            text = badgeText,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(horizontal = Spacing.xs)
+                        )
+                    }
+                }
+            }
             if (!address.isNullOrBlank()) {
                 Text(
                     text = address,

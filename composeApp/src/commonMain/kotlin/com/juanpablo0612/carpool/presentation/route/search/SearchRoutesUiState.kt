@@ -6,6 +6,7 @@ data class SearchRoutesUiState(
     val results: List<TripResult> = emptyList(),
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
+    val isRefreshing: Boolean = false,
     val origin: Place? = null,
     val destination: Place? = Place.UNIVERSITY_EIA,
     val selectedEpochMs: Long? = null,

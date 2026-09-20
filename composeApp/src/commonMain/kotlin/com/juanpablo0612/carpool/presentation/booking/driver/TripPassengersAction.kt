@@ -20,4 +20,5 @@ sealed class TripPassengersAction {
         val rateeName: String
     ) : TripPassengersAction()
     data object DismissError : TripPassengersAction()
+    data object Refresh : TripPassengersAction()
 }

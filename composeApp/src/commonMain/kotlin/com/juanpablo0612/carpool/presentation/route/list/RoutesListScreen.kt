@@ -14,8 +14,11 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +34,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -38,6 +42,7 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.cd_community_routes
 import enrutadoseia.composeapp.generated.resources.location_on_24px
+import enrutadoseia.composeapp.generated.resources.notice_route_duplicated
 import enrutadoseia.composeapp.generated.resources.route_delete_confirm_button
 import enrutadoseia.composeapp.generated.resources.route_delete_confirm_description
 import enrutadoseia.composeapp.generated.resources.route_delete_confirm_title
@@ -46,6 +51,8 @@ import enrutadoseia.composeapp.generated.resources.routes_empty_title
 import enrutadoseia.composeapp.generated.resources.routes_list_new_route
 import enrutadoseia.composeapp.generated.resources.routes_list_subtitle
 import enrutadoseia.composeapp.generated.resources.routes_list_title
+import enrutadoseia.composeapp.generated.resources.routes_search_no_results
+import enrutadoseia.composeapp.generated.resources.routes_search_placeholder
 import enrutadoseia.composeapp.generated.resources.search_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -125,48 +132,87 @@ fun RoutesListContent(
             )
         }
     ) { padding ->
-        when {
-            state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
-            state.error != null -> ErrorState(
-                description = stringResource(state.error.asStringResource()),
-                onRetry = { onAction(RoutesListAction.OnRetry) },
-                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
-            )
-            state.routes.isEmpty() -> EmptyState(
-                icon = vectorResource(Res.drawable.location_on_24px),
-                title = stringResource(Res.string.routes_empty_title),
-                description = stringResource(Res.string.routes_empty_description),
-                modifier = Modifier.fillMaxSize().padding(padding),
-                primaryAction = ActionButton(stringResource(Res.string.routes_list_new_route)) {
-                    onAction(RoutesListAction.OnCreateRouteClick)
-                }
-            )
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(Spacing.lg),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.md)
-                ) {
-                    state.actionError?.let { actionError ->
-                        item(key = "action_error") {
-                            ErrorMessage(
-                                message = stringResource(actionError.asStringResource()),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onAction(RoutesListAction.OnDismissActionError) }
+        val pullRefreshState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(RoutesListAction.OnRefresh) },
+            state = pullRefreshState,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+            when {
+                state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
+                state.error != null -> ErrorState(
+                    description = stringResource(state.error.asStringResource()),
+                    onRetry = { onAction(RoutesListAction.OnRetry) },
+                    modifier = Modifier.fillMaxSize().padding(Spacing.lg)
+                )
+                state.routes.isEmpty() -> EmptyState(
+                    icon = vectorResource(Res.drawable.location_on_24px),
+                    title = stringResource(Res.string.routes_empty_title),
+                    description = stringResource(Res.string.routes_empty_description),
+                    modifier = Modifier.fillMaxSize(),
+                    primaryAction = ActionButton(stringResource(Res.string.routes_list_new_route)) {
+                        onAction(RoutesListAction.OnCreateRouteClick)
+                    }
+                )
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(Spacing.lg),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.md)
+                    ) {
+                        item(key = "search") {
+                            OutlinedTextField(
+                                value = state.searchQuery,
+                                onValueChange = { onAction(RoutesListAction.OnSearchQueryChanged(it)) },
+                                placeholder = { Text(stringResource(Res.string.routes_search_placeholder)) },
+                                leadingIcon = {
+                                    Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
+                                },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
-                    }
-                    items(state.routes, key = { it.route.id }) { routeWithStats ->
-                        RouteCard(
-                            routeWithStats = routeWithStats,
-                            onClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
-                            onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
-                            onEditClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
-                            onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
-                            onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) },
-                            isDuplicating = state.duplicatingRouteId == routeWithStats.route.id
-                        )
+                        state.actionError?.let { actionError ->
+                            item(key = "action_error") {
+                                ErrorMessage(
+                                    message = stringResource(actionError.asStringResource()),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onAction(RoutesListAction.OnDismissActionError) }
+                                )
+                            }
+                        }
+                        if (state.showDuplicateSuccess) {
+                            item(key = "duplicate_success") {
+                                SuccessMessage(
+                                    message = stringResource(Res.string.notice_route_duplicated),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onAction(RoutesListAction.OnDismissDuplicateSuccess) }
+                                )
+                            }
+                        }
+                        if (state.filteredRoutes.isEmpty()) {
+                            item(key = "no_search_results") {
+                                Text(
+                                    text = stringResource(Res.string.routes_search_no_results, state.searchQuery),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(Spacing.lg)
+                                )
+                            }
+                        }
+                        items(state.filteredRoutes, key = { it.route.id }) { routeWithStats ->
+                            RouteCard(
+                                routeWithStats = routeWithStats,
+                                onClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
+                                onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
+                                onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
+                                onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) },
+                                isDuplicating = state.duplicatingRouteId == routeWithStats.route.id
+                            )
+                        }
                     }
                 }
             }

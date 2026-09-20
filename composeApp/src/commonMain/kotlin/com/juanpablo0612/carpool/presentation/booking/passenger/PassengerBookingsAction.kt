@@ -14,4 +14,13 @@ sealed class PassengerBookingsAction {
         val rateeId: String,
         val rateeName: String
     ) : PassengerBookingsAction()
+    data object Refresh : PassengerBookingsAction()
+    data class OnPastSearchQueryChanged(val query: String) : PassengerBookingsAction()
+    data object OnSearchTripsClick : PassengerBookingsAction()
+    data class OnMessageDriver(
+        val bookingId: String,
+        val tripId: String,
+        val driverName: String,
+        val isReadOnly: Boolean
+    ) : PassengerBookingsAction()
 }

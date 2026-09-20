@@ -27,7 +27,8 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    canNavigateBack: Boolean = true
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -43,7 +44,8 @@ fun LoginScreen(
         onAction = viewModel::onAction,
         onNavigateToRegister = onNavigateToRegister,
         onForgotPasswordClick = onForgotPasswordClick,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        canNavigateBack = canNavigateBack
     )
 }
 
@@ -53,13 +55,15 @@ fun LoginContent(
     onAction: (LoginAction) -> Unit,
     onNavigateToRegister: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    canNavigateBack: Boolean = true
 ) {
     Scaffold(
         topBar = {
             AuthTopBar(
                 title = stringResource(Res.string.login_title),
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                showBackButton = canNavigateBack
             )
         }
     ) { padding ->

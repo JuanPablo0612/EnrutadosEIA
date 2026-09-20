@@ -8,7 +8,8 @@ data class TripResult(
     val trip: Trip,
     val vehicle: Vehicle?,
     val availableSeats: Int,
-    val driver: PublicProfile? = null
+    val driver: PublicProfile? = null,
+    val driverAverageRating: Double? = null
 ) {
     /**
      * Formatted contribution amount (with thousands separators), or null when the trip is free

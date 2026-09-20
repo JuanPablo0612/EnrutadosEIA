@@ -1,7 +1,12 @@
 package com.juanpablo0612.carpool.presentation.navigation.graph
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -25,6 +30,8 @@ fun NavGraphBuilder.passengerNavGraph(
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
     onNavigateToAddPlace: () -> Unit,
+    onNavigateToSearchTrips: () -> Unit,
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     composable<Route.PassengerHome> {
@@ -42,6 +49,8 @@ fun NavGraphBuilder.passengerNavGraph(
                 onNavigateToTripDetail = onNavigateToTripDetail,
                 onNavigateToAddPlace = onNavigateToAddPlace
             )
+        } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
     }
 
@@ -61,7 +70,9 @@ fun NavGraphBuilder.passengerNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onNavigateToTripTracking = onNavigateToTripTracking,
-            onNavigateToRating = onNavigateToRating
+            onNavigateToRating = onNavigateToRating,
+            onNavigateToSearchTrips = onNavigateToSearchTrips,
+            onNavigateToChat = onNavigateToChat
         )
     }
 }

@@ -9,6 +9,8 @@ sealed class RouteDetailAction {
     data object OnBackClick : RouteDetailAction()
     data object OnEditClick : RouteDetailAction()
     data object OnCancelEdit : RouteDetailAction()
+    data object OnConfirmDiscardEdit : RouteDetailAction()
+    data object OnDismissDiscardEditConfirm : RouteDetailAction()
     data object OnSaveChangesClick : RouteDetailAction()
     data object OnDeleteClick : RouteDetailAction()
     data object OnConfirmDelete : RouteDetailAction()

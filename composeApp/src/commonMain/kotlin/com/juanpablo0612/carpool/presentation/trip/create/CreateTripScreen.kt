@@ -50,6 +50,7 @@ import com.juanpablo0612.carpool.presentation.trip.create.components.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
@@ -70,6 +71,9 @@ import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.create_trip_title
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.publish_trip
+import enrutadoseia.composeapp.generated.resources.publish_trip_confirm_body
+import enrutadoseia.composeapp.generated.resources.publish_trip_confirm_button
+import enrutadoseia.composeapp.generated.resources.publish_trip_confirm_title
 import enrutadoseia.composeapp.generated.resources.select_vehicle_section
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary_with_contribution
@@ -116,6 +120,16 @@ fun CreateTripContent(
     state: CreateTripUiState,
     onAction: (CreateTripAction) -> Unit
 ) {
+    if (state.showPublishConfirm) {
+        ConfirmDialog(
+            title = stringResource(Res.string.publish_trip_confirm_title),
+            description = stringResource(Res.string.publish_trip_confirm_body),
+            confirmText = stringResource(Res.string.publish_trip_confirm_button),
+            onConfirm = { onAction(CreateTripAction.OnConfirmPublish) },
+            onDismiss = { onAction(CreateTripAction.OnDismissPublishConfirm) }
+        )
+    }
+
     if (state.showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = state.departureDate.let {
@@ -318,7 +332,9 @@ fun CreateTripContent(
                 state.vehicles.size == 1 -> item {
                     SingleVehicleCard(
                         vehicle = state.vehicles.first(),
-                        onChangeClick = { onAction(CreateTripAction.OnNavigateToVehiclesList) },
+                        // "Change" has nothing to change to with only one vehicle — the action
+                        // only makes sense once there's a second vehicle to switch to.
+                        onChangeClick = null,
                         modifier = Modifier.padding(horizontal = Spacing.lg)
                     )
                 }

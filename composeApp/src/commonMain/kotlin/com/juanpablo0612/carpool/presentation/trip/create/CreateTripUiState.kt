@@ -27,6 +27,7 @@ data class CreateTripUiState(
     val error: TripError? = null,
     val showDatePicker: Boolean = false,
     val showTimePicker: Boolean = false,
+    val showPublishConfirm: Boolean = false,
 ) {
     val selectedVehicle: Vehicle?
         get() = vehicles.find { it.id == selectedVehicleId }

@@ -14,6 +14,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
@@ -21,6 +22,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,6 +43,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.booking_history_search_placeholder
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_confirmed
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_history
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_pending
@@ -88,6 +92,7 @@ fun BookingRequestsContent(
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
 ) {
     val nowMs = rememberNowMs()
+    val pullRefreshState = rememberPullToRefreshState()
     if (state.pendingRejectionFor != null) {
         RejectBottomSheet(
             selectedReason = state.selectedRejectReason,
@@ -121,10 +126,17 @@ fun BookingRequestsContent(
             )
         },
     ) { padding ->
-        Column(
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(BookingRequestsAction.Refresh) },
+            state = pullRefreshState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
+        ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
         ) {
             if (state.tripJustFilled) {
                 TripFilledBanner(
@@ -176,6 +188,18 @@ fun BookingRequestsContent(
                 )
             }
 
+            if (state.tab == DriverBookingsTab.History && !state.isLoading) {
+                OutlinedTextField(
+                    value = state.historyQuery,
+                    onValueChange = { onAction(BookingRequestsAction.OnHistoryQueryChange(it)) },
+                    placeholder = { Text(stringResource(Res.string.booking_history_search_placeholder)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                )
+            }
+
             when {
                 state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
                 else -> when (state.tab) {
@@ -223,16 +247,17 @@ fun BookingRequestsContent(
                     }
 
                     DriverBookingsTab.History -> TabContent(
-                        isEmpty = state.history.isEmpty(),
+                        isEmpty = state.filteredHistory.isEmpty(),
                         emptyTitle = stringResource(Res.string.history_empty_title),
                         emptySubtitle = stringResource(Res.string.history_empty_subtitle),
                     ) {
-                        items(state.history, key = { it.booking.id }) { item ->
+                        items(state.filteredHistory, key = { it.booking.id }) { item ->
                             HistoryBookingCard(item = item)
                         }
                     }
                 }
             }
+        }
         }
     }
 }

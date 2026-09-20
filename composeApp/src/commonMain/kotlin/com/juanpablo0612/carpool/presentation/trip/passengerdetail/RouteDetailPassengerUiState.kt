@@ -10,6 +10,7 @@ data class RouteDetailPassengerUiState(
     val trip: Trip? = null,
     val vehicle: Vehicle? = null,
     val driver: PublicProfile? = null,
+    val driverAverageRating: Double? = null,
     val availableSeats: Int = 0,
     val alreadyRequested: Boolean = false,
     /** True when the signed-in user is this trip's driver — hides the booking CTA entirely. */
@@ -17,5 +18,7 @@ data class RouteDetailPassengerUiState(
     val isBooking: Boolean = false,
     val showConfirmSheet: Boolean = false,
     val passengerMessage: String = "",
+    /** True right after a booking request succeeds, briefly, before navigating to Bookings. */
+    val bookingRequestSent: Boolean = false,
     val error: BookingError? = null
 )

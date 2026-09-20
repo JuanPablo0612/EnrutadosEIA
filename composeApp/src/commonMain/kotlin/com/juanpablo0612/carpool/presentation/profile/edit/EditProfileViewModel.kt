@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val SAVED_BANNER_DURATION_MS = 900L
 
 class EditProfileViewModel(
     private val userSession: UserSession,
@@ -40,6 +43,7 @@ class EditProfileViewModel(
                     isLoading = false
                 )
             }
+            _state.update { it.copy(initialSnapshot = it.snapshot) }
         }
     }
 
@@ -56,6 +60,18 @@ class EditProfileViewModel(
             }
             is EditProfileAction.OnPhotoSelected -> _state.update { it.copy(photoFile = action.file, photoError = false) }
             EditProfileAction.OnSaveClick -> save()
+            EditProfileAction.OnBackClick -> {
+                if (_state.value.isDirty) {
+                    _state.update { it.copy(showDiscardConfirm = true) }
+                } else {
+                    viewModelScope.launch { _events.emit(EditProfileEvent.NavigateBack) }
+                }
+            }
+            EditProfileAction.OnConfirmDiscard -> {
+                _state.update { it.copy(showDiscardConfirm = false) }
+                viewModelScope.launch { _events.emit(EditProfileEvent.NavigateBack) }
+            }
+            EditProfileAction.OnDismissDiscardConfirm -> _state.update { it.copy(showDiscardConfirm = false) }
         }
     }
 
@@ -88,7 +104,8 @@ class EditProfileViewModel(
             ).fold(
                 onSuccess = { updatedUser ->
                     userSession.setUser(updatedUser)
-                    _state.update { it.copy(isSaving = false) }
+                    _state.update { it.copy(isSaving = false, isSaved = true) }
+                    delay(SAVED_BANNER_DURATION_MS)
                     _events.emit(EditProfileEvent.SaveSuccess)
                 },
                 onFailure = { throwable ->

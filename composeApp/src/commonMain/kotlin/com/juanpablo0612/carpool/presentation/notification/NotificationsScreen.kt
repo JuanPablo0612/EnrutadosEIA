@@ -14,6 +14,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,7 +31,10 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.bookmarks_24px
+import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_body
+import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_button
+import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_title
+import enrutadoseia.composeapp.generated.resources.notifications_24px
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all_confirm_body
 import enrutadoseia.composeapp.generated.resources.notifications_clear_all_confirm_title
@@ -74,6 +79,17 @@ fun NotificationsContent(
         )
     }
 
+    if (state.pendingDeleteId != null) {
+        ConfirmDialog(
+            title = stringResource(Res.string.notification_delete_confirm_title),
+            description = stringResource(Res.string.notification_delete_confirm_body),
+            confirmText = stringResource(Res.string.notification_delete_confirm_button),
+            onConfirm = { onAction(NotificationsAction.OnConfirmDelete) },
+            onDismiss = { onAction(NotificationsAction.OnDismissDeleteConfirm) },
+            isDestructive = true
+        )
+    }
+
     Scaffold(
         topBar = {
             CarpoolBackTopBar(
@@ -104,7 +120,13 @@ fun NotificationsContent(
                 )
             }
 
-            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            val pullRefreshState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = state.isRefreshing,
+                onRefresh = { onAction(NotificationsAction.Refresh) },
+                state = pullRefreshState,
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
                 when {
                     state.isLoading -> {
                         ListSkeleton(modifier = Modifier.fillMaxSize())
@@ -118,7 +140,7 @@ fun NotificationsContent(
                     }
                     state.notifications.isEmpty() -> {
                         EmptyState(
-                            icon = vectorResource(Res.drawable.bookmarks_24px),
+                            icon = vectorResource(Res.drawable.notifications_24px),
                             title = stringResource(Res.string.notifications_empty_title),
                             description = stringResource(Res.string.notifications_empty_subtitle),
                             modifier = Modifier.align(Alignment.Center)
@@ -134,7 +156,8 @@ fun NotificationsContent(
                                 SwipeToDeleteNotification(
                                     notification = notification,
                                     actionError = state.actionError is NotificationActionError.DeleteFailed,
-                                    onDismiss = { onAction(NotificationsAction.OnDismiss(notification.id)) },
+                                    isPendingDelete = state.pendingDeleteId == notification.id,
+                                    onSwipeToDelete = { onAction(NotificationsAction.OnSwipeToDelete(notification.id)) },
                                     onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
                                 )
                             }

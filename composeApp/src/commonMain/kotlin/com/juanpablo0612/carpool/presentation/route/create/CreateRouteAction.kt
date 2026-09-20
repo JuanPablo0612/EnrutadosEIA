@@ -18,4 +18,6 @@ sealed class CreateRouteAction {
     data object OnToggleShared : CreateRouteAction()
     data object OnSaveClick : CreateRouteAction()
     data object OnBackClick : CreateRouteAction()
+    data object OnConfirmDiscard : CreateRouteAction()
+    data object OnDismissDiscardConfirm : CreateRouteAction()
 }

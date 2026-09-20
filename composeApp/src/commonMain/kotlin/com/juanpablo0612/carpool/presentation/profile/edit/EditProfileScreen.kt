@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -43,13 +44,18 @@ import com.juanpablo0612.carpool.presentation.auth.register.components.NameTextF
 import com.juanpablo0612.carpool.presentation.auth.register.components.PhoneTextField
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.full_name_placeholder
+import enrutadoseia.composeapp.generated.resources.discard_changes_body
+import enrutadoseia.composeapp.generated.resources.discard_changes_confirm
+import enrutadoseia.composeapp.generated.resources.discard_changes_title
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_counter
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_placeholder
@@ -59,6 +65,7 @@ import enrutadoseia.composeapp.generated.resources.edit_profile_phone_placeholde
 import enrutadoseia.composeapp.generated.resources.edit_profile_photo_error
 import enrutadoseia.composeapp.generated.resources.edit_profile_save_button
 import enrutadoseia.composeapp.generated.resources.edit_profile_title
+import enrutadoseia.composeapp.generated.resources.notice_profile_saved
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_photo_action_camera
 import enrutadoseia.composeapp.generated.resources.register_photo_action_gallery
@@ -70,6 +77,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
+@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun EditProfileScreen(
     viewModel: EditProfileViewModel,
@@ -81,18 +89,22 @@ fun EditProfileScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             EditProfileEvent.SaveSuccess -> onSaved()
+            EditProfileEvent.NavigateBack -> onBackClick()
         }
     }
 
-    EditProfileContent(state = state, onAction = viewModel::onAction, onBackClick = onBackClick)
+    BackHandler {
+        viewModel.onAction(EditProfileAction.OnBackClick)
+    }
+
+    EditProfileContent(state = state, onAction = viewModel::onAction)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileContent(
     state: EditProfileUiState,
-    onAction: (EditProfileAction) -> Unit,
-    onBackClick: () -> Unit
+    onAction: (EditProfileAction) -> Unit
 ) {
     var showImageSourceSheet by remember { mutableStateOf(false) }
 
@@ -103,11 +115,22 @@ fun EditProfileContent(
         onAction(EditProfileAction.OnPhotoSelected(file))
     }
 
+    if (state.showDiscardConfirm) {
+        ConfirmDialog(
+            title = stringResource(Res.string.discard_changes_title),
+            description = stringResource(Res.string.discard_changes_body),
+            confirmText = stringResource(Res.string.discard_changes_confirm),
+            onConfirm = { onAction(EditProfileAction.OnConfirmDiscard) },
+            onDismiss = { onAction(EditProfileAction.OnDismissDiscardConfirm) },
+            isDestructive = true
+        )
+    }
+
     Scaffold(
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.edit_profile_title),
-                onBack = onBackClick,
+                onBack = { onAction(EditProfileAction.OnBackClick) },
             )
         }
     ) { padding ->
@@ -213,10 +236,14 @@ fun EditProfileContent(
                     ErrorMessage(message = stringResource(it.asStringResource()))
                 }
 
+                if (state.isSaved) {
+                    SuccessMessage(message = stringResource(Res.string.notice_profile_saved))
+                }
+
                 PrimaryButton(
                     text = stringResource(Res.string.edit_profile_save_button),
                     onClick = { onAction(EditProfileAction.OnSaveClick) },
-                    enabled = !state.isSaving,
+                    enabled = !state.isSaving && !state.isSaved,
                     isLoading = state.isSaving,
                     modifier = Modifier.fillMaxWidth()
                 )

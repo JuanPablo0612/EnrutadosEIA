@@ -41,8 +41,10 @@ import enrutadoseia.composeapp.generated.resources.safety_add_contact
 import enrutadoseia.composeapp.generated.resources.safety_add_contact_title
 import enrutadoseia.composeapp.generated.resources.safety_auto_share
 import enrutadoseia.composeapp.generated.resources.safety_auto_share_desc
+import enrutadoseia.composeapp.generated.resources.safety_contacts_cap_hint
 import enrutadoseia.composeapp.generated.resources.safety_contacts_section
 import enrutadoseia.composeapp.generated.resources.safety_description
+import enrutadoseia.composeapp.generated.resources.safety_empty_contacts_description
 import enrutadoseia.composeapp.generated.resources.safety_max_contacts_reached
 import enrutadoseia.composeapp.generated.resources.safety_remove_contact_body
 import enrutadoseia.composeapp.generated.resources.safety_remove_contact_confirm
@@ -130,11 +132,18 @@ fun SafetyContent(
 
                 SectionHeader(stringResource(Res.string.safety_contacts_section))
 
+                Text(
+                    text = stringResource(Res.string.safety_contacts_cap_hint, SafetyUiState.MAX_CONTACTS),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
+                )
+
                 if (state.contacts.isEmpty()) {
                     EmptyState(
                         icon = vectorResource(Res.drawable.call_24px),
                         title = stringResource(Res.string.safety_add_contact_title),
-                        description = stringResource(Res.string.safety_description),
+                        description = stringResource(Res.string.safety_empty_contacts_description),
                         primaryAction = ActionButton(
                             label = stringResource(Res.string.safety_add_contact),
                             onClick = { onAction(SafetyAction.OnAddContactClick) }

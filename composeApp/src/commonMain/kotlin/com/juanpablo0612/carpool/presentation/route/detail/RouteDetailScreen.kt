@@ -39,6 +39,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
+import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -98,6 +99,12 @@ fun RouteDetailScreen(
         viewModel.onAction(RouteDetailAction.OnCancelSelection)
     }
 
+    // Route system back through the same dirty-check as the edit form's top-bar back arrow,
+    // so a swipe/gesture back can't silently discard in-progress edits either.
+    BackHandler(enabled = selectionTarget == null && state.isEditing) {
+        viewModel.onAction(RouteDetailAction.OnCancelEdit)
+    }
+
     when {
         selectionTarget != null -> {
             val (activeSelectorState, activeSelectorViewModel) = when (selectionTarget) {
@@ -132,6 +139,8 @@ fun RouteDetailScreen(
             RouteDetailEditContent(
                 draft = draft,
                 isSaving = state.isSaving,
+                isSaved = state.isSaved,
+                showDiscardConfirm = state.showDiscardEditConfirm,
                 onAction = viewModel::onAction
             )
         }
@@ -339,6 +348,8 @@ internal fun RouteDetailReadContent(
 internal fun RouteDetailEditContent(
     draft: CreateRouteUiState,
     isSaving: Boolean,
+    isSaved: Boolean = false,
+    showDiscardConfirm: Boolean = false,
     onAction: (RouteDetailAction) -> Unit
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
@@ -346,6 +357,17 @@ internal fun RouteDetailEditContent(
         initialHour = draft.typicalDepartureTime?.hour ?: 7,
         initialMinute = draft.typicalDepartureTime?.minute ?: 0
     )
+
+    if (showDiscardConfirm) {
+        ConfirmDialog(
+            title = stringResource(Res.string.discard_changes_title),
+            description = stringResource(Res.string.discard_changes_body),
+            confirmText = stringResource(Res.string.discard_changes_confirm),
+            onConfirm = { onAction(RouteDetailAction.OnConfirmDiscardEdit) },
+            onDismiss = { onAction(RouteDetailAction.OnDismissDiscardEditConfirm) },
+            isDestructive = true
+        )
+    }
 
     if (showTimePicker) {
         TimePickerDialog(
@@ -473,13 +495,24 @@ internal fun RouteDetailEditContent(
                 )
             }
 
+            if (isSaved) {
+                item {
+                    SuccessMessage(
+                        message = stringResource(Res.string.notice_route_updated),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                    )
+                }
+            }
+
             item {
                 Button(
                     onClick = { onAction(RouteDetailAction.OnSaveChangesClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(Spacing.lg),
-                    enabled = draft.isValid && !isSaving
+                    enabled = draft.isValid && !isSaving && !isSaved
                 ) {
                     if (isSaving) {
                         CircularProgressIndicator(

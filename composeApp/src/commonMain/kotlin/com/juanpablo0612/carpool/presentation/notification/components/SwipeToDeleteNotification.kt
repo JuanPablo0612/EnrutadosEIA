@@ -13,23 +13,26 @@ import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 internal fun SwipeToDeleteNotification(
     notification: AppNotification,
     actionError: Boolean,
-    onDismiss: () -> Unit,
+    isPendingDelete: Boolean,
+    onSwipeToDelete: () -> Unit,
     onClick: () -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
+            // Never auto-commit: a swipe only requests the confirm dialog (unlike every other
+            // destructive action in the app, this used to delete immediately with no way back).
+            // The row snaps back below whenever the delete isn't actually confirmed.
             if (value == SwipeToDismissBoxValue.EndToStart) {
-                onDismiss()
-                true
-            } else false
+                onSwipeToDelete()
+            }
+            false
         }
     )
 
-    // The swipe commits optimistically (confirmValueChange returns true before the
-    // repository call resolves) — if the delete then fails, reset back to Settled so the
-    // row is interactive again instead of stuck in a visually-dismissed state.
-    LaunchedEffect(actionError) {
-        if (actionError) {
+    // Snap the row back once there's no pending confirmation for it left — either the user
+    // cancelled, or the delete failed and there's nothing further to show mid-swipe for.
+    LaunchedEffect(isPendingDelete, actionError) {
+        if (!isPendingDelete || actionError) {
             dismissState.reset()
         }
     }

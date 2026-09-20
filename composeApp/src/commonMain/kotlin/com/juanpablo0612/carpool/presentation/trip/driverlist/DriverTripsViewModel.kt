@@ -76,7 +76,7 @@ class DriverTripsViewModel(
                         ) { it.toList() }
                     }
                 }
-                .catch { _state.update { it.copy(isLoading = false, error = TripError.Unknown) } }
+                .catch { _state.update { it.copy(isLoading = false, isRefreshing = false, error = TripError.Unknown) } }
                 .collect { tripStats ->
                     val tab = _state.value.tab
                     val now = Clock.System.now().toEpochMilliseconds()
@@ -91,7 +91,7 @@ class DriverTripsViewModel(
                             else
                                 compareByDescending { it.trip.departureTime }
                         )
-                    _state.update { it.copy(trips = filtered, isLoading = false) }
+                    _state.update { it.copy(trips = filtered, isLoading = false, isRefreshing = false) }
                 }
         }
     }
@@ -102,7 +102,14 @@ class DriverTripsViewModel(
                 _state.update { it.copy(tab = action.tab, isLoading = true) }
                 loadTrips()
             }
-            is DriverTripsAction.StartTrip -> updateStatus(action.tripId, TripStatus.InProgress)
+            is DriverTripsAction.StartTrip -> _state.update {
+                it.copy(pendingStartTripId = action.tripId)
+            }
+            is DriverTripsAction.ConfirmStart -> {
+                _state.update { it.copy(pendingStartTripId = null) }
+                updateStatus(action.tripId, TripStatus.InProgress)
+            }
+            DriverTripsAction.DismissStart -> _state.update { it.copy(pendingStartTripId = null) }
             is DriverTripsAction.FinishTrip -> _state.update {
                 it.copy(pendingFinishTripId = action.tripId)
             }
@@ -133,12 +140,11 @@ class DriverTripsViewModel(
                 _events.emit(DriverTripsEvent.NavigateToRoutesList)
             }
             DriverTripsAction.Refresh -> {
-                _state.update { it.copy(isLoading = true) }
+                _state.update { it.copy(isRefreshing = true) }
                 loadTrips()
             }
-            DriverTripsAction.OnBackClick -> viewModelScope.launch {
-                _events.emit(DriverTripsEvent.NavigateBack)
-            }
+            is DriverTripsAction.OnPastSearchQueryChanged ->
+                _state.update { it.copy(pastSearchQuery = action.query) }
         }
     }
 

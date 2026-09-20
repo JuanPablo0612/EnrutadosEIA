@@ -13,4 +13,5 @@ sealed class VehiclesListAction {
     data object OnAddVehicle : VehiclesListAction()
     data object OnBackClick : VehiclesListAction()
     data object OnDismissActionError : VehiclesListAction()
+    data object Refresh : VehiclesListAction()
 }

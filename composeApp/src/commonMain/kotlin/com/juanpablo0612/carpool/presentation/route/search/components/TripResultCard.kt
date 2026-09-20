@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.route.search.TripResult
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
+import com.juanpablo0612.carpool.presentation.ui.components.DriverRatingBadge
 import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
@@ -74,6 +75,10 @@ fun TripResultCard(
                 text = driverName,
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
             )
+            result.driverAverageRating?.let { rating ->
+                Spacer(modifier = Modifier.size(Spacing.sm))
+                DriverRatingBadge(averageRating = rating)
+            }
         }
 
         result.vehicle?.let { vehicle ->

@@ -18,16 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.presentation.trip.tracking.components.CompleteTripDialog
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.DriverTrackingContent
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.PassengerTrackingContent
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.SosDialog
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_button
+import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_title
 import enrutadoseia.composeapp.generated.resources.trip_tracking_sos
 import enrutadoseia.composeapp.generated.resources.trip_tracking_title
 import org.jetbrains.compose.resources.stringResource
@@ -105,7 +108,10 @@ fun TripTrackingContent(
         }
 
         if (state.showCompleteTripDialog) {
-            CompleteTripDialog(
+            ConfirmDialog(
+                title = stringResource(Res.string.trip_tracking_complete_confirm_title),
+                description = stringResource(Res.string.trip_tracking_complete_confirm_body),
+                confirmText = stringResource(Res.string.trip_tracking_complete_confirm_button),
                 onConfirm = { onAction(TripTrackingAction.OnCompleteTripConfirm) },
                 onDismiss = { onAction(TripTrackingAction.OnCompleteTripDismiss) }
             )

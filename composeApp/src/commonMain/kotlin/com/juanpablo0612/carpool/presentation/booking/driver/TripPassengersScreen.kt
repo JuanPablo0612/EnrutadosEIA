@@ -12,6 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -114,13 +116,19 @@ fun TripPassengersContent(
             )
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // The top bar's title is static ("Passengers"), so without this the driver has no
-            // on-screen way to tell which trip's passenger list they're looking at. Every booking
-            // already carries denormalized origin/destination/departureTime, so the first one
-            // available doubles as the trip context — no extra trip fetch needed.
-            (state.pending.firstOrNull() ?: state.confirmed.firstOrNull())?.let { item ->
-                val local = Instant.fromEpochMilliseconds(item.booking.departureTime)
+        val pullRefreshState = rememberPullToRefreshState()
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(TripPassengersAction.Refresh) },
+            state = pullRefreshState,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // The top bar's title is static ("Passengers"); the trip is fetched directly (rather
+            // than derived from the first booking) so this context header still renders even for
+            // a trip with zero bookings, instead of silently disappearing.
+            state.trip?.let { trip ->
+                val local = Instant.fromEpochMilliseconds(trip.departureTime)
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                 val dayNamesShort = stringArrayResource(Res.array.day_names_short)
                 val monthNames = stringArrayResource(Res.array.month_names)
@@ -134,8 +142,8 @@ fun TripPassengersContent(
                 )
                 Column(modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)) {
                     RouteLineRow(
-                        origin = item.booking.originName,
-                        destination = item.booking.destinationName,
+                        origin = trip.origin.name,
+                        destination = trip.destination.name,
                     )
                     Text(
                         text = "$dateStr · $timeStr",
@@ -218,6 +226,7 @@ fun TripPassengersContent(
                     }
                 }
             }
+        }
         }
     }
 }
