@@ -3,9 +3,9 @@
 Enrutados EIA is a carpooling app for Universidad EIA students and staff. Drivers publish
 recurring routes and one-off trips; passengers search those trips and reserve seats. It's built
 with Kotlin Multiplatform and Compose Multiplatform, backed by Firebase (Auth, Firestore, and
-Storage), and follows Clean Architecture with MVVM on the presentation layer: eleven singular
-feature packages (`auth, booking, chat, notification, place, preferences, rating, route, safety,
-trip, vehicle`) live in parallel under `data/`, `domain/`, and `presentation/`, each with a
+Storage), and follows Clean Architecture with MVVM on the presentation layer: ten singular
+feature packages (`auth, booking, chat, notification, place, preferences, rating, route, trip,
+vehicle`) live in parallel under `data/`, `domain/`, and `presentation/`, each with a
 `datasource/` that owns every Firebase call, a `repository/` that maps DTOs to domain models and
 translates failures to `AppException`, and a `domain/{feature}/usecase/` that holds only the use
 cases with real orchestration or derivation logic — plain single-call reads and writes go straight

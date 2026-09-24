@@ -88,9 +88,6 @@ sealed interface Route {
     data object Notifications : Route
 
     @Serializable
-    data object Safety : Route
-
-    @Serializable
     data object EditProfile : Route
 
     @Serializable

@@ -61,9 +61,6 @@ class ProfileViewModel(
             ProfileAction.OnNotificationsClick -> viewModelScope.launch {
                 _events.emit(ProfileEvent.NavigateToNotifications)
             }
-            ProfileAction.OnSafetyClick -> viewModelScope.launch {
-                _events.emit(ProfileEvent.NavigateToSafety)
-            }
 
             ProfileAction.OnActiveRolesClick -> _state.update { it.copy(showActiveRolesDialog = true) }
             ProfileAction.OnActiveRolesDismissed -> _state.update {

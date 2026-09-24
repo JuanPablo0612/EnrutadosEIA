@@ -364,7 +364,6 @@ fun AppNavigation(
                     // The list, not the creation form — the row is labelled "saved places".
                     onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                     onNavigateToNotifications = { navController.navigate(Route.Notifications) },
-                    onNavigateToSafety = { navController.navigate(Route.Safety) },
                     onDeleteAccountSuccess = {
                         navController.navigate(Route.Login) {
                             popUpTo(0) { inclusive = true }

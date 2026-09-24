@@ -20,18 +20,11 @@ service cloud.firestore {
 
     // ---------------------------------------------------------------------------------------
     // users/{uid} — profile is readable by any signed-in user (driver/passenger profile display,
-    // e.g. on a trip result or booking request card) but only the owner may write it. Safety
-    // settings (autoShareTrip, vibrateSos) are stored as plain fields on this same document, so
-    // they inherit the same owner-only write rule.
+    // e.g. on a trip result or booking request card) but only the owner may write it.
     // ---------------------------------------------------------------------------------------
     match /users/{uid} {
       allow read: if isSignedIn();
       allow create, update, delete: if isOwner(uid);
-
-      // users/{uid}/emergency_contacts/** — owner-only, matches SafetyRepositoryImpl.
-      match /emergency_contacts/{contactId} {
-        allow read, write: if isOwner(uid);
-      }
     }
 
     // ---------------------------------------------------------------------------------------

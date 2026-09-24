@@ -7,20 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.DriverTrackingContent
 import com.juanpablo0612.carpool.presentation.trip.tracking.components.PassengerTrackingContent
-import com.juanpablo0612.carpool.presentation.trip.tracking.components.SosDialog
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
@@ -31,7 +26,6 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_button
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_title
-import enrutadoseia.composeapp.generated.resources.trip_tracking_sos
 import enrutadoseia.composeapp.generated.resources.trip_tracking_title
 import org.jetbrains.compose.resources.stringResource
 
@@ -40,7 +34,6 @@ fun TripTrackingScreen(
     viewModel: TripTrackingViewModel,
     onBackClick: () -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
-    onNavigateToSafety: () -> Unit,
     onTripCompleted: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -51,7 +44,6 @@ fun TripTrackingScreen(
             TripTrackingEvent.TripCompleted -> onTripCompleted()
             is TripTrackingEvent.NavigateToChat ->
                 onNavigateToChat(event.bookingId, event.tripId, event.otherPartyName, event.isReadOnly)
-            TripTrackingEvent.NavigateToSafety -> onNavigateToSafety()
         }
     }
 
@@ -69,19 +61,6 @@ fun TripTrackingContent(
             CarpoolBackTopBar(
                 title = stringResource(Res.string.trip_tracking_title),
                 onBack = { onAction(TripTrackingAction.OnBackClick) },
-                actions = {
-                    TextButton(
-                        onClick = { onAction(TripTrackingAction.OnSOSClick) },
-                        colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.trip_tracking_sos),
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                        )
-                    }
-                },
             )
         }
     ) { padding ->
@@ -114,18 +93,6 @@ fun TripTrackingContent(
                 confirmText = stringResource(Res.string.trip_tracking_complete_confirm_button),
                 onConfirm = { onAction(TripTrackingAction.OnCompleteTripConfirm) },
                 onDismiss = { onAction(TripTrackingAction.OnCompleteTripDismiss) }
-            )
-        }
-
-        if (state.showSosDialog) {
-            SosDialog(
-                vibrateSosEnabled = state.vibrateSosEnabled,
-                noContactsMessageVisible = state.sosNoContacts,
-                locationSharedMessageVisible = state.sosLocationShared,
-                onCallEmergency = { onAction(TripTrackingAction.OnSOSCallEmergencyClick) },
-                onShareLocation = { onAction(TripTrackingAction.OnSOSShareLocationClick) },
-                onAddEmergencyContact = { onAction(TripTrackingAction.OnSOSAddEmergencyContactClick) },
-                onDismiss = { onAction(TripTrackingAction.OnSOSDismiss) }
             )
         }
     }

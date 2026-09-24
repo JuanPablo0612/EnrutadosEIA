@@ -27,5 +27,5 @@ val tripModule = module {
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
     viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get()) }
 }

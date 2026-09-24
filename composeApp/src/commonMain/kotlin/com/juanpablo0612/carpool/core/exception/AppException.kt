@@ -52,9 +52,4 @@ sealed class AppException : Exception() {
     sealed class NotificationException : AppException() {
         data object Unknown : NotificationException()
     }
-
-    sealed class SafetyException : AppException() {
-        data object MaxContactsReached : SafetyException()
-        data object Unknown : SafetyException()
-    }
 }

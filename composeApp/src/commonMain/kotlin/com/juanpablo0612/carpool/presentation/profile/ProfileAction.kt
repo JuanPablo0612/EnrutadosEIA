@@ -11,7 +11,6 @@ sealed class ProfileAction {
     data object OnEditProfileClick : ProfileAction()
     data object OnSavedPlacesClick : ProfileAction()
     data object OnNotificationsClick : ProfileAction()
-    data object OnSafetyClick : ProfileAction()
     data object OnActiveRolesClick : ProfileAction()
     data object OnActiveRolesDismissed : ProfileAction()
     data class OnToggleRole(val role: UserRole, val enabled: Boolean) : ProfileAction()

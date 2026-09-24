@@ -26,8 +26,6 @@ import com.juanpablo0612.carpool.presentation.profile.edit.EditProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.edit.EditProfileViewModel
 import com.juanpablo0612.carpool.presentation.rating.RatingScreen
 import com.juanpablo0612.carpool.presentation.rating.RatingViewModel
-import com.juanpablo0612.carpool.presentation.safety.SafetyScreen
-import com.juanpablo0612.carpool.presentation.safety.SafetyViewModel
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingScreen
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,7 +35,7 @@ private const val MAP_PICK_RESULT_KEY = "map_pick_result"
 
 /**
  * Role-agnostic routes reachable from both the driver and the passenger side of the app —
- * profile/account management, places, notifications, safety, chat, trip tracking, and
+ * profile/account management, places, notifications, chat, trip tracking, and
  * post-trip rating.
  */
 fun NavGraphBuilder.sharedNavGraph(
@@ -51,7 +49,6 @@ fun NavGraphBuilder.sharedNavGraph(
     onNavigateToEditProfile: () -> Unit,
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToNotifications: () -> Unit,
-    onNavigateToSafety: () -> Unit,
     onDeleteAccountSuccess: () -> Unit,
     onRoleSwitched: (UserRole) -> Unit,
     onNavigateToDeepLink: (String) -> Unit,
@@ -126,7 +123,6 @@ fun NavGraphBuilder.sharedNavGraph(
             // The list, not the creation form — the row is labelled "saved places".
             onNavigateToSavedPlaces = onNavigateToSavedPlaces,
             onNavigateToNotifications = onNavigateToNotifications,
-            onNavigateToSafety = onNavigateToSafety,
             onDeleteAccountSuccess = onDeleteAccountSuccess,
             onRoleSwitched = onRoleSwitched
         )
@@ -152,14 +148,6 @@ fun NavGraphBuilder.sharedNavGraph(
         )
     }
 
-    composable<Route.Safety> {
-        val viewModel: SafetyViewModel = koinViewModel()
-        SafetyScreen(
-            viewModel = viewModel,
-            onBackClick = onNavigateBack
-        )
-    }
-
     composable<Route.Chat> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.Chat>()
         val viewModel: ChatViewModel = koinViewModel {
@@ -178,7 +166,6 @@ fun NavGraphBuilder.sharedNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onNavigateToChat = onNavigateToChat,
-            onNavigateToSafety = onNavigateToSafety,
             onTripCompleted = onNavigateBack
         )
     }

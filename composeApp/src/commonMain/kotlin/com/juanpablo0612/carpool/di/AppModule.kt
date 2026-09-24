@@ -22,8 +22,7 @@ val appModule = module {
         homeModule,
         ratingModule,
         chatModule,
-        notificationModule,
-        safetyModule
+        notificationModule
     )
 }
 

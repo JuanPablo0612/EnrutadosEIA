@@ -13,13 +13,6 @@ data class TripTrackingUiState(
     val isCompletingTrip: Boolean = false,
     val showCompleteTripDialog: Boolean = false,
     val pendingDropOffPassengerId: String? = null,
-    val showSosDialog: Boolean = false,
-    /** True once the SOS dialog has detected the user has no stored emergency contacts to share with. */
-    val sosNoContacts: Boolean = false,
-    /** True right after "share live location" successfully opened the SMS composer. */
-    val sosLocationShared: Boolean = false,
-    /** Mirrors [com.juanpablo0612.carpool.domain.safety.model.SafetySettings.vibrateSos]. */
-    val vibrateSosEnabled: Boolean = true,
     /** passengerId set currently mid-mutation, so their action buttons can be disabled to prevent double-taps. */
     val processingPassengerIds: Set<String> = emptySet(),
     /** True while the driver-location poll loop is actually running (see updateLocationPolling). */

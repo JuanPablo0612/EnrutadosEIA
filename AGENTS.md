@@ -73,7 +73,7 @@ Follow Clean Architecture: **presentation → domain → data**.
 
 Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library).
 
-Hybrid architecture (layers + features) inside `composeApp`. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, safety, trip, vehicle` (`route` is a driver's published route; `trip` is a bookable trip instance on that route — separate features on purpose).
+Hybrid architecture (layers + features) inside `composeApp`. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, trip, vehicle` (`route` is a driver's published route; `trip` is a bookable trip instance on that route — separate features on purpose).
 
 ```
 com/juanpablo0612/carpool/
@@ -115,14 +115,13 @@ Convert external errors into domain-safe errors.
 Responsibilities: Domain models, business rules, use cases, and repository interfaces.
 Pure Kotlin only. No dependency on frameworks or other layers.
 
-**Use cases exist only where there is real logic** — orchestration across repositories, derivation, ownership checks, or entity construction with id/timestamp. A plain single-call read or write does not get a use case; the ViewModel injects the repository directly instead. There are 15 use cases today, in `domain/{feature}/usecase/`:
+**Use cases exist only where there is real logic** — orchestration across repositories, derivation, ownership checks, or entity construction with id/timestamp. A plain single-call read or write does not get a use case; the ViewModel injects the repository directly instead. There are 14 use cases today, in `domain/{feature}/usecase/`:
 - `booking`: CreateBooking, CheckExistingBooking, GetTripAvailableSeats, GetBookingsForTrip, RejectBooking, ConfirmBooking, CancelBooking
 - `place`: CreatePlace, DeletePlace, GetSavedPlaces
 - `trip`: GetAvailableTrips
 - `chat`: SendMessage
 - `notification`: CreateNotification
 - `rating`: CreateRating
-- `safety`: AddEmergencyContact
 
 Exception worth knowing about: `domain/auth/validation/Validator.kt` is called directly from Login/Register/ForgotPassword ViewModels rather than through a use case. That's fine — it's pure framework-free domain logic with no repository involved. Also, `BookingWithPassenger`, `PassengerSummary`, and `TripSummary` live in `presentation/booking/model/` rather than here, since a ViewModel builds them and only Compose consumes them.
 
@@ -174,13 +173,13 @@ Represent events from UI to ViewModel. UI calls `viewModel.onAction(Action)`. Us
 
 # 16. Error Handling & UI Patterns
 
-- **One rule: repositories fail with `AppException`; presentation owns every error type the UI renders.** Every repository maps raw SDK/Firebase exceptions to a subclass of `core/exception/AppException.kt` (one nested sealed class per feature — `AuthException`, `BookingException`, `TripException`, `RouteException`, `VehicleException`, `PlaceException`, `ChatException`, `RatingException`, `NotificationException`, `SafetyException`). Never return `Result.failure(e)` with the raw exception.
+- **One rule: repositories fail with `AppException`; presentation owns every error type the UI renders.** Every repository maps raw SDK/Firebase exceptions to a subclass of `core/exception/AppException.kt` (one nested sealed class per feature — `AuthException`, `BookingException`, `TripException`, `RouteException`, `VehicleException`, `PlaceException`, `ChatException`, `RatingException`, `NotificationException`). Never return `Result.failure(e)` with the raw exception.
 - Firestore-backed features (everything except `AuthException`) can currently only ever produce their `.Unknown` case — the `dev.gitlive` Firestore SDK exposes no exception subtypes to branch on the way `FirebaseAuthException` does. `data/auth/repository/AuthRepositoryImpl.kt` is the only file outside a `datasource/` package that imports `dev.gitlive` at all.
 - **NO SNACKBARS:** Do not use `SnackbarHost` for validation, authentication, or any other error/status message.
 - **Inline Errors:** Use `errorMessage` properties in text fields and the `ErrorMessage` component for global screen errors.
 - Two error-typing styles coexist, both in `presentation/{feature}/` now (no error types live in `domain/` any more):
   - **Sealed class + mapper** (`AuthError`/`AuthErrorMapper.kt`, `BookingError`/`BookingErrorMapper.kt`, `TripError`/`TripErrorMapper.kt`, `RatingError`/`RatingErrorMapper.kt`, `NotificationError`/`NotificationErrorMapper.kt`) — for errors that originate from a repository/use-case failure. A `presentation/{feature}/XxxErrorMapper.kt` holds `Throwable.toXxxError()` and `XxxError.asStringResource()` as extension functions. One deliberate exception: `BookingError.VehicleNotFound` is constructed directly in `RouteDetailPassengerViewModel` for a trip whose vehicle is missing, not via a mapped repository failure.
-  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `SafetyContactFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`) — for screen-local errors that never touch the domain layer, carrying their own member `.asStringResource()`.
+  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`) — for screen-local errors that never touch the domain layer, carrying their own member `.asStringResource()`.
 
 ------------------------------------------------------------------------
 
@@ -220,7 +219,7 @@ No hardcoded strings. Use `Res.string.*` from `composeResources/values/strings.x
 
 # 21. Navigation & Side-Effects
 
-- Type-safe routes via one flat `@Serializable sealed interface Route` (29 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose. `presentation/navigation/graph/` splits the graph into `AuthNavGraph`, `DriverNavGraph`, `PassengerNavGraph`, `RootNavGraph` (Splash/Onboarding/RoleSelector), and `SharedNavGraph` (role-agnostic routes). `Navigation.kt` only assembles the `NavHost` plus session/logout/role-switch wiring.
+- Type-safe routes via one flat `@Serializable sealed interface Route` (31 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose. `presentation/navigation/graph/` splits the graph into `AuthNavGraph`, `DriverNavGraph`, `PassengerNavGraph`, `RootNavGraph` (Splash/Onboarding/RoleSelector), and `SharedNavGraph` (role-agnostic routes). `Navigation.kt` only assembles the `NavHost` plus session/logout/role-switch wiring.
 - **ObserveAsEvents:** lives in `presentation/ui/util/` (it's a utility, not a component). Use it to handle one-time side-effects like navigation or showing success messages, triggered by a `SharedFlow` in the ViewModel.
 
 ------------------------------------------------------------------------

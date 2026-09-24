@@ -21,7 +21,6 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.round
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -88,62 +87,4 @@ fun formatLongDate(
     val dayName = dayNames[date.dayOfWeek.ordinal]
     val monthName = monthNames[date.month.ordinal]
     return "$dayName $day $connector $monthName"
-}
-
-/**
- * Formats a latitude/longitude pair to a fixed number of decimal places without relying on
- * `String.format`, which is JVM-only and unavailable in common code.
- */
-fun formatCoordinates(latitude: Double, longitude: Double, decimals: Int = 5): String {
-    return "${roundToDecimals(latitude, decimals)}, ${roundToDecimals(longitude, decimals)}"
-}
-
-private fun roundToDecimals(value: Double, decimals: Int): String {
-    val factor = generateSequence(1L) { it * 10 }.elementAt(decimals)
-    val scaled = round(value * factor).toLong()
-    val negative = scaled < 0
-    val absScaled = if (negative) -scaled else scaled
-    val wholePart = absScaled / factor
-    val fractionPart = (absScaled % factor).toString().padStart(decimals, '0')
-    return "${if (negative) "-" else ""}$wholePart.$fractionPart"
-}
-
-/** Today/Tomorrow/This-week/Later bucket for a list sorted by relative departure date. */
-enum class RelativeDateGroup { TODAY, TOMORROW, THIS_WEEK, LATER }
-
-/**
- * Buckets [items] into [RelativeDateGroup]s by the date [epochMsOf] resolves to, relative to
- * [nowMs]. Used by both the driver's trip list and the passenger's booking list, which must
- * agree on the same Today/Tomorrow/This-week boundary logic.
- */
-fun <T> groupByRelativeDate(
-    items: List<T>,
-    nowMs: Long,
-    epochMsOf: (T) -> Long
-): List<Pair<RelativeDateGroup, List<T>>> {
-    val tz = TimeZone.currentSystemDefault()
-    val nowDate = Instant.fromEpochMilliseconds(nowMs).toLocalDateTime(tz).date
-    val tomorrow = nowDate.plus(1, DateTimeUnit.DAY)
-    val nextWeek = nowDate.plus(7, DateTimeUnit.DAY)
-
-    val groups = LinkedHashMap<RelativeDateGroup, MutableList<T>>()
-    items.forEach { item ->
-        val date = Instant.fromEpochMilliseconds(epochMsOf(item)).toLocalDateTime(tz).date
-        val group = when {
-            date == nowDate -> RelativeDateGroup.TODAY
-            date == tomorrow -> RelativeDateGroup.TOMORROW
-            date < nextWeek -> RelativeDateGroup.THIS_WEEK
-            else -> RelativeDateGroup.LATER
-        }
-        groups.getOrPut(group) { mutableListOf() }.add(item)
-    }
-    return groups.entries.map { (k, v) -> k to v }
-}
-
-@Composable
-fun RelativeDateGroup.label(): String = when (this) {
-    RelativeDateGroup.TODAY -> stringResource(Res.string.relative_date_today)
-    RelativeDateGroup.TOMORROW -> stringResource(Res.string.relative_date_tomorrow)
-    RelativeDateGroup.THIS_WEEK -> stringResource(Res.string.relative_date_this_week)
-    RelativeDateGroup.LATER -> stringResource(Res.string.relative_date_later)
 }

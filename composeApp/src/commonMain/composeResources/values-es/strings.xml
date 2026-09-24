@@ -522,7 +522,6 @@
     <string name="profile_saved_places">Mis lugares guardados</string>
     <string name="profile_active_roles">Roles activos</string>
     <string name="profile_notifications_settings">Notificaciones</string>
-    <string name="profile_safety">Seguridad</string>
     <string name="profile_language">Idioma</string>
     <string name="profile_language_value">Español</string>
     <string name="profile_theme">Tema</string>
@@ -604,21 +603,15 @@
     <string name="trip_tracking_mark_dropped_off">Marcar bajó</string>
     <string name="trip_tracking_complete_trip">Finalizar viaje</string>
     <string name="trip_tracking_no_location">Sin ubicación aún</string>
-    <string name="trip_tracking_sos">SOS</string>
     <string name="trip_tracking_message_driver">Mensaje</string>
     <string name="trip_tracking_your_status">Tu estado</string>
     <string name="pickup_status_picked_up">Recogido</string>
     <string name="pickup_status_dropped_off">Bajó</string>
     <string name="trip_tracking_passengers_title">Pasajeros</string>
     <string name="trip_tracking_sharing_location">Compartiendo tu ubicación en vivo con los pasajeros</string>
-    <string name="trip_tracking_sos_add_contact">Agregar un contacto de emergencia</string>
     <string name="trip_tracking_complete_confirm_title">¿Finalizar viaje?</string>
     <string name="trip_tracking_complete_confirm_body">Todos los pasajeros serán marcados como entregados y el viaje quedará completado.</string>
     <string name="trip_tracking_complete_confirm_button">Finalizar viaje</string>
-    <string name="trip_tracking_sos_title">Asistencia de emergencia</string>
-    <string name="trip_tracking_sos_call_emergency">Llamar a emergencias (123)</string>
-    <string name="trip_tracking_sos_share_location">Compartir ubicación en vivo</string>
-    <string name="trip_tracking_sos_report_issue">Reportar un problema</string>
 
     <!-- Notificaciones -->
     <string name="notifications_title">Notificaciones</string>
@@ -635,26 +628,6 @@
     <string name="notification_new_booking_request_body">Un pasajero solicitó un puesto en tu viaje.</string>
 
     <!-- Seguridad -->
-    <string name="safety_title">Seguridad</string>
-    <string name="safety_description">Cuando empieza un viaje, le enviaremos automáticamente los detalles a tus contactos de emergencia (conductor, vehículo, ruta, ETA).</string>
-    <string name="safety_empty_contacts_description">Agrega a alguien a quien podamos contactar si algo no se siente bien durante un viaje — recibirá tu conductor, vehículo, ruta y hora estimada de llegada automáticamente.</string>
-    <string name="safety_contacts_section">Mis contactos</string>
-    <string name="safety_add_contact">+ Agregar contacto</string>
-    <string name="safety_max_contacts_reached">Máximo 2 contactos</string>
-    <string name="safety_contact_name_label">Nombre</string>
-    <string name="safety_contact_name_placeholder">Mamá, Papá…</string>
-    <string name="safety_contact_phone_label">Teléfono</string>
-    <string name="safety_contact_phone_placeholder">300 123 4567</string>
-    <string name="safety_save_contact">Guardar</string>
-    <string name="safety_settings_section">Antes y durante el viaje</string>
-    <string name="safety_auto_share">Compartir viaje automáticamente</string>
-    <string name="safety_auto_share_desc">Envía los detalles del viaje a tus contactos cuando empiece</string>
-    <string name="safety_vibrate_sos">Vibración del botón SOS</string>
-    <string name="safety_vibrate_sos_desc">Activa la vibración al presionar el botón SOS</string>
-    <string name="safety_error_name_empty">El nombre no puede estar vacío</string>
-    <string name="safety_error_phone_empty">El teléfono no puede estar vacío</string>
-    <string name="safety_error_phone_invalid">Ingresa un número de teléfono válido de 10 dígitos</string>
-    <string name="safety_add_contact_title">Agregar contacto de emergencia</string>
 
     <!-- SearchRoutes rediseño -->
     <string name="search_origin_placeholder">Origen</string>
@@ -828,7 +801,6 @@
     <string name="form_progress_label">%1$d de %2$d campos obligatorios completados</string>
     <string name="booking_request_sent_notice">Solicitud enviada — el conductor confirmará pronto</string>
     <string name="booking_history_search_placeholder">Buscar por nombre del pasajero</string>
-    <string name="safety_contacts_cap_hint">Hasta %1$d contactos</string>
 
     <plurals name="route_trips_count">
         <item quantity="one">%1$d viaje</item>
@@ -838,16 +810,7 @@
 
     <string name="booking_request_rating">Calificación %1$s</string>
 
-    <!-- SOS -->
-    <string name="trip_tracking_sos_dismiss">Cerrar</string>
-    <string name="trip_tracking_sos_no_contacts">Aún no tienes contactos de emergencia. Agrega uno en Perfil → Seguridad.</string>
-    <string name="trip_tracking_sos_location_shared">Detalles del viaje enviados a tus contactos de emergencia.</string>
-    <string name="trip_tracking_sos_no_app_available">Ninguna app en este dispositivo puede realizar esa acción.</string>
-
     <!-- Confirmaciones destructivas -->
-    <string name="safety_remove_contact_title">¿Eliminar contacto?</string>
-    <string name="safety_remove_contact_body">Dejará de recibir los detalles de tus viajes.</string>
-    <string name="safety_remove_contact_confirm">Eliminar</string>
     <string name="notifications_clear_all_confirm_title">¿Borrar todas las notificaciones?</string>
     <string name="notifications_clear_all_confirm_body">Esta acción no se puede deshacer.</string>
 

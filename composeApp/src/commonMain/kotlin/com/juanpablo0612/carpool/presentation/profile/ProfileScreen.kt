@@ -51,12 +51,10 @@ import enrutadoseia.composeapp.generated.resources.profile_config_section
 import enrutadoseia.composeapp.generated.resources.profile_delete_account
 import enrutadoseia.composeapp.generated.resources.profile_my_account_section
 import enrutadoseia.composeapp.generated.resources.profile_notifications_settings
-import enrutadoseia.composeapp.generated.resources.profile_safety
 import enrutadoseia.composeapp.generated.resources.profile_saved_places
 import enrutadoseia.composeapp.generated.resources.profile_title
 import enrutadoseia.composeapp.generated.resources.routes_list_title
 import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
-import enrutadoseia.composeapp.generated.resources.shield_24px
 import enrutadoseia.composeapp.generated.resources.vehicles_list_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -69,7 +67,6 @@ fun ProfileScreen(
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
     onNavigateToNotifications: () -> Unit,
-    onNavigateToSafety: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccountSuccess: () -> Unit,
     onRoleSwitched: (UserRole) -> Unit
@@ -84,7 +81,6 @@ fun ProfileScreen(
             ProfileEvent.NavigateToEditProfile -> onNavigateToEditProfile()
             ProfileEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
             ProfileEvent.NavigateToNotifications -> onNavigateToNotifications()
-            ProfileEvent.NavigateToSafety -> onNavigateToSafety()
             ProfileEvent.DeleteAccountSuccess -> onDeleteAccountSuccess()
             is ProfileEvent.RoleSwitched -> onRoleSwitched(event.role)
         }
@@ -196,11 +192,6 @@ fun ProfileContent(
                     title = stringResource(Res.string.profile_notifications_settings),
                     icon = { Icon(vectorResource(Res.drawable.notifications_24px), null) },
                     onClick = { onAction(ProfileAction.OnNotificationsClick) }
-                )
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_safety),
-                    icon = { Icon(vectorResource(Res.drawable.shield_24px), null) },
-                    onClick = { onAction(ProfileAction.OnSafetyClick) }
                 )
                 HorizontalDivider()
 
