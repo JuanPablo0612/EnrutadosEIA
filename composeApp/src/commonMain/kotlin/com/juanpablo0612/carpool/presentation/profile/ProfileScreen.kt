@@ -26,8 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
-import com.juanpablo0612.carpool.presentation.profile.components.ActiveRolesDialog
 import com.juanpablo0612.carpool.presentation.profile.components.DeleteAccountDialog
 import com.juanpablo0612.carpool.presentation.profile.components.ProfileListItem
 import com.juanpablo0612.carpool.presentation.profile.components.UserHeader
@@ -46,7 +44,6 @@ import enrutadoseia.composeapp.generated.resources.notifications_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_description
 import enrutadoseia.composeapp.generated.resources.logout_confirm_title
 import enrutadoseia.composeapp.generated.resources.logout_title
-import enrutadoseia.composeapp.generated.resources.profile_active_roles
 import enrutadoseia.composeapp.generated.resources.profile_config_section
 import enrutadoseia.composeapp.generated.resources.profile_delete_account
 import enrutadoseia.composeapp.generated.resources.profile_my_account_section
@@ -54,7 +51,6 @@ import enrutadoseia.composeapp.generated.resources.profile_notifications_setting
 import enrutadoseia.composeapp.generated.resources.profile_saved_places
 import enrutadoseia.composeapp.generated.resources.profile_title
 import enrutadoseia.composeapp.generated.resources.routes_list_title
-import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
 import enrutadoseia.composeapp.generated.resources.vehicles_list_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -69,7 +65,6 @@ fun ProfileScreen(
     onNavigateToNotifications: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccountSuccess: () -> Unit,
-    onRoleSwitched: (UserRole) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -82,7 +77,6 @@ fun ProfileScreen(
             ProfileEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
             ProfileEvent.NavigateToNotifications -> onNavigateToNotifications()
             ProfileEvent.DeleteAccountSuccess -> onDeleteAccountSuccess()
-            is ProfileEvent.RoleSwitched -> onRoleSwitched(event.role)
         }
     }
 
@@ -103,16 +97,6 @@ fun ProfileContent(
             onConfirm = { onAction(ProfileAction.OnLogoutConfirmed) },
             onDismiss = { onAction(ProfileAction.OnLogoutDismissed) },
             isDestructive = true
-        )
-    }
-
-    if (state.showActiveRolesDialog) {
-        ActiveRolesDialog(
-            user = state.user,
-            activeRole = state.activeRole,
-            blocked = state.blockedRoleToggle,
-            onToggleRole = { role, enabled -> onAction(ProfileAction.OnToggleRole(role, enabled)) },
-            onDismiss = { onAction(ProfileAction.OnActiveRolesDismissed) }
         )
     }
 
@@ -162,27 +146,20 @@ fun ProfileContent(
                 HorizontalDivider()
 
                 SectionHeader(stringResource(Res.string.profile_my_account_section))
-                if (state.user?.isDriver == true) {
-                    ProfileListItem(
-                        title = stringResource(Res.string.vehicles_list_title),
-                        icon = { Icon(vectorResource(Res.drawable.directions_car_24px), null) },
-                        onClick = { onAction(ProfileAction.OnMyVehiclesClick) }
-                    )
-                    ProfileListItem(
-                        title = stringResource(Res.string.routes_list_title),
-                        icon = { Icon(vectorResource(Res.drawable.add_road_24px), null) },
-                        onClick = { onAction(ProfileAction.OnMyRoutesClick) }
-                    )
-                }
+                ProfileListItem(
+                    title = stringResource(Res.string.vehicles_list_title),
+                    icon = { Icon(vectorResource(Res.drawable.directions_car_24px), null) },
+                    onClick = { onAction(ProfileAction.OnMyVehiclesClick) }
+                )
+                ProfileListItem(
+                    title = stringResource(Res.string.routes_list_title),
+                    icon = { Icon(vectorResource(Res.drawable.add_road_24px), null) },
+                    onClick = { onAction(ProfileAction.OnMyRoutesClick) }
+                )
                 ProfileListItem(
                     title = stringResource(Res.string.profile_saved_places),
                     icon = { Icon(vectorResource(Res.drawable.location_on_24px), null) },
                     onClick = { onAction(ProfileAction.OnSavedPlacesClick) }
-                )
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_active_roles),
-                    icon = { Icon(vectorResource(Res.drawable.swap_horiz_24px), null) },
-                    onClick = { onAction(ProfileAction.OnActiveRolesClick) }
                 )
 
                 HorizontalDivider()

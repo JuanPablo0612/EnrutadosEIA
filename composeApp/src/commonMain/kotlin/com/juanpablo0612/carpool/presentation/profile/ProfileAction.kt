@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.profile
 
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
 
 sealed class ProfileAction {
     data object OnLogoutClick : ProfileAction()
@@ -11,9 +10,6 @@ sealed class ProfileAction {
     data object OnEditProfileClick : ProfileAction()
     data object OnSavedPlacesClick : ProfileAction()
     data object OnNotificationsClick : ProfileAction()
-    data object OnActiveRolesClick : ProfileAction()
-    data object OnActiveRolesDismissed : ProfileAction()
-    data class OnToggleRole(val role: UserRole, val enabled: Boolean) : ProfileAction()
     data object OnDeleteAccountClick : ProfileAction()
     data object OnDeleteAccountDismissed : ProfileAction()
     data class OnDeleteAccountNameChange(val name: String) : ProfileAction()

@@ -3,7 +3,6 @@ package com.juanpablo0612.carpool.presentation.navigation.graph
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.chat.ChatScreen
 import com.juanpablo0612.carpool.presentation.chat.ChatViewModel
 import com.juanpablo0612.carpool.presentation.navigation.ObserveMapPickResult
@@ -46,7 +45,6 @@ fun NavGraphBuilder.sharedNavGraph(
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onDeleteAccountSuccess: () -> Unit,
-    onRoleSwitched: (UserRole) -> Unit,
     onNavigateToDeepLink: (String) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
 ) {
@@ -110,7 +108,6 @@ fun NavGraphBuilder.sharedNavGraph(
             onNavigateToSavedPlaces = onNavigateToSavedPlaces,
             onNavigateToNotifications = onNavigateToNotifications,
             onDeleteAccountSuccess = onDeleteAccountSuccess,
-            onRoleSwitched = onRoleSwitched
         )
     }
 

@@ -306,7 +306,6 @@ fun AppNavigation(
                             popUpTo(0) { inclusive = true }
                         }
                     },
-                    onRoleSwitched = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
                     onNavigateToDeepLink = navController::navigateToNotificationDeepLink,
                     onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
                         navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
