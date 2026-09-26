@@ -87,17 +87,14 @@ export const onBookingUpdated = onDocumentUpdated(
       const wasActive =
         before.status === "PENDING" || before.status === "CONFIRMED";
       if (!wasActive) return;
-      // Builds without cancelledBy only let passengers cancel from the
-      // client, so a missing actor is treated as the passenger.
-      const byDriver = after.cancelledBy === driverId;
-      if (byDriver) {
+      if (after.cancelledBy === driverId) {
         await notify({
           recipientId: passengerId,
           type: "booking_cancelled_by_driver",
           params: {...params, driverName: await userName(driverId)},
           inAppId: `booking_cancelled_by_driver_${bookingId}`,
         });
-      } else {
+      } else if (after.cancelledBy === passengerId) {
         await notify({
           recipientId: driverId,
           type: "booking_cancelled_by_passenger",

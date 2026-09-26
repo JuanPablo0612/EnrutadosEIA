@@ -1,7 +1,7 @@
 /**
  * Firestore document shapes as the Android app writes them (see the
- * `*Dto.kt` classes under `data/`). Every field is optional because a
- * document written by an older app build may be missing any of them.
+ * `*Dto.kt` classes under `data/`). Fields are optional because a trigger
+ * must never crash on a malformed or partially written document.
  */
 
 export type BookingStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED";
