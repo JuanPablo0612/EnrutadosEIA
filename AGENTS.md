@@ -115,7 +115,9 @@ Contains shared infrastructure: Result wrappers, dispatchers, shared extensions,
 # 8. Data Layer
 
 Responsibilities: API communication, data sources, DTOs, mappers, and repository implementations.
-Convert external errors into domain-safe errors.
+Convert external errors into domain-safe errors. Every DTO field has a default so a partially-missing document decodes.
+
+**No compatibility code for old data.** The app is not in production and Firestore only holds test data: when a schema changes, change the code to the new shape only — no migrations, backfill scripts or legacy fallbacks — and clear the affected test data.
 
 ------------------------------------------------------------------------
 

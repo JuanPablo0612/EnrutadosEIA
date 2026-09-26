@@ -97,16 +97,10 @@ Composite indexes can take several minutes to build after deploying; queries tha
 fail with `FAILED_PRECONDITION` until the build finishes (the error includes a direct link to
 create the missing index from the Firebase console, if you'd rather do it that way).
 
-**Two Firestore fields predate the rules and silently misbehave on existing documents — backfill
-both before deploying to a database with real data, or accept the loss on a dev/test project:**
+The app is not in production and the database only holds test data, so the code carries no
+compatibility layer for older document shapes. When the schema changes, clear the affected test
+collections (or the whole test database and its users) instead of writing a migration.
 
-- **`places.ownerId`** defaults to `""` on any document written before that field existed, which
-  does not match any signed-in user's UID — those places become permanently invisible (not just to
-  other users, to their original owner too) once `firestore.rules` is deployed.
-- **`trips.confirmedSeats`** defaults to `0` on any trip that already had confirmed passengers
-  before the seat counter existed, which over-reports availability and allows overbooking until a
-  booking status change next touches the counter. Backfill it as
-  `count(bookings where tripId == trip.id and status == 'CONFIRMED')`.
 ### Cloud Functions
 
 `functions/` (TypeScript, Node 22, 2nd-gen Firebase Functions) is the app's backend: it writes
@@ -136,11 +130,5 @@ logged instead of sent.
 4. `firebase deploy --only functions` (accept the Artifact Registry cleanup-policy prompt; if the
    first 2nd-gen deploy fails with an Eventarc service-agent permission error, retry after a few
    minutes).
-5. Backfill the rating aggregate that driver averages now read from:
-   `gcloud auth application-default login`, then
-   `npm --prefix functions run backfill:ratings -- --dry-run` and the same without `--dry-run`
-   (safe to re-run).
-6. `firebase deploy --only firestore:rules,storage`.
-7. Install the new app build. Old builds wrote notifications for other users and deleted accounts
-   from the client, both of which the new rules reject, and still offered the removed community
-   routes.
+5. `firebase deploy --only firestore:rules,storage`.
+6. Clear the existing test data (see above) and install the new app build.

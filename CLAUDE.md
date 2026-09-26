@@ -48,7 +48,7 @@ A fresh clone is missing two gitignored files the Android build needs:
 
 Functions deploy to `us-central1`, which must match the Firestore location (`nam5`) and `BackendConfig.FUNCTIONS_REGION` in the app. Deploying needs the Blaze plan.
 
-`firestore.rules`, `firestore.indexes.json`, `storage.rules` and `firebase.json` are at the repo root; `.firebaserc` points at `enrutados-eia` (no `firebase init` needed). Deploy with `firebase deploy --only functions,firestore:rules,firestore:indexes,storage` (Storage has no `:rules` sub-target). `firebase deploy --only firestore:rules --dry-run` validates the rules without deploying. See `README.md` for the full order and the one-off backfills: `places.ownerId`, `trips.confirmedSeats`, and the rating aggregate (`npm --prefix functions run backfill:ratings`).
+`firestore.rules`, `firestore.indexes.json`, `storage.rules` and `firebase.json` are at the repo root; `.firebaserc` points at `enrutados-eia` (no `firebase init` needed). Deploy with `firebase deploy --only functions,firestore:rules,firestore:indexes,storage` (Storage has no `:rules` sub-target). `firebase deploy --only firestore:rules --dry-run` validates the rules without deploying. See `README.md` for the first-deployment order.
 
 ## Architecture
 
@@ -96,7 +96,7 @@ Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab ho
 
 **Navigation** — type-safe routes via one flat `@Serializable sealed interface Route` (29 routes) in `presentation/navigation/Route.kt`. One bottom bar for everyone: **Inicio · Buscar · Mis viajes · Perfil** (`BottomNavItem`). Always switch tabs with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination. `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph`, `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive — routes, publishing, vehicles, booking requests — reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, and push-tap handling (`PendingDeepLinks`). Notification deep links are plain strings built and parsed in `NotificationDeepLink.kt` (`forNotification(type, params)` / `toRouteOrNull()`), opened with `navigateToNotificationDeepLink`. One-time events use `ObserveAsEvents` (in `presentation/ui/util/`) with `SharedFlow`.
 
-**Notifications (client side)** — the app never creates notifications. It renders them from `type` + `params` with `resolveNotificationText` (legacy documents with stored title/body still render). `PushTokenSync` registers the device's FCM token under `users/{uid}/fcmTokens` on sign-in; sign-out removes it. `CarpoolMessagingService` shows data-only pushes in the device language; POST_NOTIFICATIONS is requested via `rememberNotificationPermissionState()` right after a meaningful action (requesting a seat, publishing a trip), never at launch.
+**Notifications (client side)** — the app never creates notifications. It renders them from `type` + `params` with `resolveNotificationText`. `PushTokenSync` registers the device's FCM token under `users/{uid}/fcmTokens` on sign-in; sign-out removes it. `CarpoolMessagingService` shows data-only pushes in the device language; POST_NOTIFICATIONS is requested via `rememberNotificationPermissionState()` right after a meaningful action (requesting a seat, publishing a trip), never at launch.
 
 ## DI (Koin)
 
@@ -107,7 +107,8 @@ Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab ho
 - **Naming:** `AuthRepository` (interface), `AuthRepositoryImpl` (impl), `UserDto` (DTO), `User` (model), `LoginUseCase` (verb + UseCase, in `domain/{feature}/usecase/`).
 - **Sealed classes over enums** for errors, events, actions and states. The only enum-like exception is a type-safe navigation argument (`MyTripsTab`), since navigation supports enums natively.
 - **Localization:** all UI strings via `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, in exact key parity — add, rename and remove keys in both). No hardcoded strings. Use `stringResource` in composition and the suspend `getString` outside it (e.g. rendering a push).
-- **DTOs default every field**, so a partially-missing Firestore document decodes. Unknown fields in a document are ignored by the gitlive decoder, so removing a DTO field needs no migration.
+- **DTOs default every field**, so a partially-missing Firestore document decodes. Unknown fields in a document are ignored by the gitlive decoder.
+- **No compatibility code for old data.** The app is not in production and Firestore only holds test data: when a schema changes, change the code to the new shape only — no migrations, backfill scripts or legacy fallbacks — and clear the affected test data.
 - **Icons:** local XML vectors in `composeResources/drawable/`, accessed with `vectorResource(Res.drawable.icon_name)`. **`material-icons-extended` is forbidden.** Reuse an existing vector when possible; if a new icon is needed, reference it and tell the user which Material Symbol to download — never invent path data.
 - **Input UX:** disable `autoCorrect` for credentials, `KeyboardCapitalization.Words` for names, `ImeAction.Next` between fields, `ImeAction.Done` on the last field.
 - **State:** immutable data classes, updated via `MutableStateFlow.update { }`.
