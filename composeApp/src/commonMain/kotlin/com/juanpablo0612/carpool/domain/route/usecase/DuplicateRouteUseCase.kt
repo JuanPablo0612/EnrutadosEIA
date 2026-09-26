@@ -18,6 +18,6 @@ class DuplicateRouteUseCase(
             driverId = currentUserId,
             name = nameOverride ?: route.name,
         )
-        return repository.createRoute(duplicate)
+        return repository.createRoute(duplicate).map { }
     }
 }

@@ -12,11 +12,10 @@ class RouteRepositoryImpl(
     private val remoteDataSource: RouteRemoteDataSource
 ) : RouteRepository {
 
-    override suspend fun createRoute(route: Route): Result<Unit> {
+    override suspend fun createRoute(route: Route): Result<String> {
         return try {
             val dto = RouteDto.fromDomain(route)
-            remoteDataSource.createRoute(dto)
-            Result.success(Unit)
+            Result.success(remoteDataSource.createRoute(dto).id)
         } catch (_: Exception) {
             Result.failure(AppException.RouteException.Unknown)
         }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface TripRemoteDataSource {
     suspend fun createTrip(trip: TripDto): TripDto
+    suspend fun createTrips(trips: List<TripDto>): List<String>
     fun getDriverTrips(driverId: String): Flow<List<TripDto>>
     fun getAvailableTrips(): Flow<List<TripDto>>
     suspend fun getTripById(id: String): TripDto

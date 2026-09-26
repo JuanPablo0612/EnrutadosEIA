@@ -17,6 +17,17 @@ class FirebaseTripRemoteDataSource(
         return dto
     }
 
+    override suspend fun createTrips(trips: List<TripDto>): List<String> {
+        val batch = firestore.batch()
+        val ids = trips.map { trip ->
+            val docRef = firestore.collection(COLLECTION_NAME).document
+            batch.set(docRef, TripDto.serializer(), trip.copy(id = docRef.id))
+            docRef.id
+        }
+        batch.commit()
+        return ids
+    }
+
     override fun getDriverTrips(driverId: String): Flow<List<TripDto>> {
         return firestore.collection(COLLECTION_NAME)
             .where { "driverId" equalTo driverId }

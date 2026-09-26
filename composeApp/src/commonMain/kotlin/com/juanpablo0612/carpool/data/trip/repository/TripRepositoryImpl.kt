@@ -13,11 +13,18 @@ class TripRepositoryImpl(
     private val remoteDataSource: TripRemoteDataSource
 ) : TripRepository {
 
-    override suspend fun createTrip(trip: Trip): Result<Unit> {
+    override suspend fun createTrip(trip: Trip): Result<String> {
         return try {
             val dto = TripDto.fromDomain(trip)
-            remoteDataSource.createTrip(dto)
-            Result.success(Unit)
+            Result.success(remoteDataSource.createTrip(dto).id)
+        } catch (_: Exception) {
+            Result.failure(AppException.TripException.Unknown)
+        }
+    }
+
+    override suspend fun createTrips(trips: List<Trip>): Result<List<String>> {
+        return try {
+            Result.success(remoteDataSource.createTrips(trips.map(TripDto::fromDomain)))
         } catch (_: Exception) {
             Result.failure(AppException.TripException.Unknown)
         }

@@ -5,7 +5,11 @@ import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import kotlinx.coroutines.flow.Flow
 
 interface TripRepository {
-    suspend fun createTrip(trip: Trip): Result<Unit>
+    /** Creates the trip and returns its id. */
+    suspend fun createTrip(trip: Trip): Result<String>
+
+    /** Creates all [trips] atomically (one batch) and returns their ids in order. */
+    suspend fun createTrips(trips: List<Trip>): Result<List<String>>
     fun getDriverTrips(driverId: String): Flow<List<Trip>>
     fun getAvailableTrips(): Flow<List<Trip>>
     suspend fun getTripById(id: String): Result<Trip>
