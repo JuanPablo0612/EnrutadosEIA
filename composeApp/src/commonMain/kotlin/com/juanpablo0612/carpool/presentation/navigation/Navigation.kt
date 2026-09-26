@@ -17,32 +17,59 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
+import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.driverNavGraph
-import com.juanpablo0612.carpool.presentation.navigation.graph.passengerNavGraph
+import com.juanpablo0612.carpool.presentation.navigation.graph.mainNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.rootNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.sharedNavGraph
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
+private val topLevelItems = listOf(
+    BottomNavItem.Home,
+    BottomNavItem.SearchTrips,
+    BottomNavItem.MyTrips,
+    BottomNavItem.Profile,
+)
+
+private val topLevelRouteClasses = topLevelItems.map { it.route::class }
+
 /**
- * Which role's nav graph a route belongs to, or `null` for role-agnostic/shared routes. Used so a
- * deep link can switch [UserSession.activeRole] to match its target before navigating, instead of
- * leaving a dual-role user's bottom bar/theme desynced from the screen they land on.
+ * Switches to a bottom-bar destination. Every tab's stack is saved when leaving and restored when
+ * coming back; [Route.Home] is the root, so back from any tab root returns to Inicio.
+ *
+ * Top-level destinations must always be reached through here, never pushed: in this flat graph a
+ * pushed tab root would end up inside another tab's saved stack.
  */
-private fun Route.requiredRoleOrNull(): UserRole? = when (this) {
-    is Route.Home, is Route.RoutesList, is Route.CommunityRoutes, is Route.CreateRoute, is Route.RouteDetail,
-    is Route.CreateTrip, is Route.DriverTrips, is Route.TripPassengers, is Route.VehiclesList,
-    is Route.RegisterVehicle, is Route.DriverBookingRequests, is Route.PassengerProfile -> UserRole.Driver
+internal fun NavHostController.navigateToTopLevel(route: Route, restoreState: Boolean = true) {
+    navigate(route) {
+        popUpTo<Route.Home> { saveState = true }
+        launchSingleTop = true
+        this.restoreState = restoreState
+    }
+}
 
-    is Route.PassengerHome, is Route.TripDetailPassenger, is Route.PassengerBookings -> UserRole.Passenger
-
-    else -> null
+/**
+ * Opens a persisted notification deep link. Tab destinations switch tabs; anything else is pushed
+ * so back returns to where the user tapped the notification.
+ */
+internal fun NavHostController.navigateToNotificationDeepLink(link: String) {
+    val route = link.toRouteOrNull() ?: return
+    if (route::class in topLevelRouteClasses) {
+        navigateToTopLevel(route, restoreState = false)
+    } else {
+        navigate(route)
+    }
 }
 
 @Composable
@@ -53,8 +80,8 @@ fun AppNavigation(
     val userSession = koinInject<UserSession>()
     val authRepository = koinInject<AuthRepository>()
     val notificationRepository = koinInject<NotificationRepository>()
+    val bookingRepository = koinInject<BookingRepository>()
     val scope = rememberCoroutineScope()
-    val activeRole by userSession.activeRole.collectAsState()
     val currentUser by userSession.user.collectAsState()
 
     // The only unread-item signal anywhere in the nav chrome — otherwise a user has to drill into
@@ -70,50 +97,33 @@ fun AppNavigation(
         }
     }
 
+    // Seat requests waiting on the user as a driver, badged on "Mis viajes".
+    val pendingRequestCount by produceState(initialValue = 0, currentUser?.id) {
+        val userId = currentUser?.id
+        if (userId.isNullOrBlank()) {
+            value = 0
+        } else {
+            bookingRepository.getDriverBookingRequests(userId)
+                .map { bookings -> bookings.count { it.status == BookingStatus.Pending } }
+                .catch { emit(0) }
+                .collect { value = it }
+        }
+    }
+
     val navBackstackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackstackEntry?.destination
+    val showBottomBar = topLevelItems.any { currentDestination?.hasRoute(it.route::class) == true }
 
-    val driverBottomNavItems = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.MyTrips,
-        BottomNavItem.BookingRequests,
-        BottomNavItem.Profile
-    )
-    val passengerBottomNavItems = listOf(
-        BottomNavItem.SearchRoutes,
-        BottomNavItem.PassengerBookings,
-        BottomNavItem.Profile
-    )
-    val showDriverBottomBar = driverBottomNavItems.any {
-        currentDestination?.hasRoute(it.route::class) == true
-    }
-    val showPassengerBottomBar = passengerBottomNavItems.any {
-        currentDestination?.hasRoute(it.route::class) == true
-    }
-    val showBottomBar = showDriverBottomBar || showPassengerBottomBar
-    val currentBottomNavItems = when {
-        showDriverBottomBar && showPassengerBottomBar -> {
-            if (activeRole == UserRole.Passenger) passengerBottomNavItems else driverBottomNavItems
-        }
-        showDriverBottomBar -> driverBottomNavItems
-        showPassengerBottomBar -> passengerBottomNavItems
-        else -> emptyList()
-    }
-
-    // The one way to change active role. Every caller resets the back stack, because leaving the
-    // previous role's destinations underneath is exactly how activeRole ends up disagreeing with
-    // the tab set that is actually on screen — the desync the bottom-bar comment below guards
-    // against, reached from the other direction. `destination` defaults to that role's home
-    // screen, but a caller landing somewhere more specific (e.g. a deep link target) can override
-    // it while still getting the same role-set-then-reset-stack behavior.
-    fun switchActiveRole(
-        role: UserRole,
-        destination: Route = if (role == UserRole.Driver) Route.Home else Route.PassengerHome
-    ) {
-        userSession.setActiveRole(role)
-        navController.navigate(destination) {
+    fun enterApp(user: User) {
+        userSession.setUser(user)
+        navController.navigate(Route.Home) {
             popUpTo(0) { inclusive = true }
         }
+    }
+
+    // Today's publish path: pick one of your routes, then fill in the trip.
+    val onPublishTrip: () -> Unit = {
+        navController.navigate(Route.RoutesList) { launchSingleTop = true }
     }
 
     val onLogout: () -> Unit = {
@@ -132,24 +142,12 @@ fun AppNavigation(
                 if (showBottomBar) {
                     BottomNavigationBar(
                         currentDestination = currentDestination,
-                        items = currentBottomNavItems,
-                        badgeCounts = mapOf(Route.Profile::class to unreadNotificationCount),
-                        onNavigate = { route ->
-                            navController.navigate(route) {
-                                // Anchor on the same signal that picked currentBottomNavItems
-                                // (destination-driven), not on activeRole directly — activeRole
-                                // is a separately-updated field that can momentarily disagree
-                                // with which tab set is actually on screen, which would pop the
-                                // back stack to the wrong role's root.
-                                if (currentBottomNavItems === passengerBottomNavItems) {
-                                    popUpTo<Route.PassengerHome> { saveState = true }
-                                } else {
-                                    popUpTo<Route.Home> { saveState = true }
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
+                        items = topLevelItems,
+                        badgeCounts = mapOf(
+                            Route.Profile::class to unreadNotificationCount,
+                            Route.MyTrips::class to pendingRequestCount,
+                        ),
+                        onNavigate = { route -> navController.navigateToTopLevel(route as Route) }
                     )
                 }
             },
@@ -196,71 +194,20 @@ fun AppNavigation(
                             popUpTo<Route.Splash> { inclusive = true }
                         }
                     },
-                    onSplashNavigateToDriver = { user ->
-                        userSession.setSession(user, UserRole.Driver)
-                        navController.navigate(Route.Home) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onSplashNavigateToPassenger = { user ->
-                        userSession.setSession(user, UserRole.Passenger)
-                        navController.navigate(Route.PassengerHome) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onSplashNavigateToRoleSelector = { user ->
-                        userSession.setUser(user)
-                        navController.navigate(Route.RoleSelector) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
+                    onSplashNavigateToDriver = ::enterApp,
+                    onSplashNavigateToPassenger = ::enterApp,
+                    onSplashNavigateToRoleSelector = ::enterApp,
                     onOnboardingNavigateToApp = {
                         navController.navigate(Route.Splash) {
                             popUpTo<Route.Onboarding> { inclusive = true }
                         }
                     },
-                    onSelectDriver = {
-                        userSession.setActiveRole(UserRole.Driver)
-                        navController.navigate(Route.Home) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    onSelectPassenger = {
-                        userSession.setActiveRole(UserRole.Passenger)
-                        navController.navigate(Route.PassengerHome) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
+                    onSelectDriver = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+                    onSelectPassenger = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
                 )
 
                 authNavGraph(
-                    onAuthSuccess = { user ->
-                        when {
-                            user.isDriver && user.isPassenger -> {
-                                userSession.setUser(user)
-                                navController.navigate(Route.RoleSelector) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
-                            user.isDriver -> {
-                                userSession.setSession(user, UserRole.Driver)
-                                navController.navigate(Route.Home) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
-                            user.isPassenger -> {
-                                userSession.setSession(user, UserRole.Passenger)
-                                navController.navigate(Route.PassengerHome) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
-                            else -> {
-                                navController.navigate(Route.Login) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
-                        }
-                    },
+                    onAuthSuccess = ::enterApp,
                     onNavigateToRegister = { navController.navigate(Route.Register) },
                     onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                     onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
@@ -268,8 +215,46 @@ fun AppNavigation(
                     canNavigateBack = { navController.previousBackStackEntry != null }
                 )
 
+                mainNavGraph(
+                    pendingRequestCount = { pendingRequestCount },
+                    onNavigateToProfile = { navController.navigateToTopLevel(Route.Profile) },
+                    onPublishTrip = onPublishTrip,
+                    onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
+                    onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
+                    onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
+                    onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
+                    onNavigateToSearchTrips = { navController.navigateToTopLevel(Route.SearchTrips) },
+                    onNavigateToMyTrips = { tab ->
+                        if (tab == null) {
+                            navController.navigateToTopLevel(Route.MyTrips())
+                        } else {
+                            navController.navigateToTopLevel(Route.MyTrips(tab), restoreState = false)
+                        }
+                    },
+                    onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
+                    onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
+                    onBookingCreated = {
+                        // Leave the booked trip out of the Search tab's saved stack.
+                        navController.popBackStack<Route.TripDetailPassenger>(inclusive = true)
+                        navController.navigateToTopLevel(Route.MyTrips(MyTripsTab.Passenger), restoreState = false)
+                    },
+                    onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
+                    onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
+                    onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
+                        // Rating from "Como pasajero": the ratee is always the driver, which
+                        // selects the "clean car / safe driving" chip set.
+                        navController.navigate(
+                            Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = true)
+                        )
+                    },
+                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
+                    },
+                    onNavigateBack = { navController.popBackStack() },
+                )
+
                 driverNavGraph(
-                    onNavigateToProfile = { navController.navigate(Route.Profile) },
                     onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
                     onNavigateToEditVehicle = { id -> navController.navigate(Route.RegisterVehicle(id)) },
@@ -278,19 +263,13 @@ fun AppNavigation(
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToCommunityRoutes = { navController.navigate(Route.CommunityRoutes) },
-                    onNavigateToDriverTrips = { navController.navigate(Route.DriverTrips) },
-                    onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
-                    onNavigateToSearchTrips = { switchActiveRole(UserRole.Passenger) },
-                    onNavigateToPassengerBookings = { navController.navigate(Route.PassengerBookings) },
-                    onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                     onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
                     onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
                     onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
-                        // Driver side, so the ratee is always the passenger — selects the
-                        // passenger chip set, mirroring the passenger graph's rateeIsDriver = true.
+                        // Rating from a trip the user drove: the ratee is always the passenger.
                         navController.navigate(
                             Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = false)
                         )
@@ -299,44 +278,6 @@ fun AppNavigation(
                         navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
                     },
                     onNavigateBack = { navController.popBackStack() },
-                )
-
-                passengerNavGraph(
-                    onSwitchRole = { switchActiveRole(UserRole.Driver) },
-                    onNavigateToProfile = { navController.navigate(Route.Profile) },
-                    onNavigateToTripDetail = { tripId ->
-                        navController.navigate(Route.TripDetailPassenger(tripId))
-                    },
-                    onNavigateToPassengerBookings = {
-                        // Pop the trip-detail screen the booking was created from instead of
-                        // stacking on top of it, so back from Bookings doesn't return to a
-                        // trip the passenger just booked.
-                        navController.navigate(Route.PassengerBookings) {
-                            popUpTo<Route.TripDetailPassenger> { inclusive = true }
-                        }
-                    },
-                    onNavigateToTripTracking = { tripId ->
-                        navController.navigate(Route.TripTracking(tripId))
-                    },
-                    onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
-                        // This graph is the passenger side, so the ratee is always the driver —
-                        // which is what selects the "clean car / safe driving" chip set.
-                        navController.navigate(
-                            Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = true)
-                        )
-                    },
-                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    onNavigateToSearchTrips = {
-                        navController.navigate(Route.PassengerHome) {
-                            popUpTo<Route.PassengerHome> { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
-                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
-                    },
-                    onNavigateBack = { navController.popBackStack() }
                 )
 
                 sharedNavGraph(
@@ -365,28 +306,8 @@ fun AppNavigation(
                             popUpTo(0) { inclusive = true }
                         }
                     },
-                    onRoleSwitched = { role ->
-                        // ProfileViewModel already flipped userSession.activeRole — just move
-                        // the nav graph so it agrees.
-                        val destination =
-                            if (role == UserRole.Driver) Route.Home else Route.PassengerHome
-                        navController.navigate(destination) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    onNavigateToDeepLink = { deepLink ->
-                        deepLink.toRouteOrNull()?.let { route ->
-                            val requiredRole = route.requiredRoleOrNull()
-                            if (requiredRole != null && requiredRole != activeRole) {
-                                // Land on the deep link's actual target, not that role's home
-                                // screen, while still keeping activeRole/bottom-bar/theme in
-                                // sync with where the user is actually being sent.
-                                switchActiveRole(requiredRole, route)
-                            } else {
-                                navController.navigate(route)
-                            }
-                        }
-                    },
+                    onRoleSwitched = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+                    onNavigateToDeepLink = navController::navigateToNotificationDeepLink,
                     onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
                         navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
                     }

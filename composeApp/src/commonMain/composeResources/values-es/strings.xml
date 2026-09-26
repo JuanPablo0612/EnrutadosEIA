@@ -203,12 +203,12 @@
     <string name="passenger_bookings_title">Mis Reservas</string>
 
     <!-- Solicitudes del conductor -->
-    <string name="booking_requests_title">Solicitudes de Reserva</string>
+    <string name="booking_requests_title">Solicitudes de reserva</string>
 
     <!-- Navegación -->
     <string name="nav_booking_requests">Solicitudes</string>
     <string name="nav_my_bookings">Mis Reservas</string>
-    <string name="nav_my_trips">Mis Viajes</string>
+    <string name="nav_my_trips">Mis viajes</string>
     <string name="nav_profile">Perfil</string>
 
     <!-- Perfil -->
@@ -280,6 +280,13 @@
     <string name="home_driver_empty_subtitle">Registra tu vehículo y crea una ruta para comenzar a ofrecer viajes.</string>
     <string name="home_passenger_empty_title">¡Encuentra tu primer viaje!</string>
     <string name="home_passenger_empty_subtitle">Busca rutas disponibles y reserva tu cupo fácilmente.</string>
+    <string name="my_trips_tab_passenger">Como pasajero</string>
+    <string name="my_trips_tab_driver">Como conductor</string>
+    <string name="my_trips_requests_subtitle">Revisa, confirma o rechaza pasajeros</string>
+    <plurals name="my_trips_pending_requests">
+        <item quantity="one">%1$d solicitud pendiente</item>
+        <item quantity="other">%1$d solicitudes pendientes</item>
+    </plurals>
 
     <!-- Login rediseño -->
     <string name="login_terms_footer">Al iniciar sesión aceptas nuestros Términos de Servicio</string>

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,14 +38,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun CarpoolTopBar(
     title: String,
     user: User,
-    isDualRole: Boolean,
-    /**
-     * Labels the action, not the state: "Switch to passenger" while you are a driver, so the
-     * chip reads as "tap to switch" rather than as a "filter by role" toggle.
-     */
-    switchRoleLabel: String = "",
     onAvatarClick: () -> Unit,
-    onRoleToggle: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
@@ -72,16 +64,7 @@ fun CarpoolTopBar(
                 )
             }
         },
-        actions = {
-            if (isDualRole && onRoleToggle != null) {
-                AssistChip(
-                    onClick = onRoleToggle,
-                    label = { Text(switchRoleLabel) },
-                    modifier = Modifier.padding(end = Spacing.xs)
-                )
-            }
-            actions()
-        }
+        actions = actions
     )
 }
 

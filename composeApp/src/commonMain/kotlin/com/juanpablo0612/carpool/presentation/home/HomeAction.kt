@@ -8,7 +8,6 @@ sealed class HomeAction {
     data object OpenAllRequests : HomeAction()
     data object ViewMyTrips : HomeAction()
     data object ViewMyRoutes : HomeAction()
-    data object ViewMyBookings : HomeAction()
     data object ViewSavedPlaces : HomeAction()
     data object Refresh : HomeAction()
     data class AcceptRequest(val bookingId: String) : HomeAction()

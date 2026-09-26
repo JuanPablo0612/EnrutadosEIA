@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.booking.passenger
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,8 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -58,7 +57,6 @@ import enrutadoseia.composeapp.generated.resources.cancel_confirm_title
 import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_body
 import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_button
 import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_title
-import enrutadoseia.composeapp.generated.resources.passenger_bookings_title
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -124,21 +122,8 @@ fun PassengerBookingsContent(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.passenger_bookings_title),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
-    ) { padding ->
+    // Hosted inside the "Mis viajes" tab, which owns the top bar and the window insets.
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0)) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             // Cancel failures, so a failed cancel is distinguishable from a successful one. Tap
             // to dismiss, matching BookingRequestsScreen.

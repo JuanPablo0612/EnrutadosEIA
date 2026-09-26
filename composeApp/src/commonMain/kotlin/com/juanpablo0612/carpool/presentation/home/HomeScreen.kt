@@ -18,6 +18,7 @@ import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.home.components.HomeDashboard
+import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
@@ -37,13 +38,13 @@ import org.jetbrains.compose.resources.stringResource
 fun HomeScreen(
     viewModel: HomeViewModel,
     onNavigateToProfile: () -> Unit,
+    onPublishTrip: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
-    onNavigateToDriverTrips: () -> Unit,
+    onNavigateToMyTrips: (MyTripsTab?) -> Unit,
     onNavigateToDriverBookingRequests: () -> Unit,
     onNavigateToSearchTrips: () -> Unit,
-    onNavigateToPassengerBookings: () -> Unit,
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
 ) {
@@ -51,16 +52,15 @@ fun HomeScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
+            HomeEvent.NavigateToPublishTrip -> onPublishTrip()
             HomeEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
             HomeEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
             HomeEvent.NavigateToRoutesList -> onNavigateToRoutesList()
-            HomeEvent.NavigateToDriverTrips -> onNavigateToDriverTrips()
+            is HomeEvent.NavigateToMyTrips -> onNavigateToMyTrips(event.tab)
             HomeEvent.NavigateToDriverBookingRequests -> onNavigateToDriverBookingRequests()
             HomeEvent.NavigateToSearchTrips -> onNavigateToSearchTrips()
-            HomeEvent.NavigateToPassengerBookings -> onNavigateToPassengerBookings()
             HomeEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
             is HomeEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
-            is HomeEvent.NavigateToTripDetailPassenger -> onNavigateToTripDetail(event.tripId)
         }
     }
 
@@ -97,10 +97,7 @@ internal fun HomeContent(
                 CarpoolTopBar(
                     title = stringResource(Res.string.nav_home),
                     user = user,
-                    isDualRole = false,
-                    switchRoleLabel = "",
                     onAvatarClick = onNavigateToProfile,
-                    onRoleToggle = null,
                 )
             }
         },

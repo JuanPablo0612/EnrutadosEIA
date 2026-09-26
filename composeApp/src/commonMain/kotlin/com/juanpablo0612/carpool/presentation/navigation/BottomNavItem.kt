@@ -1,13 +1,9 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.bookmarks_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.home_24px
-import enrutadoseia.composeapp.generated.resources.inbox_24px
-import enrutadoseia.composeapp.generated.resources.nav_booking_requests
 import enrutadoseia.composeapp.generated.resources.nav_home
-import enrutadoseia.composeapp.generated.resources.nav_my_bookings
 import enrutadoseia.composeapp.generated.resources.nav_my_trips
 import enrutadoseia.composeapp.generated.resources.nav_profile
 import enrutadoseia.composeapp.generated.resources.nav_search_routes
@@ -27,28 +23,16 @@ sealed class BottomNavItem<T : Any>(
         route = Route.Home
     )
 
-    data object MyTrips : BottomNavItem<Route.DriverTrips>(
-        label = Res.string.nav_my_trips,
-        icon = Res.drawable.directions_car_24px,
-        route = Route.DriverTrips
-    )
-
-    data object BookingRequests : BottomNavItem<Route.DriverBookingRequests>(
-        label = Res.string.nav_booking_requests,
-        icon = Res.drawable.inbox_24px,
-        route = Route.DriverBookingRequests
-    )
-
-    data object SearchRoutes : BottomNavItem<Route.PassengerHome>(
+    data object SearchTrips : BottomNavItem<Route.SearchTrips>(
         label = Res.string.nav_search_routes,
         icon = Res.drawable.search_24px,
-        route = Route.PassengerHome
+        route = Route.SearchTrips
     )
 
-    data object PassengerBookings : BottomNavItem<Route.PassengerBookings>(
-        label = Res.string.nav_my_bookings,
-        icon = Res.drawable.bookmarks_24px,
-        route = Route.PassengerBookings
+    data object MyTrips : BottomNavItem<Route.MyTrips>(
+        label = Res.string.nav_my_trips,
+        icon = Res.drawable.directions_car_24px,
+        route = Route.MyTrips()
     )
 
     data object Profile : BottomNavItem<Route.Profile>(

@@ -7,8 +7,6 @@ import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsScre
 import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsViewModel
 import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersScreen
 import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersViewModel
-import com.juanpablo0612.carpool.presentation.home.HomeScreen
-import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileViewModel
@@ -22,8 +20,6 @@ import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripScreen
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
-import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
-import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListScreen
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleScreen
@@ -31,8 +27,11 @@ import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleVi
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+/**
+ * Screens for trips you drive: routes, publishing, vehicles and booking requests. Every user can
+ * reach them; there is no driver role.
+ */
 fun NavGraphBuilder.driverNavGraph(
-    onNavigateToProfile: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToEditVehicle: (String) -> Unit,
@@ -41,11 +40,6 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToAddPlace: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
     onNavigateToCommunityRoutes: () -> Unit,
-    onNavigateToDriverTrips: () -> Unit,
-    onNavigateToDriverBookingRequests: () -> Unit,
-    onNavigateToSearchTrips: () -> Unit,
-    onNavigateToPassengerBookings: () -> Unit,
-    onNavigateToSavedPlaces: () -> Unit,
     onNavigateToVehiclesList: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
@@ -55,23 +49,6 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    composable<Route.Home> {
-        val viewModel: HomeViewModel = koinViewModel()
-        HomeScreen(
-            viewModel = viewModel,
-            onNavigateToProfile = onNavigateToProfile,
-            onNavigateToCreateRoute = onNavigateToCreateRoute,
-            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
-            onNavigateToRoutesList = onNavigateToRoutesList,
-            onNavigateToDriverTrips = onNavigateToDriverTrips,
-            onNavigateToDriverBookingRequests = onNavigateToDriverBookingRequests,
-            onNavigateToSearchTrips = onNavigateToSearchTrips,
-            onNavigateToPassengerBookings = onNavigateToPassengerBookings,
-            onNavigateToSavedPlaces = onNavigateToSavedPlaces,
-            onNavigateToTripDetail = onNavigateToTripDetail,
-        )
-    }
-
     composable<Route.RoutesList> {
         val viewModel: RoutesListViewModel = koinViewModel()
         RoutesListScreen(
@@ -127,17 +104,6 @@ fun NavGraphBuilder.driverNavGraph(
         )
     }
 
-    composable<Route.DriverTrips> {
-        val viewModel: DriverTripsViewModel = koinViewModel()
-        DriverTripsScreen(
-            viewModel = viewModel,
-            onNavigateToRoutesList = onNavigateToRoutesList,
-            onNavigateToTripDetail = onNavigateToTripDetail,
-            onNavigateToPassengers = onNavigateToPassengers,
-            onNavigateToTripTracking = onNavigateToTripTracking
-        )
-    }
-
     composable<Route.TripPassengers> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.TripPassengers>()
         val viewModel: TripPassengersViewModel = koinViewModel { parametersOf(args.tripId) }
@@ -178,6 +144,7 @@ fun NavGraphBuilder.driverNavGraph(
             onNavigateToPassengerProfile = onNavigateToPassengerProfile,
             onNavigateToRating = onNavigateToRating,
             onNavigateToChat = onNavigateToChat,
+            onBackClick = onNavigateBack,
         )
     }
 

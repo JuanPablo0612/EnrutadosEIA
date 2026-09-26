@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
+import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
+
 /**
  * The deep-link vocabulary carried by `AppNotification.deepLink`.
  *
@@ -33,7 +35,7 @@ object NotificationDeepLink {
         val arg = segments.getOrNull(1)?.takeIf { it.isNotBlank() }
 
         return when (head) {
-            "passenger-bookings" -> Route.PassengerBookings
+            "passenger-bookings" -> Route.MyTrips(MyTripsTab.Passenger)
             "booking-requests" -> Route.DriverBookingRequests
             "trip" -> arg?.let { Route.TripDetailPassenger(it) }
             "tracking" -> arg?.let { Route.TripTracking(it) }

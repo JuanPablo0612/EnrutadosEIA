@@ -20,8 +20,6 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -36,6 +34,7 @@ import com.juanpablo0612.carpool.presentation.booking.driver.components.RejectBo
 import com.juanpablo0612.carpool.presentation.booking.driver.components.confirmedBookingItems
 import com.juanpablo0612.carpool.presentation.booking.driver.components.pendingBookingItems
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
@@ -65,6 +64,7 @@ fun BookingRequestsScreen(
     onNavigateToPassengerProfile: (String) -> Unit = {},
     onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit = { _, _, _, _ -> },
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
+    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -81,6 +81,7 @@ fun BookingRequestsScreen(
         state = state,
         onAction = viewModel::onAction,
         onNavigateToChat = onNavigateToChat,
+        onBackClick = onBackClick,
     )
 }
 
@@ -90,6 +91,7 @@ fun BookingRequestsContent(
     state: BookingRequestsUiState,
     onAction: (BookingRequestsAction) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
+    onBackClick: () -> Unit = {},
 ) {
     val nowMs = rememberNowMs()
     val pullRefreshState = rememberPullToRefreshState()
@@ -113,16 +115,9 @@ fun BookingRequestsContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(Res.string.booking_requests_title),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.booking_requests_title),
+                onBack = onBackClick,
             )
         },
     ) { padding ->

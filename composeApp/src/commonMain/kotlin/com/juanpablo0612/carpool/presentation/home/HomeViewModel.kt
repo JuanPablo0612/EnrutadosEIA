@@ -119,12 +119,11 @@ class HomeViewModel(
         when (action) {
             HomeAction.CreateRoute -> emit(HomeEvent.NavigateToCreateRoute)
             HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
-            HomeAction.PublishTrip -> emit(HomeEvent.NavigateToRoutesList)
+            HomeAction.PublishTrip -> emit(HomeEvent.NavigateToPublishTrip)
             HomeAction.ViewMyRoutes -> emit(HomeEvent.NavigateToRoutesList)
-            HomeAction.ViewMyTrips -> emit(HomeEvent.NavigateToDriverTrips)
+            HomeAction.ViewMyTrips -> emit(HomeEvent.NavigateToMyTrips(tab = null))
             HomeAction.OpenAllRequests -> emit(HomeEvent.NavigateToDriverBookingRequests)
             HomeAction.SearchTrips -> emit(HomeEvent.NavigateToSearchTrips)
-            HomeAction.ViewMyBookings -> emit(HomeEvent.NavigateToPassengerBookings)
             HomeAction.ViewSavedPlaces -> emit(HomeEvent.NavigateToSavedPlaces)
             HomeAction.Refresh -> handleRefresh()
             is HomeAction.AcceptRequest -> confirmBooking(action.bookingId)
@@ -137,7 +136,7 @@ class HomeViewModel(
             }
             HomeAction.OnDismissRejectConfirm -> _state.update { it.copy(pendingRejectBookingId = null) }
             is HomeAction.OpenTrip -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
-            is HomeAction.OpenBooking -> emit(HomeEvent.NavigateToTripDetailPassenger(action.tripId))
+            is HomeAction.OpenBooking -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
             HomeAction.DismissBookingActionError -> _state.update { it.copy(error = null) }
         }
     }

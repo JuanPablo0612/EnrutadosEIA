@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -56,7 +56,6 @@ import enrutadoseia.composeapp.generated.resources.driver_trips_past_search_no_r
 import enrutadoseia.composeapp.generated.resources.driver_trips_past_search_placeholder
 import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.driver_trips_upcoming_empty_title
-import enrutadoseia.composeapp.generated.resources.nav_my_trips
 import enrutadoseia.composeapp.generated.resources.publish_trip_fab
 import enrutadoseia.composeapp.generated.resources.tab_past
 import enrutadoseia.composeapp.generated.resources.tab_upcoming
@@ -134,10 +133,9 @@ fun DriverTripsContent(
         )
     }
 
+    // Hosted inside the "Mis viajes" tab, which owns the top bar and the window insets.
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(Res.string.nav_my_trips)) })
-        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             if (isUpcoming) {
                 ExtendedFloatingActionButton(

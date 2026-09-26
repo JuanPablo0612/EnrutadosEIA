@@ -40,8 +40,6 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
-import enrutadoseia.composeapp.generated.resources.role_selector_passenger_title
 import enrutadoseia.composeapp.generated.resources.search_24px
 import enrutadoseia.composeapp.generated.resources.search_prompt_subtitle
 import enrutadoseia.composeapp.generated.resources.search_prompt_title
@@ -56,8 +54,6 @@ import org.koin.core.parameter.parametersOf
 fun SearchRoutesScreen(
     viewModel: SearchRoutesViewModel,
     user: User,
-    isDualRole: Boolean,
-    onSwitchRole: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToAddPlace: () -> Unit
@@ -125,9 +121,7 @@ fun SearchRoutesScreen(
         null -> SearchRoutesContent(
             state = state,
             user = user,
-            isDualRole = isDualRole,
             onAction = viewModel::onAction,
-            onSwitchRole = onSwitchRole,
             onNavigateToProfile = onNavigateToProfile
         )
     }
@@ -138,9 +132,7 @@ fun SearchRoutesScreen(
 fun SearchRoutesContent(
     state: SearchRoutesUiState,
     user: User,
-    isDualRole: Boolean,
     onAction: (SearchRoutesAction) -> Unit,
-    onSwitchRole: () -> Unit,
     onNavigateToProfile: () -> Unit
 ) {
     val filtersSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -151,10 +143,7 @@ fun SearchRoutesContent(
             CarpoolTopBar(
                 title = stringResource(Res.string.passenger_home_title),
                 user = user,
-                isDualRole = isDualRole,
-                switchRoleLabel = stringResource(Res.string.role_switch_to_driver),
                 onAvatarClick = onNavigateToProfile,
-                onRoleToggle = if (isDualRole) onSwitchRole else null
             )
         }
     ) { padding ->
@@ -264,9 +253,7 @@ private fun SearchRoutesEmptyPreview() {
         SearchRoutesContent(
             state = SearchRoutesUiState(isLoading = false),
             user = previewUser,
-            isDualRole = false,
             onAction = {},
-            onSwitchRole = {},
             onNavigateToProfile = {}
         )
     }
