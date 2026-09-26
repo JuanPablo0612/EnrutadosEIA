@@ -1,12 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. `AGENTS.md` holds the same rules for other agents; keep the two in sync.
 
 ## Project
 
-EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app for university students. Drivers publish trips, passengers find and reserve seats. Currently targeting Android (iOS scaffold exists but is not active).
+EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app for university students (EIA, Envigado). Anyone can search and book seats; anyone with a registered vehicle can publish trips. There are **no user roles** — one account, one navigation. Currently targeting Android (iOS scaffold exists but is not active).
 
-## Build & Run
+## Build, Test & Run
 
 ```bash
 # Build Android debug APK
@@ -15,51 +15,66 @@ EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app f
 # Clean build
 ./gradlew clean :androidApp:assembleDebug
 
+# Unit tests (commonTest, run on the JVM via Android host tests — no device needed)
+./gradlew :composeApp:testAndroidHostTest
+
 # Compile shared code only (no Android SDK required)
 ./gradlew :composeApp:compileCommonMainKotlinMetadata
+
+# Cloud Functions
+npm --prefix functions run lint
+npm --prefix functions run build
 ```
 
-There is no test command — android host tests are not enabled (`composeApp`'s `commonTest` source set exists but isn't wired to a runnable target) and the project has no tests. Don't add `./gradlew :composeApp:testDebugUnitTest` to docs or scripts; it does not exist. `composeApp` is a Kotlin Multiplatform **library** module, not an application — `:composeApp:assembleDebug` is not a valid task; the installable APK is built via `:androidApp:assembleDebug`. There is also no CI workflow and no lint/detekt/ktlint config — `./gradlew :composeApp:compileCommonMainKotlinMetadata` is the only automated check available.
+On Windows use `gradlew.bat`. Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP **library** — `:composeApp:assembleDebug` is not a valid task; the APK comes from `:androidApp:assembleDebug`). Gradle configuration cache is enabled. JVM target is 17. There is no CI workflow and no lint/detekt/ktlint config for Kotlin.
 
-Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library). Gradle configuration cache is enabled. JVM target is 17.
+**Tests** live in `composeApp/src/commonTest` (kotlin-test + kotlinx-coroutines-test) and cover pure domain logic: trip matching (`MatchTripsUseCase`, `GeoDistance`), recurring slots, trip validation, the publish use cases (with in-memory fakes in `PublishFakes.kt`) and notification deep links. Add tests for any new domain logic; there are no UI/instrumented tests.
 
 ### First-time setup
 
 A fresh clone is missing two gitignored files the Android build needs:
 
 1. **`androidApp/google-services.json`** — Firebase config for the `com.juanpablo0612.carpool` app. Download it from the Firebase console (Project settings → your Android app) and place it at that exact path. Without it, the `googleServices` Gradle plugin fails the build.
-2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` and injected into the manifest as a placeholder, and also by `composeApp/build.gradle.kts` (via the BuildKonfig plugin) as the generated `com.juanpablo0612.carpool.core.config.BuildKonfig.MAPS_API_KEY` Kotlin constant used for Places API (New) autocomplete/details and Geocoding API reverse-geocoding calls (`data/place/datasource/GooglePlacesSearchService.kt`). Copy `secrets.properties.example` to `secrets.properties` and fill in a real Google Maps API key that has **Maps SDK for Android**, **Places API (New)**, and **Geocoding API** all enabled in the Google Cloud console. Without this file (or with a blank key), the build still succeeds but the key resolves to an empty string, map screens render blank, and address search/reverse geocoding silently return no results.
+2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` (manifest placeholder) and by `composeApp/build.gradle.kts` via BuildKonfig as `com.juanpablo0612.carpool.core.config.BuildKonfig.MAPS_API_KEY`, used for Places API (New) autocomplete/details and Geocoding (`data/place/datasource/GooglePlacesSearchService.kt`). Copy `secrets.properties.example` and fill in a key with **Maps SDK for Android**, **Places API (New)** and **Geocoding API** enabled. Without it the build succeeds but maps render blank and address search returns nothing.
 
-### Firestore/Storage rules, indexes, and data backfills
+### Backend: Cloud Functions, rules, indexes
 
-`firestore.rules`, `firestore.indexes.json`, and `storage.rules` at the repo root are deployed with the Firebase CLI (`firebase deploy --only firestore:rules,firestore:indexes,storage`) — see `README.md` for the full setup. `.firebaserc` and `firebase.json` are checked in and already point at project `enrutados-eia`, so `firebase use enrutados-eia` is all that's needed before deploying (no `firebase init` required). Storage has no `:rules` sub-target — `--only storage:rules` fails; use plain `--only storage`. Before deploying rules to a database with real data, backfill two Firestore fields that predate them and silently misbehave on existing documents:
+`functions/` (TypeScript, Node 22, firebase-functions 7 / firebase-admin 13, eslint-config-google — JSDoc on every function, max 80 columns) is the backend. It **owns** these writes; the app must never do them itself:
 
-- **`places.ownerId`** defaults to `""` on documents written before the owner field existed, which matches no signed-in user's UID — those places become invisible to their own owner once the rules are enforced.
-- **`trips.confirmedSeats`** defaults to `0` on trips that already had confirmed passengers, which over-reports availability and allows overbooking until the counter is next touched by a booking transition. Backfill it as `count(bookings where tripId == trip.id and status == 'CONFIRMED')`.
+- **Notifications** — in-app documents in `notifications/{uid}/items` (type + string params, deterministic ids for idempotency) and FCM data-only pushes, sent from Firestore triggers on bookings, trips and chat messages (`functions/src/triggers`, `functions/src/notifications`). Clients may only read, mark read and delete their own notifications.
+- **Trip cancellation cascade** — cancelling or deleting a trip cancels its open bookings (`cancelledBy: "system"`) and resets `confirmedSeats`.
+- **Rating aggregate** — `users/{uid}.ratingSum` / `ratingCount` (integers; the app computes the average).
+- **Account deletion** — the `deleteAccount` callable purges the user's data and then the auth user (plus a 1st-gen `auth.user().onDelete` safety net).
+
+Functions deploy to `us-central1`, which must match the Firestore location (`nam5`) and `BackendConfig.FUNCTIONS_REGION` in the app. Deploying needs the Blaze plan.
+
+`firestore.rules`, `firestore.indexes.json`, `storage.rules` and `firebase.json` are at the repo root; `.firebaserc` points at `enrutados-eia` (no `firebase init` needed). Deploy with `firebase deploy --only functions,firestore:rules,firestore:indexes,storage` (Storage has no `:rules` sub-target). `firebase deploy --only firestore:rules --dry-run` validates the rules without deploying. See `README.md` for the full order and the one-off backfills: `places.ownerId`, `trips.confirmedSeats`, and the rating aggregate (`npm --prefix functions run backfill:ratings`).
 
 ## Architecture
 
-**Clean Architecture + MVVM**, organized as hybrid layers + features. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, trip, vehicle` (`route` is a driver's published route; `trip` is a bookable trip instance on that route — they are separate features on purpose).
+**Clean Architecture + MVVM**, organized as hybrid layers + features. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, trip, vehicle` (`route` is a driver's saved route template; `trip` is a bookable trip with date, vehicle and seats — separate features on purpose; a one-off trip has `routeId == ""`).
 
 ```
 com/juanpablo0612/carpool/
-├── core/exception/         # AppException sealed class (domain-safe errors)
+├── core/config/             # FeatureFlags, BackendConfig, generated BuildKonfig
+├── core/exception/          # AppException sealed class (domain-safe errors)
 ├── data/{feature}/
 │   ├── model/               # DTOs (absent for `preferences`, which has no Firestore DTO)
-│   ├── datasource/           # owns every Firebase/DataStore call; throws
-│   └── repository/           # DTO→domain mapping, catches and returns Result<T>
+│   ├── datasource/          # owns every Firebase/DataStore call; throws
+│   └── repository/          # DTO→domain mapping, catches and returns Result<T>
 ├── domain/{feature}/
-│   ├── model/                # domain models
-│   ├── repository/           # repository interfaces
-│   └── usecase/              # only where there is real logic (see below)
+│   ├── model/               # domain models
+│   ├── repository/          # repository interfaces
+│   ├── usecase/             # only where there is real logic (see below)
+│   └── validation/          # pure validators (auth/Validator, trip/TripDraftValidator)
 ├── presentation/{feature}/  # Screens, ViewModels, UiState, Actions, screen-local errors
-│   └── .../components/       # leaf composables for screens over ~250 lines
+│   └── .../components/      # leaf composables for screens over ~250 lines
 ├── presentation/navigation/ # Route.kt + graph/ (see Navigation below)
 ├── presentation/ui/         # components/ used by 2+ features, theme, util/
-└── di/                       # one Koin module file per feature (see DI below)
+└── di/                      # one Koin module file per feature (see DI below)
 ```
 
-Non-feature presentation packages also exist alongside the feature ones: `home`, `onboarding`, `profile`, `roleselector`, `session`, `splash`.
+Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab host), `onboarding`, `profile`, `session`, `splash`. Shared presentation pieces worth knowing: `presentation/place/stops/` (StopsDraft, SelectionTarget, `stopsEditorItems`/`stopsReadOnlyItems`, `StopSelectionHost` — the stop editor used by route create/edit and trip publishing), `presentation/notification/NotificationText.kt` (`resolveNotificationText`, shared by the in-app list and the push renderer). Android-only push code lives in `composeApp/src/androidMain/.../push/`.
 
 **Dependency rule:** presentation → domain ← data. Domain is pure Kotlin with no framework imports.
 
@@ -69,37 +84,42 @@ Non-feature presentation packages also exist alongside the feature ones: `home`,
 1. `XxxScreen` — injects ViewModel, collects state, handles navigation side-effects
 2. `XxxContent` — stateless, receives state + callbacks, supports `@Preview`
 
-**ViewModel** — one per screen. Exposes `StateFlow<UiState>` + `SharedFlow<Event>`. UI calls `onAction(Action)`. No business logic in ViewModels. `BookingWithPassenger`, `PassengerSummary`, and `TripSummary` live in `presentation/booking/model/` rather than `domain/` — a ViewModel builds them and only Compose consumes them, so there's no reason to keep them framework-free.
+**ViewModel** — one per screen. Exposes `StateFlow<UiState>` + `SharedFlow<Event>`. UI calls `onAction(Action)`. No business logic in ViewModels. `BookingWithPassenger`, `PassengerSummary`, and `TripSummary` live in `presentation/booking/model/` since a ViewModel builds them and only Compose consumes them. `UserSession` (in-memory signed-in user) is reloaded in `Navigation.kt` after process death.
 
-**Use cases** — 14 total, kept only where there is real logic: orchestration across repositories, derivation, ownership checks, or entity construction with id/timestamp (`booking`: CreateBooking, CheckExistingBooking, GetTripAvailableSeats, GetBookingsForTrip, RejectBooking, ConfirmBooking, CancelBooking · `place`: CreatePlace, DeletePlace, GetSavedPlaces · `trip`: GetAvailableTrips · `chat`: SendMessage · `notification`: CreateNotification · `rating`: CreateRating). For a plain single-call read or write, the ViewModel injects the repository directly instead of wrapping it in a use case. `domain/auth/validation/Validator.kt` is one exception worth knowing about: it's called directly from Login/Register/ForgotPassword ViewModels rather than through a use case — that's fine, since it's pure framework-free domain logic with no repository involved.
+**Use cases** — 18 total, kept only where there is real logic: orchestration across repositories, derivation, ownership checks, validation, or entity construction (`booking`: CreateBooking, CheckExistingBooking, GetTripAvailableSeats, GetBookingsForTrip, RejectBooking, ConfirmBooking, CancelBooking · `place`: CreatePlace, DeletePlace, GetSavedPlaces · `route`: DuplicateRoute · `trip`: GetAvailableTrips, MatchTrips, GenerateRecurringTripSlots, PublishTrip, PublishRecurringTrips · `chat`: SendMessage · `rating`: CreateRating). For a plain single-call read or write, the ViewModel injects the repository directly. Pure validators (`domain/auth/validation/Validator.kt`, `domain/trip/validation/TripDraftValidator.kt`) are called directly; time-dependent domain logic takes `now` and the time zone as parameters so it stays testable.
 
-**Error handling** — one rule: **repositories fail with `AppException`; presentation owns every error type the UI renders.** Every repository maps raw SDK/Firebase exceptions to a domain-safe subclass of `core/exception/AppException.kt` at the data-layer boundary (one nested sealed class per feature: `AuthException`, `BookingException`, `TripException`, `RouteException`, `VehicleException`, `PlaceException`, `ChatException`, `RatingException`, `NotificationException`) — `Result.failure(e)` with a raw exception is never returned. Firestore-backed features (everything except `AuthException`) can currently only ever produce their `.Unknown` case: the `dev.gitlive` Firestore SDK exposes no exception subtypes to branch on the way `FirebaseAuthException` does, so `data/auth/repository/AuthRepositoryImpl.kt` is the only file outside a `datasource/` package that imports `dev.gitlive` at all. Two error-typing styles coexist in `presentation/{feature}/`, both purely presentation-layer now:
-  - **Sealed class + mapper** (`AuthError`/`AuthErrorMapper.kt`, `BookingError`/`BookingErrorMapper.kt`, `TripError`/`TripErrorMapper.kt`, `RatingError`/`RatingErrorMapper.kt`, `NotificationError`/`NotificationErrorMapper.kt`) — for errors that originate from a repository/use-case failure. A `presentation/{feature}/XxxErrorMapper.kt` holds `Throwable.toXxxError()` and `XxxError.asStringResource()` as extension functions. One deliberate exception: `BookingError.VehicleNotFound` is constructed directly in `RouteDetailPassengerViewModel` for a trip whose vehicle is missing, not via a mapped repository failure.
-  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`) — for screen-local errors that never touch the domain layer. These carry their own member `asStringResource()`.
+**Error handling** — one rule: **repositories fail with `AppException`; presentation owns every error type the UI renders.** Every repository maps raw SDK/Firebase exceptions to a domain-safe subclass of `core/exception/AppException.kt` (one nested sealed class per feature) — `Result.failure(e)` with a raw exception is never returned. Firestore-backed features mostly produce `.Unknown`, because the `dev.gitlive` Firestore SDK exposes no exception subtypes; `TripException` also carries use-case outcomes (`Invalid(errors)`, `NotAuthenticated`, `VehicleNotFound`, `RouteSavedTripFailed`). Two error-typing styles coexist in `presentation/{feature}/`:
+  - **Sealed class + mapper** (`AuthError`, `BookingError`, `TripError`, `RatingError`, `NotificationError`, each with an `XxxErrorMapper.kt` holding `Throwable.toXxxError()` / `XxxError.asStringResource()`; `TripErrorMapper` also maps `TripValidationError`).
+  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`) for screen-local errors, with a member `asStringResource()`.
 
-  Either way, errors reach the UI as `ErrorMessage`/`ErrorState` components or inline text-field errors — **never SnackBars, never a raw `throwable.message`.**
+  Errors reach the UI as `ErrorMessage`/`ErrorState` components or inline field errors — **never SnackBars, never a raw `throwable.message`.** Forms show validation problems next to each field when the primary button is tapped rather than silently disabling it.
 
-**Navigation** — type-safe routes via one flat `@Serializable sealed interface Route` (31 routes) in `presentation/navigation/Route.kt`. `presentation/navigation/graph/` splits the graph into `AuthNavGraph`, `DriverNavGraph`, `PassengerNavGraph`, `RootNavGraph` (Splash/Onboarding/RoleSelector), and `SharedNavGraph` (role-agnostic routes). `Navigation.kt` only assembles the `NavHost` plus session/logout/role-switch wiring. One-time events use the `ObserveAsEvents` utility (in `presentation/ui/util/`) with `SharedFlow`.
+**Navigation** — type-safe routes via one flat `@Serializable sealed interface Route` (29 routes) in `presentation/navigation/Route.kt`. One bottom bar for everyone: **Inicio · Buscar · Mis viajes · Perfil** (`BottomNavItem`). Always switch tabs with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination. `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph`, `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive — routes, publishing, vehicles, booking requests — reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, and push-tap handling (`PendingDeepLinks`). Notification deep links are plain strings built and parsed in `NotificationDeepLink.kt` (`forNotification(type, params)` / `toRouteOrNull()`), opened with `navigateToNotificationDeepLink`. One-time events use `ObserveAsEvents` (in `presentation/ui/util/`) with `SharedFlow`.
+
+**Notifications (client side)** — the app never creates notifications. It renders them from `type` + `params` with `resolveNotificationText` (legacy documents with stored title/body still render). `PushTokenSync` registers the device's FCM token under `users/{uid}/fcmTokens` on sign-in; sign-out removes it. `CarpoolMessagingService` shows data-only pushes in the device language; POST_NOTIFICATIONS is requested via `rememberNotificationPermissionState()` right after a meaningful action (requesting a seat, publishing a trip), never at launch.
 
 ## DI (Koin)
 
-`di/` has one file per module instead of a single aggregate: `FirebaseModule` (the three Firebase SDK singletons), `AppStateModule` (`UserSession`, `createLocationPermissionRequester`), one module per feature (`AuthModule`, `RouteModule`, `PlaceModule`, etc.) plus `SplashModule`/`ProfileModule`/`HomeModule`/`RoleSelectorModule`, and `AppModule` — the `includes(...)` aggregate plus `initKoin`. Singletons for Firebase/repos, factories for use cases, `koinViewModel<T>()` for ViewModels. Hand-written Koin DSL only — the project does not use `koin-annotations` or the `koinCompose` compiler plugin (`@Single`/`@Factory`/`@KoinViewModel`), so don't add those dependencies back without actually adopting the annotation-based style everywhere.
+`di/` has one file per module: `FirebaseModule` (Auth, Firestore, Storage, Functions, Messaging singletons), `AppStateModule` (`UserSession`, `createLocationPermissionRequester`), one module per feature (`AuthModule`, `RouteModule`, `TripModule`, `NotificationModule`, etc.) plus `SplashModule`/`ProfileModule`/`HomeModule`, and `AppModule` — the `includes(...)` aggregate plus `initKoin`. Singletons for Firebase/repos/data sources, factories for use cases, `koinViewModel<T>()` for ViewModels. Hand-written Koin DSL only — no `koin-annotations`/compiler plugin.
 
 ## Key Conventions
 
-- **Naming:** `AuthRepository` (interface), `AuthRepositoryImpl` (impl), `UserDto` (DTO), `User` (model), `LoginUseCase` (verb + UseCase, in `domain/{feature}/usecase/`)
-- **Localization:** all UI strings via `Res.string.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, kept in exact key parity with `values/`). No hardcoded strings. Inside a `@Composable`, resolve with `stringResource(Res.string.x)`; when text must be resolved **outside** composition — e.g. a notification title/body that gets persisted to Firestore as plain text from a ViewModel — use the suspend `getString(Res.string.x)` from `org.jetbrains.compose.resources` instead.
-- **DTOs default every field.** Every field in a `data/{feature}/model/XxxDto.kt` has a default value, so a partially-missing Firestore document decodes instead of throwing (which otherwise surfaces as a generic failure and, for `UserDto` specifically, previously caused a login loop).
-- **Icons:** local XML vectors in `composeResources/drawable/`. Access via `vectorResource(Res.drawable.icon_name)`. **`material-icons-extended` is forbidden.** If a new icon is needed, reference it in code and tell the user which icon to download.
-- **Input UX:** disable `autoCorrect` for credentials, use `KeyboardCapitalization.Words` for names, `ImeAction.Next` between fields, `ImeAction.Done` on last field.
+- **Naming:** `AuthRepository` (interface), `AuthRepositoryImpl` (impl), `UserDto` (DTO), `User` (model), `LoginUseCase` (verb + UseCase, in `domain/{feature}/usecase/`).
+- **Sealed classes over enums** for errors, events, actions and states. The only enum-like exception is a type-safe navigation argument (`MyTripsTab`), since navigation supports enums natively.
+- **Localization:** all UI strings via `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, in exact key parity — add, rename and remove keys in both). No hardcoded strings. Use `stringResource` in composition and the suspend `getString` outside it (e.g. rendering a push).
+- **DTOs default every field**, so a partially-missing Firestore document decodes. Unknown fields in a document are ignored by the gitlive decoder, so removing a DTO field needs no migration.
+- **Icons:** local XML vectors in `composeResources/drawable/`, accessed with `vectorResource(Res.drawable.icon_name)`. **`material-icons-extended` is forbidden.** Reuse an existing vector when possible; if a new icon is needed, reference it and tell the user which Material Symbol to download — never invent path data.
+- **Input UX:** disable `autoCorrect` for credentials, `KeyboardCapitalization.Words` for names, `ImeAction.Next` between fields, `ImeAction.Done` on the last field.
 - **State:** immutable data classes, updated via `MutableStateFlow.update { }`.
+- **Comments** explain the current code's non-obvious *why*; don't narrate history or reference tickets.
 
 ## Tech Stack
 
-Versions below are tracked in `gradle/libs.versions.toml` — treat that file as the source of truth and re-check it if this list goes stale.
+Versions are tracked in `gradle/libs.versions.toml` — treat that file as the source of truth.
 
 - Kotlin 2.3.21, Compose Multiplatform 1.10.3, Material3
-- Firebase Auth + Firestore + Analytics (Kotlin SDK `dev.gitlive:firebase-*` 2.4.0)
-- Koin 4.2.1, AndroidX Navigation Compose 2.9.2, KotlinX Serialization
+- Firebase Auth, Firestore, Storage, Functions, Messaging, Analytics (Kotlin SDK `dev.gitlive:firebase-*` 2.4.0)
+- Koin 4.2.1, AndroidX Navigation Compose 2.9.2, KotlinX Serialization, KotlinX Coroutines 1.10.2
 - FileKit 0.14.1, KotlinX DateTime 0.8.0
 - Android: compileSdk 37, minSdk 24, targetSdk 37
+- Backend: Node 22, firebase-functions 7, firebase-admin 13, TypeScript
