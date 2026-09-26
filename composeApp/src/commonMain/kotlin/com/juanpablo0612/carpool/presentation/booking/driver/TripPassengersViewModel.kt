@@ -9,17 +9,9 @@ import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetBookingsForTripUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
-import com.juanpablo0612.carpool.domain.notification.model.NotificationType
-import com.juanpablo0612.carpool.domain.notification.usecase.CreateNotificationUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
-import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
 import com.juanpablo0612.carpool.presentation.booking.model.toBookingWithPassenger
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
-import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.notification_booking_accepted_body
-import enrutadoseia.composeapp.generated.resources.notification_booking_accepted_title
-import enrutadoseia.composeapp.generated.resources.notification_booking_rejected_body
-import enrutadoseia.composeapp.generated.resources.notification_booking_rejected_title
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,7 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 class TripPassengersViewModel(
     private val tripId: String,
@@ -38,7 +29,6 @@ class TripPassengersViewModel(
     private val rejectBookingUseCase: RejectBookingUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val authRepository: AuthRepository,
-    private val createNotificationUseCase: CreateNotificationUseCase,
     private val tripRepository: TripRepository,
 ) : ViewModel() {
 
@@ -150,21 +140,9 @@ class TripPassengersViewModel(
 
     private fun acceptBooking(bookingId: String, tripId: String) {
         if (bookingId in _state.value.processingIds) return
-        val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
             confirmBookingUseCase(bookingId, tripId)
-                .onSuccess {
-                    if (passengerId != null) {
-                        createNotificationUseCase(
-                            userId = passengerId,
-                            type = NotificationType.BookingAccepted,
-                            title = getString(Res.string.notification_booking_accepted_title),
-                            body = getString(Res.string.notification_booking_accepted_body),
-                            deepLink = NotificationDeepLink.passengerBookings()
-                        )
-                    }
-                }
                 .onFailure { error -> _state.update { it.copy(error = error.toBookingError()) } }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
@@ -172,21 +150,9 @@ class TripPassengersViewModel(
 
     private fun rejectBooking(bookingId: String, reason: RejectReason, comment: String?) {
         if (bookingId in _state.value.processingIds) return
-        val passengerId = findBookingPassengerId(bookingId)
         viewModelScope.launch {
             _state.update { it.copy(processingIds = it.processingIds + bookingId) }
             rejectBookingUseCase(bookingId, reason, comment)
-                .onSuccess {
-                    if (passengerId != null) {
-                        createNotificationUseCase(
-                            userId = passengerId,
-                            type = NotificationType.BookingRejected,
-                            title = getString(Res.string.notification_booking_rejected_title),
-                            body = getString(Res.string.notification_booking_rejected_body),
-                            deepLink = NotificationDeepLink.passengerBookings()
-                        )
-                    }
-                }
                 .onFailure { error -> _state.update { it.copy(error = error.toBookingError()) } }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
@@ -199,10 +165,5 @@ class TripPassengersViewModel(
                 .onFailure { error -> _state.update { it.copy(error = error.toBookingError()) } }
             _state.update { it.copy(processingIds = it.processingIds - bookingId) }
         }
-    }
-
-    private fun findBookingPassengerId(bookingId: String): String? {
-        val all = _state.value.pending + _state.value.confirmed
-        return all.firstOrNull { it.booking.id == bookingId }?.booking?.passengerId
     }
 }

@@ -713,11 +713,8 @@
     <string name="notification_delete_failed">Couldn\'t delete that notification. Please try again.</string>
     <string name="notification_clear_all_failed">Couldn\'t clear your notifications. Please try again.</string>
     <string name="notification_booking_accepted_title">Booking confirmed</string>
-    <string name="notification_booking_accepted_body">The driver accepted your request. Have a great trip!</string>
     <string name="notification_booking_rejected_title">Booking rejected</string>
-    <string name="notification_booking_rejected_body">The driver couldn\'t accept your request.</string>
     <string name="notification_new_booking_request_title">New booking request</string>
-    <string name="notification_new_booking_request_body">A passenger requested a seat on your trip.</string>
 
     <!-- DateTime formatting -->
     <string name="time_am">AM</string>

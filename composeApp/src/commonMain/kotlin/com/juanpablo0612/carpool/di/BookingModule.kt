@@ -31,8 +31,8 @@ val bookingModule = module {
     factoryOf(::CancelBookingUseCase)
     factoryOf(::CheckExistingBookingUseCase)
     viewModel { PassengerBookingsViewModel(get(), get(), get(), get(), get()) }
-    viewModel { BookingRequestsViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { BookingRequestsViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) ->
-        TripPassengersViewModel(tripId, get(), get(), get(), get(), get(), get(), get())
+        TripPassengersViewModel(tripId, get(), get(), get(), get(), get(), get())
     }
 }

@@ -2,7 +2,6 @@ package com.juanpablo0612.carpool.data.notification.repository
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.notification.datasource.NotificationRemoteDataSource
-import com.juanpablo0612.carpool.data.notification.model.NotificationDto
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,16 +16,6 @@ class NotificationRepositoryImpl(
             .map { list ->
                 list.map { it.toDomain() }.sortedByDescending { it.timestamp }
             }
-    }
-
-    override suspend fun createNotification(notification: AppNotification): Result<Unit> {
-        return try {
-            val dto = NotificationDto.fromDomain(notification)
-            remoteDataSource.createNotification(dto)
-            Result.success(Unit)
-        } catch (_: Exception) {
-            Result.failure(AppException.NotificationException.Unknown)
-        }
     }
 
     override suspend fun markRead(userId: String, notificationId: String): Result<Unit> {

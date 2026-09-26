@@ -19,14 +19,6 @@ class FirebaseNotificationRemoteDataSource(
             }
     }
 
-    override suspend fun createNotification(notification: NotificationDto) {
-        firestore.collection(COLLECTION)
-            .document(notification.userId)
-            .collection(ITEMS_COLLECTION)
-            .document(notification.id)
-            .set(NotificationDto.serializer(), notification)
-    }
-
     override suspend fun markRead(userId: String, notificationId: String) {
         firestore.collection(COLLECTION)
             .document(userId)

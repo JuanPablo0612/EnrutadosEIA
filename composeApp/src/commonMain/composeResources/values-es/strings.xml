@@ -586,11 +586,8 @@
     <string name="notification_delete_failed">No pudimos eliminar esa notificación. Inténtalo de nuevo.</string>
     <string name="notification_clear_all_failed">No pudimos borrar tus notificaciones. Inténtalo de nuevo.</string>
     <string name="notification_booking_accepted_title">Reserva confirmada</string>
-    <string name="notification_booking_accepted_body">El conductor aceptó tu reserva. ¡Que tengas buen viaje!</string>
     <string name="notification_booking_rejected_title">Reserva rechazada</string>
-    <string name="notification_booking_rejected_body">El conductor no pudo aceptar tu reserva.</string>
     <string name="notification_new_booking_request_title">Nueva solicitud de reserva</string>
-    <string name="notification_new_booking_request_body">Un pasajero solicitó un puesto en tu viaje.</string>
 
     <!-- Seguridad -->
 
