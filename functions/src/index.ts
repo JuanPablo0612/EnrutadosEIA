@@ -6,3 +6,6 @@ initializeApp();
 
 // Caps concurrent containers per function to contain unexpected traffic spikes.
 setGlobalOptions({region: REGION, maxInstances: 10});
+
+export {onBookingCreated, onBookingUpdated} from "./triggers/bookings";
+export {onFcmTokenCreated} from "./triggers/fcmTokens";
