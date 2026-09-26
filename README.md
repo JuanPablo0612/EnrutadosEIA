@@ -101,3 +101,22 @@ both before deploying to a database with real data, or accept the loss on a dev/
   before the seat counter existed, which over-reports availability and allows overbooking until a
   booking status change next touches the counter. Backfill it as
   `count(bookings where tripId == trip.id and status == 'CONFIRMED')`.
+### Cloud Functions
+
+`functions/` (TypeScript, Node 22, 2nd-gen Firebase Functions) is the app's backend: it writes
+in-app notifications and sends push notifications, cascades trip cancellations to their bookings,
+keeps each user's rating aggregate, and purges a user's data when their account is deleted.
+Deploying functions requires the project to be on the **Blaze** (pay-as-you-go) plan — set a
+budget alert in the Google Cloud console when upgrading.
+
+```shell
+npm --prefix functions ci
+npm --prefix functions run lint
+npm --prefix functions run build
+firebase deploy --only functions
+```
+
+`firebase.json` runs lint and build as predeploy steps. Functions deploy to `us-central1`, which
+must match the Firestore location (`nam5`) and `FUNCTIONS_REGION` in the app's `BackendConfig.kt`.
+`firebase emulators:start` also starts the functions emulator; there, push notifications are
+logged instead of sent.
