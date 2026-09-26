@@ -4,6 +4,7 @@ import com.juanpablo0612.carpool.data.trip.datasource.FirebaseTripRemoteDataSour
 import com.juanpablo0612.carpool.data.trip.datasource.TripRemoteDataSource
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.domain.trip.usecase.GenerateRecurringTripSlotsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.MatchTripsUseCase
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
@@ -22,6 +23,7 @@ val tripModule = module {
     singleOf(::TripRepositoryImpl) bind TripRepository::class
     factoryOf(::GetAvailableTripsUseCase)
     factoryOf(::MatchTripsUseCase)
+    factoryOf(::GenerateRecurringTripSlotsUseCase)
     // SearchRoutesViewModel lives in presentation/route/search/ but depends on trip matching and
     // trip data, so it is registered with the trip feature.
     viewModel { SearchRoutesViewModel(get(), get(), get(), get(), get()) }
