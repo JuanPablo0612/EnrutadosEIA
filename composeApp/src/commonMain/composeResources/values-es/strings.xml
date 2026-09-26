@@ -588,6 +588,24 @@
     <string name="notification_booking_accepted_title">Reserva confirmada</string>
     <string name="notification_booking_rejected_title">Reserva rechazada</string>
     <string name="notification_new_booking_request_title">Nueva solicitud de reserva</string>
+    <string name="notification_new_booking_request_body_fmt">%1$s quiere un cupo en tu viaje %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_accepted_body_fmt">%1$s confirmó tu cupo: %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_rejected_body_fmt">%1$s no pudo llevarte en %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_rejected_reason_body_fmt">%1$s no pudo llevarte en %2$s → %3$s, %4$s. Motivo: %5$s</string>
+    <string name="notification_booking_cancelled_by_passenger_title">Cupo cancelado</string>
+    <string name="notification_booking_cancelled_by_passenger_body_fmt">%1$s canceló su cupo en %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_cancelled_by_driver_title">Tu cupo fue cancelado</string>
+    <string name="notification_booking_cancelled_by_driver_body_fmt">%1$s canceló tu cupo en %2$s → %3$s, %4$s</string>
+    <string name="notification_trip_cancelled_title">Viaje cancelado</string>
+    <string name="notification_trip_cancelled_body_fmt">%1$s canceló el viaje %2$s → %3$s, %4$s. Busca otro viaje.</string>
+    <string name="notification_trip_started_title">Tu conductor va en camino</string>
+    <string name="notification_trip_started_body_fmt">%1$s inició el viaje %2$s → %3$s. Síguelo en vivo.</string>
+    <string name="notification_trip_completed_title">¿Cómo estuvo tu viaje?</string>
+    <string name="notification_trip_completed_body_fmt">Califica a %1$s por el viaje %2$s → %3$s</string>
+    <string name="notification_new_message_title_fmt">Mensaje de %1$s</string>
+    <string name="notification_someone">Alguien</string>
+    <string name="notification_generic_title">Nueva notificación</string>
+    <string name="notification_generic_body">Abre la app para ver los detalles.</string>
 
     <!-- Seguridad -->
 

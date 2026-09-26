@@ -715,6 +715,24 @@
     <string name="notification_booking_accepted_title">Booking confirmed</string>
     <string name="notification_booking_rejected_title">Booking rejected</string>
     <string name="notification_new_booking_request_title">New booking request</string>
+    <string name="notification_new_booking_request_body_fmt">%1$s wants a seat on your trip %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_accepted_body_fmt">%1$s confirmed your seat: %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_rejected_body_fmt">%1$s couldn\'t take you on %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_rejected_reason_body_fmt">%1$s couldn\'t take you on %2$s → %3$s, %4$s. Reason: %5$s</string>
+    <string name="notification_booking_cancelled_by_passenger_title">Seat cancelled</string>
+    <string name="notification_booking_cancelled_by_passenger_body_fmt">%1$s cancelled their seat on %2$s → %3$s, %4$s</string>
+    <string name="notification_booking_cancelled_by_driver_title">Your seat was cancelled</string>
+    <string name="notification_booking_cancelled_by_driver_body_fmt">%1$s cancelled your seat on %2$s → %3$s, %4$s</string>
+    <string name="notification_trip_cancelled_title">Trip cancelled</string>
+    <string name="notification_trip_cancelled_body_fmt">%1$s cancelled the trip %2$s → %3$s, %4$s. Look for another one.</string>
+    <string name="notification_trip_started_title">Your driver is on the way</string>
+    <string name="notification_trip_started_body_fmt">%1$s started the trip %2$s → %3$s. Follow it live.</string>
+    <string name="notification_trip_completed_title">How was your trip?</string>
+    <string name="notification_trip_completed_body_fmt">Rate %1$s for the trip %2$s → %3$s</string>
+    <string name="notification_new_message_title_fmt">Message from %1$s</string>
+    <string name="notification_someone">Someone</string>
+    <string name="notification_generic_title">New notification</string>
+    <string name="notification_generic_body">Open the app to see the details.</string>
 
     <!-- DateTime formatting -->
     <string name="time_am">AM</string>

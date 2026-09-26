@@ -10,11 +10,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
+import com.juanpablo0612.carpool.presentation.notification.NotificationText
+import com.juanpablo0612.carpool.presentation.notification.resolveNotificationText
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonth
 import kotlin.time.Clock
@@ -27,6 +31,14 @@ internal fun NotificationItem(
     notification: AppNotification,
     onClick: () -> Unit
 ) {
+    val text by produceState<NotificationText?>(initialValue = null, notification) {
+        value = resolveNotificationText(
+            type = notification.type,
+            params = notification.params,
+            legacyTitle = notification.legacyTitle,
+            legacyBody = notification.legacyBody,
+        )
+    }
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -45,13 +57,13 @@ internal fun NotificationItem(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = notification.title,
+                    text = text?.title.orEmpty(),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = if (!notification.isRead) FontWeight.SemiBold else FontWeight.Normal
                     )
                 )
                 Text(
-                    text = notification.body,
+                    text = text?.body.orEmpty(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

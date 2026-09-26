@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
+import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -61,7 +62,9 @@ class NotificationsViewModel(
             is NotificationsAction.OnNotificationClick -> {
                 viewModelScope.launch {
                     notificationRepository.markRead(userId, action.notification.id)
-                    val deepLink = action.notification.deepLink
+                    val notification = action.notification
+                    val deepLink = NotificationDeepLink.forNotification(notification.type, notification.params)
+                        ?: notification.legacyDeepLink
                     if (!deepLink.isNullOrBlank()) {
                         _events.emit(NotificationsEvent.NavigateTo(deepLink))
                     }

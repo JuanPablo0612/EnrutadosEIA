@@ -15,7 +15,8 @@ class FirebaseNotificationRemoteDataSource(
             .collection(ITEMS_COLLECTION)
             .snapshots
             .map { snapshot ->
-                snapshot.documents.map { it.data(NotificationDto.serializer()) }
+                // One malformed document must not hide the rest of the list.
+                snapshot.documents.mapNotNull { runCatching { it.data(NotificationDto.serializer()) }.getOrNull() }
             }
     }
 
