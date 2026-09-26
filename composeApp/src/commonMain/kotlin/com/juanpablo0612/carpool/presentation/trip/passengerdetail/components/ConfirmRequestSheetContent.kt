@@ -66,8 +66,7 @@ internal fun ConfirmRequestSheetContent(
             modifier = Modifier.fillMaxWidth(),
             minLines = 2,
             // OutlinedTextField's maxLines has no overflow parameter (Text-only API); typed input
-            // naturally wraps rather than clipping mid-glyph, so this maxLines is unaffected by
-            // Task 2's Ellipsis fix.
+            // wraps rather than clipping mid-glyph, so no Ellipsis is needed here.
             maxLines = 4,
             supportingText = {
                 Text(

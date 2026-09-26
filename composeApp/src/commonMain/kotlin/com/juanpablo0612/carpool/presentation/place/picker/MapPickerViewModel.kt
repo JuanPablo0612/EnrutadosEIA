@@ -50,7 +50,7 @@ class MapPickerViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoadingLocation = true, error = null) }
             // Request the OS permission explicitly so isMyLocationEnabled only ever reflects a
-            // real grant, never an assumption (3.12) — GoogleMap throws a SecurityException
+            // real grant, never an assumption — GoogleMap throws a SecurityException
             // otherwise.
             val granted = locationPermissionRequester.requestPermission()
             if (!granted) {

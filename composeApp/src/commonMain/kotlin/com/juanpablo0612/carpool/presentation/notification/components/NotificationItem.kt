@@ -69,8 +69,8 @@ private fun formatTimestamp(epochMs: Long): String {
     val timeZone = TimeZone.currentSystemDefault()
     val local = Instant.fromEpochMilliseconds(epochMs).toLocalDateTime(timeZone)
     val today = Clock.System.now().toLocalDateTime(timeZone).date
-    // Time-only timestamps made old notifications look like they'd just arrived when the app
-    // was reopened days later — show a date instead once it's not from today.
+    // Time for today's notifications; older ones show a date so they don't look like they just
+    // arrived.
     if (local.date == today) {
         val hour = local.hour.toString().padStart(2, '0')
         val minute = local.minute.toString().padStart(2, '0')

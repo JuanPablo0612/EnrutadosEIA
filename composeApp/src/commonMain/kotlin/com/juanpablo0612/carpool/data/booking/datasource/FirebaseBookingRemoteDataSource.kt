@@ -70,7 +70,7 @@ class FirebaseBookingRemoteDataSource(
 
     // A single passenger's own CONFIRMED booking on the trip (0 or 1 item) — used by
     // TripTrackingViewModel on the passenger side to find their chat/booking id. Seat *counts*
-    // never read bookings at all anymore; see GetTripAvailableSeatsUseCase.
+    // never read bookings; see GetTripAvailableSeatsUseCase.
     override fun getBookingsForTripAsPassenger(tripId: String, passengerId: String): Flow<List<BookingDto>> {
         return firestore.collection(COLLECTION_NAME)
             .where {

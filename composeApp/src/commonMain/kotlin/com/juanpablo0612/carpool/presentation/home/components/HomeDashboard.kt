@@ -54,10 +54,8 @@ internal fun HomeDashboard(
             }
         }
 
-        // These sections were each wrapped in AnimatedVisibility(visible = true), which can only
-        // ever animate on first composition and never plays an exit — the wrapper cost a
-        // composition layer for no behaviour. The item is already added conditionally, so the
-        // list's own item animation is what actually carries the change.
+        // These items are added conditionally, so the list's own item animation carries the
+        // change — an AnimatedVisibility(visible = true) wrapper would never play an exit.
         if (state.role == UserRole.Driver) {
             state.nextTrip?.let { trip ->
                 item(key = "next_trip") {
@@ -82,10 +80,8 @@ internal fun HomeDashboard(
             }
         }
 
-        // The pending-requests block previously nested AnimatedVisibility(pendingRequests
-        // .isNotEmpty()) inside an `if` testing the same condition, so the outer `if` removed the
-        // node the instant the list emptied and the exit animation was structurally unreachable.
-        // AnimatedVisibility owns the condition now, so the section can actually animate out.
+        // AnimatedVisibility owns the non-empty condition (no enclosing `if` on the same test),
+        // so the pending-requests section can animate out when the list empties.
         if (state.role == UserRole.Driver) {
             item(key = "pending_requests") {
                 AnimatedVisibility(
@@ -113,8 +109,7 @@ internal fun HomeDashboard(
             )
         }
 
-        // Was gated at >= 3 trips, hiding stats entirely for new/low-volume drivers even when
-        // they had 1-2 real trips this month worth showing.
+        // Shown from the first trip of the month, so new/low-volume drivers see their stats too.
         if (state.tripsThisMonth > 0) {
             item(key = "stats") {
                 StatsSection(

@@ -8,11 +8,7 @@ import enrutadoseia.composeapp.generated.resources.error_route_save_failed
 import org.jetbrains.compose.resources.StringResource
 
 /**
- * Failures surfaced by the route detail screen.
- *
- * This replaces a plain `String?` that the ViewModel filled with Spanish literals — the last
- * untyped error in the presentation layer, and one that could not be localized because the copy
- * never reached `strings.xml`.
+ * Failures surfaced by the route detail screen, typed so their copy stays in `strings.xml`.
  */
 sealed class RouteDetailError {
     data object NotFound : RouteDetailError()

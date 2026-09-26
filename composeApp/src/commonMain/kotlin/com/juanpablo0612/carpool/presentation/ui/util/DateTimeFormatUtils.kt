@@ -64,8 +64,7 @@ fun formatDayMonthTime(epochMs: Long): String {
  * A departure time phrased relative to [now] — "In 20 min", "Today · 7:05 AM", "Tue. · 7:05 AM".
  *
  * Composable because every phrasing, the AM/PM markers and the weekday abbreviations all come from
- * `strings.xml`; this used to build Spanish literals in Kotlin, so it rendered untranslated in the
- * English locale.
+ * `strings.xml`, so the result follows the device locale.
  */
 @Composable
 fun relativeTime(epochMs: Long, now: Long = Clock.System.now().toEpochMilliseconds()): String {

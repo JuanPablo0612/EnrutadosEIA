@@ -102,7 +102,7 @@ class TripTrackingViewModel(
         else ""
 
         // Preserve transient UI flags (dialogs, in-flight completion) across snapshots instead of
-        // rebuilding the whole state, which would silently dismiss whatever dialog was open (3.4).
+        // rebuilding the whole state, which would silently dismiss whatever dialog was open.
         _state.update {
             it.copy(
                 trip = trip,
@@ -179,7 +179,7 @@ class TripTrackingViewModel(
 
     // Polls the device's location and pushes it to the trip document while this user is driving
     // an in-progress trip; stops as soon as either condition stops holding. Requests the OS
-    // permission once up front (3.12) so the driver is prompted as soon as the trip starts rather
+    // permission once up front so the driver is prompted as soon as the trip starts rather
     // than silently polling nothing; getCurrentCoordinates() returning null afterward (permission
     // still denied, GPS off, no fix yet) is treated as "nothing to report this tick" rather than an
     // error, so the screen just keeps showing the last known fix.

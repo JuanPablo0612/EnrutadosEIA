@@ -22,10 +22,8 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 /**
  * The shared shape of the home screen's "what's next" hero card.
  *
- * `NextTripCard` and `NextBookingCard` were near-byte-identical 87-line files, differing only in
- * their model type, which status badge they show, one string resource, and one field name. This
- * collapses both into a single component: the two files now just supply their model-specific
- * bits (title, badge, time text, route) and render through here.
+ * `NextTripCard` and `NextBookingCard` both render through here, supplying only their
+ * model-specific bits (title, badge, time text, route).
  *
  * Renders through [CarpoolListCard] with a primary-container variant so the "next up" card reads
  * as visually distinct from the plain list rows around it, and through [RouteLineRow] for its

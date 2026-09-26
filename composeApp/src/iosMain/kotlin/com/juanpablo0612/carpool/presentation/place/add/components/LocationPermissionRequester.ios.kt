@@ -5,11 +5,10 @@ import dev.jordond.compass.permissions.LocationPermissionController
 import dev.jordond.compass.permissions.PermissionState
 import dev.jordond.compass.permissions.mobile
 
-// Compiler-unverified here (no macOS toolchain, same caveat as StorageUpload.ios.kt from an
-// earlier phase) but not a stub: dev.jordond.compass:permissions-mobile ships a real iOS
+// Not compiler-verified (no macOS toolchain in this project's setup) but not a stub: dev.jordond.compass:permissions-mobile ships a real iOS
 // CLLocationManager-backed implementation, and it's the exact same controller
 // CompassLocationService's Geolocator.mobile() already depends on for current() on this platform.
-// Requires NSLocationWhenInUseUsageDescription in Info.plist (added).
+// Requires NSLocationWhenInUseUsageDescription in Info.plist.
 private class IosLocationPermissionRequester(
     private val controller: LocationPermissionController = LocationPermissionController.mobile(),
 ) : LocationPermissionRequester {

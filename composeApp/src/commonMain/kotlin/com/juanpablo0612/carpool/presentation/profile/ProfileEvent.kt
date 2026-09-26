@@ -11,6 +11,6 @@ sealed class ProfileEvent {
     data object NavigateToNotifications : ProfileEvent()
     data object DeleteAccountSuccess : ProfileEvent()
 
-    /** The active role was disabled, so [role] — the one that's still on — takes over (3.9). */
+    /** The active role was disabled, so [role] — the one that's still on — takes over. */
     data class RoleSwitched(val role: UserRole) : ProfileEvent()
 }

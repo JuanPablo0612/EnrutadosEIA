@@ -18,7 +18,7 @@ data class BookingRequestsUiState(
     val rejectComment: String = "",
     val cancelConfirmFor: String? = null,
     val error: BookingError? = null,
-    // Real state instead of smuggling a control signal through a snackbar string (4.2).
+    // Shows TripFilledBanner until the driver dismisses it.
     val tripJustFilled: Boolean = false,
 ) {
     val filteredHistory: List<BookingWithPassenger>

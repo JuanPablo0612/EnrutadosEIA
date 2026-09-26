@@ -29,7 +29,7 @@ data class UserDto(
     )
 
     // Only the fields safe to show to any signed-in user browsing trips/bookings — no email,
-    // phone, role flags, or isEmailVerified. See PublicProfile's kdoc / commit 05fec9b.
+    // phone, role flags, or isEmailVerified. See PublicProfile.
     fun toPublicProfile(): PublicProfile = PublicProfile(
         id = id,
         name = name.orEmpty(),

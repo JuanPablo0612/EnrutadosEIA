@@ -39,8 +39,8 @@ fun EnrichedBookingCard(
     // rather than making this card fetch anything itself.
     driverName: String? = null,
     vehicleSummary: String? = null,
-    // Nullable like its siblings: the "Past" tab has nothing to cancel, and passing an empty
-    // lambda there rendered a live-looking Cancel button that silently did nothing.
+    // Nullable like its siblings: the "Past" tab has nothing to cancel, and null hides the
+    // Cancel button instead of rendering one that does nothing.
     onCancelClick: ((String) -> Unit)? = null,
     onTrackTrip: ((tripId: String) -> Unit)? = null,
     onRateBooking: ((bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit)? = null,

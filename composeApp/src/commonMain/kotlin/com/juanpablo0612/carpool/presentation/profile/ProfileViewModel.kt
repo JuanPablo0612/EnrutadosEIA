@@ -94,7 +94,7 @@ class ProfileViewModel(
             authRepository.updateRoles(newIsDriver, newIsPassenger).onSuccess { updatedUser ->
                 userSession.setUser(updatedUser)
                 // Disabling the role you're currently in would otherwise leave the driver
-                // Home/bottom bar showing for a user who just turned Driver off (3.9) — switch to
+                // Home/bottom bar showing for a user who just turned Driver off — switch to
                 // whichever role is still enabled and navigate there.
                 val activeRole = _state.value.activeRole
                 val disabledActiveRole = (activeRole == UserRole.Driver && !newIsDriver) ||

@@ -87,9 +87,8 @@ fun NavGraphBuilder.sharedNavGraph(
         val viewModel: PlaceSelectorViewModel = koinViewModel {
             parametersOf(PlaceSelectorMode.MY_PLACES_KEY)
         }
-        // Reuses the browse-and-delete surface that already existed but was never
-        // registered as a destination. This is the stateful PlaceSelectorScreen (not the
-        // bare Content) so its events (current-location resolve, suggestion select) are
+        // Reuses the place selector's browse-and-delete surface. This is the stateful
+        // PlaceSelectorScreen (not the bare Content) so its events (current-location resolve, suggestion select) are
         // actually collected instead of suspending forever with no collector; selecting a
         // place here has no further use, so onPlaceSelected is a no-op.
         PlaceSelectorScreen(
@@ -142,8 +141,8 @@ fun NavGraphBuilder.sharedNavGraph(
         NotificationsScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
-            // The ViewModel already parses a deep link off each notification; without
-            // this the parsed destination was dropped and tapping only marked it read.
+            // The ViewModel parses a deep link off each notification; this follows it
+            // (otherwise tapping would only mark the notification read).
             onNavigateTo = onNavigateToDeepLink
         )
     }

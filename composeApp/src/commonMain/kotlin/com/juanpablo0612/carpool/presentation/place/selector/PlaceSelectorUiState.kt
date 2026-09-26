@@ -11,7 +11,7 @@ data class PlaceSelectorUiState(
     val campusPlaces: List<Place> = Place.campusPresets,
     val currentLocation: Place? = null,
     val isResolvingLocation: Boolean = false,
-    // Overwritten with the real OS grant state as soon as the ViewModel initializes (3.12); false
+    // Overwritten with the real OS grant state as soon as the ViewModel initializes; false
     // by default so the UI never assumes a permission it hasn't checked.
     val locationPermissionGranted: Boolean = false,
     val searchResults: List<AutocompleteSuggestion> = emptyList(),

@@ -52,8 +52,7 @@ internal fun PassengerStatusCard(
             Spacer(Modifier.height(Spacing.sm))
 
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                // The driver had no way into a thread at all: the only chat entry point in the
-                // app was the passenger-side button.
+                // The driver's entry point into the chat thread with this passenger.
                 OutlinedButton(
                     onClick = onMessage,
                     modifier = Modifier.weight(1f)

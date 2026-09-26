@@ -58,7 +58,7 @@ class BookingRequestsViewModel(
 
     private fun loadBookings() {
         // Cancel any previous collector first — Refresh calls this again, and each collector is a
-        // live Firestore listener that would otherwise leak (3.8).
+        // live Firestore listener that would otherwise leak.
         bookingsJob?.cancel()
         val driverId = authRepository.getCurrentUserId() ?: run {
             _state.update { it.copy(isLoading = false, isRefreshing = false) }

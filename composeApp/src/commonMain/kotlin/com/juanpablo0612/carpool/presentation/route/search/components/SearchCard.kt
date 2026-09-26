@@ -121,11 +121,9 @@ internal fun SearchCard(
     }
 }
 
-// A read-only OutlinedTextField plus a transparent tap-catching overlay used to be the pattern
-// here — a readOnly text field still consumes the tap for focus before it ever reaches a
-// `.clickable` on the same node, so the field just highlighted and never opened the picker. A
-// plain clickable surface styled to look like an outlined field sidesteps the problem entirely
-// instead of working around it with an overlay.
+// A plain clickable surface styled to look like an outlined field, not a read-only
+// OutlinedTextField: a readOnly text field consumes the tap for focus before it reaches a
+// `.clickable` on the same node, so it would highlight and never open the picker.
 @Composable
 private fun PickerField(
     value: String,

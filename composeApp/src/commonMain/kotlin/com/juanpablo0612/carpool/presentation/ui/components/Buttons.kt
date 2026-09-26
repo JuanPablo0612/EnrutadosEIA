@@ -52,8 +52,7 @@ fun PrimaryButton(
         enabled = enabled && !isLoading,
         shape = shape,
         // Disabled colours are left to ButtonDefaults, which already applies the spec-correct
-        // 0.12 container / 0.38 content opacities; the previous 0.5f override was less legible
-        // than the default it replaced.
+        // 0.12 container / 0.38 content opacities.
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,

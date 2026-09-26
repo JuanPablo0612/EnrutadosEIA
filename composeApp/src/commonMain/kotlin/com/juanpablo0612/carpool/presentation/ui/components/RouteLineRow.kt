@@ -27,13 +27,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 /**
- * An "origin → destination" row, deduplicated from six near-identical copies that each hard-clipped
- * long place names (no [TextOverflow.Ellipsis]), read as three separate accessibility nodes, and
- * disagreed on the connecting icon's size (12/14/16/18dp across the six).
- *
- * Fixes all three: both texts ellipsize, the icon is a single [RouteLineIconSize], and the whole
- * row is merged into one accessibility node via [Res.string.cd_route_line] so a screen reader
- * announces the route once instead of three fragments.
+ * An "origin → destination" row. Both texts ellipsize ([TextOverflow.Ellipsis]), the icon is a
+ * single [RouteLineIconSize], and the whole row is merged into one accessibility node via
+ * [Res.string.cd_route_line] so a screen reader announces the route once instead of three
+ * fragments.
  *
  * [style]/[textColor]/[iconTint] default to the row's most common call-site look (semibold body
  * text, muted icon); override them for a variant with different emphasis or a tinted container

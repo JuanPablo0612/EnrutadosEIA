@@ -57,7 +57,7 @@ class RoleSelectorViewModel(
                 userPreferencesRepository.saveRolePreference(role)
             } else {
                 // A later un-ticked choice must overwrite a previously remembered one, otherwise
-                // the stale preference keeps routing the next launch to the old role (3.9).
+                // the stale preference keeps routing the next launch to the old role.
                 userPreferencesRepository.clearRolePreference()
             }
             val event = when (role) {

@@ -262,8 +262,7 @@ fun BookingRequestsContent(
     }
 }
 
-// Inline, dismiss-on-tap notice — CLAUDE.md forbids SnackBars, so the "trip is now full" signal
-// (previously smuggled through a snackbar string) is rendered as a real, non-transient banner.
+// Inline, dismiss-on-tap notice for the "trip is now full" signal — the app uses no SnackBars.
 @Composable
 private fun TripFilledBanner(
     onDismiss: () -> Unit,

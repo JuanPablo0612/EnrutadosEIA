@@ -42,8 +42,7 @@ sealed interface Route {
 
     /**
      * The list of places the user has saved, with delete. Distinct from [AddPlace], which is the
-     * creation form — Profile's "saved places" row used to open that form, so there was no way to
-     * review or remove an existing place.
+     * creation form.
      */
     @Serializable
     data object SavedPlaces : Route

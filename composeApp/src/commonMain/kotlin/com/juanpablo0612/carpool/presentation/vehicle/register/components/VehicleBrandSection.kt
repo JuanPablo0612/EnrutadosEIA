@@ -92,10 +92,7 @@ internal fun VehicleBrandSection(
                 imeAction = ImeAction.Next
             ),
             // The message goes through errorMessage so it lands in the field's
-            // supportingText and is announced with the field. It used to be a single
-            // space here — just enough to redden the border — with the real text in a
-            // detached Text below, which a screen reader never associates with the
-            // field it describes.
+            // supportingText and is announced with the field.
             errorMessage = if (brandError) {
                 stringResource(Res.string.error_vehicle_brand_required)
             } else null

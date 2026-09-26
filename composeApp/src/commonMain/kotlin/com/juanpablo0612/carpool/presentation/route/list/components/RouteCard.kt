@@ -196,8 +196,6 @@ fun RouteCard(
                         modifier = Modifier.size(14.dp) // icon-intrinsic size
                     )
                     Spacer(modifier = Modifier.width(Spacing.xs))
-                    // Was "$count viajes" built in Kotlin: hardcoded Spanish that rendered
-                    // untranslated in English, and unpluralized.
                     val tripsText = pluralStringResource(
                         Res.plurals.route_trips_count,
                         routeWithStats.tripsCount,

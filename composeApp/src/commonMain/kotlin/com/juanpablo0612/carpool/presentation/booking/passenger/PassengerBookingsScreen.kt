@@ -101,9 +101,8 @@ fun PassengerBookingsContent(
 ) {
     val nowMs = rememberNowMs()
     // A booking belongs to "Past" once its departure has gone by, or as soon as it reaches a
-    // terminal status. The previous split kept every Confirmed booking in "Upcoming" regardless
-    // of date, which meant a departed-and-confirmed booking never reached the tab that offers
-    // the rate action — the whole post-trip rating flow was unreachable because of it.
+    // terminal status — so a departed Confirmed booking reaches the tab that offers the rate
+    // action.
     val upcomingBookings = remember(state.bookings, nowMs) {
         state.bookings
             .filter { it.departureTime > nowMs && !it.status.isTerminal }
@@ -141,9 +140,8 @@ fun PassengerBookingsContent(
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // The ViewModel has always recorded cancel failures here; nothing rendered them, so
-            // a failed cancel was indistinguishable from a successful one. Tap to dismiss,
-            // matching BookingRequestsScreen.
+            // Cancel failures, so a failed cancel is distinguishable from a successful one. Tap
+            // to dismiss, matching BookingRequestsScreen.
             state.error?.let { error ->
                 ErrorMessage(
                     message = stringResource(error.asStringResource()),

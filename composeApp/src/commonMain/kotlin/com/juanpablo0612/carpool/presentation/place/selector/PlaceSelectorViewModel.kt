@@ -55,7 +55,7 @@ class PlaceSelectorViewModel(
     private val _state = MutableStateFlow(
         PlaceSelectorUiState(
             mode = PlaceSelectorMode.fromString(mode),
-            // Reflect the real OS grant instead of assuming it (3.12).
+            // Reflect the real OS grant instead of assuming it.
             locationPermissionGranted = locationPermissionRequester.hasPermission(),
         )
     )

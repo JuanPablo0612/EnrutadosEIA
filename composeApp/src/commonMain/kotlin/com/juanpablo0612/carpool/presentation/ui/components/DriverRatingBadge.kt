@@ -20,8 +20,7 @@ import org.jetbrains.compose.resources.vectorResource
 
 /**
  * A driver's average rating, shown wherever a passenger evaluates who they'd be riding with
- * (search results, trip detail) — previously nowhere in that flow, despite the same rating data
- * already existing and being shown on the driver side for passengers.
+ * (search results, trip detail).
  */
 @Composable
 fun DriverRatingBadge(

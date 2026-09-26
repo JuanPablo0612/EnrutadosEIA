@@ -178,9 +178,8 @@ private fun ReputationLine(passenger: PassengerSummary) {
         if (passenger.averageRating != null) {
             val r = passenger.averageRating
             val formatted = "${r.toInt()}.${((r * 10).toInt() % 10)}"
-            // A localized label rather than a ⭐ prefix: the emoji ignored `tint`, rendered
-            // differently per platform, and was the one part of this row that bypassed
-            // stringResource while its two siblings below used it.
+            // A localized label rather than a ⭐ prefix: an emoji ignores `tint`, renders
+            // differently per platform, and would bypass stringResource unlike its siblings.
             add(stringResource(Res.string.booking_request_rating, formatted))
         }
         if (passenger.tripsCompleted > 0) add(

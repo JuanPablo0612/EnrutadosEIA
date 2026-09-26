@@ -90,9 +90,8 @@ class HomeViewModel(
             val tripsThisMonth = trips.count {
                 it.departureTime >= monthStart && it.status != TripStatus.Cancelled
             }
-            // getDriverBookingRequestsUseCase is already scoped to PENDING, so counting
-            // Confirmed bookings over it is always empty — source this stat from the full
-            // driver booking set instead (3.3).
+            // getDriverBookingRequests is scoped to PENDING, so Confirmed bookings are counted
+            // over the full driver booking set.
             val passengersThisMonth = allBookings.count {
                 it.departureTime >= monthStart && it.status == BookingStatus.Confirmed
             }

@@ -47,8 +47,8 @@ internal fun ChatInputRow(
             shape = RoundedCornerShape(24.dp)
         )
         // Always the same IconButton (48dp touch target) — overlay the spinner while sending
-        // instead of swapping it out for a bare CircularProgressIndicator, which used to shrink
-        // the tappable area to 24dp and shift layout right as the button disappeared.
+        // instead of swapping it out for a bare CircularProgressIndicator, which would shrink
+        // the tappable area to 24dp and shift layout as the button disappeared.
         IconButton(
             onClick = onSendClick,
             enabled = text.isNotBlank() && !isSending

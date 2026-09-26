@@ -4,7 +4,7 @@ package com.juanpablo0612.carpool.presentation.place.add.components
  * Checks and requests the device's runtime location permission (ACCESS_FINE_LOCATION /
  * ACCESS_COARSE_LOCATION on Android). Declaring the permission in the manifest is not enough —
  * without an explicit request, GoogleMap's `isMyLocationEnabled` throws a SecurityException and
- * CompassLocationService silently returns null (3.12).
+ * CompassLocationService silently returns null.
  *
  * Backed on both platforms by the same dev.jordond.compass.permissions controller that
  * CompassLocationService's Geolocator.mobile() already consults internally when fetching a

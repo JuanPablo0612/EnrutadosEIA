@@ -41,9 +41,8 @@ fun CarpoolTopBar(
     user: User,
     isDualRole: Boolean,
     /**
-     * Labels the action, not the state: "Switch to passenger" while you are a driver. The chip
-     * used to show the role you were already in, styled as an *unselected* filter, which read as
-     * "filter by driver" rather than "you are a driver, tap to switch".
+     * Labels the action, not the state: "Switch to passenger" while you are a driver, so the
+     * chip reads as "tap to switch" rather than as a "filter by role" toggle.
      */
     switchRoleLabel: String = "",
     onAvatarClick: () -> Unit,
@@ -87,13 +86,12 @@ fun CarpoolTopBar(
 }
 
 /**
- * Shared top bar for screens that navigate back via a leading arrow. Standardizes on the
- * bold titleLarge + [MaterialTheme.colorScheme.background] container treatment already used
- * by the majority of the hand-rolled top bars this replaces (the two are visually identical
- * in this theme's color scheme, since `background` and `surface` share the same value).
+ * Shared top bar for screens that navigate back via a leading arrow: a bold titleLarge on a
+ * [MaterialTheme.colorScheme.background] container (visually identical to `surface` in this
+ * theme's color scheme, since the two share the same value).
  *
  * @param subtitle optional secondary line rendered under [title] in a smaller, muted style,
- * for screens that previously showed a two-line title (e.g. a list count or description).
+ * for screens that need a two-line title (e.g. a list count or description).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

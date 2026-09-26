@@ -110,7 +110,7 @@ class SearchRoutesViewModel(
         viewModelScope.launch {
             val filtered = allTrips.value.filter { trip ->
                 // An empty selected address must never match — trip.origin.address.contains("")
-                // is true for every trip, which used to make this filter a no-op (3.11).
+                // is true for every trip, which would make this filter a no-op.
                 val originMatch = state.origin == null ||
                         trip.origin.name.contains(state.origin.name, ignoreCase = true) ||
                         (state.origin.address.isNotBlank() &&

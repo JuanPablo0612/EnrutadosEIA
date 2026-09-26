@@ -53,7 +53,7 @@ fun CreateRouteScreen(
     val state by viewModel.state.collectAsState()
 
     // Each selection target gets its own keyed instance so the selector's mode-dependent title
-    // and state don't bleed across origin/destination/waypoint (they used to share one instance).
+    // and state don't bleed across origin/destination/waypoint.
     val originSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "origin") { parametersOf("ORIGIN") }
     val destinationSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "destination") { parametersOf("DESTINATION") }
     val waypointSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "waypoint") { parametersOf("WAYPOINT") }
@@ -92,9 +92,8 @@ fun CreateRouteScreen(
         activeSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
     }
     // Row taps (saved/campus place) call onPlaceSelected directly, but "use current location"
-    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected — without observing
-    // it here, those two paths silently did nothing and leaked a suspended coroutine on every tap
-    // (the emit has no collector to receive it).
+    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected, so they must be
+    // observed here — otherwise those taps do nothing and the emit suspends with no collector.
     ObserveAsEvents(activeSelectorViewModel.events) { event ->
         when (event) {
             is PlaceSelectorEvent.PlaceSelected -> onPlaceSelected(event.place)

@@ -114,8 +114,8 @@ fun MapPickerContent(
                         Text(
                             text = state.resolvedAddress ?: stringResource(Res.string.map_picker_address_unavailable),
                             style = MaterialTheme.typography.bodyMedium,
-                            // Was always onSurfaceVariant, giving no visual warning that
-                            // confirming now will save a pin with no resolved address.
+                            // Error colour warns that confirming now will save a pin with no
+                            // resolved address.
                             color = if (state.resolvedAddress == null) MaterialTheme.colorScheme.error
                             else MaterialTheme.colorScheme.onSurfaceVariant,
                         )

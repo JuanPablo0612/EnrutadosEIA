@@ -19,8 +19,8 @@ internal fun SwipeToDeleteNotification(
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            // Never auto-commit: a swipe only requests the confirm dialog (unlike every other
-            // destructive action in the app, this used to delete immediately with no way back).
+            // Never auto-commit: a swipe only requests the confirm dialog, like every other
+            // destructive action in the app.
             // The row snaps back below whenever the delete isn't actually confirmed.
             if (value == SwipeToDismissBoxValue.EndToStart) {
                 onSwipeToDelete()

@@ -37,17 +37,14 @@ import enrutadoseia.composeapp.generated.resources.trip_status_scheduled
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Was `Text(color = dotColor)` on `Surface(color = dotColor.copy(alpha = 0.12f))` — foreground
- * and background were the same hue separated only by an alpha composite, which fails 4.5:1 for
- * several of the six statuses (`extended.warning` and `colorScheme.outline` most likely; see the
- * repo audit that prompted this rewrite). Every status now resolves to a real, paired M3
- * `*Container`/`on*Container` role, which Material's colour generation guarantees meets contrast
- * on its own. The border adds a
- * visible edge independent of contrast, since a badge can render on a same-hue parent (e.g.
- * inside [HighlightCard]'s primary-container hero).
+ * Every status resolves to a paired M3 `*Container`/`on*Container` role, which Material's colour
+ * generation guarantees meets contrast; a same-hue foreground over an alpha-tinted background of
+ * that hue fails 4.5:1 for several statuses. The border adds a visible edge independent of
+ * contrast, since a badge can render on a same-hue parent (e.g. inside [HighlightCard]'s
+ * primary-container hero).
  *
- * The dot and label used to read as two sibling accessibility nodes stating the same fact; merged
- * into one via [Res.string.cd_status]. Status is still never colour-only — [text] always renders.
+ * The dot and label are merged into one accessibility node via [Res.string.cd_status]. Status is
+ * never colour-only — [text] always renders.
  */
 @Composable
 private fun StatusBadge(

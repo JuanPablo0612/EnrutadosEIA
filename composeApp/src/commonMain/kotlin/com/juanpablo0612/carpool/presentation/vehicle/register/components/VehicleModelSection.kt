@@ -31,8 +31,6 @@ internal fun VehicleModelSection(
             capitalization = KeyboardCapitalization.Words,
             imeAction = ImeAction.Next
         ),
-        // Previously a bare space with no message anywhere: the field reddened and
-        // the reason was given in no modality at all, visual or spoken.
         errorMessage = if (modelError) {
             stringResource(Res.string.error_vehicle_model_required)
         } else null

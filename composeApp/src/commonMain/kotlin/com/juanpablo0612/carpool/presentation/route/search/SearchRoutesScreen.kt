@@ -84,9 +84,8 @@ fun SearchRoutesScreen(
         destinationSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
     }
     // Row taps (saved/campus place) call onPlaceSelected directly, but "use current location"
-    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected — without observing
-    // it here, those two paths silently did nothing and leaked a suspended coroutine on every tap
-    // (the emit has no collector to receive it).
+    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected, so they must be
+    // observed here — otherwise those taps do nothing and the emit suspends with no collector.
     ObserveAsEvents(originSelectorViewModel.events) { event ->
         when (event) {
             is PlaceSelectorEvent.PlaceSelected -> onOriginSelected(event.place)

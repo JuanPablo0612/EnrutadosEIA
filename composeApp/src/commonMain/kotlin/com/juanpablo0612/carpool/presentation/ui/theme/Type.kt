@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.sp
 val AppTypography = Typography(
     displaySmall = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.W400),
     headlineSmall = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
-    // Bold rather than SemiBold: 13 screens were re-applying `.copy(fontWeight = Bold)` to this
-    // role for their top-bar title. Carrying the weight on the token lets those overrides go.
+    // Bold rather than SemiBold: this is the top-bar title role, so the weight lives on the
+    // token instead of per-screen `.copy(fontWeight = Bold)` overrides.
     titleLarge = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
     titleMedium = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
     bodyLarge = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal),

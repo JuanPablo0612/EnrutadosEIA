@@ -171,9 +171,7 @@ fun VehiclesListContent(
                                 onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
                                 onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
                                 onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
-                                // The card used to look tappable (same styling as every other
-                                // list card in the app) but do nothing — wire it to the same
-                                // destination as the "Edit" menu item.
+                                // Same destination as the "Edit" menu item.
                                 onClick = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) }
                             )
                         }

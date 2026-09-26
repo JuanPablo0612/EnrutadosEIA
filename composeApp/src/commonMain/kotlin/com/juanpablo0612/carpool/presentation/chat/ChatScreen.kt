@@ -178,8 +178,8 @@ fun ChatContent(
     }
 }
 
-// Message timestamps were time-of-day only, with no day context — a multi-day conversation
-// looked ambiguously ordered when scrolled back through. This mirrors the day-divider pattern
+// Message timestamps are time-of-day only, so a day divider gives a multi-day conversation its
+// day context when scrolled back through. This mirrors the day-divider pattern
 // common to chat UIs, distinct from RelativeDateGroup (which is future-oriented: Today/Tomorrow/
 // This week/Later) since chat history is always in the past.
 @Composable

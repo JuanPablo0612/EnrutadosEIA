@@ -160,8 +160,8 @@ fun AppNavigation(
             NavHost(
                 navController = navController,
                 startDestination = Route.Splash,
-                // Forward and back navigation were visually identical (NavHost's default fade),
-                // so the app gave no directional cue about depth. Declared once here rather than
+                // Directional slides (rather than NavHost's default fade) so forward and back
+                // navigation give a cue about depth. Declared once here rather than
                 // per-destination.
                 enterTransition = {
                     slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeIn()
@@ -371,7 +371,7 @@ fun AppNavigation(
                     },
                     onRoleSwitched = { role ->
                         // ProfileViewModel already flipped userSession.activeRole — just move
-                        // the nav graph so it agrees (3.9).
+                        // the nav graph so it agrees.
                         val destination =
                             if (role == UserRole.Driver) Route.Home else Route.PassengerHome
                         navController.navigate(destination) {

@@ -2,8 +2,8 @@ rules_version = '2';
 
 // EnrutadosEIA — Firestore security rules.
 //
-// These rules are the enforcement counterpart of the server-side `where` queries added in
-// data/*/repository/*RepositoryImpl.kt (Phase 2 of the repair plan). Every `list` query below is
+// These rules are the enforcement counterpart of the server-side `where` queries in
+// data/*/datasource/Firebase*RemoteDataSource.kt. Every `list` query below is
 // only satisfiable by Firestore's rule engine if the query's own `where` clauses can prove the
 // rule holds for every possible result — an unscoped `.collection("x").get()` is rejected
 // outright. See README.md for how to deploy this file.
@@ -44,10 +44,10 @@ service cloud.firestore {
     // ---------------------------------------------------------------------------------------
     // trips/{tripId} — trips are the browsable marketplace: any signed-in user may read them
     // (SearchRoutesViewModel needs to see every driver's active trips), but only the owning
-    // driver may create/update them. getAvailableTrips() now scopes status/departureTime
+    // driver may create/update them. getAvailableTrips() scopes status/departureTime
     // server-side; getDriverTrips() scopes driverId.
     //
-    // confirmedSeats carve-out: this field is the denormalized CONFIRMED-booking counter (3.0)
+    // confirmedSeats carve-out: this field is the denormalized CONFIRMED-booking counter
     // that BookingRepositoryImpl.applyStatusTransition maintains alongside each booking status
     // write. Every transition that changes it is driver-initiated (accept/reject) except one: a
     // passenger cancelling their own already-CONFIRMED booking, which decrements the trip they do
@@ -117,7 +117,7 @@ service cloud.firestore {
     // Read: allowed only for the two parties (passengerId/driverId == uid). This covers every
     // remaining query: getPassengerBookings, getDriverBookingRequests, getAllDriverBookings,
     // hasActiveBooking, and the party-scoped getBookingsForTripAsDriver/AsPassenger used by
-    // TripTrackingViewModel. A seat *count* no longer requires reading bookings at all —
+    // TripTrackingViewModel. A seat *count* never requires reading bookings —
     // GetTripAvailableSeatsUseCase reads trips/{tripId}.confirmedSeats instead, which is
     // maintained by BookingRepositoryImpl.applyStatusTransition and carries no PII. There is
     // therefore no "browsing, not yet a party" carve-out here: a passenger who hasn't booked a
@@ -157,8 +157,8 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------------------------
-    // notifications/{uid}/items/{itemId} — strictly owner-only (Phase 1 threaded userId through
-    // markRead/delete precisely so this can be enforced).
+    // notifications/{uid}/items/{itemId} — strictly owner-only (markRead/delete take
+    // the userId precisely so this can be enforced).
     // ---------------------------------------------------------------------------------------
     match /notifications/{uid} {
       match /items/{itemId} {

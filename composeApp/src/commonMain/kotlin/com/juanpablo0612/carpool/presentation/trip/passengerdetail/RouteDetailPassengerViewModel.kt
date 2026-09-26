@@ -77,10 +77,10 @@ class RouteDetailPassengerViewModel(
         }
     }
 
-    // Available seats are driven by trip.seatCount, not the vehicle's capacity (3.1) — the vehicle
+    // Available seats are driven by trip.seatCount, not the vehicle's capacity — the vehicle
     // flow is only consulted here for display (photo/brand/model). flatMapLatest re-subscribes the
     // seats flow whenever the vehicle list changes, instead of collecting it nested inside onEach,
-    // which would block this flow from ever processing a later vehicle emission (3.6).
+    // which would block this flow from ever processing a later vehicle emission.
     private fun observeVehicleAndSeats(driverId: String, vehicleId: String, tripId: String) {
         vehicleRepository.getUserVehicles(driverId)
             .flatMapLatest { vehicles ->
@@ -132,9 +132,9 @@ class RouteDetailPassengerViewModel(
         val trip = _state.value.trip ?: return
         if (_state.value.isOwner) return
         if (_state.value.vehicle == null) {
-            // The vehicle is only used for display here (seats come from trip.seatCount, 3.1),
+            // The vehicle is only used for display here (seats come from trip.seatCount),
             // but a missing vehicle still means the trip's data is incomplete — surface it instead
-            // of leaving the confirm button silently doing nothing (3.7).
+            // of leaving the confirm button silently doing nothing.
             _state.update { it.copy(error = BookingError.VehicleNotFound) }
             return
         }

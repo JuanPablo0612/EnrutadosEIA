@@ -125,8 +125,8 @@ fun NavGraphBuilder.driverNavGraph(
             onBackClick = onNavigateBack,
             onTripPublished = onNavigateBack,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
-            // Opens the vehicle list rather than popping — "change vehicle" used to discard the
-            // whole in-progress trip form.
+            // Opens the vehicle list rather than popping, so "change vehicle" keeps the
+            // in-progress trip form.
             onNavigateToVehiclesList = onNavigateToVehiclesList
         )
     }

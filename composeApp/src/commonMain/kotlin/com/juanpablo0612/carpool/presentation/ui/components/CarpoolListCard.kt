@@ -19,8 +19,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 /**
  * The one card recipe every list row in the app renders through.
  *
- * Before this, the nine equivalent list rows disagreed on four container colours, three shapes,
- * three elevations and three padding expressions. This fixes the container to one recipe:
+ * The container is fixed to one recipe:
  * [MaterialTheme.shapes] `large`, [Elevation.card], [Spacing.cardPadding] inset, and the
  * **default M3 tonal container** — deliberately not forced to `surface`, which cancels the tonal
  * elevation cue and leaves shape as the only way to tell a card apart from its surroundings.
