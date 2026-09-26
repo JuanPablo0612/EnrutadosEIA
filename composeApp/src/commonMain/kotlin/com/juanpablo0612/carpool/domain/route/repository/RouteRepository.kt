@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface RouteRepository {
     suspend fun createRoute(route: Route): Result<Unit>
     fun getUserRoutes(userId: String): Flow<List<Route>>
-    fun getCommunityRoutes(): Flow<List<Route>>
     suspend fun getRouteById(id: String): Result<Route>
     suspend fun updateRoute(route: Route): Result<Unit>
     suspend fun deleteRoute(id: String): Result<Unit>

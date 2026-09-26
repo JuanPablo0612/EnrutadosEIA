@@ -5,7 +5,6 @@ import com.juanpablo0612.carpool.data.route.datasource.RouteRemoteDataSource
 import com.juanpablo0612.carpool.data.route.repository.RouteRepositoryImpl
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.route.usecase.DuplicateRouteUseCase
-import com.juanpablo0612.carpool.presentation.route.community.CommunityRoutesViewModel
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteViewModel
 import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
@@ -22,5 +21,4 @@ val routeModule = module {
     viewModel { CreateRouteViewModel(get(), get()) }
     viewModel { RoutesListViewModel(get(), get(), get(), get()) }
     viewModel { (routeId: String) -> RouteDetailViewModel(routeId, get(), get(), get()) }
-    viewModel { CommunityRoutesViewModel(get(), get(), get()) }
 }

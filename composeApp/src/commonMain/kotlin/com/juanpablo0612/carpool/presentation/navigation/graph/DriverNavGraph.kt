@@ -10,8 +10,6 @@ import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersViewM
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileViewModel
-import com.juanpablo0612.carpool.presentation.route.community.CommunityRoutesScreen
-import com.juanpablo0612.carpool.presentation.route.community.CommunityRoutesViewModel
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteScreen
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteViewModel
 import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailScreen
@@ -39,7 +37,6 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToCreateTrip: (String) -> Unit,
     onNavigateToAddPlace: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
-    onNavigateToCommunityRoutes: () -> Unit,
     onNavigateToVehiclesList: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
@@ -56,16 +53,7 @@ fun NavGraphBuilder.driverNavGraph(
             onNavigateToCreateRoute = onNavigateToCreateRoute,
             onNavigateToRouteDetail = onNavigateToRouteDetail,
             onNavigateToCreateTrip = onNavigateToCreateTrip,
-            onNavigateToCommunityRoutes = onNavigateToCommunityRoutes,
             onBackClick = onNavigateBack
-        )
-    }
-
-    composable<Route.CommunityRoutes> {
-        val viewModel: CommunityRoutesViewModel = koinViewModel()
-        CommunityRoutesScreen(
-            viewModel = viewModel,
-            onBack = onNavigateBack
         )
     }
 

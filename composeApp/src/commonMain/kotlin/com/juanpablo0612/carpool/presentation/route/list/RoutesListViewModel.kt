@@ -115,9 +115,6 @@ class RoutesListViewModel(
             RoutesListAction.OnBackClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateBack)
             }
-            RoutesListAction.OnCommunityRoutesClick -> viewModelScope.launch {
-                _events.emit(RoutesListEvent.NavigateToCommunityRoutes)
-            }
         }
     }
 

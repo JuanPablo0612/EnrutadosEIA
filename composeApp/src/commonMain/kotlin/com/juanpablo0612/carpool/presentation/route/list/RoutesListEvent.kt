@@ -5,5 +5,4 @@ sealed class RoutesListEvent {
     data class NavigateToRouteDetail(val routeId: String) : RoutesListEvent()
     data class NavigateToCreateTrip(val routeId: String) : RoutesListEvent()
     data object NavigateBack : RoutesListEvent()
-    data object NavigateToCommunityRoutes : RoutesListEvent()
 }

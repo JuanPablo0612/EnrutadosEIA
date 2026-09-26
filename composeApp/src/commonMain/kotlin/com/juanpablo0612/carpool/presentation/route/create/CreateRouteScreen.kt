@@ -24,7 +24,6 @@ import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewMo
 import com.juanpablo0612.carpool.presentation.route.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.route.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
-import com.juanpablo0612.carpool.presentation.route.create.components.SharingToggleRow
 import com.juanpablo0612.carpool.presentation.route.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
@@ -301,18 +300,6 @@ fun CreateRouteContent(
                 ) {
                     Text(timeLabel)
                 }
-            }
-
-            // Sharing section
-            item {
-                SectionHeader(stringResource(Res.string.sharing_section_title))
-            }
-
-            item {
-                SharingToggleRow(
-                    checked = state.isShared,
-                    onCheckedChange = { onAction(CreateRouteAction.OnToggleShared) }
-                )
             }
 
             // General error — field-specific errors (e.g. NameRequired) are shown inline on

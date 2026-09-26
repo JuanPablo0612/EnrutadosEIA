@@ -31,7 +31,6 @@ import com.juanpablo0612.carpool.presentation.route.create.SelectionTarget
 import com.juanpablo0612.carpool.presentation.route.create.components.DaySelector
 import com.juanpablo0612.carpool.presentation.route.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
-import com.juanpablo0612.carpool.presentation.route.create.components.SharingToggleRow
 import com.juanpablo0612.carpool.presentation.route.create.components.StopType
 import com.juanpablo0612.carpool.presentation.route.detail.components.RecurrenceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -485,15 +484,6 @@ internal fun RouteDetailEditContent(
                 ) {
                     Text(timeLabel)
                 }
-            }
-
-            item { SectionHeader(stringResource(Res.string.sharing_section_title)) }
-
-            item {
-                SharingToggleRow(
-                    checked = draft.isShared,
-                    onCheckedChange = { onAction(RouteDetailAction.OnToggleShared) }
-                )
             }
 
             if (isSaved) {

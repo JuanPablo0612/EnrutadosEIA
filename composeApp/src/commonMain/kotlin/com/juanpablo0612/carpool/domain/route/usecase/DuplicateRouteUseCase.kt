@@ -17,7 +17,6 @@ class DuplicateRouteUseCase(
             id = "",
             driverId = currentUserId,
             name = nameOverride ?: route.name,
-            isShared = false,
         )
         return repository.createRoute(duplicate)
     }

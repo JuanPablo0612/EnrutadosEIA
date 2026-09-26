@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface RouteRemoteDataSource {
     suspend fun createRoute(route: RouteDto): RouteDto
     fun getUserRoutes(userId: String): Flow<List<RouteDto>>
-    fun getCommunityRoutes(): Flow<List<RouteDto>>
     suspend fun getRouteById(id: String): RouteDto
     suspend fun updateRoute(route: RouteDto)
     suspend fun deleteRoute(id: String)

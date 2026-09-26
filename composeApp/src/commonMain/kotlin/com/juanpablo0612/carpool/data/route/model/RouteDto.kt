@@ -16,6 +16,8 @@ data class RouteDto(
     val name: String = "",
     val recurringDays: List<String> = emptyList(),
     val typicalDepartureTime: String? = null,
+    // Legacy: routes used to be shareable with the community. Kept so old documents decode;
+    // always written as false.
     val isShared: Boolean = false,
 ) {
     fun toDomain(): Route = Route(
@@ -32,7 +34,6 @@ data class RouteDto(
                 LocalTime(parts[0].toInt(), parts[1].toInt())
             }.getOrNull()
         },
-        isShared = isShared,
     )
 
     companion object {
@@ -47,7 +48,6 @@ data class RouteDto(
             typicalDepartureTime = route.typicalDepartureTime?.let { t ->
                 "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
             },
-            isShared = route.isShared,
         )
     }
 }

@@ -28,7 +28,6 @@ data class RouteDetailUiState(
                 d.destination != r.destination ||
                 d.waypoints != r.waypoints ||
                 d.recurringDays != r.recurringDays ||
-                d.typicalDepartureTime != r.typicalDepartureTime ||
-                d.isShared != r.isShared
+                d.typicalDepartureTime != r.typicalDepartureTime
         }
 }

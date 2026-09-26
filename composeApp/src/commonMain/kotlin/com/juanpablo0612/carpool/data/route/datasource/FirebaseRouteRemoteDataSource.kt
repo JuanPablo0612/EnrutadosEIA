@@ -25,14 +25,6 @@ class FirebaseRouteRemoteDataSource(
             }
     }
 
-    override fun getCommunityRoutes(): Flow<List<RouteDto>> {
-        return firestore.collection(COLLECTION_NAME)
-            .where { "isShared" equalTo true }
-            .snapshots
-            .map { snapshot ->
-                snapshot.documents.map { it.data(RouteDto.serializer()) }
-            }
-    }
 
     override suspend fun getRouteById(id: String): RouteDto {
         val snapshot = firestore.collection(COLLECTION_NAME).document(id).get()

@@ -333,9 +333,6 @@
     <string name="departure_time_not_set">No time set</string>
 
     <!-- Sharing section -->
-    <string name="sharing_section_title">Sharing</string>
-    <string name="create_route_share_label">Share with community</string>
-    <string name="create_route_share_description">Other drivers will be able to see and reuse this route</string>
 
     <!-- Day abbreviations (single letter chips) -->
     <string name="day_abbr_mon">M</string>
@@ -370,13 +367,6 @@
     <string name="route_menu_delete">Delete</string>
 
     <!-- Community Routes -->
-    <string name="cd_community_routes">Community routes</string>
-    <string name="community_routes_title">Community Routes</string>
-    <string name="community_routes_subtitle">Routes shared by other drivers</string>
-    <string name="community_routes_empty_title">No shared routes yet</string>
-    <string name="community_routes_empty_description">When a driver shares a route with the community, it will show up here for you to reuse.</string>
-    <string name="community_routes_reuse_button">Use this route</string>
-    <string name="error_route_reuse_failed">Couldn\'t use this route. Please try again.</string>
 
     <!-- CreateTrip - date quick-select -->
     <string name="date_today">Today</string>

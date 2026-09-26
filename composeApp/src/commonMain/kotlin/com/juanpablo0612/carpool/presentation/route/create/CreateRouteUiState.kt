@@ -11,7 +11,6 @@ data class CreateRouteUiState(
     val waypoints: List<Place> = emptyList(),
     val recurringDays: Set<DayOfWeek> = emptySet(),
     val typicalDepartureTime: LocalTime? = null,
-    val isShared: Boolean = false,
     val isLoading: Boolean = false,
     val isSaved: Boolean = false,
     val showDiscardConfirm: Boolean = false,
@@ -23,7 +22,7 @@ data class CreateRouteUiState(
 
     val isDirty: Boolean
         get() = name.isNotBlank() || origin != null || destination != null || waypoints.isNotEmpty() ||
-            recurringDays.isNotEmpty() || typicalDepartureTime != null || isShared
+            recurringDays.isNotEmpty() || typicalDepartureTime != null
 }
 
 sealed class SelectionTarget {

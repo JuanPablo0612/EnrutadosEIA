@@ -27,11 +27,6 @@ class RouteRepositoryImpl(
             .map { list -> list.map { it.toDomain() } }
     }
 
-    override fun getCommunityRoutes(): Flow<List<Route>> {
-        return remoteDataSource.getCommunityRoutes()
-            .map { list -> list.map { it.toDomain() } }
-    }
-
     override suspend fun getRouteById(id: String): Result<Route> {
         return try {
             val route = remoteDataSource.getRouteById(id).toDomain()

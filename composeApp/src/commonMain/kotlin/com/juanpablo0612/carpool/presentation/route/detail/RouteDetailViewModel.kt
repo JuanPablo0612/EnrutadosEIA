@@ -109,7 +109,6 @@ class RouteDetailViewModel(
             }
             is RouteDetailAction.OnPlaceSelectedFromResult -> onDraftPlaceSelected(action.place)
             RouteDetailAction.OnCancelSelection -> updateDraft { it.copy(selectionTarget = null) }
-            RouteDetailAction.OnToggleShared -> updateDraft { it.copy(isShared = !it.isShared) }
         }
     }
 
@@ -125,7 +124,6 @@ class RouteDetailViewModel(
                     waypoints = route.waypoints,
                     recurringDays = route.recurringDays,
                     typicalDepartureTime = route.typicalDepartureTime,
-                    isShared = route.isShared
                 )
             )
         }
@@ -146,7 +144,6 @@ class RouteDetailViewModel(
                 waypoints = draft.waypoints,
                 recurringDays = draft.recurringDays,
                 typicalDepartureTime = draft.typicalDepartureTime,
-                isShared = draft.isShared
             )
             routeRepository.updateRoute(updatedRoute)
                 .onSuccess {

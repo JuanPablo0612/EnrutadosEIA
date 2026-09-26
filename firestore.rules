@@ -107,16 +107,13 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------------------------
-    // routes/{routeId} — recurring route templates, private to their driver unless opted into
-    // the community. Unlike trips (an intentionally open marketplace), a route's origin/
-    // destination can reveal a driver's home address, so reads require either ownership or
-    // isShared == true. getUserRoutes() scopes driverId server-side; getCommunityRoutes() issues
-    // `where("isShared", "==", true)` — both are provable statically against this rule.
+    // routes/{routeId} — a driver's saved route templates, private to that driver. Unlike trips
+    // (an intentionally open marketplace), a route's origin/destination can reveal a driver's
+    // home address. getUserRoutes() scopes driverId server-side, which is provable against this
+    // rule.
     // ---------------------------------------------------------------------------------------
     match /routes/{routeId} {
-      allow read: if isSignedIn() && (
-        resource.data.driverId == request.auth.uid || resource.data.isShared == true
-      );
+      allow read: if isSignedIn() && resource.data.driverId == request.auth.uid;
       allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.driverId == request.auth.uid;
     }

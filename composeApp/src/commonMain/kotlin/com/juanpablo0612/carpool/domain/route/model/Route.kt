@@ -13,5 +13,4 @@ data class Route(
     val name: String = "",
     val recurringDays: Set<DayOfWeek> = emptySet(),
     val typicalDepartureTime: LocalTime? = null,
-    val isShared: Boolean = false,
 )

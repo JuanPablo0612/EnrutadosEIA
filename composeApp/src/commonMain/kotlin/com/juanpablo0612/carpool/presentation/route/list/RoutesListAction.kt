@@ -14,5 +14,4 @@ sealed class RoutesListAction {
     data object OnDismissActionError : RoutesListAction()
     data object OnDismissDuplicateSuccess : RoutesListAction()
     data object OnBackClick : RoutesListAction()
-    data object OnCommunityRoutesClick : RoutesListAction()
 }
