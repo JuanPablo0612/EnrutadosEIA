@@ -113,6 +113,6 @@ internal val previewTrip = Trip(
     waypoints = emptyList(),
     departureTime = 0L,
     status = TripStatus.InProgress,
-    driverLatitude = 6.1633,
-    driverLongitude = -75.4913,
+    driverLatitude = com.juanpablo0612.carpool.domain.place.model.Place.EIA_LAS_PALMAS.latitude,
+    driverLongitude = com.juanpablo0612.carpool.domain.place.model.Place.EIA_LAS_PALMAS.longitude,
 )

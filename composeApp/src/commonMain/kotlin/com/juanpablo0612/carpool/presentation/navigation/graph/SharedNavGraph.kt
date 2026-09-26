@@ -1,14 +1,12 @@
 package com.juanpablo0612.carpool.presentation.navigation.graph
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.chat.ChatScreen
 import com.juanpablo0612.carpool.presentation.chat.ChatViewModel
+import com.juanpablo0612.carpool.presentation.navigation.ObserveMapPickResult
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.notification.NotificationsScreen
 import com.juanpablo0612.carpool.presentation.notification.NotificationsViewModel
@@ -30,8 +28,6 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingScreen
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private const val MAP_PICK_RESULT_KEY = "map_pick_result"
 
 /**
  * Role-agnostic routes reachable from both the driver and the passenger side of the app —
@@ -56,23 +52,14 @@ fun NavGraphBuilder.sharedNavGraph(
 ) {
     composable<Route.AddPlace> { backStackEntry ->
         val viewModel: AddPlaceViewModel = koinViewModel()
-        val mapPickResult by backStackEntry.savedStateHandle
-            .getStateFlow<String?>(MAP_PICK_RESULT_KEY, null)
-            .collectAsState()
-
-        LaunchedEffect(mapPickResult) {
-            mapPickResult?.let { raw ->
-                // limit = 3 so a place name containing commas isn't truncated at the first one.
-                val parts = raw.split(",", limit = 3)
-                viewModel.onAction(
-                    AddPlaceAction.OnMapPickResult(
-                        latitude = parts[0].toDouble(),
-                        longitude = parts[1].toDouble(),
-                        placeName = parts.getOrNull(2)?.takeIf { it.isNotBlank() },
-                    )
+        backStackEntry.ObserveMapPickResult { result ->
+            viewModel.onAction(
+                AddPlaceAction.OnMapPickResult(
+                    latitude = result.latitude,
+                    longitude = result.longitude,
+                    placeName = result.placeName?.takeIf { it.isNotBlank() },
                 )
-                backStackEntry.savedStateHandle.remove<String>(MAP_PICK_RESULT_KEY)
-            }
+            )
         }
 
         AddPlaceScreen(

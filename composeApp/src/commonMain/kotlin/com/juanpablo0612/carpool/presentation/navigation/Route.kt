@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
+import com.juanpablo0612.carpool.domain.place.model.Place
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -120,7 +121,7 @@ sealed interface Route {
 
     @Serializable
     data class MapPicker(
-        val initialLatitude: Double = 6.1633,
-        val initialLongitude: Double = -75.4913,
+        val initialLatitude: Double = Place.EIA_LAS_PALMAS.latitude,
+        val initialLongitude: Double = Place.EIA_LAS_PALMAS.longitude,
     ) : Route
 }

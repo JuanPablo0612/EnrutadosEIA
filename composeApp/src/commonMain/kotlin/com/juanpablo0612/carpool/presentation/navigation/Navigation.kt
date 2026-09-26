@@ -30,8 +30,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
-private const val MAP_PICK_RESULT_KEY = "map_pick_result"
-
 /**
  * Which role's nav graph a route belongs to, or `null` for role-agnostic/shared routes. Used so a
  * deep link can switch [UserSession.activeRole] to match its target before navigating, instead of
@@ -348,13 +346,15 @@ fun AppNavigation(
                 sharedNavGraph(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToMapPicker = { lat, lon ->
-                        navController.navigate(Route.MapPicker(lat ?: 6.1633, lon ?: -75.4913))
+                        val mapPicker = if (lat != null && lon != null) {
+                            Route.MapPicker(lat, lon)
+                        } else {
+                            Route.MapPicker()
+                        }
+                        navController.navigate(mapPicker)
                     },
                     onCoordinatesPicked = { lat, lon, placeName ->
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set(MAP_PICK_RESULT_KEY, "$lat,$lon,${placeName ?: ""}")
-                        navController.popBackStack()
+                        navController.popWithMapPickResult(MapPickResult(lat, lon, placeName))
                     },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                     onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
