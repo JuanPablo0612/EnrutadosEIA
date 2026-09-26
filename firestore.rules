@@ -7,6 +7,9 @@ rules_version = '2';
 // only satisfiable by Firestore's rule engine if the query's own `where` clauses can prove the
 // rule holds for every possible result — an unscoped `.collection("x").get()` is rejected
 // outright. See README.md for how to deploy this file.
+//
+// Cloud Functions (functions/) use the Admin SDK, which bypasses these rules: they alone write
+// notifications, rating aggregates, trip-cancellation cascades and account purges.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -18,13 +21,33 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // Maintained only by the onRatingCreated function.
+    function serverOwnedUserFields() {
+      return ['ratingSum', 'ratingCount', 'ratingAverage'];
+    }
+
     // ---------------------------------------------------------------------------------------
     // users/{uid} — profile is readable by any signed-in user (driver/passenger profile display,
-    // e.g. on a trip result or booking request card) but only the owner may write it.
+    // e.g. on a trip result or booking request card) but only the owner may write it, and never
+    // the rating aggregate. Deletion happens through the deleteAccount function.
+    //
+    // users/{uid}/fcmTokens/{token} — the owner's push tokens, one document per device, keyed by
+    // the token itself.
     // ---------------------------------------------------------------------------------------
     match /users/{uid} {
       allow read: if isSignedIn();
-      allow create, update, delete: if isOwner(uid);
+      allow create: if isOwner(uid) &&
+        !request.resource.data.keys().hasAny(serverOwnedUserFields());
+      allow update: if isOwner(uid) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(serverOwnedUserFields());
+      allow delete: if false;
+
+      match /fcmTokens/{token} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) &&
+          request.resource.data.token == token &&
+          request.resource.data.keys().hasOnly(['token', 'updatedAt']);
+      }
     }
 
     // ---------------------------------------------------------------------------------------
@@ -53,10 +76,10 @@ service cloud.firestore {
     // passenger cancelling their own already-CONFIRMED booking, which decrements the trip they do
     // not own. That single case is allowed here, narrowly: a non-driver update may touch only
     // confirmedSeats, and only as an exact decrement-by-one that never goes negative — it can
-    // never be used to inflate a trip's counter or touch any other field. This is a client-only
-    // approximation (there is no server-side function in this project to verify the caller
-    // actually held a CONFIRMED booking on this exact trip); the residual risk is a signed-in user
-    // spamming another trip's counter down one at a time, not a PII leak or an ownership takeover.
+    // never be used to inflate a trip's counter or touch any other field. The rule cannot verify
+    // the caller actually held a CONFIRMED booking on this exact trip; the residual risk is a
+    // signed-in user spamming another trip's counter down one at a time, not a PII leak or an
+    // ownership takeover. Trip cancellation resets the counter server-side (onTripUpdated).
     //
     // The driver-owned branch is bounded the same way on the increment side: whenever a
     // driver-initiated update touches confirmedSeats (accepting a booking), the new value may
@@ -125,7 +148,9 @@ service cloud.firestore {
     //
     // Write: only the driver may set CONFIRMED/REJECTED; either party may set CANCELLED; a
     // passenger may only create a booking under their own passengerId in PENDING status. No field
-    // other than status/rejectReason/rejectComment may change on an update. The confirmedSeats
+    // other than status/rejectReason/rejectComment/cancelledBy may change on an update, and
+    // cancelledBy (who cancelled, read by the notification functions) can only name the caller.
+    // The confirmedSeats
     // counter itself is written as part of the same client update to trips/{tripId} — see the
     // `trips` rule below, which restricts that field the same way.
     // ---------------------------------------------------------------------------------------
@@ -144,25 +169,33 @@ service cloud.firestore {
           resource.data.driverId == request.auth.uid &&
           request.resource.data.status in ['CONFIRMED', 'REJECTED', 'CANCELLED'] &&
           request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['status', 'rejectReason', 'rejectComment'])
+            .hasOnly(['status', 'rejectReason', 'rejectComment', 'cancelledBy'])
         ) ||
         (
           resource.data.passengerId == request.auth.uid &&
           request.resource.data.status == 'CANCELLED' &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'cancelledBy'])
         )
+      ) && (
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['cancelledBy']) ||
+        request.resource.data.cancelledBy == request.auth.uid
       );
 
       allow delete: if false;
     }
 
     // ---------------------------------------------------------------------------------------
-    // notifications/{uid}/items/{itemId} — strictly owner-only (markRead/delete take
-    // the userId precisely so this can be enforced).
+    // notifications/{uid}/items/{itemId} — written only by Cloud Functions. The owner may read,
+    // mark as read and delete their own notifications (markRead/delete take the userId precisely
+    // so this can be enforced).
     // ---------------------------------------------------------------------------------------
     match /notifications/{uid} {
       match /items/{itemId} {
-        allow read, write: if isOwner(uid);
+        allow read, delete: if isOwner(uid);
+        allow update: if isOwner(uid) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+        allow create: if false;
       }
     }
 
@@ -191,11 +224,19 @@ service cloud.firestore {
     // ---------------------------------------------------------------------------------------
     // ratings/{ratingId} — average rating / trip count are shown on other users' profiles and
     // trip cards, so ratings are readable by any signed-in user. A rating may only be created by
-    // its own rater and is never editable or deletable once written.
+    // its own rater, once per booking (id = {bookingId}_{raterId}), for someone else, with 1-5
+    // whole stars, and is never editable or deletable once written. onRatingCreated additionally
+    // checks both users are parties to the booking before counting it.
     // ---------------------------------------------------------------------------------------
     match /ratings/{ratingId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.raterId == request.auth.uid;
+      allow create: if isSignedIn() &&
+        request.resource.data.raterId == request.auth.uid &&
+        request.resource.data.rateeId != request.auth.uid &&
+        ratingId == request.resource.data.bookingId + '_' + request.auth.uid &&
+        request.resource.data.stars is int &&
+        request.resource.data.stars >= 1 && request.resource.data.stars <= 5 &&
+        !request.resource.data.keys().hasAny(['aggregatedAt', 'aggregation']);
       allow update, delete: if false;
     }
   }
