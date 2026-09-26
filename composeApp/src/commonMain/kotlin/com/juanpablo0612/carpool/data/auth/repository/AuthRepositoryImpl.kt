@@ -26,13 +26,11 @@ class AuthRepositoryImpl(
         email: String,
         password: String,
         name: String,
-        isPassenger: Boolean,
-        isDriver: Boolean,
         phone: String,
         photoBytes: ByteArray?
     ): Result<Unit> {
         return try {
-            remoteDataSource.signUp(email, password, name, isPassenger, isDriver, phone, photoBytes)
+            remoteDataSource.signUp(email, password, name, phone, photoBytes)
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())
@@ -95,15 +93,6 @@ class AuthRepositoryImpl(
     override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User> {
         return try {
             val dto = remoteDataSource.updateProfile(name, phone, bio, photoBytes)
-            Result.success(dto.toDomain())
-        } catch (_: Exception) {
-            Result.failure(AppException.AuthException.Unknown)
-        }
-    }
-
-    override suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): Result<User> {
-        return try {
-            val dto = remoteDataSource.updateRoles(isDriver, isPassenger)
             Result.success(dto.toDomain())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)

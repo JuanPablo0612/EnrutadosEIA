@@ -24,8 +24,6 @@ class FirebaseAuthRemoteDataSource(
         email: String,
         password: String,
         name: String,
-        isPassenger: Boolean,
-        isDriver: Boolean,
         phone: String,
         photoBytes: ByteArray?
     ) {
@@ -49,8 +47,6 @@ class FirebaseAuthRemoteDataSource(
             email = email,
             name = name,
             isEmailVerified = user.isEmailVerified,
-            isPassenger = isPassenger,
-            isDriver = isDriver,
             phone = phone.ifBlank { null },
             photoUrl = photoUrl
         )
@@ -119,15 +115,6 @@ class FirebaseAuthRemoteDataSource(
             updates["photoUrl"] = ref.getDownloadUrl()
         }
         firestore.collection("users").document(userId).update(updates)
-        val snapshot = firestore.collection("users").document(userId).get()
-        return snapshot.data(UserDto.serializer())
-    }
-
-    override suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): UserDto {
-        val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
-        firestore.collection("users").document(userId).update(
-            mapOf("isDriver" to isDriver, "isPassenger" to isPassenger)
-        )
         val snapshot = firestore.collection("users").document(userId).get()
         return snapshot.data(UserDto.serializer())
     }

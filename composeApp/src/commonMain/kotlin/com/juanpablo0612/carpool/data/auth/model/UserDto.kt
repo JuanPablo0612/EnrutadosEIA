@@ -10,8 +10,6 @@ data class UserDto(
     val email: String = "",
     val name: String? = null,
     val isEmailVerified: Boolean = false,
-    val isPassenger: Boolean = false,
-    val isDriver: Boolean = false,
     val phone: String? = null,
     val photoUrl: String? = null,
     val bio: String? = null
@@ -21,15 +19,13 @@ data class UserDto(
         email = email,
         name = name,
         isEmailVerified = isEmailVerified,
-        isPassenger = isPassenger,
-        isDriver = isDriver,
         phone = phone,
         photoUrl = photoUrl,
         bio = bio
     )
 
     // Only the fields safe to show to any signed-in user browsing trips/bookings — no email,
-    // phone, role flags, or isEmailVerified. See PublicProfile.
+    // phone, or isEmailVerified. See PublicProfile.
     fun toPublicProfile(): PublicProfile = PublicProfile(
         id = id,
         name = name.orEmpty(),

@@ -242,8 +242,6 @@ private val previewUser = User(
     email = "pasajero@eia.edu.co",
     name = "Maria García",
     isEmailVerified = true,
-    isPassenger = true,
-    isDriver = false
 )
 
 @Preview

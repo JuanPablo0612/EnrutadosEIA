@@ -9,8 +9,6 @@ interface AuthRepository {
         email: String,
         password: String,
         name: String,
-        isPassenger: Boolean,
-        isDriver: Boolean,
         phone: String = "",
         photoBytes: ByteArray? = null
     ): Result<Unit>
@@ -21,6 +19,5 @@ interface AuthRepository {
     suspend fun getCurrentUser(): Result<User>
     suspend fun getPublicProfile(userId: String): Result<PublicProfile>
     suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User>
-    suspend fun updateRoles(isDriver: Boolean, isPassenger: Boolean): Result<User>
     suspend fun deleteAccount(): Result<Unit>
 }

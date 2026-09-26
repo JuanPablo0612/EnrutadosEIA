@@ -139,8 +139,6 @@ private val previewUser = User(
     email = "juan.perez@eia.edu.co",
     name = "Juan Pérez",
     isEmailVerified = true,
-    isPassenger = true,
-    isDriver = true,
 )
 
 private val previewTrip = Trip(

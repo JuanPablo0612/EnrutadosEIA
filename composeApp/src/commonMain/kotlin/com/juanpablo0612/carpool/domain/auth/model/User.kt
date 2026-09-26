@@ -5,8 +5,6 @@ data class User(
     val email: String,
     val name: String?,
     val isEmailVerified: Boolean,
-    val isPassenger: Boolean,
-    val isDriver: Boolean,
     val phone: String? = null,
     val photoUrl: String? = null,
     val bio: String? = null

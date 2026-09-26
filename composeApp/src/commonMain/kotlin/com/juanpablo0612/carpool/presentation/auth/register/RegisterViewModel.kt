@@ -93,8 +93,6 @@ class RegisterViewModel(
                 email = state.email,
                 password = state.password,
                 name = state.fullName,
-                isPassenger = true,
-                isDriver = true,
                 phone = state.phone,
                 photoBytes = photoBytes
             )
