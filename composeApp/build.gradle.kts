@@ -32,6 +32,9 @@ kotlin {
         androidResources {
             enable = true
         }
+        // Runs commonTest on the JVM of the build machine (no device/emulator); the tests cover
+        // pure-Kotlin domain logic only.
+        withHostTest {}
     }
 
     sourceSets {
