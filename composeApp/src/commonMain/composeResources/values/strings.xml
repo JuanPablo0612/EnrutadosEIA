@@ -245,8 +245,8 @@
 
     <!-- Home Dashboard -->
     <string name="home_greeting_subtitle">Ready for today\'s trip?</string>
-    <string name="home_next_trip_title">Next trip</string>
-    <string name="home_next_booking_title">Your next trip</string>
+    <string name="home_next_trip_title">Your next drive</string>
+    <string name="home_next_booking_title">Your next ride</string>
     <string name="home_pending_requests_title">Solicitudes pendientes (%1$d)</string>
     <string name="home_quick_actions_title">Acciones rápidas</string>
     <string name="home_stats_title">Este mes</string>
@@ -267,8 +267,8 @@
     <string name="home_action_history">Historial</string>
 
     <!-- Home onboarding banners -->
-    <string name="home_no_vehicle_title">Register a vehicle</string>
-    <string name="home_no_vehicle_subtitle">To publish trips, you first need to register a vehicle.</string>
+    <string name="home_no_vehicle_title">Have a car?</string>
+    <string name="home_no_vehicle_subtitle">Register your vehicle to publish trips.</string>
     <string name="home_no_route_title">Create a route</string>
     <string name="home_no_route_subtitle">Define your recurring route and start publishing trips.</string>
     <string name="home_register_vehicle_cta">Register vehicle</string>

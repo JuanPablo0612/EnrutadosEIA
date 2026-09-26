@@ -245,8 +245,8 @@
 
     <!-- Home Dashboard -->
     <string name="home_greeting_subtitle">¿Listo para tu viaje de hoy?</string>
-    <string name="home_next_trip_title">Próximo viaje</string>
-    <string name="home_next_booking_title">Tu próximo viaje</string>
+    <string name="home_next_trip_title">Tu próximo viaje · Conduces</string>
+    <string name="home_next_booking_title">Tu próximo viaje · Pasajero</string>
     <string name="home_pending_requests_title">Solicitudes pendientes (%1$d)</string>
     <string name="home_quick_actions_title">Acciones rápidas</string>
     <string name="home_stats_title">Este mes</string>
@@ -267,8 +267,8 @@
     <string name="home_action_history">Historial</string>
 
     <!-- Home banners de incorporación -->
-    <string name="home_no_vehicle_title">Registra un vehículo</string>
-    <string name="home_no_vehicle_subtitle">Para publicar viajes, primero necesitas registrar un vehículo.</string>
+    <string name="home_no_vehicle_title">¿Tienes carro?</string>
+    <string name="home_no_vehicle_subtitle">Registra tu vehículo para publicar viajes.</string>
     <string name="home_no_route_title">Crea una ruta</string>
     <string name="home_no_route_subtitle">Define tu ruta recurrente y empieza a publicar viajes.</string>
     <string name="home_register_vehicle_cta">Registrar vehículo</string>

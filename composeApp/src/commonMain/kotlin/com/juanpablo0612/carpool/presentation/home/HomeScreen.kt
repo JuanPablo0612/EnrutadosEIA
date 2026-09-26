@@ -12,14 +12,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.auth.model.User
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.home.components.HomeDashboard
-import com.juanpablo0612.carpool.presentation.home.components.HomeDashboardEmpty
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
@@ -28,13 +26,10 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.driver_home_title
 import enrutadoseia.composeapp.generated.resources.home_reject_confirm_body
 import enrutadoseia.composeapp.generated.resources.home_reject_confirm_title
-import enrutadoseia.composeapp.generated.resources.passenger_home_title
+import enrutadoseia.composeapp.generated.resources.nav_home
 import enrutadoseia.composeapp.generated.resources.reject_confirm_button
-import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
-import enrutadoseia.composeapp.generated.resources.role_switch_to_passenger
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,7 +37,6 @@ import org.jetbrains.compose.resources.stringResource
 fun HomeScreen(
     viewModel: HomeViewModel,
     onNavigateToProfile: () -> Unit,
-    onSwitchRole: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
@@ -57,7 +51,6 @@ fun HomeScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            HomeEvent.NavigateToSwitchRole -> onSwitchRole()
             HomeEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
             HomeEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
             HomeEvent.NavigateToRoutesList -> onNavigateToRoutesList()
@@ -102,20 +95,12 @@ internal fun HomeContent(
         topBar = {
             state.user?.let { user ->
                 CarpoolTopBar(
-                    title = stringResource(
-                        if (state.role == UserRole.Driver) Res.string.driver_home_title
-                        else Res.string.passenger_home_title,
-                    ),
+                    title = stringResource(Res.string.nav_home),
                     user = user,
-                    isDualRole = state.isDualRole,
-                    switchRoleLabel = stringResource(
-                        if (state.role == UserRole.Driver) Res.string.role_switch_to_passenger
-                        else Res.string.role_switch_to_driver,
-                    ),
+                    isDualRole = false,
+                    switchRoleLabel = "",
                     onAvatarClick = onNavigateToProfile,
-                    onRoleToggle = if (state.isDualRole) {
-                        { onAction(HomeAction.SwitchRole) }
-                    } else null,
+                    onRoleToggle = null,
                 )
             }
         },
@@ -144,9 +129,6 @@ internal fun HomeContent(
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
-                isOnboardingEmpty(state) -> {
-                    HomeDashboardEmpty(state = state, onAction = onAction)
-                }
                 else -> {
                     HomeDashboard(state = state, onAction = onAction)
                 }
@@ -154,11 +136,6 @@ internal fun HomeContent(
         }
     }
 }
-
-private fun isOnboardingEmpty(state: HomeUiState): Boolean =
-    state.role == UserRole.Driver &&
-            !state.hasVehicles && !state.hasRoutes &&
-            state.nextTrip == null && state.pendingRequests.isEmpty()
 
 private val previewUser = User(
     id = "u1",
@@ -212,12 +189,11 @@ private fun HomeContentLoadingPreview() {
 
 @Preview
 @Composable
-private fun HomeContentDriverEmptyPreview() {
+private fun HomeContentNewUserPreview() {
     CarpoolTheme {
         HomeContent(
             state = HomeUiState(
                 user = previewUser,
-                role = UserRole.Driver,
                 isLoading = false,
                 hasVehicles = false,
                 hasRoutes = false,
@@ -230,13 +206,11 @@ private fun HomeContentDriverEmptyPreview() {
 
 @Preview
 @Composable
-private fun HomeContentDriverPopulatedPreview() {
+private fun HomeContentPopulatedPreview() {
     CarpoolTheme {
         HomeContent(
             state = HomeUiState(
                 user = previewUser,
-                role = UserRole.Driver,
-                isDualRole = true,
                 isLoading = false,
                 hasVehicles = true,
                 hasRoutes = true,

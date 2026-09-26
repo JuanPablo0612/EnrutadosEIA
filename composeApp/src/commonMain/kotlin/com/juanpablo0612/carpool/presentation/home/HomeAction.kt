@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.home
 
 sealed class HomeAction {
-    data object SwitchRole : HomeAction()
     data object PublishTrip : HomeAction()
     data object CreateRoute : HomeAction()
     data object SearchTrips : HomeAction()

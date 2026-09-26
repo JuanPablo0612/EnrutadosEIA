@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.home
 
 sealed class HomeEvent {
-    data object NavigateToSwitchRole : HomeEvent()
     data object NavigateToCreateRoute : HomeEvent()
     data object NavigateToRegisterVehicle : HomeEvent()
     data object NavigateToRoutesList : HomeEvent()

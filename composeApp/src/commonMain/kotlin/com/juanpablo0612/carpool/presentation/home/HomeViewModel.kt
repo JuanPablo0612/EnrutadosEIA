@@ -2,12 +2,13 @@ package com.juanpablo0612.carpool.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
+import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
+import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
@@ -21,8 +22,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -47,64 +51,62 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            combine(userSession.user, userSession.activeRole) { user, role -> user to role }
-                .collect { (user, role) ->
-                    if (user == null || role == null) return@collect
-                    val isDualRole = user.isDriver && user.isPassenger
-                    _state.update {
-                        it.copy(
-                            user = user,
-                            role = role,
-                            isDualRole = isDualRole,
-                            isLoading = true,
-                            error = null,
-                        )
-                    }
-                    dataJob?.cancel()
-                    dataJob = launch { loadData(userId = user.id, role = role) }
-                }
+            userSession.user.filterNotNull().collectLatest { user ->
+                _state.update { it.copy(user = user) }
+            }
+        }
+        viewModelScope.launch {
+            userSession.user.filterNotNull().map { it.id }.distinctUntilChanged().collectLatest { userId ->
+                _state.update { it.copy(isLoading = true, error = null) }
+                dataJob?.cancel()
+                dataJob = launch { loadData(userId) }
+            }
         }
     }
 
-    private suspend fun loadData(userId: String, role: UserRole) {
+    private suspend fun loadData(userId: String) {
         val now = Clock.System.now().toEpochMilliseconds()
-        when (role) {
-            UserRole.Driver -> loadDriverData(userId, now)
-            UserRole.Passenger -> loadPassengerData(userId, now)
-        }
-    }
-
-    private suspend fun loadDriverData(userId: String, now: Long) {
-        combine(
+        val drivingFlow = combine(
             tripRepository.getDriverTrips(userId),
             bookingRepository.getDriverBookingRequests(userId),
             bookingRepository.getAllDriverBookings(userId),
             vehicleRepository.getUserVehicles(userId),
             routeRepository.getUserRoutes(userId),
-        ) { trips, pendingBookings, allBookings, vehicles, routes ->
+        ) { trips, pendingBookings, allDriverBookings, vehicles, routes ->
             val monthStart = startOfCurrentMonth(now)
-            val nextTrip = trips
-                .filter { it.status == TripStatus.Active && it.departureTime > now }
+            DrivingSnapshot(
+                nextTrip = trips
+                    .filter { it.status == TripStatus.Active && it.departureTime > now }
+                    .minByOrNull { it.departureTime },
+                pendingRequests = pendingBookings.filter { it.status == BookingStatus.Pending },
+                hasVehicles = vehicles.isNotEmpty(),
+                hasRoutes = routes.isNotEmpty(),
+                hasTrips = trips.isNotEmpty(),
+                tripsThisMonth = trips.count { it.departureTime >= monthStart && it.status != TripStatus.Cancelled },
+                // getDriverBookingRequests is scoped to PENDING, so Confirmed bookings are counted
+                // over the full driver booking set.
+                passengersThisMonth = allDriverBookings.count {
+                    it.departureTime >= monthStart && it.status == BookingStatus.Confirmed
+                },
+            )
+        }
+
+        combine(drivingFlow, bookingRepository.getPassengerBookings(userId)) { driving, passengerBookings ->
+            val nextBooking = passengerBookings
+                .filter { it.status == BookingStatus.Confirmed && it.departureTime > now }
                 .minByOrNull { it.departureTime }
-            val pendingRequests = pendingBookings.filter { it.status == BookingStatus.Pending }
-            val tripsThisMonth = trips.count {
-                it.departureTime >= monthStart && it.status != TripStatus.Cancelled
-            }
-            // getDriverBookingRequests is scoped to PENDING, so Confirmed bookings are counted
-            // over the full driver booking set.
-            val passengersThisMonth = allBookings.count {
-                it.departureTime >= monthStart && it.status == BookingStatus.Confirmed
-            }
             _state.update {
                 it.copy(
                     isLoading = false,
                     isRefreshing = false,
-                    nextTrip = nextTrip,
-                    pendingRequests = pendingRequests,
-                    hasVehicles = vehicles.isNotEmpty(),
-                    hasRoutes = routes.isNotEmpty(),
-                    tripsThisMonth = tripsThisMonth,
-                    passengersThisMonth = passengersThisMonth,
+                    nextTrip = driving.nextTrip,
+                    nextBooking = nextBooking,
+                    pendingRequests = driving.pendingRequests,
+                    hasVehicles = driving.hasVehicles,
+                    hasRoutes = driving.hasRoutes,
+                    hasTrips = driving.hasTrips,
+                    tripsThisMonth = driving.tripsThisMonth,
+                    passengersThisMonth = driving.passengersThisMonth,
                     error = null,
                 )
             }
@@ -113,28 +115,8 @@ class HomeViewModel(
             .collect {}
     }
 
-    private suspend fun loadPassengerData(userId: String, now: Long) {
-        bookingRepository.getPassengerBookings(userId)
-            .onEach { bookings ->
-                val nextBooking = bookings
-                    .filter { it.status == BookingStatus.Confirmed && it.departureTime > now }
-                    .minByOrNull { it.departureTime }
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isRefreshing = false,
-                        nextBooking = nextBooking,
-                        error = null,
-                    )
-                }
-            }
-            .catch { _state.update { it.copy(isLoading = false, isRefreshing = false, error = HomeError.LoadFailed) } }
-            .collect {}
-    }
-
     fun onAction(action: HomeAction) {
         when (action) {
-            HomeAction.SwitchRole -> emit(HomeEvent.NavigateToSwitchRole)
             HomeAction.CreateRoute -> emit(HomeEvent.NavigateToCreateRoute)
             HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
             HomeAction.PublishTrip -> emit(HomeEvent.NavigateToRoutesList)
@@ -161,11 +143,10 @@ class HomeViewModel(
     }
 
     private fun handleRefresh() {
-        val current = _state.value
-        val userId = current.user?.id ?: return
+        val userId = _state.value.user?.id ?: return
         _state.update { it.copy(isRefreshing = true, error = null) }
         dataJob?.cancel()
-        dataJob = viewModelScope.launch { loadData(userId, current.role) }
+        dataJob = viewModelScope.launch { loadData(userId) }
     }
 
     private fun confirmBooking(bookingId: String) {
@@ -195,3 +176,13 @@ class HomeViewModel(
         viewModelScope.launch { _events.emit(event) }
     }
 }
+
+private data class DrivingSnapshot(
+    val nextTrip: Trip?,
+    val pendingRequests: List<Booking>,
+    val hasVehicles: Boolean,
+    val hasRoutes: Boolean,
+    val hasTrips: Boolean,
+    val tripsThisMonth: Int,
+    val passengersThisMonth: Int,
+)

@@ -269,9 +269,6 @@ fun AppNavigation(
                 )
 
                 driverNavGraph(
-                    // A direct toggle: RoleSelector stays for first run and the explicit
-                    // "remember my choice" flow, not for flipping a binary you already know.
-                    onSwitchRole = { switchActiveRole(UserRole.Passenger) },
                     onNavigateToProfile = { navController.navigate(Route.Profile) },
                     onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },

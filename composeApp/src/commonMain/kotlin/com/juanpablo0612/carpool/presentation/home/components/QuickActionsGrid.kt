@@ -20,31 +20,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.home.HomeAction
 import com.juanpablo0612.carpool.presentation.home.HomeUiState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.add_road_24px
-import enrutadoseia.composeapp.generated.resources.bookmarks_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.home_action_create_route
-import enrutadoseia.composeapp.generated.resources.home_action_history
-import enrutadoseia.composeapp.generated.resources.home_action_my_bookings
 import enrutadoseia.composeapp.generated.resources.home_action_my_places
 import enrutadoseia.composeapp.generated.resources.home_action_my_routes
 import enrutadoseia.composeapp.generated.resources.home_action_my_trips
 import enrutadoseia.composeapp.generated.resources.home_action_publish_trip
 import enrutadoseia.composeapp.generated.resources.home_action_search_trip
-import enrutadoseia.composeapp.generated.resources.home_create_route_cta
-import enrutadoseia.composeapp.generated.resources.home_no_route_subtitle
-import enrutadoseia.composeapp.generated.resources.home_no_route_title
-import enrutadoseia.composeapp.generated.resources.home_no_vehicle_subtitle
-import enrutadoseia.composeapp.generated.resources.home_no_vehicle_title
 import enrutadoseia.composeapp.generated.resources.home_quick_actions_title
-import enrutadoseia.composeapp.generated.resources.home_register_vehicle_cta
-import enrutadoseia.composeapp.generated.resources.inbox_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.search_24px
 import org.jetbrains.compose.resources.stringResource
@@ -63,92 +52,58 @@ fun QuickActionsGrid(
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
 
-        when (state.role) {
-            UserRole.Driver -> DriverQuickActions(state = state, onAction = onAction)
-            UserRole.Passenger -> PassengerQuickActions(onAction = onAction)
-        }
-    }
-}
-
-@Composable
-private fun DriverQuickActions(
-    state: HomeUiState,
-    onAction: (HomeAction) -> Unit,
-) {
-    when {
-        !state.hasVehicles -> {
-            OnboardingBanner(
-                title = stringResource(Res.string.home_no_vehicle_title),
-                subtitle = stringResource(Res.string.home_no_vehicle_subtitle),
-                ctaLabel = stringResource(Res.string.home_register_vehicle_cta),
-                onCta = { onAction(HomeAction.RegisterVehicle) },
+        val items = buildList {
+            add(
+                QuickActionItem(
+                    icon = vectorResource(Res.drawable.search_24px),
+                    label = stringResource(Res.string.home_action_search_trip),
+                    isPrimary = true,
+                    onClick = { onAction(HomeAction.SearchTrips) },
+                )
             )
-        }
-        !state.hasRoutes -> {
-            OnboardingBanner(
-                title = stringResource(Res.string.home_no_route_title),
-                subtitle = stringResource(Res.string.home_no_route_subtitle),
-                ctaLabel = stringResource(Res.string.home_create_route_cta),
-                onCta = { onAction(HomeAction.CreateRoute) },
-            )
-        }
-        else -> {
-            ActionGrid(
-                items = listOf(
+            if (state.hasVehicles) {
+                add(
                     QuickActionItem(
                         icon = vectorResource(Res.drawable.add_road_24px),
                         label = stringResource(Res.string.home_action_publish_trip),
                         isPrimary = true,
                         onClick = { onAction(HomeAction.PublishTrip) },
-                    ),
+                    )
+                )
+            }
+            add(
+                QuickActionItem(
+                    icon = vectorResource(Res.drawable.directions_car_24px),
+                    label = stringResource(Res.string.home_action_my_trips),
+                    onClick = { onAction(HomeAction.ViewMyTrips) },
+                )
+            )
+            add(
+                QuickActionItem(
+                    icon = vectorResource(Res.drawable.location_on_24px),
+                    label = stringResource(Res.string.home_action_my_places),
+                    onClick = { onAction(HomeAction.ViewSavedPlaces) },
+                )
+            )
+            if (state.showDriverSections) {
+                add(
                     QuickActionItem(
                         icon = vectorResource(Res.drawable.add_24px),
                         label = stringResource(Res.string.home_action_create_route),
                         onClick = { onAction(HomeAction.CreateRoute) },
-                    ),
+                    )
+                )
+                add(
                     QuickActionItem(
                         icon = vectorResource(Res.drawable.add_road_24px),
                         label = stringResource(Res.string.home_action_my_routes),
                         onClick = { onAction(HomeAction.ViewMyRoutes) },
-                    ),
-                    QuickActionItem(
-                        icon = vectorResource(Res.drawable.directions_car_24px),
-                        label = stringResource(Res.string.home_action_my_trips),
-                        onClick = { onAction(HomeAction.ViewMyTrips) },
-                    ),
-                ),
-            )
+                    )
+                )
+            }
         }
+        ActionGrid(items = items)
     }
-}
-
-@Composable
-private fun PassengerQuickActions(onAction: (HomeAction) -> Unit) {
-    ActionGrid(
-        items = listOf(
-            QuickActionItem(
-                icon = vectorResource(Res.drawable.search_24px),
-                label = stringResource(Res.string.home_action_search_trip),
-                isPrimary = true,
-                onClick = { onAction(HomeAction.SearchTrips) },
-            ),
-            QuickActionItem(
-                icon = vectorResource(Res.drawable.location_on_24px),
-                label = stringResource(Res.string.home_action_my_places),
-                onClick = { onAction(HomeAction.ViewSavedPlaces) },
-            ),
-            QuickActionItem(
-                icon = vectorResource(Res.drawable.bookmarks_24px),
-                label = stringResource(Res.string.home_action_my_bookings),
-                onClick = { onAction(HomeAction.ViewMyBookings) },
-            ),
-            QuickActionItem(
-                icon = vectorResource(Res.drawable.inbox_24px),
-                label = stringResource(Res.string.home_action_history),
-                onClick = { onAction(HomeAction.ViewMyBookings) },
-            ),
-        ),
-    )
 }
 
 @Composable
@@ -227,13 +182,14 @@ private fun QuickActionCard(
 }
 
 @Composable
-private fun OnboardingBanner(
+internal fun OnboardingBanner(
     title: String,
     subtitle: String,
     ctaLabel: String,
     onCta: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Spacing.lg)) {
             Text(text = title, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.height(Spacing.xs))

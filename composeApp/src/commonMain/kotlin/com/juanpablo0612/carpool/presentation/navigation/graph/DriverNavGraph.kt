@@ -32,7 +32,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.driverNavGraph(
-    onSwitchRole: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
@@ -61,7 +60,6 @@ fun NavGraphBuilder.driverNavGraph(
         HomeScreen(
             viewModel = viewModel,
             onNavigateToProfile = onNavigateToProfile,
-            onSwitchRole = onSwitchRole,
             onNavigateToCreateRoute = onNavigateToCreateRoute,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
             onNavigateToRoutesList = onNavigateToRoutesList,
