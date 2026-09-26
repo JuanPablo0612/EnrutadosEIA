@@ -16,9 +16,6 @@ data class RouteDto(
     val name: String = "",
     val recurringDays: List<String> = emptyList(),
     val typicalDepartureTime: String? = null,
-    // Legacy: routes used to be shareable with the community. Kept so old documents decode;
-    // always written as false.
-    val isShared: Boolean = false,
 ) {
     fun toDomain(): Route = Route(
         id = id,
