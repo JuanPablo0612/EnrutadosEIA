@@ -13,7 +13,6 @@ val appModule = module {
         splashModule,
         profileModule,
         preferencesModule,
-        roleSelectorModule,
         routeModule,
         tripModule,
         placeModule,

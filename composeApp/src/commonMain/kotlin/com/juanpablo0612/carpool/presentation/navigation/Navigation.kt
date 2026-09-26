@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -83,6 +84,14 @@ fun AppNavigation(
     val bookingRepository = koinInject<BookingRepository>()
     val scope = rememberCoroutineScope()
     val currentUser by userSession.user.collectAsState()
+
+    // UserSession lives in memory only. After process death the NavHost restores its back stack
+    // without going through Splash, so reload the signed-in user here.
+    LaunchedEffect(Unit) {
+        if (userSession.user.value == null && authRepository.getCurrentUserId() != null) {
+            authRepository.getCurrentUser().onSuccess(userSession::setUser)
+        }
+    }
 
     // The only unread-item signal anywhere in the nav chrome — otherwise a user has to drill into
     // Profile > Notifications just to find out whether anything is new.
@@ -194,16 +203,12 @@ fun AppNavigation(
                             popUpTo<Route.Splash> { inclusive = true }
                         }
                     },
-                    onSplashNavigateToDriver = ::enterApp,
-                    onSplashNavigateToPassenger = ::enterApp,
-                    onSplashNavigateToRoleSelector = ::enterApp,
+                    onSplashNavigateToHome = ::enterApp,
                     onOnboardingNavigateToApp = {
                         navController.navigate(Route.Splash) {
                             popUpTo<Route.Onboarding> { inclusive = true }
                         }
                     },
-                    onSelectDriver = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
-                    onSelectPassenger = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
                 )
 
                 authNavGraph(

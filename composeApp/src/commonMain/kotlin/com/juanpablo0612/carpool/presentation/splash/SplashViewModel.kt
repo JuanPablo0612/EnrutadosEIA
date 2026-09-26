@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.model.User
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.preferences.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,18 +43,10 @@ class SplashViewModel(
         }
     }
 
-    private suspend fun User.toSplashEvent(): SplashEvent = when {
-        FeatureFlags.EMAIL_VERIFICATION_REQUIRED && !isEmailVerified -> SplashEvent.NavigateToEmailVerification
-        isDriver && isPassenger -> {
-            val savedRole = userPreferencesRepository.getRolePreference()
-            when (savedRole) {
-                UserRole.Driver -> SplashEvent.NavigateToDriver(this)
-                UserRole.Passenger -> SplashEvent.NavigateToPassenger(this)
-                null -> SplashEvent.NavigateToRoleSelector(this)
-            }
+    private fun User.toSplashEvent(): SplashEvent =
+        if (FeatureFlags.EMAIL_VERIFICATION_REQUIRED && !isEmailVerified) {
+            SplashEvent.NavigateToEmailVerification
+        } else {
+            SplashEvent.NavigateToHome(this)
         }
-        isDriver -> SplashEvent.NavigateToDriver(this)
-        isPassenger -> SplashEvent.NavigateToPassenger(this)
-        else -> SplashEvent.NavigateToAuth
-    }
 }

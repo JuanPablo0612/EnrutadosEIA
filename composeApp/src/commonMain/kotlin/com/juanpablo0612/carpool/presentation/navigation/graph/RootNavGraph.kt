@@ -6,8 +6,6 @@ import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.onboarding.OnboardingScreen
 import com.juanpablo0612.carpool.presentation.onboarding.OnboardingViewModel
-import com.juanpablo0612.carpool.presentation.roleselector.RoleSelectorScreen
-import com.juanpablo0612.carpool.presentation.roleselector.RoleSelectorViewModel
 import com.juanpablo0612.carpool.presentation.splash.SplashScreen
 import com.juanpablo0612.carpool.presentation.splash.SplashViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -16,12 +14,8 @@ fun NavGraphBuilder.rootNavGraph(
     onSplashNavigateToAuth: () -> Unit,
     onSplashNavigateToOnboarding: () -> Unit,
     onSplashNavigateToEmailVerification: () -> Unit,
-    onSplashNavigateToDriver: (User) -> Unit,
-    onSplashNavigateToPassenger: (User) -> Unit,
-    onSplashNavigateToRoleSelector: (User) -> Unit,
+    onSplashNavigateToHome: (User) -> Unit,
     onOnboardingNavigateToApp: () -> Unit,
-    onSelectDriver: () -> Unit,
-    onSelectPassenger: () -> Unit,
 ) {
     composable<Route.Splash> {
         val viewModel: SplashViewModel = koinViewModel()
@@ -30,9 +24,7 @@ fun NavGraphBuilder.rootNavGraph(
             onNavigateToAuth = onSplashNavigateToAuth,
             onNavigateToOnboarding = onSplashNavigateToOnboarding,
             onNavigateToEmailVerification = onSplashNavigateToEmailVerification,
-            onNavigateToDriver = onSplashNavigateToDriver,
-            onNavigateToPassenger = onSplashNavigateToPassenger,
-            onNavigateToRoleSelector = onSplashNavigateToRoleSelector
+            onNavigateToHome = onSplashNavigateToHome,
         )
     }
 
@@ -41,15 +33,6 @@ fun NavGraphBuilder.rootNavGraph(
         OnboardingScreen(
             viewModel = viewModel,
             onNavigateToApp = onOnboardingNavigateToApp
-        )
-    }
-
-    composable<Route.RoleSelector> {
-        val viewModel: RoleSelectorViewModel = koinViewModel()
-        RoleSelectorScreen(
-            viewModel = viewModel,
-            onSelectDriver = onSelectDriver,
-            onSelectPassenger = onSelectPassenger
         )
     }
 }

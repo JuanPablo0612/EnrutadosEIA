@@ -19,9 +19,7 @@ fun SplashScreen(
     onNavigateToAuth: () -> Unit,
     onNavigateToOnboarding: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
-    onNavigateToDriver: (User) -> Unit,
-    onNavigateToPassenger: (User) -> Unit,
-    onNavigateToRoleSelector: (User) -> Unit
+    onNavigateToHome: (User) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -30,9 +28,7 @@ fun SplashScreen(
             SplashEvent.NavigateToAuth -> onNavigateToAuth()
             SplashEvent.NavigateToOnboarding -> onNavigateToOnboarding()
             SplashEvent.NavigateToEmailVerification -> onNavigateToEmailVerification()
-            is SplashEvent.NavigateToDriver -> onNavigateToDriver(event.user)
-            is SplashEvent.NavigateToPassenger -> onNavigateToPassenger(event.user)
-            is SplashEvent.NavigateToRoleSelector -> onNavigateToRoleSelector(event.user)
+            is SplashEvent.NavigateToHome -> onNavigateToHome(event.user)
         }
     }
 
