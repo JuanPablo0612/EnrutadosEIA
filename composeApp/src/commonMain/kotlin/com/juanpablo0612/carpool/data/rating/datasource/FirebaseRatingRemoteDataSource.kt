@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.data.rating.datasource
 
 import com.juanpablo0612.carpool.data.rating.model.RatingDto
-import dev.gitlive.firebase.firestore.Direction
+import com.juanpablo0612.carpool.data.rating.model.UserRatingSummaryDto
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 
 class FirebaseRatingRemoteDataSource(
@@ -18,16 +18,13 @@ class FirebaseRatingRemoteDataSource(
         return doc.exists
     }
 
-    override suspend fun getRatingsForUser(userId: String): List<RatingDto> {
-        val snapshot = firestore.collection(COLLECTION)
-            .where { "rateeId" equalTo userId }
-            .orderBy("createdAt", Direction.DESCENDING)
-            .limit(50)
-            .get()
-        return snapshot.documents.map { it.data(RatingDto.serializer()) }
+    override suspend fun getUserRatingSummary(userId: String): UserRatingSummaryDto {
+        val doc = firestore.collection(USERS_COLLECTION).document(userId).get()
+        return if (doc.exists) doc.data(UserRatingSummaryDto.serializer()) else UserRatingSummaryDto()
     }
 
     companion object {
         private const val COLLECTION = "ratings"
+        private const val USERS_COLLECTION = "users"
     }
 }

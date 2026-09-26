@@ -30,9 +30,7 @@ class RatingRepositoryImpl(
 
     override suspend fun getUserAverageRating(userId: String): Result<Double?> {
         return try {
-            val ratings = remoteDataSource.getRatingsForUser(userId)
-            val avg = if (ratings.isEmpty()) null else ratings.map { it.stars }.average()
-            Result.success(avg)
+            Result.success(remoteDataSource.getUserRatingSummary(userId).average)
         } catch (_: Exception) {
             Result.failure(AppException.RatingException.Unknown)
         }

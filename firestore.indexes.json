@@ -44,14 +44,6 @@
       ]
     },
     {
-      "collectionGroup": "ratings",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "rateeId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "trips",
       "queryScope": "COLLECTION",
       "fields": [
