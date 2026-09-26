@@ -38,6 +38,7 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToAddPlace: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
     onNavigateToVehiclesList: () -> Unit,
+    onTripPublished: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
@@ -84,11 +85,9 @@ fun NavGraphBuilder.driverNavGraph(
         PublishTripScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
-            onTripPublished = onNavigateBack,
+            onTripPublished = onTripPublished,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
-            // Opens the vehicle list rather than popping, so "change vehicle" keeps the
-            // in-progress trip form.
-            onNavigateToVehiclesList = onNavigateToVehiclesList
+            onNavigateToAddPlace = onNavigateToAddPlace,
         )
     }
 

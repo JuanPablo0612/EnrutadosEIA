@@ -145,9 +145,8 @@ fun AppNavigation(
         }
     }
 
-    // Today's publish path: pick one of your routes, then fill in the trip.
     val onPublishTrip: () -> Unit = {
-        navController.navigate(Route.RoutesList) { launchSingleTop = true }
+        navController.navigate(Route.PublishTrip()) { launchSingleTop = true }
     }
 
     val onLogout: () -> Unit = {
@@ -283,6 +282,11 @@ fun AppNavigation(
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
+                    onTripPublished = {
+                        // Land on the trips you drive, without the finished form underneath.
+                        navController.popBackStack<Route.PublishTrip>(inclusive = true)
+                        navController.navigateToTopLevel(Route.MyTrips(MyTripsTab.Driver), restoreState = false)
+                    },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },

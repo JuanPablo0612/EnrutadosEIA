@@ -61,16 +61,14 @@ fun QuickActionsGrid(
                     onClick = { onAction(HomeAction.SearchTrips) },
                 )
             )
-            if (state.hasVehicles) {
-                add(
-                    QuickActionItem(
-                        icon = vectorResource(Res.drawable.add_road_24px),
-                        label = stringResource(Res.string.home_action_publish_trip),
-                        isPrimary = true,
-                        onClick = { onAction(HomeAction.PublishTrip) },
-                    )
+            add(
+                QuickActionItem(
+                    icon = vectorResource(Res.drawable.add_road_24px),
+                    label = stringResource(Res.string.home_action_publish_trip),
+                    isPrimary = true,
+                    onClick = { onAction(HomeAction.PublishTrip) },
                 )
-            }
+            )
             add(
                 QuickActionItem(
                     icon = vectorResource(Res.drawable.directions_car_24px),

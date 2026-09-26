@@ -1,8 +1,11 @@
 package com.juanpablo0612.carpool.presentation.trip.publish
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,16 +14,24 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -29,15 +40,29 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.text.KeyboardOptions
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
+import com.juanpablo0612.carpool.domain.trip.validation.TripDraftValidator
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
+import com.juanpablo0612.carpool.presentation.place.stops.StopSelectionHost
+import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
+import com.juanpablo0612.carpool.presentation.place.stops.stopsEditorItems
+import com.juanpablo0612.carpool.presentation.trip.TripError
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.trip.publish.components.DateChip
-import com.juanpablo0612.carpool.presentation.trip.publish.components.RouteSummaryCard
+import com.juanpablo0612.carpool.presentation.trip.publish.components.PublishSummarySheet
 import com.juanpablo0612.carpool.presentation.trip.publish.components.SectionLabel
 import com.juanpablo0612.carpool.presentation.trip.publish.components.SingleVehicleCard
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripContributionSection
@@ -47,62 +72,77 @@ import com.juanpablo0612.carpool.presentation.trip.publish.components.TripTimeSe
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripWhenSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
 import com.juanpablo0612.carpool.presentation.trip.publish.components.formatPesos
-import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
+import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
-import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel
+import enrutadoseia.composeapp.generated.resources.cd_reverse_stops
 import enrutadoseia.composeapp.generated.resources.confirm
+import enrutadoseia.composeapp.generated.resources.create_trip_title
 import enrutadoseia.composeapp.generated.resources.date_of_connector
 import enrutadoseia.composeapp.generated.resources.day_names_short
+import enrutadoseia.composeapp.generated.resources.directions_car_24px
+import enrutadoseia.composeapp.generated.resources.discard_changes_body
+import enrutadoseia.composeapp.generated.resources.discard_changes_confirm
+import enrutadoseia.composeapp.generated.resources.discard_changes_title
 import enrutadoseia.composeapp.generated.resources.month_names
+import enrutadoseia.composeapp.generated.resources.publish_trip_linked_route_hint
+import enrutadoseia.composeapp.generated.resources.publish_trip_review_button
+import enrutadoseia.composeapp.generated.resources.publish_trip_route_section
+import enrutadoseia.composeapp.generated.resources.publish_trip_save_as_route
+import enrutadoseia.composeapp.generated.resources.publish_trip_save_as_route_description
+import enrutadoseia.composeapp.generated.resources.publish_trip_saved_routes_label
+import enrutadoseia.composeapp.generated.resources.recurrence_section_title
+import enrutadoseia.composeapp.generated.resources.route_name_label
+import enrutadoseia.composeapp.generated.resources.route_name_placeholder
+import enrutadoseia.composeapp.generated.resources.select_vehicle_section
+import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
 import enrutadoseia.composeapp.generated.resources.time_am
 import enrutadoseia.composeapp.generated.resources.time_pm
-import enrutadoseia.composeapp.generated.resources.create_trip_title
-import enrutadoseia.composeapp.generated.resources.directions_car_24px
-import enrutadoseia.composeapp.generated.resources.publish_trip
-import enrutadoseia.composeapp.generated.resources.publish_trip_confirm_body
-import enrutadoseia.composeapp.generated.resources.publish_trip_confirm_button
-import enrutadoseia.composeapp.generated.resources.publish_trip_confirm_title
-import enrutadoseia.composeapp.generated.resources.select_vehicle_section
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary
 import enrutadoseia.composeapp.generated.resources.trip_bottom_summary_with_contribution
 import enrutadoseia.composeapp.generated.resources.trip_no_vehicle_title
-import enrutadoseia.composeapp.generated.resources.trip_publish_disabled_hint
+import enrutadoseia.composeapp.generated.resources.trip_register_another_vehicle
 import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
-import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Clock
+import kotlin.time.Instant
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PublishTripScreen(
     viewModel: PublishTripViewModel,
     onBackClick: () -> Unit,
     onTripPublished: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
-    onNavigateToVehiclesList: () -> Unit,
+    onNavigateToAddPlace: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
-
     val notificationPermission = rememberNotificationPermissionState()
 
     ObserveAsEvents(viewModel.events) { event ->
@@ -114,113 +154,108 @@ fun PublishTripScreen(
             }
             PublishTripEvent.NavigateBack -> onBackClick()
             PublishTripEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
-            PublishTripEvent.NavigateToVehiclesList -> onNavigateToVehiclesList()
         }
     }
 
-    PublishTripContent(state = state, onAction = viewModel::onAction)
+    // Route system back through the same dirty-check as the top-bar arrow.
+    BackHandler(enabled = state.selectionTarget == null) {
+        viewModel.onAction(PublishTripAction.OnBackClick)
+    }
+
+    StopSelectionHost(
+        selectionTarget = state.selectionTarget,
+        onPlaceSelected = { viewModel.onAction(PublishTripAction.OnPlaceSelected(it)) },
+        onCancelSelection = { viewModel.onAction(PublishTripAction.OnCancelSelection) },
+        onNavigateToAddPlace = onNavigateToAddPlace,
+    ) {
+        PublishTripContent(state = state, onAction = viewModel::onAction)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PublishTripContent(
     state: PublishTripUiState,
-    onAction: (PublishTripAction) -> Unit
+    onAction: (PublishTripAction) -> Unit,
 ) {
-    if (state.showPublishConfirm) {
+    val timeZone = TimeZone.currentSystemDefault()
+    val today = Clock.System.now().toLocalDateTime(timeZone).date
+    val tomorrow = today.plus(1, DateTimeUnit.DAY)
+    val lastBookableDay = today.plus(TripDraftValidator.MAX_DAYS_AHEAD, DateTimeUnit.DAY)
+
+    val dayNames = stringArrayResource(Res.array.day_names_short).toList()
+    val monthNames = stringArrayResource(Res.array.month_names).toList()
+    val dateConnector = stringResource(Res.string.date_of_connector)
+    val amMarker = stringResource(Res.string.time_am)
+    val pmMarker = stringResource(Res.string.time_pm)
+    val formattedDate = state.departureDate?.let {
+        formatLongDate(it.year, it.month.number, it.day, dayNames, monthNames, dateConnector)
+    }.orEmpty()
+    val formattedTime = state.departureTime?.let { formatShortTime(it.hour, it.minute, amMarker, pmMarker) }.orEmpty()
+
+    if (state.showDiscardConfirm) {
         ConfirmDialog(
-            title = stringResource(Res.string.publish_trip_confirm_title),
-            description = stringResource(Res.string.publish_trip_confirm_body),
-            confirmText = stringResource(Res.string.publish_trip_confirm_button),
-            onConfirm = { onAction(PublishTripAction.OnConfirmPublish) },
-            onDismiss = { onAction(PublishTripAction.OnDismissPublishConfirm) }
+            title = stringResource(Res.string.discard_changes_title),
+            description = stringResource(Res.string.discard_changes_body),
+            confirmText = stringResource(Res.string.discard_changes_confirm),
+            onConfirm = { onAction(PublishTripAction.OnConfirmDiscard) },
+            onDismiss = { onAction(PublishTripAction.OnDismissDiscard) },
+            isDestructive = true,
         )
     }
 
     if (state.showDatePicker) {
+        // The Material date picker works in UTC-midnight millis, independent of the device zone.
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = state.departureDate.let {
-                kotlinx.datetime.LocalDateTime(it, LocalTime(0, 0))
-                    .toInstant(TimeZone.UTC).toEpochMilliseconds()
-            }
+            initialSelectedDateMillis = (state.departureDate ?: today).toUtcMillis(),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+                    utcTimeMillis.toUtcDate() in today..lastBookableDay
+            },
         )
         DatePickerDialog(
             onDismissRequest = { onAction(PublishTripAction.OnDismissDatePicker) },
             confirmButton = {
                 TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let { ms ->
-                        val date = Instant.fromEpochMilliseconds(ms)
-                            .toLocalDateTime(TimeZone.UTC).date
-                        onAction(PublishTripAction.OnDateSelected(date))
-                    }
+                    datePickerState.selectedDateMillis?.let { onAction(PublishTripAction.OnDateSelected(it.toUtcDate())) }
                 }) { Text(stringResource(Res.string.confirm)) }
             },
             dismissButton = {
                 TextButton(onClick = { onAction(PublishTripAction.OnDismissDatePicker) }) {
                     Text(stringResource(Res.string.cancel))
                 }
-            }
+            },
         ) {
             DatePicker(state = datePickerState)
         }
     }
 
     if (state.showTimePicker) {
-        val timePickerState = rememberTimePickerState(
-            initialHour = state.departureTime.hour,
-            initialMinute = state.departureTime.minute,
-            is24Hour = false
-        )
+        val initial = state.departureTime ?: LocalTime(7, 0)
+        val timePickerState = rememberTimePickerState(initialHour = initial.hour, initialMinute = initial.minute, is24Hour = false)
         TimePickerDialog(
             onCancel = { onAction(PublishTripAction.OnDismissTimePicker) },
-            onConfirm = {
-                onAction(
-                    PublishTripAction.OnTimeSelected(
-                        LocalTime(timePickerState.hour, timePickerState.minute)
-                    )
-                )
-            }
+            onConfirm = { onAction(PublishTripAction.OnTimeSelected(LocalTime(timePickerState.hour, timePickerState.minute))) },
         ) {
             TimePicker(state = timePickerState)
         }
     }
 
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val tomorrow = today.plus(1, DateTimeUnit.DAY)
-
-    val dateChipState = when (state.departureDate) {
-        today -> DateChip.Today
-        tomorrow -> DateChip.Tomorrow
-        else -> DateChip.Other
-    }
-
-    val dayNamesShort = stringArrayResource(Res.array.day_names_short)
-    val monthNames = stringArrayResource(Res.array.month_names)
-    val dateConnector = stringResource(Res.string.date_of_connector)
-    val amMarker = stringResource(Res.string.time_am)
-    val pmMarker = stringResource(Res.string.time_pm)
-    val formattedDate = formatLongDate(
-        state.departureDate.year,
-        state.departureDate.monthNumber,
-        state.departureDate.dayOfMonth,
-        dayNamesShort.toList(),
-        monthNames.toList(),
-        dateConnector
-    )
-    val formattedTime = formatShortTime(state.departureTime.hour, state.departureTime.minute, amMarker, pmMarker)
-
-    val contributionText = state.contributionPerPassenger?.let {
-        formatPesos(it)
-    }
-    val summaryText = if (contributionText != null) {
-        stringResource(
-            Res.string.trip_bottom_summary_with_contribution,
-            formattedDate, formattedTime, state.seatCount, contributionText
-        )
-    } else {
-        stringResource(
-            Res.string.trip_bottom_summary,
-            formattedDate, formattedTime, state.seatCount
+    if (state.showSummary) {
+        val vehicle = state.selectedVehicle
+        PublishSummarySheet(
+            originName = state.stops.origin?.name.orEmpty(),
+            destinationName = state.stops.destination?.name.orEmpty(),
+            waypointCount = state.stops.waypoints.size,
+            whenText = "$formattedDate · $formattedTime",
+            vehicleText = listOfNotNull(
+                vehicle?.let { "${it.brand} ${it.model} · ${it.licensePlate}" },
+                bottomSummary(state, formattedDate, formattedTime).substringAfterLast(" · ").takeIf { state.contributionPerPassenger != null },
+            ).joinToString(" · "),
+            message = state.message,
+            routeNameToSave = state.routeName.trim().takeIf { state.isFromScratch && state.saveAsRoute },
+            onConfirm = { onAction(PublishTripAction.OnConfirmPublish) },
+            onDismiss = { onAction(PublishTripAction.OnDismissSummary) },
         )
     }
 
@@ -233,47 +268,34 @@ fun PublishTripContent(
         },
         bottomBar = {
             if (!state.isLoading) {
-                Surface(
-                    tonalElevation = Elevation.raised,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Surface(tonalElevation = Elevation.raised, modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(Spacing.lg)) {
                         Text(
-                            text = summaryText,
+                            text = bottomSummary(state, formattedDate, formattedTime),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(Spacing.sm))
+                        // Stays enabled: tapping it with problems shows them next to each field.
                         Button(
-                            onClick = { onAction(PublishTripAction.OnPublishClick) },
+                            onClick = { onAction(PublishTripAction.OnReviewClick) },
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = state.canPublish && !state.isPublishing
+                            enabled = !state.isPublishing,
                         ) {
                             if (state.isPublishing) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp), // component-intrinsic spinner size
                                     color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp // hairline stroke
+                                    strokeWidth = 2.dp,
                                 )
                             } else {
-                                Text(stringResource(Res.string.publish_trip))
+                                Text(stringResource(Res.string.publish_trip_review_button))
                             }
-                        }
-                        // The other canPublish conditions can't actually be false once vehicles
-                        // exist (route always loads, seatCount/message default within range), so
-                        // this hint only fires for the one reachable case: an over-limit message.
-                        if (!state.canPublish && state.vehicles.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(Spacing.xs))
-                            Text(
-                                text = stringResource(Res.string.trip_publish_disabled_hint),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.error
-                            )
                         }
                     }
                 }
             }
-        }
+        },
     ) { padding ->
         if (state.isLoading) {
             DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
@@ -282,120 +304,109 @@ fun PublishTripContent(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding).imePadding(),
-            contentPadding = PaddingValues(bottom = Spacing.lg)
+            contentPadding = PaddingValues(bottom = Spacing.lg),
         ) {
-            // Route summary card
-            state.route?.let { route ->
-                item {
-                    RouteSummaryCard(
-                        originName = route.origin.name,
-                        destinationName = route.destination.name,
-                        waypointCount = route.waypoints.size,
-                        modifier = Modifier.padding(Spacing.lg)
+            if (state.savedRoutes.isNotEmpty()) {
+                item(key = "saved_routes") {
+                    SavedRouteChips(
+                        routes = state.savedRoutes,
+                        selectedRouteId = state.linkedRoute?.id,
+                        onRouteClick = { onAction(PublishTripAction.OnSavedRouteClick(it)) },
                     )
                 }
             }
 
-            // When section
-            item {
+            item(key = "route_header") {
+                SectionHeader(
+                    title = stringResource(Res.string.publish_trip_route_section),
+                    action = {
+                        IconButton(onClick = { onAction(PublishTripAction.OnReverseStops) }, enabled = state.stops.isComplete) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.swap_horiz_24px),
+                                contentDescription = stringResource(Res.string.cd_reverse_stops),
+                                modifier = Modifier.rotate(90f),
+                            )
+                        }
+                    },
+                )
+            }
+            stopsEditorItems(
+                stops = state.stops,
+                onOriginClick = { onAction(PublishTripAction.OnOriginClick) },
+                onDestinationClick = { onAction(PublishTripAction.OnDestinationClick) },
+                onEditWaypoint = { onAction(PublishTripAction.OnEditWaypointClick(it)) },
+                onRemoveWaypoint = { onAction(PublishTripAction.OnRemoveWaypoint(it)) },
+                onAddWaypoint = { onAction(PublishTripAction.OnAddWaypointClick) },
+            )
+            if (state.linkedRoute != null) {
+                item(key = "linked_hint") {
+                    Text(
+                        text = stringResource(Res.string.publish_trip_linked_route_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = Spacing.lg),
+                    )
+                }
+            }
+            fieldErrorItem("stops_error", state.fieldErrors, TripError.OriginDestinationRequired, TripError.SameOriginDestination)
+
+            item(key = "when") {
                 TripWhenSection(
-                    dateChipState = dateChipState,
+                    dateChipState = when (state.departureDate) {
+                        today -> DateChip.Today
+                        tomorrow -> DateChip.Tomorrow
+                        else -> DateChip.Other
+                    },
                     formattedDate = formattedDate,
-                    onSelectToday = { onAction(PublishTripAction.OnSelectTodayDate) },
-                    onSelectTomorrow = { onAction(PublishTripAction.OnSelectTomorrowDate) },
+                    onSelectToday = { onAction(PublishTripAction.OnSelectToday) },
+                    onSelectTomorrow = { onAction(PublishTripAction.OnSelectTomorrow) },
                     onShowDatePicker = { onAction(PublishTripAction.OnShowDatePicker) },
                 )
             }
-
-            // Time section
-            item {
-                TripTimeSection(
-                    formattedTime = formattedTime,
-                    onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) },
-                )
+            item(key = "time") {
+                TripTimeSection(formattedTime = formattedTime, onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) })
             }
+            fieldErrorItem("when_error", state.fieldErrors, TripError.DepartureTooSoon, TripError.DepartureTooFar)
 
-            // Vehicle section
-            item {
-                SectionLabel(
-                    text = stringResource(Res.string.select_vehicle_section),
-                    modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.lg, bottom = Spacing.sm)
-                )
-            }
+            vehicleItems(state, onAction)
 
-            when {
-                state.vehicles.isEmpty() -> item {
-                    EmptyState(
-                        icon = vectorResource(Res.drawable.directions_car_24px),
-                        title = stringResource(Res.string.trip_no_vehicle_title),
-                        description = "",
-                        primaryAction = ActionButton(
-                            label = stringResource(Res.string.trip_register_vehicle_action),
-                            onClick = { onAction(PublishTripAction.OnNavigateToRegisterVehicle) }
-                        ),
-                        modifier = Modifier.padding(Spacing.lg)
-                    )
-                }
-                state.vehicles.size == 1 -> item {
-                    SingleVehicleCard(
-                        vehicle = state.vehicles.first(),
-                        // "Change" has nothing to change to with only one vehicle — the action
-                        // only makes sense once there's a second vehicle to switch to.
-                        onChangeClick = null,
-                        modifier = Modifier.padding(horizontal = Spacing.lg)
-                    )
-                }
-                else -> item {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = Spacing.lg),
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                    ) {
-                        items(state.vehicles, key = { it.id }) { vehicle ->
-                            VehicleRadioItem(
-                                vehicle = vehicle,
-                                isSelected = vehicle.id == state.selectedVehicleId,
-                                onClick = { onAction(PublishTripAction.OnVehicleSelected(vehicle.id)) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Seat count stepper
             if (state.vehicles.isNotEmpty()) {
-                item {
+                item(key = "seats") {
                     TripSeatsSection(
                         seatCount = state.seatCount,
                         selectedVehicle = state.selectedVehicle,
                         onChange = { onAction(PublishTripAction.OnSetSeats(it)) },
                     )
                 }
-
-                // Contribution field
-                item {
+                fieldErrorItem("seats_error", state.fieldErrors, TripError.SeatsOutOfRange)
+                item(key = "contribution") {
                     TripContributionSection(
                         contributionPerPassenger = state.contributionPerPassenger,
                         onContributionChange = { onAction(PublishTripAction.OnSetContribution(it)) },
                     )
                 }
-
-                // Message field
-                item {
+                fieldErrorItem("contribution_error", state.fieldErrors, TripError.ContributionOutOfRange)
+                item(key = "message") {
                     TripMessageSection(
-                        message = state.messageToPassengers,
+                        message = state.message,
                         onMessageChange = { onAction(PublishTripAction.OnSetMessage(it)) },
                     )
                 }
+                fieldErrorItem("message_error", state.fieldErrors, TripError.MessageTooLong)
             }
 
-            // Error
+            if (state.isFromScratch) {
+                item(key = "save_as_route") { SaveAsRouteSection(state, onAction) }
+            }
+
             state.error?.let { error ->
-                item {
+                item(key = "error") {
                     ErrorMessage(
                         message = stringResource(error.asStringResource()),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                            .semantics { liveRegion = LiveRegionMode.Polite },
                     )
                 }
             }
@@ -403,30 +414,181 @@ fun PublishTripContent(
     }
 }
 
+@Composable
+private fun bottomSummary(state: PublishTripUiState, formattedDate: String, formattedTime: String): String {
+    val contribution = state.contributionPerPassenger?.let(::formatPesos)
+    return if (contribution != null) {
+        stringResource(Res.string.trip_bottom_summary_with_contribution, formattedDate, formattedTime, state.seatCount, contribution)
+    } else {
+        stringResource(Res.string.trip_bottom_summary, formattedDate, formattedTime, state.seatCount)
+    }
+}
+
+@Composable
+private fun SavedRouteChips(routes: List<Route>, selectedRouteId: String?, onRouteClick: (String) -> Unit) {
+    Column {
+        SectionLabel(
+            text = stringResource(Res.string.publish_trip_saved_routes_label),
+            modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.lg, bottom = Spacing.sm),
+        )
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = Spacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
+            items(routes, key = { it.id }) { route ->
+                FilterChip(
+                    selected = route.id == selectedRouteId,
+                    onClick = { onRouteClick(route.id) },
+                    label = { Text(route.name.ifBlank { "${route.origin.name} → ${route.destination.name}" }) },
+                )
+            }
+        }
+    }
+}
+
+private fun LazyListScope.vehicleItems(state: PublishTripUiState, onAction: (PublishTripAction) -> Unit) {
+    item(key = "vehicle_label") {
+        SectionLabel(
+            text = stringResource(Res.string.select_vehicle_section),
+            modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.lg, bottom = Spacing.sm),
+        )
+    }
+    when {
+        state.vehicles.isEmpty() -> item(key = "vehicle_empty") {
+            EmptyState(
+                icon = vectorResource(Res.drawable.directions_car_24px),
+                title = stringResource(Res.string.trip_no_vehicle_title),
+                description = "",
+                primaryAction = ActionButton(
+                    label = stringResource(Res.string.trip_register_vehicle_action),
+                    onClick = { onAction(PublishTripAction.OnRegisterVehicleClick) },
+                ),
+                modifier = Modifier.padding(Spacing.lg),
+            )
+        }
+        state.vehicles.size == 1 -> item(key = "vehicle_single") {
+            SingleVehicleCard(
+                vehicle = state.vehicles.first(),
+                onChangeClick = null,
+                modifier = Modifier.padding(horizontal = Spacing.lg),
+            )
+        }
+        else -> item(key = "vehicle_list") {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = Spacing.lg),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                items(state.vehicles, key = { it.id }) { vehicle ->
+                    VehicleRadioItem(
+                        vehicle = vehicle,
+                        isSelected = vehicle.id == state.selectedVehicleId,
+                        onClick = { onAction(PublishTripAction.OnVehicleSelected(vehicle.id)) },
+                    )
+                }
+            }
+        }
+    }
+    if (state.vehicles.isNotEmpty()) {
+        item(key = "vehicle_register_another") {
+            TextButton(
+                onClick = { onAction(PublishTripAction.OnRegisterVehicleClick) },
+                modifier = Modifier.padding(horizontal = Spacing.sm),
+            ) { Text(stringResource(Res.string.trip_register_another_vehicle)) }
+        }
+    }
+    fieldErrorItem("vehicle_error", state.fieldErrors, TripError.NoVehicleSelected)
+}
+
+@Composable
+private fun SaveAsRouteSection(state: PublishTripUiState, onAction: (PublishTripAction) -> Unit) {
+    Column(modifier = Modifier.padding(top = Spacing.lg)) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(Res.string.publish_trip_save_as_route), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(Res.string.publish_trip_save_as_route_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = state.saveAsRoute, onCheckedChange = { onAction(PublishTripAction.OnToggleSaveAsRoute(it)) })
+        }
+        AnimatedVisibility(visible = state.saveAsRoute) {
+            Column(modifier = Modifier.padding(horizontal = Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                val nameError = TripError.RouteNameRequired in state.fieldErrors
+                OutlinedTextField(
+                    value = state.routeName,
+                    onValueChange = { onAction(PublishTripAction.OnRouteNameChange(it)) },
+                    label = { Text(stringResource(Res.string.route_name_label)) },
+                    placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
+                    singleLine = true,
+                    isError = nameError,
+                    supportingText = if (nameError) {
+                        { Text(stringResource(TripError.RouteNameRequired.asStringResource())) }
+                    } else null,
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+                )
+                Text(stringResource(Res.string.recurrence_section_title), style = MaterialTheme.typography.titleSmall)
+                DaySelector(
+                    selectedDays = state.recurringDays,
+                    onToggleDay = { onAction(PublishTripAction.OnToggleRecurringDay(it)) },
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                )
+            }
+        }
+    }
+}
+
+/** An inline error under a section, for whichever of [relevant] is in [errors]. */
+private fun LazyListScope.fieldErrorItem(key: String, errors: Set<TripError>, vararg relevant: TripError) {
+    val error = relevant.firstOrNull { it in errors } ?: return
+    item(key = key) {
+        Text(
+            text = stringResource(error.asStringResource()),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier
+                .padding(horizontal = Spacing.lg, vertical = Spacing.xs)
+                .semantics { liveRegion = LiveRegionMode.Polite },
+        )
+    }
+}
+
+private fun LocalDate.toUtcMillis(): Long = LocalDateTime(this, LocalTime(0, 0)).toInstant(TimeZone.UTC).toEpochMilliseconds()
+
+private fun Long.toUtcDate(): LocalDate = Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.UTC).date
+
 @Preview
 @Composable
-private fun PublishTripContentPreview() {
+private fun PublishTripFromScratchPreview() {
     CarpoolTheme {
         PublishTripContent(
             state = PublishTripUiState(
                 isLoading = false,
-                route = Route(
-                    id = "r1", driverId = "d1",
+                stops = StopsDraft(
                     origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
-                    destination = Place.UNIVERSITY_EIA,
-                    waypoints = emptyList()
+                    destination = Place.EIA_LAS_PALMAS,
                 ),
+                departureDate = LocalDate(2026, 10, 2),
+                departureTime = LocalTime(6, 45),
                 vehicles = listOf(
                     Vehicle(
-                        id = "v1", driverId = "d1", brand = "Toyota", model = "Corolla",
-                        licensePlate = "ABC123", color = "Blanco", year = 2020, seatsAvailable = 3
+                        id = "v1", driverId = "d1", brand = "Mazda", model = "3",
+                        licensePlate = "ABC123", color = "Gris", year = 2020, seatsAvailable = 4,
                     )
                 ),
                 selectedVehicleId = "v1",
                 seatCount = 3,
-                departureTime = LocalTime(7, 0)
+                contributionPerPassenger = 5_000,
+                saveAsRoute = true,
+                routeName = "Ida a la U",
+                fieldErrors = setOf(TripError.DepartureTooSoon),
             ),
-            onAction = {}
+            onAction = {},
         )
     }
 }

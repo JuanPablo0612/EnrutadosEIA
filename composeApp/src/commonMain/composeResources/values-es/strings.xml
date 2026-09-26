@@ -201,9 +201,8 @@
     <string name="profile_title">Perfil</string>
 
     <!-- Viaje -->
-    <string name="create_trip_title">Publicar Viaje</string>
-    <string name="publish_trip">Publicar Viaje</string>
-    <string name="select_vehicle_section">Seleccionar Vehículo</string>
+    <string name="create_trip_title">Publicar viaje</string>
+    <string name="select_vehicle_section">Vehículo</string>
     <string name="trip_status_cancelled">Cancelado</string>
     <string name="trip_status_completed">Completado</string>
     <string name="error_trip_not_found">Viaje no encontrado</string>
@@ -261,10 +260,7 @@
     <!-- Home banners de incorporación -->
     <string name="home_no_vehicle_title">¿Tienes carro?</string>
     <string name="home_no_vehicle_subtitle">Registra tu vehículo para publicar viajes.</string>
-    <string name="home_no_route_title">Crea una ruta</string>
-    <string name="home_no_route_subtitle">Define tu ruta recurrente y empieza a publicar viajes.</string>
     <string name="home_register_vehicle_cta">Registrar vehículo</string>
-    <string name="home_create_route_cta">Crear ruta</string>
     <string name="home_search_trip_cta">Buscar viaje</string>
 
     <!-- Home estados vacíos -->
@@ -390,7 +386,6 @@
     <string name="trip_message_section">Mensaje (opcional)</string>
     <string name="trip_message_placeholder">Ej. Salgo puntual, espero 5 min en la portería.</string>
     <string name="trip_message_counter">%1$d / 140</string>
-    <string name="trip_publish_disabled_hint">Tu mensaje para los pasajeros supera el límite de 140 caracteres</string>
     <string name="trip_no_vehicle_title">Necesitas un vehículo para publicar viajes.</string>
     <string name="trip_register_vehicle_action">Registrar vehículo</string>
     <string name="trip_change_vehicle">Cambiar</string>
@@ -433,6 +428,21 @@
     <string name="driver_trips_past_search_placeholder">Buscar viajes pasados</string>
     <string name="driver_trips_past_search_no_results">Ningún viaje pasado coincide con "%1$s"</string>
     <string name="publish_trip_fab">Publicar viaje</string>
+    <string name="publish_trip_saved_routes_label">Tus rutas</string>
+    <string name="publish_trip_route_section">Recorrido</string>
+    <string name="publish_trip_linked_route_hint">Los cambios en el recorrido solo aplican a este viaje</string>
+    <string name="cd_reverse_stops">Invertir el recorrido (viaje de regreso)</string>
+    <string name="publish_trip_save_as_route">Guardar como ruta frecuente</string>
+    <string name="publish_trip_save_as_route_description">Reutiliza este recorrido la próxima vez o publica toda tu semana de una vez</string>
+    <string name="publish_trip_review_button">Revisar y publicar</string>
+    <string name="publish_trip_summary_title">Confirma tu viaje</string>
+    <string name="publish_trip_summary_will_save_route">Se guardará la ruta «%1$s»</string>
+    <string name="publish_trip_summary_edit">Editar</string>
+    <plurals name="publish_trip_summary_stops">
+        <item quantity="one">%1$d parada</item>
+        <item quantity="other">%1$d paradas</item>
+    </plurals>
+    <string name="trip_register_another_vehicle">Registrar otro vehículo</string>
 
     <!-- DriverTrips - confirmación de cancelación -->
     <string name="trip_cancel_confirm_title">¿Cancelar viaje?</string>
@@ -791,8 +801,6 @@
     <string name="discard_changes_confirm">Descartar</string>
 
     <!-- Confirmaciones de publicar/iniciar/completar para acciones difíciles de revertir -->
-    <string name="publish_trip_confirm_title">¿Publicar este viaje?</string>
-    <string name="publish_trip_confirm_body">Los pasajeros podrán ver y solicitar cupos en este viaje una vez publicado.</string>
     <string name="publish_trip_confirm_button">Publicar</string>
     <string name="trip_start_confirm_title">¿Iniciar este viaje?</string>
     <string name="trip_start_confirm_body">Se notificará a los pasajeros que el viaje está en curso.</string>

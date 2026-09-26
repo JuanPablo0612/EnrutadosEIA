@@ -21,9 +21,6 @@ import com.juanpablo0612.carpool.presentation.home.HomeUiState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.home_create_route_cta
-import enrutadoseia.composeapp.generated.resources.home_no_route_subtitle
-import enrutadoseia.composeapp.generated.resources.home_no_route_title
 import enrutadoseia.composeapp.generated.resources.home_no_vehicle_subtitle
 import enrutadoseia.composeapp.generated.resources.home_no_vehicle_title
 import enrutadoseia.composeapp.generated.resources.home_passenger_empty_subtitle
@@ -139,22 +136,13 @@ internal fun HomeDashboard(
             )
         }
 
-        when {
-            !state.hasVehicles -> item(key = "vehicle_cta") {
+        if (!state.hasVehicles) {
+            item(key = "vehicle_cta") {
                 OnboardingBanner(
                     title = stringResource(Res.string.home_no_vehicle_title),
                     subtitle = stringResource(Res.string.home_no_vehicle_subtitle),
                     ctaLabel = stringResource(Res.string.home_register_vehicle_cta),
                     onCta = { onAction(HomeAction.RegisterVehicle) },
-                    modifier = Modifier.padding(horizontal = Spacing.lg),
-                )
-            }
-            !state.hasRoutes -> item(key = "route_cta") {
-                OnboardingBanner(
-                    title = stringResource(Res.string.home_no_route_title),
-                    subtitle = stringResource(Res.string.home_no_route_subtitle),
-                    ctaLabel = stringResource(Res.string.home_create_route_cta),
-                    onCta = { onAction(HomeAction.CreateRoute) },
                     modifier = Modifier.padding(horizontal = Spacing.lg),
                 )
             }

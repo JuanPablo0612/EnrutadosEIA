@@ -201,9 +201,8 @@
     <string name="profile_title">Profile</string>
 
     <!-- Trip -->
-    <string name="create_trip_title">Publish Trip</string>
-    <string name="publish_trip">Publish Trip</string>
-    <string name="select_vehicle_section">Select Vehicle</string>
+    <string name="create_trip_title">Publish trip</string>
+    <string name="select_vehicle_section">Vehicle</string>
     <string name="trip_status_cancelled">Cancelled</string>
     <string name="trip_status_completed">Completed</string>
     <string name="error_trip_not_found">Trip not found</string>
@@ -261,10 +260,7 @@
     <!-- Home onboarding banners -->
     <string name="home_no_vehicle_title">Have a car?</string>
     <string name="home_no_vehicle_subtitle">Register your vehicle to publish trips.</string>
-    <string name="home_no_route_title">Create a route</string>
-    <string name="home_no_route_subtitle">Define your recurring route and start publishing trips.</string>
     <string name="home_register_vehicle_cta">Register vehicle</string>
-    <string name="home_create_route_cta">Create route</string>
     <string name="home_search_trip_cta">Search trip</string>
 
     <!-- Home empty states -->
@@ -390,7 +386,6 @@
     <string name="trip_message_section">Message (optional)</string>
     <string name="trip_message_placeholder">e.g. I leave on time, I\'ll wait 5 min at the gate.</string>
     <string name="trip_message_counter">%1$d / 140</string>
-    <string name="trip_publish_disabled_hint">Your message to passengers is over the 140-character limit</string>
     <string name="trip_no_vehicle_title">You need a vehicle to publish trips.</string>
     <string name="trip_register_vehicle_action">Register vehicle</string>
     <string name="trip_change_vehicle">Change</string>
@@ -560,6 +555,21 @@
     <string name="driver_trips_past_search_placeholder">Search past trips</string>
     <string name="driver_trips_past_search_no_results">No past trips match "%1$s"</string>
     <string name="publish_trip_fab">Publish trip</string>
+    <string name="publish_trip_saved_routes_label">Your routes</string>
+    <string name="publish_trip_route_section">Route</string>
+    <string name="publish_trip_linked_route_hint">Changes to the stops only apply to this trip</string>
+    <string name="cd_reverse_stops">Reverse the route (return trip)</string>
+    <string name="publish_trip_save_as_route">Save as a frequent route</string>
+    <string name="publish_trip_save_as_route_description">Reuse these stops next time, or publish your whole week at once</string>
+    <string name="publish_trip_review_button">Review and publish</string>
+    <string name="publish_trip_summary_title">Confirm your trip</string>
+    <string name="publish_trip_summary_will_save_route">The route "%1$s" will be saved</string>
+    <string name="publish_trip_summary_edit">Edit</string>
+    <plurals name="publish_trip_summary_stops">
+        <item quantity="one">%1$d stop</item>
+        <item quantity="other">%1$d stops</item>
+    </plurals>
+    <string name="trip_register_another_vehicle">Register another vehicle</string>
 
     <!-- DriverTrips - cancel confirmation -->
     <string name="trip_cancel_confirm_title">Cancel trip?</string>
@@ -789,8 +799,6 @@
     <string name="discard_changes_confirm">Discard</string>
 
     <!-- Publish/start/complete confirmations for consequential, hard-to-reverse driver actions -->
-    <string name="publish_trip_confirm_title">Publish this trip?</string>
-    <string name="publish_trip_confirm_body">Passengers will be able to see and request seats on this trip once it\'s published.</string>
     <string name="publish_trip_confirm_button">Publish</string>
     <string name="trip_start_confirm_title">Start this trip?</string>
     <string name="trip_start_confirm_body">Passengers will be notified that the trip is in progress.</string>
