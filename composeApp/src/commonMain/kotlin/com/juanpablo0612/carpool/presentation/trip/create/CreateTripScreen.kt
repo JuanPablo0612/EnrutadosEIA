@@ -55,6 +55,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -102,9 +103,15 @@ fun CreateTripScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    val notificationPermission = rememberNotificationPermissionState()
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            CreateTripEvent.TripPublished -> onTripPublished()
+            CreateTripEvent.TripPublished -> {
+                // Passengers' seat requests are what a new driver needs to hear about.
+                notificationPermission.request()
+                onTripPublished()
+            }
             CreateTripEvent.NavigateBack -> onBackClick()
             CreateTripEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
             CreateTripEvent.NavigateToVehiclesList -> onNavigateToVehiclesList()

@@ -612,6 +612,9 @@
     <string name="notification_channel_trips_description">Cuando un viaje inicia, termina o se cancela</string>
     <string name="notification_channel_chat_name">Mensajes</string>
     <string name="notification_channel_chat_description">Mensajes del chat de tus viajes</string>
+    <string name="notification_permission_banner_title">Activa las notificaciones</string>
+    <string name="notification_permission_banner_body">Entérate al instante cuando un conductor responda tu solicitud, un pasajero pida cupo o un viaje cambie.</string>
+    <string name="notification_permission_banner_action">Activar</string>
 
     <!-- Seguridad -->
 

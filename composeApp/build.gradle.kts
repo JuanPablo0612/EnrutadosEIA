@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.compass.permissions.mobile)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
             implementation(libs.compass.geolocation)

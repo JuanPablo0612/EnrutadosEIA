@@ -15,6 +15,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
@@ -55,6 +57,12 @@ fun RouteDetailPassengerScreen(
     onBookingCreated: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val notificationPermission = rememberNotificationPermissionState()
+
+    // Right after requesting a seat is when a notification about the driver's answer matters.
+    LaunchedEffect(state.bookingRequestSent) {
+        if (state.bookingRequestSent) notificationPermission.request()
+    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {

@@ -739,6 +739,9 @@
     <string name="notification_channel_trips_description">When a trip starts, ends or is cancelled</string>
     <string name="notification_channel_chat_name">Messages</string>
     <string name="notification_channel_chat_description">Chat messages about your trips</string>
+    <string name="notification_permission_banner_title">Turn on notifications</string>
+    <string name="notification_permission_banner_body">Know right away when a driver answers your request, a passenger asks for a seat or a trip changes.</string>
+    <string name="notification_permission_banner_action">Turn on</string>
 
     <!-- DateTime formatting -->
     <string name="time_am">AM</string>

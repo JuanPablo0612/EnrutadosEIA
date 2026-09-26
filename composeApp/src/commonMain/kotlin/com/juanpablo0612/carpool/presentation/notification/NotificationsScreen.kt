@@ -29,7 +29,9 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.notification.components.NotificationPermissionBanner
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_body
 import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_button
@@ -59,14 +61,22 @@ fun NotificationsScreen(
         }
     }
 
-    NotificationsContent(state = state, onAction = viewModel::onAction)
+    val notificationPermission = rememberNotificationPermissionState()
+    NotificationsContent(
+        state = state,
+        onAction = viewModel::onAction,
+        showPermissionBanner = !notificationPermission.isGranted,
+        onEnableNotifications = notificationPermission::openSettings,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsContent(
     state: NotificationsUiState,
-    onAction: (NotificationsAction) -> Unit
+    onAction: (NotificationsAction) -> Unit,
+    showPermissionBanner: Boolean = false,
+    onEnableNotifications: () -> Unit = {},
 ) {
     if (state.showClearAllDialog) {
         ConfirmDialog(
@@ -110,6 +120,13 @@ fun NotificationsContent(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            if (showPermissionBanner) {
+                NotificationPermissionBanner(
+                    onEnable = onEnableNotifications,
+                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                )
+            }
+
             state.actionError?.let { error ->
                 ErrorMessage(
                     message = stringResource(error.asStringResource()),
