@@ -5,6 +5,7 @@ import com.juanpablo0612.carpool.data.trip.datasource.TripRemoteDataSource
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
+import com.juanpablo0612.carpool.domain.trip.usecase.MatchTripsUseCase
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
@@ -20,6 +21,7 @@ val tripModule = module {
     singleOf(::FirebaseTripRemoteDataSource) bind TripRemoteDataSource::class
     singleOf(::TripRepositoryImpl) bind TripRepository::class
     factoryOf(::GetAvailableTripsUseCase)
+    factoryOf(::MatchTripsUseCase)
     // SearchRoutesViewModel lives in presentation/route/search/, but it queries trips and builds
     // TripResult from Trip + Vehicle + PublicProfile, so its dependencies are trip's, not
     // route's. Registration stays here; moving the screen itself is out of scope for this phase.
