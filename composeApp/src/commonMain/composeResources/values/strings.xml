@@ -476,6 +476,17 @@
     <string name="cd_clear_destination">Clear destination</string>
     <string name="cd_clear_date">Clear date and time</string>
     <string name="cd_search_field">%1$s: %2$s</string>
+    <string name="search_empty_nearby_title">No trips near your places</string>
+    <string name="search_empty_widen_radius_action">Widen to %1$s</string>
+    <string name="search_empty_any_time_action">Search any time</string>
+    <plurals name="search_empty_widen_radius_hint">
+        <item quantity="one">1 trip matches within %2$s</item>
+        <item quantity="other">%1$d trips match within %2$s</item>
+    </plurals>
+    <plurals name="search_empty_any_time_hint">
+        <item quantity="one">1 trip matches at another time</item>
+        <item quantity="other">%1$d trips match at other times</item>
+    </plurals>
 
     <!-- RouteDetailPassenger redesign -->
     <string name="trip_driver_section">Driver</string>

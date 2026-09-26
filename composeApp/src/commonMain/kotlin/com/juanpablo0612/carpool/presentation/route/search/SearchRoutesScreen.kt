@@ -29,6 +29,7 @@ import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewMo
 import com.juanpablo0612.carpool.presentation.route.search.components.DateTimeBottomSheet
 import com.juanpablo0612.carpool.presentation.route.search.components.FiltersBottomSheet
 import com.juanpablo0612.carpool.presentation.route.search.components.SearchCard
+import com.juanpablo0612.carpool.presentation.route.search.components.SearchEmptyState
 import com.juanpablo0612.carpool.presentation.route.search.components.TripResultCard
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
@@ -42,9 +43,6 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.role_switch_to_driver
 import enrutadoseia.composeapp.generated.resources.role_selector_passenger_title
 import enrutadoseia.composeapp.generated.resources.search_24px
-import enrutadoseia.composeapp.generated.resources.search_adjust_button
-import enrutadoseia.composeapp.generated.resources.search_empty_subtitle
-import enrutadoseia.composeapp.generated.resources.search_empty_title
 import enrutadoseia.composeapp.generated.resources.search_prompt_subtitle
 import enrutadoseia.composeapp.generated.resources.search_prompt_title
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
@@ -199,15 +197,10 @@ fun SearchRoutesContent(
                         .padding(horizontal = Spacing.lg)
                 )
 
-                state.hasSearched && state.results.isEmpty() -> EmptyState(
-                    icon = vectorResource(Res.drawable.search_24px),
-                    title = stringResource(Res.string.search_empty_title),
-                    description = stringResource(Res.string.search_empty_subtitle),
+                state.hasSearched && state.results.isEmpty() -> SearchEmptyState(
+                    relaxation = state.relaxation,
+                    onAction = onAction,
                     modifier = Modifier.fillMaxSize(),
-                    primaryAction = com.juanpablo0612.carpool.presentation.ui.components.ActionButton(
-                        label = stringResource(Res.string.search_adjust_button),
-                        onClick = { onAction(SearchRoutesAction.OnShowFilters) }
-                    )
                 )
 
                 state.results.isNotEmpty() -> LazyColumn(

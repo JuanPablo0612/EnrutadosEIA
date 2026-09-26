@@ -648,6 +648,17 @@
     <string name="cd_clear_destination">Borrar destino</string>
     <string name="cd_clear_date">Borrar fecha y hora</string>
     <string name="cd_search_field">%1$s: %2$s</string>
+    <string name="search_empty_nearby_title">No hay viajes cerca</string>
+    <string name="search_empty_widen_radius_action">Ampliar a %1$s</string>
+    <string name="search_empty_any_time_action">Buscar a cualquier hora</string>
+    <plurals name="search_empty_widen_radius_hint">
+        <item quantity="one">Hay 1 viaje a menos de %2$s</item>
+        <item quantity="other">Hay %1$d viajes a menos de %2$s</item>
+    </plurals>
+    <plurals name="search_empty_any_time_hint">
+        <item quantity="one">Hay 1 viaje en otro horario</item>
+        <item quantity="other">Hay %1$d viajes en otros horarios</item>
+    </plurals>
 
     <!-- RouteDetailPassenger rediseño -->
     <string name="trip_driver_section">Conductor</string>
