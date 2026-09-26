@@ -468,6 +468,14 @@
     <string name="search_result_pickup_distance">Picks you up at %1$s, %2$s from your origin</string>
     <string name="search_result_pickup_here">Picks you up at %1$s, right by your origin</string>
     <string name="search_result_dropoff_distance">Drops you off at %1$s, %2$s from your destination</string>
+    <string name="search_preset_to_campus">To %1$s</string>
+    <string name="search_preset_from_campus">From %1$s</string>
+    <string name="campus_short_las_palmas">Las Palmas</string>
+    <string name="campus_short_zuniga">Zúñiga</string>
+    <string name="cd_clear_origin">Clear origin</string>
+    <string name="cd_clear_destination">Clear destination</string>
+    <string name="cd_clear_date">Clear date and time</string>
+    <string name="cd_search_field">%1$s: %2$s</string>
 
     <!-- RouteDetailPassenger redesign -->
     <string name="trip_driver_section">Driver</string>
