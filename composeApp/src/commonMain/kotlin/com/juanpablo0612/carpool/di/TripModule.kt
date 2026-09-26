@@ -7,6 +7,8 @@ import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.trip.usecase.GenerateRecurringTripSlotsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.MatchTripsUseCase
+import com.juanpablo0612.carpool.domain.trip.usecase.PublishRecurringTripsUseCase
+import com.juanpablo0612.carpool.domain.trip.usecase.PublishTripUseCase
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
@@ -24,6 +26,8 @@ val tripModule = module {
     factoryOf(::GetAvailableTripsUseCase)
     factoryOf(::MatchTripsUseCase)
     factoryOf(::GenerateRecurringTripSlotsUseCase)
+    factoryOf(::PublishTripUseCase)
+    factoryOf(::PublishRecurringTripsUseCase)
     // SearchRoutesViewModel lives in presentation/route/search/ but depends on trip matching and
     // trip data, so it is registered with the trip feature.
     viewModel { SearchRoutesViewModel(get(), get(), get(), get(), get()) }

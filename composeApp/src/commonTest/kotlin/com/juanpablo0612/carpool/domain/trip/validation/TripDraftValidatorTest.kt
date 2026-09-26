@@ -31,7 +31,16 @@ class TripDraftValidatorTest {
         contribution: Int? = 5_000,
         message: String = "",
         routeName: String? = null,
-    ) = TripDraft(origin, destination, departure, capacity, seats, contribution, message, routeName)
+    ) = TripDraft(
+        origin = origin,
+        destination = destination,
+        departure = departure,
+        vehicleCapacity = capacity,
+        seatCount = seats,
+        contributionPerPassenger = contribution,
+        message = message,
+        routeNameToSave = routeName,
+    )
 
     private fun errors(d: TripDraft) = TripDraftValidator.validate(d, now)
 

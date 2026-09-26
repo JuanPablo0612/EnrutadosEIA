@@ -7,6 +7,7 @@ import kotlin.time.Instant
 data class TripDraft(
     val origin: Place?,
     val destination: Place?,
+    val waypoints: List<Place> = emptyList(),
     val departure: Instant,
     /** Seats the selected vehicle can offer, or null when no vehicle is selected. */
     val vehicleCapacity: Int?,
