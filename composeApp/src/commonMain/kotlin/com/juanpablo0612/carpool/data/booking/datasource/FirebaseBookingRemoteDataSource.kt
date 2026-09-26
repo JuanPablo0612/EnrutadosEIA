@@ -2,13 +2,15 @@ package com.juanpablo0612.carpool.data.booking.datasource
 
 import com.juanpablo0612.carpool.data.booking.model.BookingDto
 import com.juanpablo0612.carpool.data.trip.model.TripDto
+import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.firestore.FieldValue
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class FirebaseBookingRemoteDataSource(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth,
 ) : BookingRemoteDataSource {
 
     override suspend fun createBooking(booking: BookingDto): BookingDto {
@@ -123,7 +125,11 @@ class FirebaseBookingRemoteDataSource(
                 update(tripRef, "confirmedSeats" to FieldValue.increment(delta))
             }
 
-            val bookingFields = (listOf<Pair<String, Any?>>("status" to newStatus) + extraFields)
+            // cancelledBy tells the backend which party to notify; rules only accept the caller.
+            val cancelledBy = if (newStatus == "CANCELLED") {
+                listOfNotNull(firebaseAuth.currentUser?.uid?.let { "cancelledBy" to it })
+            } else emptyList()
+            val bookingFields = listOf<Pair<String, Any?>>("status" to newStatus) + extraFields + cancelledBy
             update(bookingRef, *bookingFields.toTypedArray())
         }
     }
