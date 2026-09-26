@@ -457,6 +457,8 @@
     <string name="search_filters_button">Filters</string>
     <string name="search_filters_title">Filters</string>
     <string name="search_filter_max_contribution">Max contribution</string>
+    <string name="search_filter_max_walk">Max walking distance</string>
+    <string name="search_filter_max_walk_hint">Straight-line distance from your origin and destination to the driver\'s stops</string>
     <string name="search_adjust_button">Adjust search</string>
     <string name="trip_contribution_free">Free</string>
     <string name="trip_available_seats">%1$d seats</string>

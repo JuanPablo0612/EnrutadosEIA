@@ -629,6 +629,8 @@
     <string name="search_filters_button">Filtros</string>
     <string name="search_filters_title">Filtros</string>
     <string name="search_filter_max_contribution">Aporte máximo</string>
+    <string name="search_filter_max_walk">Distancia máxima a pie</string>
+    <string name="search_filter_max_walk_hint">Distancia en línea recta desde tu origen y destino hasta las paradas del conductor</string>
     <string name="search_adjust_button">Ajustar búsqueda</string>
     <string name="trip_contribution_free">Gratis</string>
     <string name="trip_available_seats">%1$d cupos</string>
