@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.core.exception
 
+import com.juanpablo0612.carpool.domain.trip.validation.TripValidationError
+
 /**
  * Base class for all application-specific exceptions.
  */
@@ -22,6 +24,12 @@ sealed class AppException : Exception() {
     }
 
     sealed class TripException : AppException() {
+        data object NotAuthenticated : TripException()
+        data object VehicleNotFound : TripException()
+        /** The trip failed validation; [errors] in the order they were found. */
+        data class Invalid(val errors: List<TripValidationError>) : TripException()
+        /** The frequent route was saved as [routeId], but publishing the trip then failed. */
+        data class RouteSavedTripFailed(val routeId: String) : TripException()
         data object Unknown : TripException()
     }
 

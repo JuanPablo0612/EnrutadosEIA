@@ -209,6 +209,14 @@
     <string name="error_trip_not_found">Viaje no encontrado</string>
     <string name="error_no_vehicle_selected">Por favor selecciona un vehículo</string>
     <string name="error_trip_departure_in_past">La hora de salida debe ser en el futuro</string>
+    <string name="error_trip_same_origin_destination">El origen y el destino deben ser lugares distintos</string>
+    <string name="error_trip_departure_too_soon">La salida debe ser en al menos 15 minutos</string>
+    <string name="error_trip_departure_too_far">Puedes publicar viajes con hasta 30 días de anticipación</string>
+    <string name="error_trip_seats_out_of_range">Ofrece entre 1 y los cupos de tu vehículo</string>
+    <string name="error_trip_contribution_out_of_range">El aporte puede ser de máximo $50.000: compartir carro solo divide gastos</string>
+    <string name="error_trip_message_too_long">El mensaje puede tener máximo 140 caracteres</string>
+    <string name="error_route_saved_trip_failed">Tu ruta se guardó, pero el viaje no se pudo publicar. Intenta de nuevo.</string>
+    <string name="error_publish_week_nothing_selected">Selecciona al menos un día para publicar</string>
 
     <!-- Acciones de diálogo -->
     <string name="confirm">Confirmar</string>

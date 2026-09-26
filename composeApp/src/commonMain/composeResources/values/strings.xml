@@ -209,6 +209,14 @@
     <string name="error_trip_not_found">Trip not found</string>
     <string name="error_no_vehicle_selected">Please select a vehicle</string>
     <string name="error_trip_departure_in_past">Departure time must be in the future</string>
+    <string name="error_trip_same_origin_destination">Origin and destination must be different places</string>
+    <string name="error_trip_departure_too_soon">Departure must be at least 15 minutes from now</string>
+    <string name="error_trip_departure_too_far">You can publish trips up to 30 days ahead</string>
+    <string name="error_trip_seats_out_of_range">Offer between 1 and your vehicle\'s seats</string>
+    <string name="error_trip_contribution_out_of_range">The contribution can be at most $50.000 — carpooling only shares costs</string>
+    <string name="error_trip_message_too_long">The message can have at most 140 characters</string>
+    <string name="error_route_saved_trip_failed">Your route was saved, but the trip couldn\'t be published. Try again.</string>
+    <string name="error_publish_week_nothing_selected">Select at least one day to publish</string>
 
     <!-- Common dialog actions -->
     <string name="confirm">Confirm</string>
