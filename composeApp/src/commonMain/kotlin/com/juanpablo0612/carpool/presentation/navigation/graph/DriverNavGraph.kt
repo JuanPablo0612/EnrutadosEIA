@@ -17,6 +17,8 @@ import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripScreen
+import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekScreen
+import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListScreen
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListViewModel
@@ -39,6 +41,7 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToRoutesList: () -> Unit,
     onNavigateToVehiclesList: () -> Unit,
     onTripPublished: () -> Unit,
+    onNavigateToPublishWeek: (String) -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
@@ -54,6 +57,7 @@ fun NavGraphBuilder.driverNavGraph(
             onNavigateToCreateRoute = onNavigateToCreateRoute,
             onNavigateToRouteDetail = onNavigateToRouteDetail,
             onNavigateToPublishTrip = onNavigateToPublishTrip,
+            onNavigateToPublishWeek = onNavigateToPublishWeek,
             onBackClick = onNavigateBack
         )
     }
@@ -75,7 +79,20 @@ fun NavGraphBuilder.driverNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onNavigateToAddPlace = onNavigateToAddPlace,
-            onNavigateToPublishTrip = onNavigateToPublishTrip
+            onNavigateToPublishTrip = onNavigateToPublishTrip,
+            onNavigateToPublishWeek = onNavigateToPublishWeek,
+        )
+    }
+
+    composable<Route.PublishWeek> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.PublishWeek>()
+        val viewModel: PublishWeekViewModel = koinViewModel { parametersOf(args.routeId) }
+        PublishWeekScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onTripsPublished = onTripPublished,
+            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToRouteDetail = onNavigateToRouteDetail,
         )
     }
 

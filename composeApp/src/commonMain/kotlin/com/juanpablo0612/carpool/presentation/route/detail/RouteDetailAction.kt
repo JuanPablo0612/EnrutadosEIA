@@ -16,6 +16,7 @@ sealed class RouteDetailAction {
     data object OnConfirmDelete : RouteDetailAction()
     data object OnDismissDelete : RouteDetailAction()
     data object OnPublishTripClick : RouteDetailAction()
+    data object OnPublishWeekClick : RouteDetailAction()
     data object OnDuplicateClick : RouteDetailAction()
     data object OnRetry : RouteDetailAction()
 

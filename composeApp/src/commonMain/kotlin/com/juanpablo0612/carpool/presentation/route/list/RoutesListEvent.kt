@@ -4,5 +4,6 @@ sealed class RoutesListEvent {
     data object NavigateToCreateRoute : RoutesListEvent()
     data class NavigateToRouteDetail(val routeId: String) : RoutesListEvent()
     data class NavigateToPublishTrip(val routeId: String) : RoutesListEvent()
+    data class NavigateToPublishWeek(val routeId: String) : RoutesListEvent()
     data object NavigateBack : RoutesListEvent()
 }

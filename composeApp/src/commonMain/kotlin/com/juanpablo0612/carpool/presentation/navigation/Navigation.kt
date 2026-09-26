@@ -283,10 +283,13 @@ fun AppNavigation(
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
                     onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
                     onTripPublished = {
-                        // Land on the trips you drive, without the finished form underneath.
+                        // Drop the finished form first so it isn't saved into the Inicio tab's
+                        // stack, then land on the trips you drive.
                         navController.popBackStack<Route.PublishTrip>(inclusive = true)
+                        navController.popBackStack<Route.PublishWeek>(inclusive = true)
                         navController.navigateToTopLevel(Route.MyTrips(MyTripsTab.Driver), restoreState = false)
                     },
+                    onNavigateToPublishWeek = { routeId -> navController.navigate(Route.PublishWeek(routeId)) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },

@@ -62,6 +62,7 @@ fun RoutesListScreen(
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
     onNavigateToPublishTrip: (String) -> Unit,
+    onNavigateToPublishWeek: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -71,6 +72,7 @@ fun RoutesListScreen(
             RoutesListEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
             is RoutesListEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
             is RoutesListEvent.NavigateToPublishTrip -> onNavigateToPublishTrip(event.routeId)
+            is RoutesListEvent.NavigateToPublishWeek -> onNavigateToPublishWeek(event.routeId)
             RoutesListEvent.NavigateBack -> onBackClick()
         }
     }
@@ -197,6 +199,9 @@ fun RoutesListContent(
                                 routeWithStats = routeWithStats,
                                 onClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
                                 onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
+                                onPublishWeekClick = routeWithStats.route
+                                    .takeIf { it.recurringDays.isNotEmpty() && it.typicalDepartureTime != null }
+                                    ?.let { { onAction(RoutesListAction.OnPublishWeekClick(it.id)) } },
                                 onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
                                 onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) },
                                 isDuplicating = state.duplicatingRouteId == routeWithStats.route.id

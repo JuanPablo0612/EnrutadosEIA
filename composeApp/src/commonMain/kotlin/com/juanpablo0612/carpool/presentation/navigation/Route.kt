@@ -50,6 +50,10 @@ sealed interface Route {
     /** Publishing a trip, starting from the saved route [routeId] or from scratch. */
     data class PublishTrip(val routeId: String? = null) : Route
 
+    /** Publishing the coming days of the recurring route [routeId] at once. */
+    @Serializable
+    data class PublishWeek(val routeId: String) : Route
+
     /** Bottom-bar "Buscar". */
     @Serializable
     data object SearchTrips : Route

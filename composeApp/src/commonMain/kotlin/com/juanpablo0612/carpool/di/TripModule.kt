@@ -11,6 +11,7 @@ import com.juanpablo0612.carpool.domain.trip.usecase.PublishRecurringTripsUseCas
 import com.juanpablo0612.carpool.domain.trip.usecase.PublishTripUseCase
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
+import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingViewModel
@@ -32,6 +33,7 @@ val tripModule = module {
     // trip data, so it is registered with the trip feature.
     viewModel { SearchRoutesViewModel(get(), get(), get(), get(), get()) }
     viewModel { (routeId: String?) -> PublishTripViewModel(routeId, get(), get(), get(), get(), get(), get()) }
+    viewModel { (routeId: String) -> PublishWeekViewModel(routeId, get(), get(), get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
     viewModel { (tripId: String) -> RouteDetailPassengerViewModel(tripId, get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get()) }

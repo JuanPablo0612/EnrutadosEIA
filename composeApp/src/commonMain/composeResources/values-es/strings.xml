@@ -443,6 +443,21 @@
         <item quantity="other">%1$d paradas</item>
     </plurals>
     <string name="trip_register_another_vehicle">Registrar otro vehículo</string>
+    <string name="publish_week_title">Publicar mi semana</string>
+    <string name="publish_week_window_label">Próximos 7 días</string>
+    <string name="publish_week_slot_already_published">Ya publicado</string>
+    <string name="publish_week_slot_passed">Ya pasó</string>
+    <string name="publish_week_slot_conflict">Choca con tu viaje de las %1$s</string>
+    <string name="publish_week_settings_title">Para todos los viajes</string>
+    <plurals name="publish_week_publish_button">
+        <item quantity="one">Publicar %1$d viaje</item>
+        <item quantity="other">Publicar %1$d viajes</item>
+    </plurals>
+    <string name="publish_week_no_schedule_title">Configura días y hora de salida</string>
+    <string name="publish_week_no_schedule_body">Para publicar tu semana se usan los días de esta ruta y su hora habitual.</string>
+    <string name="publish_week_all_published_title">Tu semana ya está publicada</string>
+    <string name="publish_week_all_published_body">Cada día que corre esta ruta en los próximos 7 días ya tiene un viaje.</string>
+    <string name="publish_week_edit_route">Editar ruta</string>
 
     <!-- DriverTrips - confirmación de cancelación -->
     <string name="trip_cancel_confirm_title">¿Cancelar viaje?</string>

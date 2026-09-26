@@ -43,6 +43,7 @@ import enrutadoseia.composeapp.generated.resources.cd_more_options
 import enrutadoseia.composeapp.generated.resources.more_vert_24px
 import enrutadoseia.composeapp.generated.resources.route_menu_delete
 import enrutadoseia.composeapp.generated.resources.route_menu_duplicate
+import enrutadoseia.composeapp.generated.resources.publish_week_title
 import enrutadoseia.composeapp.generated.resources.route_menu_publish_trip
 import enrutadoseia.composeapp.generated.resources.route_waypoints_count
 import kotlinx.datetime.TimeZone
@@ -56,6 +57,8 @@ fun RouteCard(
     routeWithStats: RouteWithStats,
     onClick: () -> Unit,
     onPublishTripClick: () -> Unit,
+    /** Null when the route has no days/time set, so a week can't be generated. */
+    onPublishWeekClick: (() -> Unit)?,
     onDuplicateClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -95,6 +98,12 @@ fun RouteCard(
                             text = { Text(stringResource(Res.string.route_menu_publish_trip)) },
                             onClick = { expanded = false; onPublishTripClick() }
                         )
+                        if (onPublishWeekClick != null) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.publish_week_title)) },
+                                onClick = { expanded = false; onPublishWeekClick() }
+                            )
+                        }
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.route_menu_duplicate)) },
                             onClick = { expanded = false; onDuplicateClick() },

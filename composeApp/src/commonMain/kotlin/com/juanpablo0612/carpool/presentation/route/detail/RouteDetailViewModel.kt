@@ -88,6 +88,9 @@ class RouteDetailViewModel(
             RouteDetailAction.OnPublishTripClick -> viewModelScope.launch {
                 _events.emit(RouteDetailEvent.NavigateToPublishTrip(routeId))
             }
+            RouteDetailAction.OnPublishWeekClick -> viewModelScope.launch {
+                _events.emit(RouteDetailEvent.NavigateToPublishWeek(routeId))
+            }
             RouteDetailAction.OnDuplicateClick -> duplicateRoute()
             RouteDetailAction.OnRetry -> loadRouteAndStats()
 

@@ -51,7 +51,8 @@ fun RouteDetailScreen(
     viewModel: RouteDetailViewModel,
     onBackClick: () -> Unit,
     onNavigateToAddPlace: () -> Unit,
-    onNavigateToPublishTrip: (String) -> Unit
+    onNavigateToPublishTrip: (String) -> Unit,
+    onNavigateToPublishWeek: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -59,6 +60,7 @@ fun RouteDetailScreen(
         when (event) {
             RouteDetailEvent.NavigateBack -> onBackClick()
             is RouteDetailEvent.NavigateToPublishTrip -> onNavigateToPublishTrip(event.routeId)
+            is RouteDetailEvent.NavigateToPublishWeek -> onNavigateToPublishWeek(event.routeId)
         }
     }
 
@@ -152,6 +154,15 @@ internal fun RouteDetailReadContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(Res.string.route_publish_trip_button))
+                    }
+                    val route = state.route
+                    if (route.recurringDays.isNotEmpty() && route.typicalDepartureTime != null) {
+                        OutlinedButton(
+                            onClick = { onAction(RouteDetailAction.OnPublishWeekClick) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(Res.string.publish_week_title))
+                        }
                     }
                     TextButton(
                         onClick = { onAction(RouteDetailAction.OnDuplicateClick) },

@@ -99,6 +99,9 @@ class RoutesListViewModel(
             is RoutesListAction.OnPublishTripClick -> viewModelScope.launch {
                 _events.emit(RoutesListEvent.NavigateToPublishTrip(action.routeId))
             }
+            is RoutesListAction.OnPublishWeekClick -> viewModelScope.launch {
+                _events.emit(RoutesListEvent.NavigateToPublishWeek(action.routeId))
+            }
             is RoutesListAction.OnDeleteRouteClick -> {
                 _state.update { it.copy(pendingDeleteRouteId = action.routeId) }
             }

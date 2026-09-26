@@ -570,6 +570,21 @@
         <item quantity="other">%1$d stops</item>
     </plurals>
     <string name="trip_register_another_vehicle">Register another vehicle</string>
+    <string name="publish_week_title">Publish my week</string>
+    <string name="publish_week_window_label">Next 7 days</string>
+    <string name="publish_week_slot_already_published">Already published</string>
+    <string name="publish_week_slot_passed">Too late to publish</string>
+    <string name="publish_week_slot_conflict">Close to your %1$s trip</string>
+    <string name="publish_week_settings_title">For every trip</string>
+    <plurals name="publish_week_publish_button">
+        <item quantity="one">Publish %1$d trip</item>
+        <item quantity="other">Publish %1$d trips</item>
+    </plurals>
+    <string name="publish_week_no_schedule_title">Set days and a departure time</string>
+    <string name="publish_week_no_schedule_body">Publishing your week uses the days this route runs and its usual time.</string>
+    <string name="publish_week_all_published_title">Your week is already published</string>
+    <string name="publish_week_all_published_body">Every day this route runs in the next 7 days already has a trip.</string>
+    <string name="publish_week_edit_route">Edit route</string>
 
     <!-- DriverTrips - cancel confirmation -->
     <string name="trip_cancel_confirm_title">Cancel trip?</string>
