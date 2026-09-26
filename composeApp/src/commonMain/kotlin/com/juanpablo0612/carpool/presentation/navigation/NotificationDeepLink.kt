@@ -5,13 +5,13 @@ import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 
 /**
- * The deep-link vocabulary for notifications, as plain text so it can travel in a push payload
- * and in older persisted notifications. [forNotification] builds the link for a notification from
+ * The deep-link vocabulary for notifications, as plain text so it can travel through a push
+ * tap intent. [forNotification] builds the link for a notification from
  * its type and params; the nav host resolves a link back to a typed destination with
  * [toRouteOrNull]. Keeping both directions in one file stops the two halves from drifting.
  *
  * An unrecognised or malformed link resolves to `null` and the tap simply marks the notification
- * read — a notification written by an older or newer build should never crash navigation.
+ * read — a notification kind added by a newer backend should never crash navigation.
  */
 object NotificationDeepLink {
     private const val SCHEME = "carpool://"

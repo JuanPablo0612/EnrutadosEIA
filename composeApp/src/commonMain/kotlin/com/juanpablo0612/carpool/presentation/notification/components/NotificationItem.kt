@@ -32,12 +32,7 @@ internal fun NotificationItem(
     onClick: () -> Unit
 ) {
     val text by produceState<NotificationText?>(initialValue = null, notification) {
-        value = resolveNotificationText(
-            type = notification.type,
-            params = notification.params,
-            legacyTitle = notification.legacyTitle,
-            legacyBody = notification.legacyBody,
-        )
+        value = resolveNotificationText(notification.type, notification.params)
     }
     Card(
         onClick = onClick,

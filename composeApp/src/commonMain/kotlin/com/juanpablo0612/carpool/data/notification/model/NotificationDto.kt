@@ -5,9 +5,8 @@ import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import kotlinx.serialization.Serializable
 
 /**
- * An in-app notification, written only by Cloud Functions. Current documents carry [type] plus
- * string [params]; [title], [body] and [deepLink] are only present on documents written before
- * that, by older app builds.
+ * An in-app notification, written only by Cloud Functions as a [type] plus string [params] that
+ * the app renders into localized text.
  */
 @Serializable
 data class NotificationDto(
@@ -17,9 +16,6 @@ data class NotificationDto(
     val params: Map<String, String> = emptyMap(),
     val isRead: Boolean = false,
     val timestamp: Long = 0L,
-    val title: String = "",
-    val body: String = "",
-    val deepLink: String? = null,
 ) {
     fun toDomain(): AppNotification = AppNotification(
         id = id,
@@ -28,8 +24,5 @@ data class NotificationDto(
         params = params,
         isRead = isRead,
         timestamp = timestamp,
-        legacyTitle = title.ifBlank { null },
-        legacyBody = body.ifBlank { null },
-        legacyDeepLink = deepLink?.ifBlank { null },
     )
 }

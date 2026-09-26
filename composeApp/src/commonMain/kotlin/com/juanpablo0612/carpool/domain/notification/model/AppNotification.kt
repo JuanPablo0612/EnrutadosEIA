@@ -8,8 +8,4 @@ data class AppNotification(
     val params: Map<String, String>,
     val isRead: Boolean,
     val timestamp: Long,
-    /** Pre-rendered text and link of notifications written before params existed. */
-    val legacyTitle: String? = null,
-    val legacyBody: String? = null,
-    val legacyDeepLink: String? = null,
 )

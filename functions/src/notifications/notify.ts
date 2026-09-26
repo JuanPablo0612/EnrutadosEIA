@@ -70,7 +70,6 @@ async function createInApp(
       params,
       isRead: false,
       timestamp: Date.now(),
-      schemaVersion: 2,
     });
     return true;
   } catch (error) {

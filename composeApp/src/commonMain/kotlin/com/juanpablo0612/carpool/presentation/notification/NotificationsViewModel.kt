@@ -64,8 +64,7 @@ class NotificationsViewModel(
                     notificationRepository.markRead(userId, action.notification.id)
                     val notification = action.notification
                     val deepLink = NotificationDeepLink.forNotification(notification.type, notification.params)
-                        ?: notification.legacyDeepLink
-                    if (!deepLink.isNullOrBlank()) {
+                    if (deepLink != null) {
                         _events.emit(NotificationsEvent.NavigateTo(deepLink))
                     }
                 }

@@ -44,19 +44,9 @@ data class NotificationText(val title: String, val body: String)
  * Renders a notification in the device's language from its [type] and [params]. Suspend (uses
  * `getString`, not composition) so the in-app list and the push renderer share it.
  *
- * Notifications written before params existed show their stored [legacyTitle]/[legacyBody];
- * kinds this build doesn't know show a generic text.
+ * Kinds this build doesn't know (added by a newer backend) show a generic text.
  */
-suspend fun resolveNotificationText(
-    type: NotificationType,
-    params: Map<String, String>,
-    legacyTitle: String? = null,
-    legacyBody: String? = null,
-): NotificationText {
-    if (params.isEmpty() && legacyTitle != null) {
-        return NotificationText(legacyTitle, legacyBody.orEmpty())
-    }
-
+suspend fun resolveNotificationText(type: NotificationType, params: Map<String, String>): NotificationText {
     suspend fun name(key: String) = params[key]?.takeIf { it.isNotBlank() } ?: getString(Res.string.notification_someone)
     val origin = params[NotificationParams.ORIGIN_NAME].orEmpty()
     val destination = params[NotificationParams.DESTINATION_NAME].orEmpty()
@@ -119,8 +109,8 @@ suspend fun resolveNotificationText(
             params[NotificationParams.MESSAGE_PREVIEW].orEmpty(),
         )
         is NotificationType.Unknown -> NotificationText(
-            legacyTitle ?: getString(Res.string.notification_generic_title),
-            legacyBody ?: getString(Res.string.notification_generic_body),
+            getString(Res.string.notification_generic_title),
+            getString(Res.string.notification_generic_body),
         )
     }
 }
