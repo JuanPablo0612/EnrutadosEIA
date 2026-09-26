@@ -2,7 +2,10 @@ package com.juanpablo0612.carpool.di
 
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
+import com.juanpablo0612.carpool.core.config.BackendConfig
 import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.functions.functions
+import dev.gitlive.firebase.messaging.messaging
 import dev.gitlive.firebase.storage.storage
 import org.koin.dsl.module
 
@@ -12,4 +15,6 @@ val firebaseModule = module {
     single { Firebase.auth }
     single { Firebase.firestore }
     single { Firebase.storage }
+    single { Firebase.functions(BackendConfig.FUNCTIONS_REGION) }
+    single { Firebase.messaging }
 }

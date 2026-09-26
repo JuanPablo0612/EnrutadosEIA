@@ -1,6 +1,9 @@
 package com.juanpablo0612.carpool.di
 
 import com.juanpablo0612.carpool.data.notification.datasource.FirebaseNotificationRemoteDataSource
+import com.juanpablo0612.carpool.data.notification.datasource.FirebasePushTokenRemoteDataSource
+import com.juanpablo0612.carpool.data.notification.datasource.PushTokenRemoteDataSource
+import com.juanpablo0612.carpool.data.notification.datasource.PushTokenSync
 import com.juanpablo0612.carpool.data.notification.datasource.NotificationRemoteDataSource
 import com.juanpablo0612.carpool.data.notification.repository.NotificationRepositoryImpl
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
@@ -13,5 +16,7 @@ import org.koin.dsl.module
 val notificationModule = module {
     singleOf(::FirebaseNotificationRemoteDataSource) bind NotificationRemoteDataSource::class
     singleOf(::NotificationRepositoryImpl) bind NotificationRepository::class
+    singleOf(::FirebasePushTokenRemoteDataSource) bind PushTokenRemoteDataSource::class
+    singleOf(::PushTokenSync)
     viewModel { NotificationsViewModel(get(), get()) }
 }

@@ -4,16 +4,22 @@ import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.data.auth.model.UserDto
 import com.juanpablo0612.carpool.data.vehicle.datasource.upload
 import dev.gitlive.firebase.auth.FirebaseAuth
+import com.juanpablo0612.carpool.data.notification.datasource.PushTokenRemoteDataSource
 import dev.gitlive.firebase.firestore.FirebaseFirestore
+import dev.gitlive.firebase.functions.FirebaseFunctions
 import dev.gitlive.firebase.storage.FirebaseStorage
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.ImageFormat
 import io.github.vinceglb.filekit.compressImage
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 class FirebaseAuthRemoteDataSource(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val functions: FirebaseFunctions,
+    private val pushTokens: PushTokenRemoteDataSource,
 ) : AuthRemoteDataSource {
 
     override suspend fun signIn(email: String, password: String) {
@@ -66,6 +72,11 @@ class FirebaseAuthRemoteDataSource(
     }
 
     override suspend fun signOut() {
+        // Stop this device receiving the user's pushes. Best effort and bounded: signing out
+        // must work offline, and the backend prunes tokens FCM later reports as dead.
+        firebaseAuth.currentUser?.uid?.let { uid ->
+            withTimeoutOrNull(SIGN_OUT_TOKEN_TIMEOUT) { runCatching { pushTokens.unregister(uid) } }
+        }
         firebaseAuth.signOut()
     }
 
@@ -120,11 +131,17 @@ class FirebaseAuthRemoteDataSource(
     }
 
     override suspend fun deleteAccount() {
-        val user = checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
-        // user.delete() requires a recent sign-in and commonly fails with a stale session. Delete
-        // the auth user first so a failure here leaves the profile document intact (recoverable);
-        // deleting the document first would leave an authenticated user with no profile.
-        user.delete()
-        firestore.collection("users").document(user.uid).delete()
+        checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
+        // The deleteAccount function purges the user's data and then the auth user, without
+        // requiring a recent sign-in the way the client SDK's user.delete() does.
+        functions.httpsCallable(DELETE_ACCOUNT_FUNCTION, DELETE_ACCOUNT_TIMEOUT).invoke()
+        runCatching { pushTokens.deleteLocalToken() }
+        firebaseAuth.signOut()
+    }
+
+    private companion object {
+        const val DELETE_ACCOUNT_FUNCTION = "deleteAccount"
+        val DELETE_ACCOUNT_TIMEOUT = 120.seconds
+        val SIGN_OUT_TOKEN_TIMEOUT = 3.seconds
     }
 }
