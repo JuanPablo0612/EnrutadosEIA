@@ -633,6 +633,11 @@
     <string name="trip_contribution_free">Gratis</string>
     <string name="trip_available_seats">%1$d cupos</string>
     <string name="trip_result_view_detail">Ver detalle →</string>
+    <string name="distance_meters">%1$d m</string>
+    <string name="distance_km">%1$d,%2$d km</string>
+    <string name="search_result_pickup_distance">Te recoge en %1$s, a %2$s de tu origen</string>
+    <string name="search_result_pickup_here">Te recoge en %1$s, junto a tu origen</string>
+    <string name="search_result_dropoff_distance">Te deja en %1$s, a %2$s de tu destino</string>
 
     <!-- RouteDetailPassenger rediseño -->
     <string name="trip_driver_section">Conductor</string>
