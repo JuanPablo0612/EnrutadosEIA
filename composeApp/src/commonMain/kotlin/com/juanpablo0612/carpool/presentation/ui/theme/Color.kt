@@ -74,16 +74,6 @@ val surfaceContainerDark = Color(0xFF1B2122)
 val surfaceContainerHighDark = Color(0xFF252B2D)
 val surfaceContainerHighestDark = Color(0xFF303637)
 
-// Passenger role amber palette (swaps primary only)
-val passengerPrimaryLight = Color(0xFFBF5900)
-val passengerOnPrimaryLight = Color(0xFFFFFFFF)
-val passengerPrimaryContainerLight = Color(0xFFFFDCC4)
-val passengerOnPrimaryContainerLight = Color(0xFF421900)
-val passengerPrimaryDark = Color(0xFFFFB780)
-val passengerOnPrimaryDark = Color(0xFF6B2E00)
-val passengerPrimaryContainerDark = Color(0xFF8F4300)
-val passengerOnPrimaryContainerDark = Color(0xFFFFDCC4)
-
 // Extended semantic colors — light
 val successLight = Color(0xFF386A20)
 val onSuccessLight = Color(0xFFFFFFFF)

@@ -126,7 +126,7 @@ fun AppNavigation(
         }
     }
 
-    CarpoolTheme(role = activeRole) {
+    CarpoolTheme {
         Scaffold(
             bottomBar = {
                 if (showBottomBar) {

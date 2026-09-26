@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.juanpablo0612.carpool.domain.auth.model.UserRole
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -86,27 +85,6 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
-// `surfaceTint` and `inversePrimary` both derive from `primary` in the base schemes, and a
-// ColorScheme.copy() does not recompute them. Without overriding them here the passenger theme
-// tints elevated surfaces teal while everything else is amber.
-private val passengerLightScheme = lightScheme.copy(
-    primary = passengerPrimaryLight,
-    onPrimary = passengerOnPrimaryLight,
-    primaryContainer = passengerPrimaryContainerLight,
-    onPrimaryContainer = passengerOnPrimaryContainerLight,
-    surfaceTint = passengerPrimaryLight,
-    inversePrimary = passengerPrimaryDark,
-)
-
-private val passengerDarkScheme = darkScheme.copy(
-    primary = passengerPrimaryDark,
-    onPrimary = passengerOnPrimaryDark,
-    primaryContainer = passengerPrimaryContainerDark,
-    onPrimaryContainer = passengerOnPrimaryContainerDark,
-    surfaceTint = passengerPrimaryDark,
-    inversePrimary = passengerPrimaryLight,
-)
-
 data class ExtendedColors(
     val success: Color,
     val onSuccess: Color,
@@ -126,13 +104,10 @@ val LocalExtendedColors = staticCompositionLocalOf {
 
 @Composable
 fun CarpoolTheme(
-    role: UserRole? = null,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        role == UserRole.Passenger && darkTheme -> passengerDarkScheme
-        role == UserRole.Passenger -> passengerLightScheme
         darkTheme -> darkScheme
         else -> lightScheme
     }
