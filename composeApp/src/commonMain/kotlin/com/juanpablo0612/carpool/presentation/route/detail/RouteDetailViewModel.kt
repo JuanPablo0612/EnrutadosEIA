@@ -7,7 +7,8 @@ import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.route.usecase.DuplicateRouteUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
-import com.juanpablo0612.carpool.presentation.route.create.SelectionTarget
+import com.juanpablo0612.carpool.presentation.place.stops.SelectionTarget
+import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -104,9 +105,7 @@ class RouteDetailViewModel(
                 it.copy(selectionTarget = SelectionTarget.EditWaypoint(action.index))
             }
             RouteDetailAction.OnAddWaypointClick -> updateDraft { it.copy(selectionTarget = SelectionTarget.NewWaypoint) }
-            is RouteDetailAction.OnRemoveWaypoint -> updateDraft {
-                it.copy(waypoints = it.waypoints.filterIndexed { i, _ -> i != action.index })
-            }
+            is RouteDetailAction.OnRemoveWaypoint -> updateDraft { it.copy(stops = it.stops.removeWaypoint(action.index)) }
             is RouteDetailAction.OnPlaceSelectedFromResult -> onDraftPlaceSelected(action.place)
             RouteDetailAction.OnCancelSelection -> updateDraft { it.copy(selectionTarget = null) }
         }
@@ -119,9 +118,7 @@ class RouteDetailViewModel(
                 isEditing = true,
                 draft = CreateRouteUiState(
                     name = route.name,
-                    origin = route.origin,
-                    destination = route.destination,
-                    waypoints = route.waypoints,
+                    stops = StopsDraft.of(route),
                     recurringDays = route.recurringDays,
                     typicalDepartureTime = route.typicalDepartureTime,
                 )
@@ -132,8 +129,8 @@ class RouteDetailViewModel(
     private fun saveChanges() {
         val draft = _state.value.draft ?: return
         val route = _state.value.route ?: return
-        val origin = draft.origin ?: return
-        val destination = draft.destination ?: return
+        val origin = draft.stops.origin ?: return
+        val destination = draft.stops.destination ?: return
 
         _state.update { it.copy(isSaving = true) }
         viewModelScope.launch {
@@ -141,7 +138,7 @@ class RouteDetailViewModel(
                 name = draft.name,
                 origin = origin,
                 destination = destination,
-                waypoints = draft.waypoints,
+                waypoints = draft.stops.waypoints,
                 recurringDays = draft.recurringDays,
                 typicalDepartureTime = draft.typicalDepartureTime,
             )
@@ -189,19 +186,7 @@ class RouteDetailViewModel(
     private fun onDraftPlaceSelected(place: Place) {
         updateDraft { draft ->
             val target = draft.selectionTarget ?: return@updateDraft draft
-            when (target) {
-                SelectionTarget.Origin -> draft.copy(origin = place, selectionTarget = null)
-                SelectionTarget.Destination -> draft.copy(destination = place, selectionTarget = null)
-                is SelectionTarget.EditWaypoint -> {
-                    val updated = draft.waypoints.toMutableList()
-                    updated[target.index] = place
-                    draft.copy(waypoints = updated, selectionTarget = null)
-                }
-                SelectionTarget.NewWaypoint -> draft.copy(
-                    waypoints = draft.waypoints + place,
-                    selectionTarget = null
-                )
-            }
+            draft.copy(stops = draft.stops.apply(target, place), selectionTarget = null)
         }
     }
 

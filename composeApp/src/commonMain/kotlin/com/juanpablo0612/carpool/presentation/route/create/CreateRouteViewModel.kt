@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.route.create
 
+import com.juanpablo0612.carpool.presentation.place.stops.SelectionTarget
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
@@ -31,9 +32,7 @@ class CreateRouteViewModel(
     fun onAction(action: CreateRouteAction) {
         when (action) {
             is CreateRouteAction.OnNameChange -> _state.update { it.copy(name = action.name, error = null) }
-            is CreateRouteAction.OnRemoveWaypoint -> _state.update {
-                it.copy(waypoints = it.waypoints.filterIndexed { i, _ -> i != action.index })
-            }
+            is CreateRouteAction.OnRemoveWaypoint -> _state.update { it.copy(stops = it.stops.removeWaypoint(action.index)) }
             CreateRouteAction.OnOriginClick -> _state.update {
                 it.copy(selectionTarget = SelectionTarget.Origin)
             }
@@ -74,21 +73,7 @@ class CreateRouteViewModel(
 
     private fun onPlaceSelected(action: CreateRouteAction.OnPlaceSelectedFromResult) {
         val target = _state.value.selectionTarget ?: return
-        _state.update {
-            when (target) {
-                SelectionTarget.Origin -> it.copy(origin = action.place, selectionTarget = null)
-                SelectionTarget.Destination -> it.copy(destination = action.place, selectionTarget = null)
-                is SelectionTarget.EditWaypoint -> {
-                    val updated = it.waypoints.toMutableList()
-                    updated[target.index] = action.place
-                    it.copy(waypoints = updated, selectionTarget = null)
-                }
-                SelectionTarget.NewWaypoint -> it.copy(
-                    waypoints = it.waypoints + action.place,
-                    selectionTarget = null
-                )
-            }
-        }
+        _state.update { it.copy(stops = it.stops.apply(target, action.place), selectionTarget = null) }
     }
 
     private fun createRoute() {
@@ -98,8 +83,8 @@ class CreateRouteViewModel(
             _state.update { it.copy(error = CreateRouteError.NameRequired) }
             return
         }
-        val origin = currentState.origin
-        val destination = currentState.destination
+        val origin = currentState.stops.origin
+        val destination = currentState.stops.destination
         if (origin == null || destination == null) {
             _state.update { it.copy(error = CreateRouteError.OriginDestinationRequired) }
             return
@@ -116,7 +101,7 @@ class CreateRouteViewModel(
                 driverId = userId,
                 origin = origin,
                 destination = destination,
-                waypoints = currentState.waypoints,
+                waypoints = currentState.stops.waypoints,
                 name = currentState.name,
                 recurringDays = currentState.recurringDays,
                 typicalDepartureTime = currentState.typicalDepartureTime,

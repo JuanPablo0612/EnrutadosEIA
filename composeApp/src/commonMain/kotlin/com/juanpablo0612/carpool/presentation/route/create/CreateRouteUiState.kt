@@ -1,14 +1,13 @@
 package com.juanpablo0612.carpool.presentation.route.create
 
-import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.presentation.place.stops.SelectionTarget
+import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
 
 data class CreateRouteUiState(
     val name: String = "",
-    val origin: Place? = null,
-    val destination: Place? = null,
-    val waypoints: List<Place> = emptyList(),
+    val stops: StopsDraft = StopsDraft(),
     val recurringDays: Set<DayOfWeek> = emptySet(),
     val typicalDepartureTime: LocalTime? = null,
     val isLoading: Boolean = false,
@@ -18,16 +17,8 @@ data class CreateRouteUiState(
     val selectionTarget: SelectionTarget? = null
 ) {
     val isValid: Boolean
-        get() = name.isNotBlank() && origin != null && destination != null
+        get() = name.isNotBlank() && stops.isComplete
 
     val isDirty: Boolean
-        get() = name.isNotBlank() || origin != null || destination != null || waypoints.isNotEmpty() ||
-            recurringDays.isNotEmpty() || typicalDepartureTime != null
-}
-
-sealed class SelectionTarget {
-    data object Origin : SelectionTarget()
-    data object Destination : SelectionTarget()
-    data class EditWaypoint(val index: Int) : SelectionTarget()
-    data object NewWaypoint : SelectionTarget()
+        get() = name.isNotBlank() || !stops.isEmpty || recurringDays.isNotEmpty() || typicalDepartureTime != null
 }

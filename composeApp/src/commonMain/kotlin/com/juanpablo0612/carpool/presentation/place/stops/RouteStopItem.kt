@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.route.create.components
+package com.juanpablo0612.carpool.presentation.place.stops
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,15 +20,10 @@ import enrutadoseia.composeapp.generated.resources.select_location_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-enum class StopType {
-    START, MIDDLE, END
-}
-
 @Composable
 fun RouteStopItem(
     label: String,
     place: Place?,
-    type: StopType,
     isLocked: Boolean,
     onClick: () -> Unit,
     onRemove: (() -> Unit)? = null,

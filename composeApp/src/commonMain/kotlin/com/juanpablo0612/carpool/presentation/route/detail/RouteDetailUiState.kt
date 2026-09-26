@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.route.detail
 
+import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
 import kotlinx.datetime.Instant
@@ -24,9 +25,7 @@ data class RouteDetailUiState(
             val d = draft ?: return false
             val r = route ?: return false
             return d.name != r.name ||
-                d.origin != r.origin ||
-                d.destination != r.destination ||
-                d.waypoints != r.waypoints ||
+                d.stops != StopsDraft.of(r) ||
                 d.recurringDays != r.recurringDays ||
                 d.typicalDepartureTime != r.typicalDepartureTime
         }

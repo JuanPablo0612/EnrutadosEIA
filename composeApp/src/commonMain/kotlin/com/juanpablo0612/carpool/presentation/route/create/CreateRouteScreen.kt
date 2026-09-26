@@ -1,8 +1,10 @@
 package com.juanpablo0612.carpool.presentation.route.create
 
+import com.juanpablo0612.carpool.presentation.place.stops.StopSelectionHost
+import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
+import com.juanpablo0612.carpool.presentation.place.stops.stopsEditorItems
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,15 +18,8 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorUiState
-import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.route.create.components.DaySelector
-import com.juanpablo0612.carpool.presentation.route.create.components.RouteStopItem
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
-import com.juanpablo0612.carpool.presentation.route.create.components.StopType
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
@@ -37,9 +32,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -51,26 +43,11 @@ fun CreateRouteScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    // Each selection target gets its own keyed instance so the selector's mode-dependent title
-    // and state don't bleed across origin/destination/waypoint.
-    val originSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "origin") { parametersOf("ORIGIN") }
-    val destinationSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "destination") { parametersOf("DESTINATION") }
-    val waypointSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "waypoint") { parametersOf("WAYPOINT") }
-    val originSelectorState by originSelectorViewModel.state.collectAsState()
-    val destinationSelectorState by destinationSelectorViewModel.state.collectAsState()
-    val waypointSelectorState by waypointSelectorViewModel.state.collectAsState()
-
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             CreateRouteEvent.NavigateBack -> onBackClick()
             CreateRouteEvent.RouteCreated -> onRouteCreated()
         }
-    }
-
-    // The selector is an inline content swap, not a real back-stack entry — without this, system
-    // back while it's open exits the whole create-route flow and discards the in-progress draft.
-    BackHandler(enabled = state.selectionTarget != null) {
-        viewModel.onAction(CreateRouteAction.OnCancelSelection)
     }
 
     // Route system back through the same dirty-check as the top-bar back arrow, so a swipe/
@@ -79,59 +56,13 @@ fun CreateRouteScreen(
         viewModel.onAction(CreateRouteAction.OnBackClick)
     }
 
-    val (activeSelectorState, activeSelectorViewModel) = when (state.selectionTarget) {
-        SelectionTarget.Origin -> originSelectorState to originSelectorViewModel
-        SelectionTarget.Destination -> destinationSelectorState to destinationSelectorViewModel
-        is SelectionTarget.EditWaypoint, SelectionTarget.NewWaypoint -> waypointSelectorState to waypointSelectorViewModel
-        null -> originSelectorState to originSelectorViewModel
-    }
-
-    val onPlaceSelected: (Place) -> Unit = { place ->
-        viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(place))
-        activeSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
-    }
-    // Row taps (saved/campus place) call onPlaceSelected directly, but "use current location"
-    // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected, so they must be
-    // observed here — otherwise those taps do nothing and the emit suspends with no collector.
-    ObserveAsEvents(activeSelectorViewModel.events) { event ->
-        when (event) {
-            is PlaceSelectorEvent.PlaceSelected -> onPlaceSelected(event.place)
-            PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
-            PlaceSelectorEvent.Dismiss -> Unit
-        }
-    }
-
-    CreateRouteScreenContent(
-        state = state,
-        placeSelectorState = activeSelectorState,
-        onAction = viewModel::onAction,
-        onPlaceSelectorAction = activeSelectorViewModel::onAction,
-        onPlaceSelected = onPlaceSelected
-    )
-}
-
-@Composable
-fun CreateRouteScreenContent(
-    state: CreateRouteUiState,
-    placeSelectorState: PlaceSelectorUiState,
-    onAction: (CreateRouteAction) -> Unit,
-    onPlaceSelectorAction: (PlaceSelectorAction) -> Unit,
-    onPlaceSelected: (Place) -> Unit,
-) {
-    if (state.selectionTarget != null) {
-        PlaceSelectorContent(
-            state = placeSelectorState,
-            onAction = onPlaceSelectorAction,
-            onPlaceSelected = onPlaceSelected,
-            onBack = {
-                onAction(CreateRouteAction.OnCancelSelection)
-            },
-        )
-    } else {
-        CreateRouteContent(
-            state = state,
-            onAction = onAction
-        )
+    StopSelectionHost(
+        selectionTarget = state.selectionTarget,
+        onPlaceSelected = { viewModel.onAction(CreateRouteAction.OnPlaceSelectedFromResult(it)) },
+        onCancelSelection = { viewModel.onAction(CreateRouteAction.OnCancelSelection) },
+        onNavigateToAddPlace = onNavigateToAddPlace,
+    ) {
+        CreateRouteContent(state = state, onAction = viewModel::onAction)
     }
 }
 
@@ -192,8 +123,8 @@ fun CreateRouteContent(
             item {
                 val completed = listOf(
                     state.name.isNotBlank(),
-                    state.origin != null,
-                    state.destination != null
+                    state.stops.origin != null,
+                    state.stops.destination != null
                 ).count { it }
                 FormProgressIndicator(
                     completedSections = completed,
@@ -226,53 +157,14 @@ fun CreateRouteContent(
                 SectionHeader(stringResource(Res.string.waypoints_section_title))
             }
 
-            item {
-                RouteStopItem(
-                    label = stringResource(Res.string.origin_label),
-                    place = state.origin,
-                    type = StopType.START,
-                    isLocked = false,
-                    onClick = { onAction(CreateRouteAction.OnOriginClick) }
-                )
-            }
-
-            itemsIndexed(
-                state.waypoints,
-                key = { index, waypoint -> waypoint.id.ifBlank { "waypoint_$index" } }
-            ) { index, waypoint ->
-                RouteStopItem(
-                    label = stringResource(Res.string.stop_number, index + 1),
-                    place = waypoint,
-                    type = StopType.MIDDLE,
-                    isLocked = false,
-                    onRemove = { onAction(CreateRouteAction.OnRemoveWaypoint(index)) },
-                    onClick = { onAction(CreateRouteAction.OnEditWaypointClick(index)) }
-                )
-            }
-
-            item {
-                TextButton(
-                    onClick = { onAction(CreateRouteAction.OnAddWaypointClick) },
-                    // 40dp aligns the label under RouteStopItem's content column (24dp timeline +
-                    // 16dp spacer), not a spacing-scale value.
-                    modifier = Modifier.padding(horizontal = 40.dp)
-                ) {
-                    Icon(vectorResource(Res.drawable.add_24px), contentDescription = null)
-                    Spacer(Modifier.width(Spacing.sm))
-                    Text(stringResource(Res.string.add_waypoint_button))
-                }
-            }
-
-            item {
-                RouteStopItem(
-                    label = stringResource(Res.string.destination_label),
-                    place = state.destination,
-                    type = StopType.END,
-                    isLocked = false,
-                    showConnector = false,
-                    onClick = { onAction(CreateRouteAction.OnDestinationClick) }
-                )
-            }
+            stopsEditorItems(
+                stops = state.stops,
+                onOriginClick = { onAction(CreateRouteAction.OnOriginClick) },
+                onDestinationClick = { onAction(CreateRouteAction.OnDestinationClick) },
+                onEditWaypoint = { onAction(CreateRouteAction.OnEditWaypointClick(it)) },
+                onRemoveWaypoint = { onAction(CreateRouteAction.OnRemoveWaypoint(it)) },
+                onAddWaypoint = { onAction(CreateRouteAction.OnAddWaypointClick) },
+            )
 
             // Recurrence section
             item {
@@ -357,15 +249,12 @@ private fun CreateRouteContentPreview() {
         CreateRouteContent(
             state = CreateRouteUiState(
                 name = "Ida a clase",
-                origin = Place(
-                    name = "Casa",
-                    address = "Calle 10 #20-30",
-                    latitude = 0.0,
-                    longitude = 0.0
+                stops = StopsDraft(
+                    origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 0.0, longitude = 0.0),
+                    waypoints = listOf(
+                        Place(name = "Parada 1", address = "Cra 50 #30", latitude = 0.0, longitude = 0.0)
+                    ),
                 ),
-                waypoints = listOf(
-                    Place(name = "Parada 1", address = "Cra 50 #30", latitude = 0.0, longitude = 0.0)
-                )
             ),
             onAction = {}
         )
