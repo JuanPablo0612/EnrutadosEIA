@@ -30,10 +30,10 @@ import com.juanpablo0612.carpool.domain.auth.model.UserRole
 import com.juanpablo0612.carpool.presentation.profile.components.ActiveRolesDialog
 import com.juanpablo0612.carpool.presentation.profile.components.DeleteAccountDialog
 import com.juanpablo0612.carpool.presentation.profile.components.ProfileListItem
-import com.juanpablo0612.carpool.presentation.profile.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.profile.components.UserHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res

@@ -49,7 +49,6 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToVehiclesList: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
-    onNavigateToTripDetailPassenger: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
     onNavigateToPassengerProfile: (String) -> Unit,
@@ -72,7 +71,6 @@ fun NavGraphBuilder.driverNavGraph(
             onNavigateToPassengerBookings = onNavigateToPassengerBookings,
             onNavigateToSavedPlaces = onNavigateToSavedPlaces,
             onNavigateToTripDetail = onNavigateToTripDetail,
-            onNavigateToTripDetailPassenger = onNavigateToTripDetailPassenger,
         )
     }
 

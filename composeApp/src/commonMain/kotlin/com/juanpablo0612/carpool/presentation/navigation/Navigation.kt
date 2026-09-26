@@ -288,7 +288,6 @@ fun AppNavigation(
                     onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                     onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
-                    onNavigateToTripDetailPassenger = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
                     onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },

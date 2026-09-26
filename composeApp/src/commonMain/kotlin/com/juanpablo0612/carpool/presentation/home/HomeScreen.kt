@@ -52,7 +52,6 @@ fun HomeScreen(
     onNavigateToPassengerBookings: () -> Unit,
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
-    onNavigateToTripDetailPassenger: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -68,7 +67,7 @@ fun HomeScreen(
             HomeEvent.NavigateToPassengerBookings -> onNavigateToPassengerBookings()
             HomeEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
             is HomeEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
-            is HomeEvent.NavigateToTripDetailPassenger -> onNavigateToTripDetailPassenger(event.tripId)
+            is HomeEvent.NavigateToTripDetailPassenger -> onNavigateToTripDetail(event.tripId)
         }
     }
 
