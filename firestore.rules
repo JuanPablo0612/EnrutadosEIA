@@ -88,7 +88,20 @@ service cloud.firestore {
     // ---------------------------------------------------------------------------------------
     match /trips/{tripId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.driverId == request.auth.uid;
+      // Server-side backstop for TripDraftValidator: a new trip is active, has no confirmed
+      // seats yet, offers 1-8 seats, departs in the future and asks at most $50.000 (carpooling
+      // may only share costs).
+      allow create: if isSignedIn() &&
+        request.resource.data.driverId == request.auth.uid &&
+        request.resource.data.status == 'ACTIVE' &&
+        request.resource.data.get("confirmedSeats", 0) == 0 &&
+        request.resource.data.get("seatCount", 1) is int &&
+        request.resource.data.get("seatCount", 1) >= 1 &&
+        request.resource.data.get("seatCount", 1) <= 8 &&
+        request.resource.data.departureTime > request.time.toMillis() &&
+        (request.resource.data.get("contributionPerPassenger", null) == null ||
+          (request.resource.data.contributionPerPassenger >= 0 &&
+            request.resource.data.contributionPerPassenger <= 50000));
       allow update: if isSignedIn() && (
         (
           resource.data.driverId == request.auth.uid &&
