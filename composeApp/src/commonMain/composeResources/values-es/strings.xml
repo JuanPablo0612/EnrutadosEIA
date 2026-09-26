@@ -14,9 +14,6 @@
     <string name="full_name_label">Nombre completo</string>
     <string name="full_name_placeholder">Juan Pérez</string>
     <string name="confirm_password_label">Confirmar contraseña</string>
-    <string name="user_type_prompt">Quiero usar Enrutados EIA como:</string>
-    <string name="passenger_option">Soy pasajero</string>
-    <string name="driver_option">Soy conductor</string>
     <string name="create_account_button">Crear cuenta</string>
     <string name="already_have_account_question">¿Ya tienes una cuenta?</string>
     <string name="login_link">Inicia sesión</string>
@@ -82,7 +79,6 @@
     <string name="error_name_too_short">Ingresa tu nombre completo (nombre y apellido)</string>
     <string name="error_confirm_password_empty">Por favor confirma tu contraseña</string>
     <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
-    <string name="error_role_not_selected">Por favor selecciona al menos un rol (pasajero o conductor)</string>
 
     <string name="show_password">Mostrar contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
@@ -165,15 +161,8 @@
     <string name="add_place_share_description">Otros usuarios podrán ver y reutilizar este lugar</string>
 
     <!-- Role Selector -->
-    <string name="role_selector_greeting">¡Hola, %1$s!</string>
-    <string name="role_selector_subtitle">¿Cómo quieres usar Enrutados EIA hoy?</string>
-    <string name="role_selector_driver_title">Conducir</string>
-    <string name="role_selector_driver_subtitle">Ofrece viajes y ahorra en tu trayecto</string>
-    <string name="role_selector_passenger_title">Viajar</string>
-    <string name="role_selector_passenger_subtitle">Encuentra y reserva viajes al campus</string>
 
     <!-- Driver Home -->
-    <string name="driver_home_title">Inicio Conductor</string>
 
     <!-- Passenger Home -->
     <string name="passenger_home_title">Buscar Viaje</string>
@@ -200,14 +189,11 @@
     <string name="route_detail_passenger_title">Detalles de la Ruta</string>
 
     <!-- Reservas del pasajero -->
-    <string name="passenger_bookings_title">Mis Reservas</string>
 
     <!-- Solicitudes del conductor -->
     <string name="booking_requests_title">Solicitudes de reserva</string>
 
     <!-- Navegación -->
-    <string name="nav_booking_requests">Solicitudes</string>
-    <string name="nav_my_bookings">Mis Reservas</string>
     <string name="nav_my_trips">Mis viajes</string>
     <string name="nav_profile">Perfil</string>
 
@@ -263,8 +249,6 @@
     <string name="home_action_my_trips">Mis viajes</string>
     <string name="home_action_search_trip">Buscar viaje</string>
     <string name="home_action_my_places">Mis lugares</string>
-    <string name="home_action_my_bookings">Mis reservas</string>
-    <string name="home_action_history">Historial</string>
 
     <!-- Home banners de incorporación -->
     <string name="home_no_vehicle_title">¿Tienes carro?</string>
@@ -276,8 +260,6 @@
     <string name="home_search_trip_cta">Buscar viaje</string>
 
     <!-- Home estados vacíos -->
-    <string name="home_driver_empty_title">¡Bienvenido, conductor!</string>
-    <string name="home_driver_empty_subtitle">Registra tu vehículo y crea una ruta para comenzar a ofrecer viajes.</string>
     <string name="home_passenger_empty_title">¡Encuentra tu primer viaje!</string>
     <string name="home_passenger_empty_subtitle">Busca rutas disponibles y reserva tu cupo fácilmente.</string>
     <string name="my_trips_tab_passenger">Como pasajero</string>
@@ -295,7 +277,6 @@
     <!-- Pasos de registro -->
     <string name="register_step_1_title">Crea tu cuenta</string>
     <string name="register_step_2_title">Completa tu perfil</string>
-    <string name="register_step_3_title">Tu rol</string>
     <string name="register_step_indicator">Paso %1$d de %2$d</string>
     <string name="register_photo_placeholder">Agregar foto de perfil (opcional)</string>
     <string name="register_photo_error">No pudimos leer esa foto. Elige otra.</string>
@@ -322,9 +303,6 @@
     <string name="forgot_password_open_gmail">Abrir Gmail</string>
 
     <!-- Selector de rol -->
-    <string name="role_selector_remember_choice">Recordar mi elección</string>
-    <string name="role_selector_remember_choice_hint">Nos saltaremos esta pantalla la próxima vez e iremos directo al rol que elijas ahora</string>
-    <string name="role_selector_driver_pending">%1$d solicitudes pendientes</string>
 
     <!-- Nuevos errores de validación -->
     <string name="error_email_not_eia">Usa tu correo @eia.edu.co</string>
@@ -525,7 +503,6 @@
     <string name="profile_my_account_section">Mi cuenta</string>
     <string name="profile_config_section">Configuración</string>
     <string name="profile_saved_places">Mis lugares guardados</string>
-    <string name="profile_active_roles">Roles activos</string>
     <string name="profile_notifications_settings">Notificaciones</string>
     <string name="profile_delete_account">Eliminar cuenta</string>
     <string name="profile_delete_account_confirm_title">¿Eliminar tu cuenta?</string>
@@ -538,14 +515,6 @@
     <string name="profile_delete_account_email_mismatch">El correo no coincide</string>
 
     <!-- Diálogo de roles activos -->
-    <string name="active_roles_title">Roles activos</string>
-    <string name="active_roles_driver">Conductor</string>
-    <string name="active_roles_passenger">Pasajero</string>
-    <string name="active_roles_min_one">Debes tener al menos un rol activo.</string>
-    <string name="active_roles_close">Cerrar</string>
-    <string name="active_roles_disable_confirm_title">¿Cambiar de rol?</string>
-    <string name="active_roles_disable_confirm_body">Actualmente estás activo en este rol. Desactivarlo te cambiará de inmediato a tu otro rol.</string>
-    <string name="active_roles_disable_confirm_button">Cambiar de rol</string>
 
     <!-- Editar perfil -->
     <string name="edit_profile_title">Editar perfil</string>
@@ -788,8 +757,6 @@
     <string name="error_route_delete_failed">No se pudo eliminar la ruta. Inténtalo de nuevo.</string>
     <string name="error_route_duplicate_failed">No se pudo duplicar la ruta. Inténtalo de nuevo.</string>
 
-    <string name="role_switch_to_driver">Cambiar a conductor</string>
-    <string name="role_switch_to_passenger">Cambiar a pasajero</string>
     <string name="notice_route_created">Ruta creada</string>
     <string name="notice_route_updated">Ruta actualizada</string>
     <string name="notice_route_duplicated">Ruta duplicada</string>

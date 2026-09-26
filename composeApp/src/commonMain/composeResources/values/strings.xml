@@ -14,9 +14,6 @@
     <string name="full_name_label">Full Name</string>
     <string name="full_name_placeholder">Jane Doe</string>
     <string name="confirm_password_label">Confirm password</string>
-    <string name="user_type_prompt">I want to use Enrutados EIA as:</string>
-    <string name="passenger_option">I am a passenger</string>
-    <string name="driver_option">I am a driver</string>
     <string name="create_account_button">Create account</string>
     <string name="already_have_account_question">Already have an account?</string>
     <string name="login_link">Log in</string>
@@ -37,7 +34,6 @@
     <string name="error_name_too_short">Please enter your full name (first and last)</string>
     <string name="error_confirm_password_empty">Please confirm your password</string>
     <string name="error_passwords_do_not_match">Passwords do not match</string>
-    <string name="error_role_not_selected">Please select at least one role (passenger or driver)</string>
 
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
@@ -165,15 +161,8 @@
     <string name="cd_add_to_my_places">Add to my places</string>
 
     <!-- Role Selector -->
-    <string name="role_selector_greeting">Hello, %1$s!</string>
-    <string name="role_selector_subtitle">How would you like to use Enrutados EIA today?</string>
-    <string name="role_selector_driver_title">Drive</string>
-    <string name="role_selector_driver_subtitle">Offer rides and earn money on your commute</string>
-    <string name="role_selector_passenger_title">Ride</string>
-    <string name="role_selector_passenger_subtitle">Find and book rides to campus</string>
 
     <!-- Driver Home -->
-    <string name="driver_home_title">Driver Home</string>
 
     <!-- Passenger Home -->
     <string name="passenger_home_title">Find a Ride</string>
@@ -200,14 +189,11 @@
     <string name="route_detail_passenger_title">Route Details</string>
 
     <!-- Passenger Bookings -->
-    <string name="passenger_bookings_title">My Bookings</string>
 
     <!-- Driver Booking Requests -->
     <string name="booking_requests_title">Booking requests</string>
 
     <!-- Navigation -->
-    <string name="nav_booking_requests">Requests</string>
-    <string name="nav_my_bookings">My Bookings</string>
     <string name="nav_my_trips">My trips</string>
     <string name="nav_profile">Profile</string>
 
@@ -263,8 +249,6 @@
     <string name="home_action_my_trips">My trips</string>
     <string name="home_action_search_trip">Search trip</string>
     <string name="home_action_my_places">Mis lugares</string>
-    <string name="home_action_my_bookings">My bookings</string>
-    <string name="home_action_history">Historial</string>
 
     <!-- Home onboarding banners -->
     <string name="home_no_vehicle_title">Have a car?</string>
@@ -276,8 +260,6 @@
     <string name="home_search_trip_cta">Search trip</string>
 
     <!-- Home empty states -->
-    <string name="home_driver_empty_title">Welcome, driver!</string>
-    <string name="home_driver_empty_subtitle">Register your vehicle and create a route to start offering rides.</string>
     <string name="home_passenger_empty_title">Find your first trip!</string>
     <string name="home_passenger_empty_subtitle">Search available routes and book your seat easily.</string>
     <string name="my_trips_tab_passenger">As passenger</string>
@@ -295,7 +277,6 @@
     <!-- Register steps -->
     <string name="register_step_1_title">Create your account</string>
     <string name="register_step_2_title">Complete your profile</string>
-    <string name="register_step_3_title">Your role</string>
     <string name="register_step_indicator">Step %1$d of %2$d</string>
     <string name="register_photo_placeholder">Add profile photo (optional)</string>
     <string name="register_photo_error">Couldn\'t read that photo. Please pick another one.</string>
@@ -322,9 +303,6 @@
     <string name="forgot_password_open_gmail">Open Gmail</string>
 
     <!-- Role selector -->
-    <string name="role_selector_remember_choice">Remember my choice</string>
-    <string name="role_selector_remember_choice_hint">Skip this screen next time and go straight to the role you pick now</string>
-    <string name="role_selector_driver_pending">%1$d pending requests</string>
 
     <!-- New validation errors -->
     <string name="error_email_not_eia">Use your @eia.edu.co email</string>
@@ -652,7 +630,6 @@
     <string name="profile_my_account_section">My account</string>
     <string name="profile_config_section">Settings</string>
     <string name="profile_saved_places">My saved places</string>
-    <string name="profile_active_roles">Roles activos</string>
     <string name="profile_notifications_settings">Notifications</string>
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
@@ -665,14 +642,6 @@
     <string name="profile_delete_account_email_mismatch">The email doesn\'t match</string>
 
     <!-- Active roles dialog -->
-    <string name="active_roles_title">Roles activos</string>
-    <string name="active_roles_driver">Driver</string>
-    <string name="active_roles_passenger">Passenger</string>
-    <string name="active_roles_min_one">You must have at least one active role.</string>
-    <string name="active_roles_close">Cerrar</string>
-    <string name="active_roles_disable_confirm_title">Switch roles?</string>
-    <string name="active_roles_disable_confirm_body">You\'re currently active in this role. Turning it off will switch you to your other role right away.</string>
-    <string name="active_roles_disable_confirm_button">Switch role</string>
 
     <!-- Edit profile -->
     <string name="edit_profile_title">Edit profile</string>
@@ -786,8 +755,6 @@
     <string name="error_route_delete_failed">Couldn't delete the route. Please try again.</string>
     <string name="error_route_duplicate_failed">Couldn't duplicate the route. Please try again.</string>
 
-    <string name="role_switch_to_driver">Switch to driver</string>
-    <string name="role_switch_to_passenger">Switch to passenger</string>
     <string name="notice_route_created">Route created</string>
     <string name="notice_route_updated">Route updated</string>
     <string name="notice_route_duplicated">Route duplicated</string>
