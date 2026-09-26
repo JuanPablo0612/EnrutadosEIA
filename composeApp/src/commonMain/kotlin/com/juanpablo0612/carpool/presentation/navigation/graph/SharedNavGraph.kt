@@ -138,6 +138,7 @@ fun NavGraphBuilder.sharedNavGraph(
         }
         ChatScreen(
             viewModel = viewModel,
+            bookingId = args.bookingId,
             onBackClick = onNavigateBack
         )
     }

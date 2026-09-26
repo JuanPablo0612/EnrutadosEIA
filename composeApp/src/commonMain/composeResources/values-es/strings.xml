@@ -606,6 +606,12 @@
     <string name="notification_someone">Alguien</string>
     <string name="notification_generic_title">Nueva notificación</string>
     <string name="notification_generic_body">Abre la app para ver los detalles.</string>
+    <string name="notification_channel_bookings_name">Reservas</string>
+    <string name="notification_channel_bookings_description">Solicitudes de cupo y cambios en tus reservas</string>
+    <string name="notification_channel_trips_name">Viajes</string>
+    <string name="notification_channel_trips_description">Cuando un viaje inicia, termina o se cancela</string>
+    <string name="notification_channel_chat_name">Mensajes</string>
+    <string name="notification_channel_chat_description">Mensajes del chat de tus viajes</string>
 
     <!-- Seguridad -->
 

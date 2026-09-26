@@ -733,6 +733,12 @@
     <string name="notification_someone">Someone</string>
     <string name="notification_generic_title">New notification</string>
     <string name="notification_generic_body">Open the app to see the details.</string>
+    <string name="notification_channel_bookings_name">Bookings</string>
+    <string name="notification_channel_bookings_description">Seat requests and changes to your bookings</string>
+    <string name="notification_channel_trips_name">Trips</string>
+    <string name="notification_channel_trips_description">When a trip starts, ends or is cancelled</string>
+    <string name="notification_channel_chat_name">Messages</string>
+    <string name="notification_channel_chat_description">Chat messages about your trips</string>
 
     <!-- DateTime formatting -->
     <string name="time_am">AM</string>
