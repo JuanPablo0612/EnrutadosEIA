@@ -9,3 +9,5 @@ setGlobalOptions({region: REGION, maxInstances: 10});
 
 export {onBookingCreated, onBookingUpdated} from "./triggers/bookings";
 export {onFcmTokenCreated} from "./triggers/fcmTokens";
+export {onTripDeleted, onTripUpdated} from "./triggers/trips";
+export {onChatMessageCreated} from "./triggers/chat";
