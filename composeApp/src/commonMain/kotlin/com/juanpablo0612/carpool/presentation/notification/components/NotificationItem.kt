@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonth
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
@@ -75,7 +76,5 @@ private fun formatTimestamp(epochMs: Long): String {
         val minute = local.minute.toString().padStart(2, '0')
         return "$hour:$minute"
     }
-    val day = local.date.dayOfMonth.toString().padStart(2, '0')
-    val month = local.date.monthNumber.toString().padStart(2, '0')
-    return "$day/$month"
+    return formatDayMonth(local.date)
 }

@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.presentation.route.search.components.formatEpochShort
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerAction
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerUiState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -53,7 +53,7 @@ internal fun ConfirmRequestSheetContent(
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
             )
             Text(
-                text = formatEpochShort(trip.departureTime),
+                text = formatDayMonthTime(trip.departureTime),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

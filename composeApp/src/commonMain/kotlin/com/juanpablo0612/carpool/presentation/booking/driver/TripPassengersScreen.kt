@@ -49,6 +49,7 @@ import enrutadoseia.composeapp.generated.resources.trip_passengers_section_pendi
 import enrutadoseia.composeapp.generated.resources.trip_passengers_title
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
@@ -137,7 +138,7 @@ fun TripPassengersContent(
                 val pmMarker = stringResource(Res.string.time_pm)
                 val timeStr = formatShortTime(local.hour, local.minute, amMarker, pmMarker)
                 val dateStr = formatLongDate(
-                    local.year, local.monthNumber, local.dayOfMonth,
+                    local.year, local.month.number, local.day,
                     dayNamesShort.toList(), monthNames.toList(), dateConnector
                 )
                 Column(modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)) {

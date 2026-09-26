@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.domain.trip.model.Trip
-import com.juanpablo0612.carpool.presentation.route.search.components.formatEpochShort
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_contribution_free
@@ -25,7 +25,7 @@ internal fun TripSummarySection(
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         Text(
-            text = formatEpochShort(trip.departureTime),
+            text = formatDayMonthTime(trip.departureTime),
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
             color = MaterialTheme.colorScheme.primary
         )

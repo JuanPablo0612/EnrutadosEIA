@@ -17,6 +17,7 @@ import enrutadoseia.composeapp.generated.resources.time_pm
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
@@ -34,6 +35,29 @@ fun formatShortTime(hour: Int, minute: Int, amMarker: String, pmMarker: String):
     val amPm = if (hour < 12) amMarker else pmMarker
     val min = minute.toString().padStart(2, '0')
     return "$h12:$min $amPm"
+}
+
+private fun Int.twoDigits(): String = toString().padStart(2, '0')
+
+/** Numeric day and month, "dd/MM". */
+fun formatDayMonth(date: LocalDate): String =
+    "${date.day.twoDigits()}/${date.month.number.twoDigits()}"
+
+/** Full numeric date, "dd/MM/yyyy". */
+fun formatNumericDate(date: LocalDate): String = "${formatDayMonth(date)}/${date.year}"
+
+/** A departure instant in the device time zone as "dd/MM · h:mm AM". */
+@Composable
+fun formatDayMonthTime(epochMs: Long): String {
+    val local = Instant.fromEpochMilliseconds(epochMs)
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+    val time = formatShortTime(
+        hour = local.hour,
+        minute = local.minute,
+        amMarker = stringResource(Res.string.time_am),
+        pmMarker = stringResource(Res.string.time_pm),
+    )
+    return "${formatDayMonth(local.date)} · $time"
 }
 
 /**

@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel
 import enrutadoseia.composeapp.generated.resources.confirm
@@ -38,7 +39,6 @@ import enrutadoseia.composeapp.generated.resources.search_time_field_placeholder
 import enrutadoseia.composeapp.generated.resources.search_tolerance_label
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -102,7 +102,7 @@ internal fun DateTimeBottomSheet(
                     onClick = { mode = DateTimeSheetMode.DATE },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(selectedDate?.let { formatDateOnly(it) } ?: stringResource(Res.string.search_date_field_placeholder))
+                    Text(selectedDate?.let { formatNumericDate(it) } ?: stringResource(Res.string.search_date_field_placeholder))
                 }
 
                 OutlinedButton(
@@ -190,14 +190,6 @@ internal fun DateTimeBottomSheet(
             }
         }
     }
-}
-
-private fun formatDateOnly(date: LocalDate): String {
-    @Suppress("DEPRECATION")
-    val day = date.dayOfMonth.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val month = date.monthNumber.toString().padStart(2, '0')
-    return "$day/$month/${date.year}"
 }
 
 private fun formatTimeOnly(time: LocalTime): String {

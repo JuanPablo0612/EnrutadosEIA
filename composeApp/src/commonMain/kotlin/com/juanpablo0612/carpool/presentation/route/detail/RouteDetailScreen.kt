@@ -41,6 +41,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -313,7 +314,7 @@ internal fun RouteDetailReadContent(
                             Text(
                                 text = stringResource(
                                     Res.string.route_detail_last_used,
-                                    "${local.date.dayOfMonth}/${local.date.monthNumber}/${local.date.year}"
+                                    formatNumericDate(local.date)
                                 ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant

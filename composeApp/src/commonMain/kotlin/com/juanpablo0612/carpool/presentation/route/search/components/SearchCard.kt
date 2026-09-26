@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesAction
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesUiState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cd_swap_origin_destination
 import enrutadoseia.composeapp.generated.resources.filter_list_24px
@@ -41,9 +42,6 @@ import enrutadoseia.composeapp.generated.resources.search_destination_placeholde
 import enrutadoseia.composeapp.generated.resources.search_filters_button
 import enrutadoseia.composeapp.generated.resources.search_origin_placeholder
 import enrutadoseia.composeapp.generated.resources.swap_horiz_24px
-import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -89,7 +87,7 @@ internal fun SearchCard(
             Spacer(modifier = Modifier.height(Spacing.xs))
 
             PickerField(
-                value = if (state.selectedEpochMs != null) formatEpochShort(state.selectedEpochMs) else "",
+                value = if (state.selectedEpochMs != null) formatDayMonthTime(state.selectedEpochMs) else "",
                 placeholder = stringResource(Res.string.search_date_placeholder),
                 onClick = { onAction(SearchRoutesAction.OnShowDateTimeSheet) },
                 modifier = Modifier.fillMaxWidth()
@@ -158,16 +156,4 @@ private fun PickerField(
             modifier = Modifier.padding(horizontal = Spacing.md)
         )
     }
-}
-
-internal fun formatEpochShort(epochMs: Long): String {
-    val instant = Instant.fromEpochMilliseconds(epochMs)
-    val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    val hour = local.hour.toString().padStart(2, '0')
-    val minute = local.minute.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val day = local.dayOfMonth.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val month = local.monthNumber.toString().padStart(2, '0')
-    return "$day/$month · $hour:$minute"
 }

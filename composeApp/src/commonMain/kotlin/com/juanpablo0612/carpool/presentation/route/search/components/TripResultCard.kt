@@ -23,17 +23,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.time_am
-import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.trip_available_seats
 import enrutadoseia.composeapp.generated.resources.trip_contribution_free
 import enrutadoseia.composeapp.generated.resources.trip_driver_placeholder
 import enrutadoseia.composeapp.generated.resources.trip_result_view_detail
-import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -49,7 +44,7 @@ fun TripResultCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = formatDeparture(result.trip.departureTime),
+                text = formatDayMonthTime(result.trip.departureTime),
                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.primary
             )
@@ -136,20 +131,3 @@ private fun SeatsChip(availableSeats: Int) {
     }
 }
 
-@Composable
-private fun formatDeparture(epochMs: Long): String {
-    val local = Instant.fromEpochMilliseconds(epochMs)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    @Suppress("DEPRECATION")
-    val day = local.dayOfMonth.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val month = local.monthNumber.toString().padStart(2, '0')
-    // Shared formatter rather than a sixth private copy; the hand-rolled version dropped AM/PM.
-    val time = formatShortTime(
-        hour = local.hour,
-        minute = local.minute,
-        amMarker = stringResource(Res.string.time_am),
-        pmMarker = stringResource(Res.string.time_pm),
-    )
-    return "$day/$month · $time"
-}

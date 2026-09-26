@@ -36,6 +36,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.chat_date_today
 import enrutadoseia.composeapp.generated.resources.chat_date_yesterday
@@ -189,7 +190,7 @@ private fun DateSeparator(epochMs: Long, modifier: Modifier = Modifier) {
     val label = when {
         date == today -> stringResource(Res.string.chat_date_today)
         date == LocalDate.fromEpochDays(today.toEpochDays() - 1) -> stringResource(Res.string.chat_date_yesterday)
-        else -> "${date.dayOfMonth.toString().padStart(2, '0')}/${date.monthNumber.toString().padStart(2, '0')}/${date.year}"
+        else -> formatNumericDate(date)
     }
 
     Row(

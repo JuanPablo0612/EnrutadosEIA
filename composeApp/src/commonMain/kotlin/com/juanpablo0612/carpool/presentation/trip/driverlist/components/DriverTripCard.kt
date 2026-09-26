@@ -41,6 +41,7 @@ import enrutadoseia.composeapp.generated.resources.trip_seats_occupied
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_trip
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
@@ -65,7 +66,7 @@ internal fun DriverTripCard(
     val amMarker = stringResource(Res.string.time_am)
     val pmMarker = stringResource(Res.string.time_pm)
     val timeStr = formatShortTime(local.hour, local.minute, amMarker, pmMarker)
-    val dateStr = formatLongDate(local.year, local.monthNumber, local.dayOfMonth, dayNamesShort.toList(), monthNames.toList(), dateConnector)
+    val dateStr = formatLongDate(local.year, local.month.number, local.day, dayNamesShort.toList(), monthNames.toList(), dateConnector)
 
     Card(
         modifier = modifier

@@ -19,7 +19,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_action_rate
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_cancelled
@@ -28,12 +28,7 @@ import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_pendi
 import enrutadoseia.composeapp.generated.resources.booking_status_subtitle_rejected
 import enrutadoseia.composeapp.generated.resources.booking_action_message_driver
 import enrutadoseia.composeapp.generated.resources.cancel_booking_button
-import enrutadoseia.composeapp.generated.resources.time_am
-import enrutadoseia.composeapp.generated.resources.time_pm
 import enrutadoseia.composeapp.generated.resources.trip_action_track
-import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -62,7 +57,7 @@ fun EnrichedBookingCard(
             verticalAlignment = Alignment.Top
         ) {
             Text(
-                text = formatDepartureTime(booking.departureTime),
+                text = formatDayMonthTime(booking.departureTime),
                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
@@ -145,21 +140,3 @@ private fun statusSubtitle(status: BookingStatus): String? = when (status) {
     is BookingStatus.Cancelled -> stringResource(Res.string.booking_status_subtitle_cancelled)
 }
 
-@Composable
-private fun formatDepartureTime(epochMs: Long): String {
-    val local = Instant.fromEpochMilliseconds(epochMs)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    @Suppress("DEPRECATION")
-    val day = local.dayOfMonth.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val month = local.monthNumber.toString().padStart(2, '0')
-    // Shared formatter: previously a hand-rolled 24-hour "$hour:$minute" that always dropped
-    // AM/PM, so a Spanish-locale user with a 12-hour habit saw an unmarked, ambiguous time.
-    val time = formatShortTime(
-        hour = local.hour,
-        minute = local.minute,
-        amMarker = stringResource(Res.string.time_am),
-        pmMarker = stringResource(Res.string.time_pm),
-    )
-    return "$day/$month · $time"
-}
