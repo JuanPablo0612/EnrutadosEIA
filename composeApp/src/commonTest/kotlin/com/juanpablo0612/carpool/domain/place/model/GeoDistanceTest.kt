@@ -67,10 +67,9 @@ class GeoDistanceTest {
     }
 
     @Test
-    fun legacyPlacesFallBackToNameMatch() {
-        val a = place(name = "Parque Envigado", lat = 0.0, lng = 0.0)
-        assertEquals(0.0, matchDistanceMeters(a, place(name = "parque envigado", lat = 0.0, lng = 0.0)))
-        assertNull(matchDistanceMeters(a, place(name = "Otro", lat = 0.0, lng = 0.0)))
-        assertNull(matchDistanceMeters(place(lat = 0.0, lng = 0.0), place(lat = 0.0, lng = 0.0)))
+    fun placesWithoutCoordinatesNeverMatch() {
+        val missing = place(name = "Parque Envigado", lat = 0.0, lng = 0.0)
+        assertNull(matchDistanceMeters(missing, missing.copy()))
+        assertNull(matchDistanceMeters(missing, place(lat = 6.17, lng = -75.58)))
     }
 }

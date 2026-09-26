@@ -38,12 +38,11 @@ fun Place.hasValidCoordinates(): Boolean =
  * How far apart two places are for trip-matching purposes, or `null` when they can't be compared.
  *
  * The same campus preset always matches at distance 0, even if a stored copy has drifted
- * coordinates. Places without coordinates (legacy data) fall back to an exact name match.
+ * coordinates. A place without usable coordinates never matches.
  */
 fun matchDistanceMeters(a: Place, b: Place): Double? = when {
     a.isCampusPreset && b.isCampusPreset && a.id.isNotBlank() && a.id == b.id -> 0.0
     a.hasValidCoordinates() && b.hasValidCoordinates() ->
         GeoDistance.haversineMeters(a.latitude, a.longitude, b.latitude, b.longitude)
-    a.name.isNotBlank() && a.name.equals(b.name, ignoreCase = true) -> 0.0
     else -> null
 }

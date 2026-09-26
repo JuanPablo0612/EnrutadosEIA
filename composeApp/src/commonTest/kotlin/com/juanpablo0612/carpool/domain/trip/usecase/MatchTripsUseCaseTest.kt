@@ -145,14 +145,11 @@ class MatchTripsUseCaseTest {
     }
 
     @Test
-    fun missingCoordinatesAreSkippedButNamesStillMatch() {
-        val legacyWaypoint = place("Sin coordenadas", 0.0, 0.0)
-        val t = trip(waypoints = listOf(legacyWaypoint))
+    fun stopsWithoutCoordinatesAreSkipped() {
+        val noCoordinates = place("Sin coordenadas", 0.0, 0.0)
+        val t = trip(waypoints = listOf(noCoordinates))
         assertEquals(0, useCase(listOf(t), criteria(envigado, campus)).single().pickup!!.pathIndex)
-
-        val legacyOrigin = trip(origin = place("Envigado", 0.0, 0.0), waypoints = emptyList())
-        val match = useCase(listOf(legacyOrigin), criteria(place("envigado", 0.0, 0.0), campus)).single()
-        assertEquals(0.0, match.pickup!!.distanceMeters)
+        assertTrue(useCase(listOf(t), criteria(noCoordinates, campus)).isEmpty())
     }
 
     @Test
