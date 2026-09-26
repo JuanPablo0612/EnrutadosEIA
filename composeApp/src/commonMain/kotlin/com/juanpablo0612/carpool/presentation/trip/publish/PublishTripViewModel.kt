@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.trip.create
+package com.juanpablo0612.carpool.presentation.trip.publish
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,19 +27,19 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-class CreateTripViewModel(
-    private val routeId: String,
+class PublishTripViewModel(
+    private val routeId: String?,
     private val routeRepository: RouteRepository,
     private val vehicleRepository: VehicleRepository,
     private val tripRepository: TripRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CreateTripUiState())
-    val state: StateFlow<CreateTripUiState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(PublishTripUiState())
+    val state: StateFlow<PublishTripUiState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<CreateTripEvent>()
-    val events: SharedFlow<CreateTripEvent> = _events.asSharedFlow()
+    private val _events = MutableSharedFlow<PublishTripEvent>()
+    val events: SharedFlow<PublishTripEvent> = _events.asSharedFlow()
 
     init {
         loadRoute()
@@ -47,6 +47,10 @@ class CreateTripViewModel(
     }
 
     private fun loadRoute() {
+        val routeId = routeId ?: run {
+            _state.update { it.copy(isLoading = false, error = TripError.Unknown) }
+            return
+        }
         viewModelScope.launch {
             routeRepository.getRouteById(routeId)
                 .onSuccess { route ->
@@ -81,9 +85,9 @@ class CreateTripViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun onAction(action: CreateTripAction) {
+    fun onAction(action: PublishTripAction) {
         when (action) {
-            is CreateTripAction.OnVehicleSelected -> {
+            is PublishTripAction.OnVehicleSelected -> {
                 val vehicle = _state.value.vehicles.find { it.id == action.vehicleId }
                 _state.update {
                     it.copy(
@@ -92,50 +96,50 @@ class CreateTripViewModel(
                     )
                 }
             }
-            CreateTripAction.OnSelectTodayDate -> {
+            PublishTripAction.OnSelectTodayDate -> {
                 val today = Clock.System.now()
                     .toLocalDateTime(TimeZone.currentSystemDefault()).date
                 _state.update { it.copy(departureDate = today, showDatePicker = false) }
             }
-            CreateTripAction.OnSelectTomorrowDate -> {
+            PublishTripAction.OnSelectTomorrowDate -> {
                 val tomorrow = Clock.System.now()
                     .toLocalDateTime(TimeZone.currentSystemDefault()).date
                     .plus(1, DateTimeUnit.DAY)
                 _state.update { it.copy(departureDate = tomorrow, showDatePicker = false) }
             }
-            is CreateTripAction.OnDateSelected -> _state.update {
+            is PublishTripAction.OnDateSelected -> _state.update {
                 it.copy(departureDate = action.date, showDatePicker = false)
             }
-            is CreateTripAction.OnTimeSelected -> _state.update {
+            is PublishTripAction.OnTimeSelected -> _state.update {
                 it.copy(departureTime = action.time, showTimePicker = false)
             }
-            CreateTripAction.OnShowDatePicker -> _state.update { it.copy(showDatePicker = true) }
-            CreateTripAction.OnShowTimePicker -> _state.update { it.copy(showTimePicker = true) }
-            CreateTripAction.OnDismissDatePicker -> _state.update { it.copy(showDatePicker = false) }
-            CreateTripAction.OnDismissTimePicker -> _state.update { it.copy(showTimePicker = false) }
-            is CreateTripAction.OnSetSeats -> _state.update { it.copy(seatCount = action.count) }
-            is CreateTripAction.OnSetContribution -> _state.update {
+            PublishTripAction.OnShowDatePicker -> _state.update { it.copy(showDatePicker = true) }
+            PublishTripAction.OnShowTimePicker -> _state.update { it.copy(showTimePicker = true) }
+            PublishTripAction.OnDismissDatePicker -> _state.update { it.copy(showDatePicker = false) }
+            PublishTripAction.OnDismissTimePicker -> _state.update { it.copy(showTimePicker = false) }
+            is PublishTripAction.OnSetSeats -> _state.update { it.copy(seatCount = action.count) }
+            is PublishTripAction.OnSetContribution -> _state.update {
                 it.copy(contributionPerPassenger = action.pesos)
             }
-            is CreateTripAction.OnSetMessage -> _state.update {
+            is PublishTripAction.OnSetMessage -> _state.update {
                 it.copy(messageToPassengers = action.text.take(140))
             }
-            CreateTripAction.OnPublishClick -> {
+            PublishTripAction.OnPublishClick -> {
                 if (_state.value.canPublish) _state.update { it.copy(showPublishConfirm = true) }
             }
-            CreateTripAction.OnConfirmPublish -> {
+            PublishTripAction.OnConfirmPublish -> {
                 _state.update { it.copy(showPublishConfirm = false) }
                 publishTrip()
             }
-            CreateTripAction.OnDismissPublishConfirm -> _state.update { it.copy(showPublishConfirm = false) }
-            CreateTripAction.OnNavigateToRegisterVehicle -> viewModelScope.launch {
-                _events.emit(CreateTripEvent.NavigateToRegisterVehicle)
+            PublishTripAction.OnDismissPublishConfirm -> _state.update { it.copy(showPublishConfirm = false) }
+            PublishTripAction.OnNavigateToRegisterVehicle -> viewModelScope.launch {
+                _events.emit(PublishTripEvent.NavigateToRegisterVehicle)
             }
-            CreateTripAction.OnNavigateToVehiclesList -> viewModelScope.launch {
-                _events.emit(CreateTripEvent.NavigateToVehiclesList)
+            PublishTripAction.OnNavigateToVehiclesList -> viewModelScope.launch {
+                _events.emit(PublishTripEvent.NavigateToVehiclesList)
             }
-            CreateTripAction.OnBackClick -> viewModelScope.launch {
-                _events.emit(CreateTripEvent.NavigateBack)
+            PublishTripAction.OnBackClick -> viewModelScope.launch {
+                _events.emit(PublishTripEvent.NavigateBack)
             }
         }
     }
@@ -164,7 +168,7 @@ class CreateTripViewModel(
         _state.update { it.copy(isPublishing = true, error = null) }
         viewModelScope.launch {
             val trip = Trip(
-                routeId = routeId,
+                routeId = route.id,
                 driverId = driverId,
                 vehicleId = vehicleId,
                 origin = route.origin,
@@ -179,7 +183,7 @@ class CreateTripViewModel(
             tripRepository.createTrip(trip)
                 .onSuccess {
                     _state.update { it.copy(isPublishing = false) }
-                    _events.emit(CreateTripEvent.TripPublished)
+                    _events.emit(PublishTripEvent.TripPublished)
                 }
                 .onFailure {
                     _state.update { it.copy(isPublishing = false, error = TripError.Unknown) }

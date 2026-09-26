@@ -47,7 +47,8 @@ sealed interface Route {
     data class RouteDetail(val routeId: String) : Route
 
     @Serializable
-    data class CreateTrip(val routeId: String) : Route
+    /** Publishing a trip, starting from the saved route [routeId] or from scratch. */
+    data class PublishTrip(val routeId: String? = null) : Route
 
     /** Bottom-bar "Buscar". */
     @Serializable

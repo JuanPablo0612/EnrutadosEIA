@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.route.create.components
+package com.juanpablo0612.carpool.presentation.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

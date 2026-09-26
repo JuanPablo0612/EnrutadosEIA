@@ -18,7 +18,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
-import com.juanpablo0612.carpool.presentation.route.create.components.DaySelector
+import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog

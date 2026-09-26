@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.trip.create.components
+package com.juanpablo0612.carpool.presentation.trip.publish.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,11 @@ import enrutadoseia.composeapp.generated.resources.departure_time_section_label
 import enrutadoseia.composeapp.generated.resources.trip_when_section
 import org.jetbrains.compose.resources.stringResource
 
-internal enum class DateChip { Today, Tomorrow, Other }
+internal sealed class DateChip {
+    data object Today : DateChip()
+    data object Tomorrow : DateChip()
+    data object Other : DateChip()
+}
 
 @Composable
 internal fun TripWhenSection(

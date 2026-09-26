@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.trip.create.components
+package com.juanpablo0612.carpool.presentation.trip.publish.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

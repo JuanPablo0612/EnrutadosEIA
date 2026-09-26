@@ -16,8 +16,8 @@ import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailScreen
 import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
-import com.juanpablo0612.carpool.presentation.trip.create.CreateTripScreen
-import com.juanpablo0612.carpool.presentation.trip.create.CreateTripViewModel
+import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripScreen
+import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListScreen
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleScreen
@@ -34,7 +34,7 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToEditVehicle: (String) -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
-    onNavigateToCreateTrip: (String) -> Unit,
+    onNavigateToPublishTrip: (String?) -> Unit,
     onNavigateToAddPlace: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
     onNavigateToVehiclesList: () -> Unit,
@@ -52,7 +52,7 @@ fun NavGraphBuilder.driverNavGraph(
             viewModel = viewModel,
             onNavigateToCreateRoute = onNavigateToCreateRoute,
             onNavigateToRouteDetail = onNavigateToRouteDetail,
-            onNavigateToCreateTrip = onNavigateToCreateTrip,
+            onNavigateToPublishTrip = onNavigateToPublishTrip,
             onBackClick = onNavigateBack
         )
     }
@@ -74,14 +74,14 @@ fun NavGraphBuilder.driverNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onNavigateToAddPlace = onNavigateToAddPlace,
-            onNavigateToCreateTrip = onNavigateToCreateTrip
+            onNavigateToPublishTrip = onNavigateToPublishTrip
         )
     }
 
-    composable<Route.CreateTrip> { backStackEntry ->
-        val args = backStackEntry.toRoute<Route.CreateTrip>()
-        val viewModel: CreateTripViewModel = koinViewModel { parametersOf(args.routeId) }
-        CreateTripScreen(
+    composable<Route.PublishTrip> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.PublishTrip>()
+        val viewModel: PublishTripViewModel = koinViewModel { parametersOf(args.routeId) }
+        PublishTripScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onTripPublished = onNavigateBack,

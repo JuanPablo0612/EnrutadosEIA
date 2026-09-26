@@ -61,7 +61,7 @@ fun RoutesListScreen(
     viewModel: RoutesListViewModel,
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
-    onNavigateToCreateTrip: (String) -> Unit,
+    onNavigateToPublishTrip: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -70,7 +70,7 @@ fun RoutesListScreen(
         when (event) {
             RoutesListEvent.NavigateToCreateRoute -> onNavigateToCreateRoute()
             is RoutesListEvent.NavigateToRouteDetail -> onNavigateToRouteDetail(event.routeId)
-            is RoutesListEvent.NavigateToCreateTrip -> onNavigateToCreateTrip(event.routeId)
+            is RoutesListEvent.NavigateToPublishTrip -> onNavigateToPublishTrip(event.routeId)
             RoutesListEvent.NavigateBack -> onBackClick()
         }
     }

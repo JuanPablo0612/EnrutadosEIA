@@ -24,7 +24,7 @@ import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.presentation.place.add.components.MapRoutePreview
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
-import com.juanpablo0612.carpool.presentation.route.create.components.DaySelector
+import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.route.detail.components.RecurrenceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -51,14 +51,14 @@ fun RouteDetailScreen(
     viewModel: RouteDetailViewModel,
     onBackClick: () -> Unit,
     onNavigateToAddPlace: () -> Unit,
-    onNavigateToCreateTrip: (String) -> Unit
+    onNavigateToPublishTrip: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             RouteDetailEvent.NavigateBack -> onBackClick()
-            is RouteDetailEvent.NavigateToCreateTrip -> onNavigateToCreateTrip(event.routeId)
+            is RouteDetailEvent.NavigateToPublishTrip -> onNavigateToPublishTrip(event.routeId)
         }
     }
 

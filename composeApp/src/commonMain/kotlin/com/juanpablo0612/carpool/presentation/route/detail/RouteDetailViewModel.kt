@@ -86,7 +86,7 @@ class RouteDetailViewModel(
             RouteDetailAction.OnConfirmDelete -> deleteRoute()
             RouteDetailAction.OnDismissDelete -> _state.update { it.copy(showDeleteConfirm = false) }
             RouteDetailAction.OnPublishTripClick -> viewModelScope.launch {
-                _events.emit(RouteDetailEvent.NavigateToCreateTrip(routeId))
+                _events.emit(RouteDetailEvent.NavigateToPublishTrip(routeId))
             }
             RouteDetailAction.OnDuplicateClick -> duplicateRoute()
             RouteDetailAction.OnRetry -> loadRouteAndStats()

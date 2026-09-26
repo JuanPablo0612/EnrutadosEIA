@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.trip.create
+package com.juanpablo0612.carpool.presentation.trip.publish
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,17 +36,17 @@ import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
-import com.juanpablo0612.carpool.presentation.trip.create.components.DateChip
-import com.juanpablo0612.carpool.presentation.trip.create.components.RouteSummaryCard
-import com.juanpablo0612.carpool.presentation.trip.create.components.SectionLabel
-import com.juanpablo0612.carpool.presentation.trip.create.components.SingleVehicleCard
-import com.juanpablo0612.carpool.presentation.trip.create.components.TripContributionSection
-import com.juanpablo0612.carpool.presentation.trip.create.components.TripMessageSection
-import com.juanpablo0612.carpool.presentation.trip.create.components.TripSeatsSection
-import com.juanpablo0612.carpool.presentation.trip.create.components.TripTimeSection
-import com.juanpablo0612.carpool.presentation.trip.create.components.TripWhenSection
-import com.juanpablo0612.carpool.presentation.trip.create.components.VehicleRadioItem
-import com.juanpablo0612.carpool.presentation.trip.create.components.formatPesos
+import com.juanpablo0612.carpool.presentation.trip.publish.components.DateChip
+import com.juanpablo0612.carpool.presentation.trip.publish.components.RouteSummaryCard
+import com.juanpablo0612.carpool.presentation.trip.publish.components.SectionLabel
+import com.juanpablo0612.carpool.presentation.trip.publish.components.SingleVehicleCard
+import com.juanpablo0612.carpool.presentation.trip.publish.components.TripContributionSection
+import com.juanpablo0612.carpool.presentation.trip.publish.components.TripMessageSection
+import com.juanpablo0612.carpool.presentation.trip.publish.components.TripSeatsSection
+import com.juanpablo0612.carpool.presentation.trip.publish.components.TripTimeSection
+import com.juanpablo0612.carpool.presentation.trip.publish.components.TripWhenSection
+import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
+import com.juanpablo0612.carpool.presentation.trip.publish.components.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -94,8 +94,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
-fun CreateTripScreen(
-    viewModel: CreateTripViewModel,
+fun PublishTripScreen(
+    viewModel: PublishTripViewModel,
     onBackClick: () -> Unit,
     onTripPublished: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
@@ -107,33 +107,33 @@ fun CreateTripScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            CreateTripEvent.TripPublished -> {
+            PublishTripEvent.TripPublished -> {
                 // Passengers' seat requests are what a new driver needs to hear about.
                 notificationPermission.request()
                 onTripPublished()
             }
-            CreateTripEvent.NavigateBack -> onBackClick()
-            CreateTripEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
-            CreateTripEvent.NavigateToVehiclesList -> onNavigateToVehiclesList()
+            PublishTripEvent.NavigateBack -> onBackClick()
+            PublishTripEvent.NavigateToRegisterVehicle -> onNavigateToRegisterVehicle()
+            PublishTripEvent.NavigateToVehiclesList -> onNavigateToVehiclesList()
         }
     }
 
-    CreateTripContent(state = state, onAction = viewModel::onAction)
+    PublishTripContent(state = state, onAction = viewModel::onAction)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTripContent(
-    state: CreateTripUiState,
-    onAction: (CreateTripAction) -> Unit
+fun PublishTripContent(
+    state: PublishTripUiState,
+    onAction: (PublishTripAction) -> Unit
 ) {
     if (state.showPublishConfirm) {
         ConfirmDialog(
             title = stringResource(Res.string.publish_trip_confirm_title),
             description = stringResource(Res.string.publish_trip_confirm_body),
             confirmText = stringResource(Res.string.publish_trip_confirm_button),
-            onConfirm = { onAction(CreateTripAction.OnConfirmPublish) },
-            onDismiss = { onAction(CreateTripAction.OnDismissPublishConfirm) }
+            onConfirm = { onAction(PublishTripAction.OnConfirmPublish) },
+            onDismiss = { onAction(PublishTripAction.OnDismissPublishConfirm) }
         )
     }
 
@@ -145,18 +145,18 @@ fun CreateTripContent(
             }
         )
         DatePickerDialog(
-            onDismissRequest = { onAction(CreateTripAction.OnDismissDatePicker) },
+            onDismissRequest = { onAction(PublishTripAction.OnDismissDatePicker) },
             confirmButton = {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { ms ->
                         val date = Instant.fromEpochMilliseconds(ms)
                             .toLocalDateTime(TimeZone.UTC).date
-                        onAction(CreateTripAction.OnDateSelected(date))
+                        onAction(PublishTripAction.OnDateSelected(date))
                     }
                 }) { Text(stringResource(Res.string.confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { onAction(CreateTripAction.OnDismissDatePicker) }) {
+                TextButton(onClick = { onAction(PublishTripAction.OnDismissDatePicker) }) {
                     Text(stringResource(Res.string.cancel))
                 }
             }
@@ -172,10 +172,10 @@ fun CreateTripContent(
             is24Hour = false
         )
         TimePickerDialog(
-            onCancel = { onAction(CreateTripAction.OnDismissTimePicker) },
+            onCancel = { onAction(PublishTripAction.OnDismissTimePicker) },
             onConfirm = {
                 onAction(
-                    CreateTripAction.OnTimeSelected(
+                    PublishTripAction.OnTimeSelected(
                         LocalTime(timePickerState.hour, timePickerState.minute)
                     )
                 )
@@ -228,7 +228,7 @@ fun CreateTripContent(
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.create_trip_title),
-                onBack = { onAction(CreateTripAction.OnBackClick) },
+                onBack = { onAction(PublishTripAction.OnBackClick) },
             )
         },
         bottomBar = {
@@ -245,7 +245,7 @@ fun CreateTripContent(
                         )
                         Spacer(modifier = Modifier.height(Spacing.sm))
                         Button(
-                            onClick = { onAction(CreateTripAction.OnPublishClick) },
+                            onClick = { onAction(PublishTripAction.OnPublishClick) },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = state.canPublish && !state.isPublishing
                         ) {
@@ -301,9 +301,9 @@ fun CreateTripContent(
                 TripWhenSection(
                     dateChipState = dateChipState,
                     formattedDate = formattedDate,
-                    onSelectToday = { onAction(CreateTripAction.OnSelectTodayDate) },
-                    onSelectTomorrow = { onAction(CreateTripAction.OnSelectTomorrowDate) },
-                    onShowDatePicker = { onAction(CreateTripAction.OnShowDatePicker) },
+                    onSelectToday = { onAction(PublishTripAction.OnSelectTodayDate) },
+                    onSelectTomorrow = { onAction(PublishTripAction.OnSelectTomorrowDate) },
+                    onShowDatePicker = { onAction(PublishTripAction.OnShowDatePicker) },
                 )
             }
 
@@ -311,7 +311,7 @@ fun CreateTripContent(
             item {
                 TripTimeSection(
                     formattedTime = formattedTime,
-                    onShowTimePicker = { onAction(CreateTripAction.OnShowTimePicker) },
+                    onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) },
                 )
             }
 
@@ -331,7 +331,7 @@ fun CreateTripContent(
                         description = "",
                         primaryAction = ActionButton(
                             label = stringResource(Res.string.trip_register_vehicle_action),
-                            onClick = { onAction(CreateTripAction.OnNavigateToRegisterVehicle) }
+                            onClick = { onAction(PublishTripAction.OnNavigateToRegisterVehicle) }
                         ),
                         modifier = Modifier.padding(Spacing.lg)
                     )
@@ -354,7 +354,7 @@ fun CreateTripContent(
                             VehicleRadioItem(
                                 vehicle = vehicle,
                                 isSelected = vehicle.id == state.selectedVehicleId,
-                                onClick = { onAction(CreateTripAction.OnVehicleSelected(vehicle.id)) }
+                                onClick = { onAction(PublishTripAction.OnVehicleSelected(vehicle.id)) }
                             )
                         }
                     }
@@ -367,7 +367,7 @@ fun CreateTripContent(
                     TripSeatsSection(
                         seatCount = state.seatCount,
                         selectedVehicle = state.selectedVehicle,
-                        onChange = { onAction(CreateTripAction.OnSetSeats(it)) },
+                        onChange = { onAction(PublishTripAction.OnSetSeats(it)) },
                     )
                 }
 
@@ -375,7 +375,7 @@ fun CreateTripContent(
                 item {
                     TripContributionSection(
                         contributionPerPassenger = state.contributionPerPassenger,
-                        onContributionChange = { onAction(CreateTripAction.OnSetContribution(it)) },
+                        onContributionChange = { onAction(PublishTripAction.OnSetContribution(it)) },
                     )
                 }
 
@@ -383,7 +383,7 @@ fun CreateTripContent(
                 item {
                     TripMessageSection(
                         message = state.messageToPassengers,
-                        onMessageChange = { onAction(CreateTripAction.OnSetMessage(it)) },
+                        onMessageChange = { onAction(PublishTripAction.OnSetMessage(it)) },
                     )
                 }
             }
@@ -405,10 +405,10 @@ fun CreateTripContent(
 
 @Preview
 @Composable
-private fun CreateTripContentPreview() {
+private fun PublishTripContentPreview() {
     CarpoolTheme {
-        CreateTripContent(
-            state = CreateTripUiState(
+        PublishTripContent(
+            state = PublishTripUiState(
                 isLoading = false,
                 route = Route(
                     id = "r1", driverId = "d1",

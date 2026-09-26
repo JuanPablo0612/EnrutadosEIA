@@ -13,7 +13,7 @@ import org.jetbrains.compose.resources.StringResource
 
 /**
  * Days of the week paired with their abbreviation string resource, in calendar order. Shared by
- * [com.juanpablo0612.carpool.presentation.route.create.components.DaySelector] and
+ * [com.juanpablo0612.carpool.presentation.ui.components.DaySelector] and
  * [com.juanpablo0612.carpool.presentation.route.list.components.RouteCard] so both recurrence
  * pickers render days in the same order.
  */

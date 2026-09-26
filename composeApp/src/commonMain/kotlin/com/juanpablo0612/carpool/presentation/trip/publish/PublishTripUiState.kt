@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.trip.create
+package com.juanpablo0612.carpool.presentation.trip.publish
 
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.presentation.trip.TripError
@@ -11,7 +11,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
-data class CreateTripUiState(
+data class PublishTripUiState(
     val route: Route? = null,
     val vehicles: List<Vehicle> = emptyList(),
     val selectedVehicleId: String? = null,
