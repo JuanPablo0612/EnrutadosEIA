@@ -112,7 +112,7 @@ internal fun SearchCard(
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = { onAction(SearchRoutesAction.OnSearchClick) },
-                    enabled = !state.isSearching
+                    enabled = !state.isSearching && !state.isLoading
                 ) {
                     Text(stringResource(Res.string.search_button))
                 }

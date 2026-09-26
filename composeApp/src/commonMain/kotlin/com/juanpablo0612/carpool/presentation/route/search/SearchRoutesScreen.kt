@@ -30,8 +30,10 @@ import com.juanpablo0612.carpool.presentation.route.search.components.DateTimeBo
 import com.juanpablo0612.carpool.presentation.route.search.components.FiltersBottomSheet
 import com.juanpablo0612.carpool.presentation.route.search.components.SearchCard
 import com.juanpablo0612.carpool.presentation.route.search.components.TripResultCard
+import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -108,21 +110,21 @@ fun SearchRoutesScreen(
     }
 
     when (state.selectionTarget) {
-        "ORIGIN" -> PlaceSelectorContent(
+        SearchPlaceTarget.Origin -> PlaceSelectorContent(
             state = originSelectorState,
             onAction = originSelectorViewModel::onAction,
             onPlaceSelected = onOriginSelected,
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
         )
 
-        "DESTINATION" -> PlaceSelectorContent(
+        SearchPlaceTarget.Destination -> PlaceSelectorContent(
             state = destinationSelectorState,
             onAction = destinationSelectorViewModel::onAction,
             onPlaceSelected = onDestinationSelected,
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
         )
 
-        else -> SearchRoutesContent(
+        null -> SearchRoutesContent(
             state = state,
             user = user,
             isDualRole = isDualRole,
@@ -179,6 +181,12 @@ fun SearchRoutesContent(
                 modifier = Modifier.fillMaxSize(),
             ) {
             when {
+                state.loadError != null -> ErrorState(
+                    description = stringResource(state.loadError.asStringResource()),
+                    onRetry = { onAction(SearchRoutesAction.RetryLoad) },
+                    modifier = Modifier.fillMaxSize(),
+                )
+
                 state.isLoading -> ListSkeleton(
                     modifier = Modifier
                         .fillMaxSize()

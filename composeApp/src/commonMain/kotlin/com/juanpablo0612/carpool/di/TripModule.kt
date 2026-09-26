@@ -22,9 +22,8 @@ val tripModule = module {
     singleOf(::TripRepositoryImpl) bind TripRepository::class
     factoryOf(::GetAvailableTripsUseCase)
     factoryOf(::MatchTripsUseCase)
-    // SearchRoutesViewModel lives in presentation/route/search/, but it queries trips and builds
-    // TripResult from Trip + Vehicle + PublicProfile, so its dependencies are trip's, not
-    // route's. Registration stays here; moving the screen itself is out of scope for this phase.
+    // SearchRoutesViewModel lives in presentation/route/search/ but depends on trip matching and
+    // trip data, so it is registered with the trip feature.
     viewModel { SearchRoutesViewModel(get(), get(), get(), get(), get()) }
     viewModel { (routeId: String) -> CreateTripViewModel(routeId, get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
