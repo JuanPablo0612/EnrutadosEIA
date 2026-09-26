@@ -381,7 +381,6 @@
 
     <!-- Ítems del menú desplegable -->
     <string name="route_menu_publish_trip">Publicar viaje</string>
-    <string name="route_menu_edit">Editar</string>
     <string name="route_menu_duplicate">Duplicar</string>
     <string name="route_menu_delete">Eliminar</string>
 
@@ -518,19 +517,9 @@
     <string name="profile_edit_button">Editar perfil</string>
     <string name="profile_my_account_section">Mi cuenta</string>
     <string name="profile_config_section">Configuración</string>
-    <string name="profile_support_section">Soporte</string>
     <string name="profile_saved_places">Mis lugares guardados</string>
     <string name="profile_active_roles">Roles activos</string>
     <string name="profile_notifications_settings">Notificaciones</string>
-    <string name="profile_language">Idioma</string>
-    <string name="profile_language_value">Español</string>
-    <string name="profile_theme">Tema</string>
-    <string name="profile_theme_value">Sistema</string>
-    <string name="profile_setting_coming_soon">Próximamente</string>
-    <string name="profile_privacy">Privacidad y datos</string>
-    <string name="profile_help">Centro de ayuda</string>
-    <string name="profile_terms">Términos y condiciones</string>
-    <string name="profile_privacy_policy">Política de privacidad</string>
     <string name="profile_delete_account">Eliminar cuenta</string>
     <string name="profile_delete_account_confirm_title">¿Eliminar tu cuenta?</string>
     <string name="profile_delete_account_confirm_desc">Tus datos serán eliminados de forma permanente. Esta acción no se puede deshacer. Escribe tu nombre para confirmar.</string>
@@ -640,8 +629,6 @@
     <string name="search_filters_button">Filtros</string>
     <string name="search_filters_title">Filtros</string>
     <string name="search_filter_max_contribution">Aporte máximo</string>
-    <string name="search_filter_female_driver">Conductora</string>
-    <string name="search_filter_female_driver_coming_soon">Próximamente</string>
     <string name="search_adjust_button">Ajustar búsqueda</string>
     <string name="trip_contribution_free">Gratis</string>
     <string name="trip_available_seats">%1$d cupos</string>
@@ -747,12 +734,10 @@
     <string name="cd_add_place">Agregar lugar</string>
     <string name="cd_delete_place">Eliminar lugar</string>
     <string name="cd_swap_origin_destination">Intercambiar origen y destino</string>
-    <string name="cd_remove_contact">Eliminar contacto</string>
     <string name="cd_delete_notification">Eliminar notificación</string>
     <string name="cd_decrease">Disminuir</string>
     <string name="cd_increase">Aumentar</string>
     <string name="cd_route_line">De %1$s a %2$s</string>
-    <string name="cd_rating_stars">Calificación: %1$d de 5 estrellas</string>
     <string name="cd_status">Estado: %1$s</string>
 
     <string name="home_greeting_morning">Buenos días, %1$s</string>
@@ -775,9 +760,7 @@
     <string name="notice_route_created">Ruta creada</string>
     <string name="notice_route_updated">Ruta actualizada</string>
     <string name="notice_route_duplicated">Ruta duplicada</string>
-    <string name="notice_trip_published">Viaje publicado</string>
     <string name="notice_vehicle_saved">Vehículo guardado</string>
-    <string name="notice_place_saved">Lugar guardado</string>
     <string name="notice_profile_saved">Perfil actualizado</string>
 
     <!-- Guardia de cambios sin guardar, reutilizada por cada formulario de creación/edición -->

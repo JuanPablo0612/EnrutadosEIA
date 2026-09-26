@@ -381,7 +381,6 @@
 
     <!-- Dropdown menu items -->
     <string name="route_menu_publish_trip">Publish trip</string>
-    <string name="route_menu_edit">Edit</string>
     <string name="route_menu_duplicate">Duplicate</string>
     <string name="route_menu_delete">Delete</string>
 
@@ -458,8 +457,6 @@
     <string name="search_filters_button">Filters</string>
     <string name="search_filters_title">Filters</string>
     <string name="search_filter_max_contribution">Max contribution</string>
-    <string name="search_filter_female_driver">Female driver</string>
-    <string name="search_filter_female_driver_coming_soon">Coming soon</string>
     <string name="search_adjust_button">Adjust search</string>
     <string name="trip_contribution_free">Free</string>
     <string name="trip_available_seats">%1$d seats</string>
@@ -621,19 +618,9 @@
     <string name="profile_edit_button">Edit profile</string>
     <string name="profile_my_account_section">My account</string>
     <string name="profile_config_section">Configuración</string>
-    <string name="profile_support_section">Soporte</string>
     <string name="profile_saved_places">Mis lugares guardados</string>
     <string name="profile_active_roles">Roles activos</string>
     <string name="profile_notifications_settings">Notificaciones</string>
-    <string name="profile_language">Idioma</string>
-    <string name="profile_language_value">Español</string>
-    <string name="profile_theme">Tema</string>
-    <string name="profile_theme_value">Sistema</string>
-    <string name="profile_setting_coming_soon">Coming soon</string>
-    <string name="profile_privacy">Privacidad y datos</string>
-    <string name="profile_help">Help center</string>
-    <string name="profile_terms">Términos y condiciones</string>
-    <string name="profile_privacy_policy">Privacy policy</string>
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
     <string name="profile_delete_account_confirm_desc">Your data will be permanently deleted. This action cannot be undone. Type your name to confirm.</string>
@@ -745,12 +732,10 @@
     <string name="cd_add_place">Add place</string>
     <string name="cd_delete_place">Delete place</string>
     <string name="cd_swap_origin_destination">Swap origin and destination</string>
-    <string name="cd_remove_contact">Remove contact</string>
     <string name="cd_delete_notification">Delete notification</string>
     <string name="cd_decrease">Decrease</string>
     <string name="cd_increase">Increase</string>
     <string name="cd_route_line">From %1$s to %2$s</string>
-    <string name="cd_rating_stars">Rating: %1$d of 5 stars</string>
     <string name="cd_status">Status: %1$s</string>
 
     <string name="home_greeting_morning">Good morning, %1$s</string>
@@ -773,9 +758,7 @@
     <string name="notice_route_created">Route created</string>
     <string name="notice_route_updated">Route updated</string>
     <string name="notice_route_duplicated">Route duplicated</string>
-    <string name="notice_trip_published">Trip published</string>
     <string name="notice_vehicle_saved">Vehicle saved</string>
-    <string name="notice_place_saved">Place saved</string>
     <string name="notice_profile_saved">Profile updated</string>
 
     <!-- Unsaved-changes guard, reused by every create/edit form with a discard-on-back risk -->
