@@ -12,3 +12,4 @@ export {onFcmTokenCreated} from "./triggers/fcmTokens";
 export {onTripDeleted, onTripUpdated} from "./triggers/trips";
 export {onChatMessageCreated} from "./triggers/chat";
 export {onRatingCreated} from "./triggers/ratings";
+export {deleteAccount, onAuthUserDeleted} from "./account/deleteAccount";
