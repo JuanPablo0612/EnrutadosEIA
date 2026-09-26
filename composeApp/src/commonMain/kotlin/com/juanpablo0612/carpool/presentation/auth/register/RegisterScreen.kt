@@ -12,7 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.register.components.RegisterStep1
 import com.juanpablo0612.carpool.presentation.auth.register.components.RegisterStep2
-import com.juanpablo0612.carpool.presentation.auth.register.components.RegisterStep3
 import com.juanpablo0612.carpool.presentation.auth.register.components.StepIndicator
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -55,8 +54,7 @@ fun RegisterContent(
 ) {
     val stepTitle = when (state.currentStep) {
         1 -> stringResource(Res.string.register_step_1_title)
-        2 -> stringResource(Res.string.register_step_2_title)
-        else -> stringResource(Res.string.register_step_3_title)
+        else -> stringResource(Res.string.register_step_2_title)
     }
 
     Scaffold(
@@ -87,12 +85,12 @@ fun RegisterContent(
 
             StepIndicator(
                 current = state.currentStep,
-                total = 3,
+                total = 2,
                 modifier = Modifier.align(Alignment.Start)
             )
 
             Text(
-                text = stringResource(Res.string.register_step_indicator, state.currentStep, 3),
+                text = stringResource(Res.string.register_step_indicator, state.currentStep, 2),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
@@ -105,8 +103,7 @@ fun RegisterContent(
             AnimatedContent(targetState = state.currentStep) { step ->
                 when (step) {
                     1 -> RegisterStep1(state = state, onAction = onAction)
-                    2 -> RegisterStep2(state = state, onAction = onAction)
-                    else -> RegisterStep3(
+                    else -> RegisterStep2(
                         state = state,
                         onAction = onAction,
                         onNavigateToLogin = onNavigateToLogin
@@ -134,10 +131,10 @@ private fun RegisterStep1Preview() {
 
 @Preview
 @Composable
-private fun RegisterStep3Preview() {
+private fun RegisterStep2Preview() {
     CarpoolTheme {
         RegisterContent(
-            state = RegisterUiState(currentStep = 3),
+            state = RegisterUiState(currentStep = 2),
             onAction = {},
             onNavigateToLogin = {},
             onBackClick = {}

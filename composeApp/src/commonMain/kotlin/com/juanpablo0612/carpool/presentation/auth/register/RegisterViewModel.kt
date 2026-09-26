@@ -37,8 +37,6 @@ class RegisterViewModel(
             RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
             is RegisterAction.OnPhotoSelected -> _uiState.update { it.copy(photoFile = action.file, photoError = false) }
             is RegisterAction.OnPhoneChanged -> _uiState.update { it.copy(phone = action.phone, phoneError = null) }
-            is RegisterAction.OnPassengerChanged -> _uiState.update { it.copy(isPassenger = action.isPassenger, roleError = null) }
-            is RegisterAction.OnDriverChanged -> _uiState.update { it.copy(isDriver = action.isDriver, roleError = null) }
             is RegisterAction.OnTermsChanged -> _uiState.update { it.copy(hasAcceptedTerms = action.accepted, termsError = false) }
             RegisterAction.OnNextStep -> advanceStep()
             RegisterAction.OnPreviousStep -> _uiState.update { if (it.currentStep > 1) it.copy(currentStep = it.currentStep - 1) else it }
@@ -46,49 +44,38 @@ class RegisterViewModel(
         }
     }
 
+    /** Validates the account step and moves on to the profile step. */
     private fun advanceStep() {
         val state = _uiState.value
-        when (state.currentStep) {
-            1 -> {
-                val nameResult = Validator.validateFullName(state.fullName)
-                val emailResult = Validator.validateEmail(state.email)
-                val passwordResult = Validator.validatePassword(state.password)
-                val confirmResult = Validator.validateConfirmPassword(state.password, state.confirmPassword)
+        if (state.currentStep != 1) return
 
-                val hasError = listOf(nameResult, emailResult, passwordResult, confirmResult).any { it is ValidationResult.Error }
-                if (hasError) {
-                    _uiState.update {
-                        it.copy(
-                            fullNameError = (nameResult as? ValidationResult.Error)?.error,
-                            emailError = (emailResult as? ValidationResult.Error)?.error,
-                            passwordError = (passwordResult as? ValidationResult.Error)?.error,
-                            confirmPasswordError = (confirmResult as? ValidationResult.Error)?.error
-                        )
-                    }
-                } else {
-                    _uiState.update { it.copy(currentStep = 2) }
-                }
+        val nameResult = Validator.validateFullName(state.fullName)
+        val emailResult = Validator.validateEmail(state.email)
+        val passwordResult = Validator.validatePassword(state.password)
+        val confirmResult = Validator.validateConfirmPassword(state.password, state.confirmPassword)
+
+        val hasError = listOf(nameResult, emailResult, passwordResult, confirmResult).any { it is ValidationResult.Error }
+        if (hasError) {
+            _uiState.update {
+                it.copy(
+                    fullNameError = (nameResult as? ValidationResult.Error)?.error,
+                    emailError = (emailResult as? ValidationResult.Error)?.error,
+                    passwordError = (passwordResult as? ValidationResult.Error)?.error,
+                    confirmPasswordError = (confirmResult as? ValidationResult.Error)?.error
+                )
             }
-            2 -> {
-                val phoneResult = Validator.validatePhone(state.phone)
-                if (phoneResult is ValidationResult.Error) {
-                    _uiState.update { it.copy(phoneError = phoneResult.error) }
-                } else {
-                    _uiState.update { it.copy(currentStep = 3) }
-                }
-            }
+        } else {
+            _uiState.update { it.copy(currentStep = 2) }
         }
     }
 
     private fun register() {
         val state = _uiState.value
-        val roleResult = Validator.validateRole(state.isPassenger, state.isDriver)
-
-        val roleError = (roleResult as? ValidationResult.Error)?.error
+        val phoneError = (Validator.validatePhone(state.phone) as? ValidationResult.Error)?.error
         val termsError = !state.hasAcceptedTerms
 
-        if (roleError != null || termsError) {
-            _uiState.update { it.copy(roleError = roleError, termsError = termsError) }
+        if (phoneError != null || termsError) {
+            _uiState.update { it.copy(phoneError = phoneError, termsError = termsError) }
             return
         }
 
@@ -99,17 +86,15 @@ class RegisterViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                // Step back to the photo step so the error is actually visible — it renders
-                // there, not on step 3 where the failure is discovered.
-                _uiState.update { it.copy(isLoading = false, photoError = true, currentStep = 2) }
+                _uiState.update { it.copy(isLoading = false, photoError = true) }
                 return@launch
             }
             authRepository.register(
                 email = state.email,
                 password = state.password,
                 name = state.fullName,
-                isPassenger = state.isPassenger,
-                isDriver = state.isDriver,
+                isPassenger = true,
+                isDriver = true,
                 phone = state.phone,
                 photoBytes = photoBytes
             )

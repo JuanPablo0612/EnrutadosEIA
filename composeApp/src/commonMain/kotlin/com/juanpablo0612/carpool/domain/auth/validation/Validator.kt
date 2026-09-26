@@ -38,14 +38,6 @@ object Validator {
         }
     }
 
-    fun validateRole(isPassenger: Boolean, isDriver: Boolean): ValidationResult {
-        return if (!isPassenger && !isDriver) {
-            ValidationResult.Error(ValidationError.RoleNotSelected)
-        } else {
-            ValidationResult.Success
-        }
-    }
-
     fun validatePhone(phone: String): ValidationResult {
         val digits = phone.filter { it.isDigit() }
         return when {

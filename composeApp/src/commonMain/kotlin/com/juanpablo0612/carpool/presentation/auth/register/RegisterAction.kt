@@ -11,8 +11,6 @@ sealed class RegisterAction {
     data object OnToggleConfirmPasswordVisibility : RegisterAction()
     data class OnPhotoSelected(val file: PlatformFile?) : RegisterAction()
     data class OnPhoneChanged(val phone: String) : RegisterAction()
-    data class OnPassengerChanged(val isPassenger: Boolean) : RegisterAction()
-    data class OnDriverChanged(val isDriver: Boolean) : RegisterAction()
     data class OnTermsChanged(val accepted: Boolean) : RegisterAction()
     data object OnNextStep : RegisterAction()
     data object OnPreviousStep : RegisterAction()

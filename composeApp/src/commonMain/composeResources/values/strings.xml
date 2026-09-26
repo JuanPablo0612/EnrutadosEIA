@@ -294,7 +294,7 @@
 
     <!-- Register steps -->
     <string name="register_step_1_title">Create your account</string>
-    <string name="register_step_2_title">Your contact info</string>
+    <string name="register_step_2_title">Complete your profile</string>
     <string name="register_step_3_title">Your role</string>
     <string name="register_step_indicator">Step %1$d of %2$d</string>
     <string name="register_photo_placeholder">Add profile photo (optional)</string>

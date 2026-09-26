@@ -294,7 +294,7 @@
 
     <!-- Pasos de registro -->
     <string name="register_step_1_title">Crea tu cuenta</string>
-    <string name="register_step_2_title">Tu información de contacto</string>
+    <string name="register_step_2_title">Completa tu perfil</string>
     <string name="register_step_3_title">Tu rol</string>
     <string name="register_step_indicator">Paso %1$d de %2$d</string>
     <string name="register_photo_placeholder">Agregar foto de perfil (opcional)</string>
