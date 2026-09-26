@@ -123,6 +123,21 @@ fun AppNavigation(
     val currentDestination = navBackstackEntry?.destination
     val showBottomBar = topLevelItems.any { currentDestination?.hasRoute(it.route::class) == true }
 
+    // A tapped push waits until a signed-in tab is on screen, so Splash's own navigation on a cold
+    // start can't wipe the target, then opens only if it was meant for the current user.
+    val pendingDeepLinks = koinInject<PendingDeepLinks>()
+    val pendingDeepLink by pendingDeepLinks.link.collectAsState()
+    LaunchedEffect(pendingDeepLink, showBottomBar, currentUser?.id) {
+        val pending = pendingDeepLink ?: return@LaunchedEffect
+        val userId = currentUser?.id
+        if (!showBottomBar || userId == null) return@LaunchedEffect
+        if (userId == pending.recipientId) {
+            navController.navigateToNotificationDeepLink(pending.deepLink)
+            pending.notificationId?.let { notificationRepository.markRead(userId, it) }
+        }
+        pendingDeepLinks.consume()
+    }
+
     fun enterApp(user: User) {
         userSession.setUser(user)
         navController.navigate(Route.Home) {
