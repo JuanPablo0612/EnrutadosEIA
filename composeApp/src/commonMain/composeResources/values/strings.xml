@@ -617,10 +617,10 @@
     <!-- Profile enhancement -->
     <string name="profile_edit_button">Edit profile</string>
     <string name="profile_my_account_section">My account</string>
-    <string name="profile_config_section">Configuración</string>
-    <string name="profile_saved_places">Mis lugares guardados</string>
+    <string name="profile_config_section">Settings</string>
+    <string name="profile_saved_places">My saved places</string>
     <string name="profile_active_roles">Roles activos</string>
-    <string name="profile_notifications_settings">Notificaciones</string>
+    <string name="profile_notifications_settings">Notifications</string>
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
     <string name="profile_delete_account_confirm_desc">Your data will be permanently deleted. This action cannot be undone. Type your name to confirm.</string>
