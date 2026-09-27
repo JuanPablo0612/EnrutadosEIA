@@ -108,7 +108,7 @@ Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab ho
 - **Sealed classes over enums** for errors, events, actions and states. The only enum-like exception is a type-safe navigation argument (`MyTripsTab`), since navigation supports enums natively.
 - **Localization:** all UI strings via `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, in exact key parity — add, rename and remove keys in both). No hardcoded strings. Use `stringResource` in composition and the suspend `getString` outside it (e.g. rendering a push).
 - **DTOs default every field**, so a partially-missing Firestore document decodes. Unknown fields in a document are ignored by the gitlive decoder.
-- **No compatibility code for old data.** The app is not in production and Firestore only holds test data: when a schema changes, change the code to the new shape only — no migrations, backfill scripts or legacy fallbacks — and clear the affected test data.
+- **No compatibility code for old data.** The app is not in production: when a schema changes, change the code to the new shape only — no migrations, backfill scripts or legacy fallbacks.
 - **Icons:** local XML vectors in `composeResources/drawable/`, accessed with `vectorResource(Res.drawable.icon_name)`. **`material-icons-extended` is forbidden.** Reuse an existing vector when possible; if a new icon is needed, reference it and tell the user which Material Symbol to download — never invent path data.
 - **Input UX:** disable `autoCorrect` for credentials, `KeyboardCapitalization.Words` for names, `ImeAction.Next` between fields, `ImeAction.Done` on the last field.
 - **State:** immutable data classes, updated via `MutableStateFlow.update { }`.

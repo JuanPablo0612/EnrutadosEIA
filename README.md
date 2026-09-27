@@ -97,9 +97,8 @@ Composite indexes can take several minutes to build after deploying; queries tha
 fail with `FAILED_PRECONDITION` until the build finishes (the error includes a direct link to
 create the missing index from the Firebase console, if you'd rather do it that way).
 
-The app is not in production and the database only holds test data, so the code carries no
-compatibility layer for older document shapes. When the schema changes, clear the affected test
-collections (or the whole test database and its users) instead of writing a migration.
+The app is not in production, so the code carries no compatibility layer for older document
+shapes: when the schema changes, the code moves to the new shape without migrations.
 
 ### Cloud Functions
 
@@ -131,4 +130,4 @@ logged instead of sent.
    first 2nd-gen deploy fails with an Eventarc service-agent permission error, retry after a few
    minutes).
 5. `firebase deploy --only firestore:rules,storage`.
-6. Clear the existing test data (see above) and install the new app build.
+6. Install the new app build.
