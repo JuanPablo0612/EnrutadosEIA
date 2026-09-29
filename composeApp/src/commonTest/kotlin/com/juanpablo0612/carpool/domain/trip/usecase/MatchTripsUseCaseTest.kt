@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.domain.trip.usecase
 
 import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripSearchCriteria
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -182,21 +183,30 @@ class MatchTripsUseCaseTest {
     }
 
     @Test
-    fun suggestsTheSmallestWiderRadius() {
-        val far = place("Lejos", 6.1845, -75.585)
-        val relaxation = useCase.suggestRelaxation(listOf(trip(waypoints = emptyList())), criteria(far, campus))
-        assertEquals(2_000, relaxation.widerRadiusMeters)
-        assertEquals(1, relaxation.widerRadiusCount)
-        assertEquals(0, relaxation.anyTimeCount)
+    fun countsTripsAtOtherTimes() {
+        val atOtherTime = criteria(envigado, campus).copy(departureAroundEpochMs = 99_000_000L)
+        assertEquals(1, useCase.suggestRelaxation(listOf(trip()), atOtherTime).anyTimeCount)
     }
 
     @Test
-    fun suggestsNothingWhenTooFarAndCountsOtherTimes() {
+    fun suggestsNothingWithoutATimeConstraint() {
         val veryFar = place("Rionegro", 6.15, -75.37)
-        assertNull(useCase.suggestRelaxation(listOf(trip()), criteria(veryFar, campus)).widerRadiusMeters)
+        assertEquals(0, useCase.suggestRelaxation(listOf(trip()), criteria(veryFar, campus)).anyTimeCount)
+    }
 
-        val atOtherTime = criteria(envigado, campus).copy(departureAroundEpochMs = 99_000_000L)
-        assertEquals(1, useCase.suggestRelaxation(listOf(trip()), atOtherTime).anyTimeCount)
+    @Test
+    fun towardsCampusThePlaceIsWhereYouGetOn() {
+        val criteria = TripSearchCriteria.forCampus(CampusDirection.ToCampus, campus, envigado)
+        val match = useCase(listOf(trip()), criteria).single()
+        assertEquals(envigado.name, match.pickup!!.place.name)
+    }
+
+    @Test
+    fun fromCampusOnlyMatchesTripsLeavingIt() {
+        val criteria = TripSearchCriteria.forCampus(CampusDirection.FromCampus, campus, envigado)
+        assertTrue(useCase(listOf(trip()), criteria).isEmpty())
+        val homeward = trip(origin = campus, destination = envigado, waypoints = emptyList())
+        assertEquals(1, useCase(listOf(homeward), criteria).size)
     }
 
     @Test

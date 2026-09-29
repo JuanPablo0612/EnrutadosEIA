@@ -163,7 +163,7 @@
     <!-- Driver Home -->
 
     <!-- Passenger Home -->
-    <string name="passenger_home_title">Find a Ride</string>
+    <string name="passenger_home_title">Find a trip</string>
 
     <!-- Common -->
     <string name="logout_title">Log out</string>
@@ -231,8 +231,6 @@
     <!-- Empty state subtitles -->
     <string name="search_empty_title">No trips available</string>
     <string name="search_empty_subtitle">Try a different search or check back later</string>
-    <string name="search_prompt_title">Search for a trip</string>
-    <string name="search_prompt_subtitle">Pick an origin, a destination, and when you want to travel</string>
 
     <!-- Home Dashboard -->
 
@@ -411,42 +409,35 @@
     <string name="vehicles_add_fab">Add vehicle</string>
 
     <!-- SearchRoutes redesign -->
-    <string name="search_origin_placeholder">Origin</string>
-    <string name="search_destination_placeholder">Destination</string>
     <string name="search_date_placeholder">Date and time</string>
     <string name="search_date_field_placeholder">Date</string>
     <string name="search_time_field_placeholder">Time</string>
     <string name="search_tolerance_label">Tolerance</string>
-    <string name="search_button">Search</string>
-    <string name="search_filters_button">Filters</string>
-    <string name="search_filters_title">Filters</string>
-    <string name="search_filter_max_contribution">Max contribution</string>
-    <string name="search_filter_max_walk">Max walking distance</string>
-    <string name="search_filter_max_walk_hint">Straight-line distance from your origin and destination to the driver\'s stops</string>
-    <string name="search_adjust_button">Adjust search</string>
+    <string name="search_direction_to_campus">To the EIA</string>
+    <string name="search_direction_from_campus">From the EIA</string>
+    <string name="search_place_label_from">From</string>
+    <string name="search_place_label_to">To</string>
+    <string name="search_place_placeholder_pickup">Where should they pick you up?</string>
+    <string name="search_place_placeholder_dropoff">Where are you going?</string>
+    <string name="search_campus_label">Campus</string>
+    <string name="search_when_any">Any time</string>
+    <string name="search_when_value">%1$s · %2$s</string>
+    <plurals name="search_results_count">
+        <item quantity="one">%1$d trip · best matches first</item>
+        <item quantity="other">%1$d trips · best matches first</item>
+    </plurals>
+    <string name="search_result_day_and_origin">%1$s · leaves from %2$s</string>
+    <string name="search_result_picks_up">Picks you up at %1$s</string>
+    <string name="search_result_drops_off">Drops you at %1$s</string>
+    <string name="search_result_last_seat">Last seat</string>
+    <string name="cd_clear_place">Clear place</string>
     <string name="trip_contribution_free">Free</string>
     <string name="trip_available_seats">%1$d seats</string>
-    <string name="trip_result_view_detail">View detail →</string>
-    <string name="distance_meters">%1$d m</string>
-    <string name="distance_km">%1$d.%2$d km</string>
-    <string name="search_result_pickup_distance">Picks you up at %1$s, %2$s from your origin</string>
-    <string name="search_result_pickup_here">Picks you up at %1$s, right by your origin</string>
-    <string name="search_result_dropoff_distance">Drops you off at %1$s, %2$s from your destination</string>
     <string name="search_preset_to_campus">To %1$s</string>
     <string name="search_preset_from_campus">From %1$s</string>
     <string name="campus_short_las_palmas">Las Palmas</string>
     <string name="campus_short_zuniga">Zúñiga</string>
-    <string name="cd_clear_origin">Clear origin</string>
-    <string name="cd_clear_destination">Clear destination</string>
-    <string name="cd_clear_date">Clear date and time</string>
-    <string name="cd_search_field">%1$s: %2$s</string>
-    <string name="search_empty_nearby_title">No trips near your places</string>
-    <string name="search_empty_widen_radius_action">Widen to %1$s</string>
     <string name="search_empty_any_time_action">Search any time</string>
-    <plurals name="search_empty_widen_radius_hint">
-        <item quantity="one">1 trip matches within %2$s</item>
-        <item quantity="other">%1$d trips match within %2$s</item>
-    </plurals>
     <plurals name="search_empty_any_time_hint">
         <item quantity="one">1 trip matches at another time</item>
         <item quantity="other">%1$d trips match at other times</item>
@@ -766,7 +757,6 @@
     <string name="cd_delete_route">Delete route</string>
     <string name="cd_add_place">Add place</string>
     <string name="cd_delete_place">Delete place</string>
-    <string name="cd_swap_origin_destination">Swap origin and destination</string>
     <string name="cd_delete_notification">Delete notification</string>
     <string name="cd_decrease">Decrease</string>
     <string name="cd_increase">Increase</string>

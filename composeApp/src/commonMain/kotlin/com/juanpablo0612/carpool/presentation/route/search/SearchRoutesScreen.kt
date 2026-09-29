@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,33 +18,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorViewModel
 import com.juanpablo0612.carpool.presentation.route.search.components.DateTimeBottomSheet
-import com.juanpablo0612.carpool.presentation.route.search.components.FiltersBottomSheet
-import com.juanpablo0612.carpool.presentation.route.search.components.SearchCard
 import com.juanpablo0612.carpool.presentation.route.search.components.SearchEmptyState
+import com.juanpablo0612.carpool.presentation.route.search.components.SearchHeader
 import com.juanpablo0612.carpool.presentation.route.search.components.TripResultCard
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
-import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTopBar
-import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.search_24px
-import enrutadoseia.composeapp.generated.resources.search_prompt_subtitle
-import enrutadoseia.composeapp.generated.resources.search_prompt_title
-import enrutadoseia.composeapp.generated.resources.passenger_home_title
+import enrutadoseia.composeapp.generated.resources.search_results_count
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -53,17 +49,20 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun SearchRoutesScreen(
     viewModel: SearchRoutesViewModel,
-    user: User,
-    onNavigateToProfile: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToAddPlace: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    val originSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "origin") { parametersOf("ORIGIN") }
-    val destinationSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "destination") { parametersOf("DESTINATION") }
-    val originSelectorState by originSelectorViewModel.state.collectAsState()
-    val destinationSelectorState by destinationSelectorViewModel.state.collectAsState()
+    // The passenger's place is the trip's origin going to campus and its destination leaving it,
+    // so each direction gets the selector variant titled for that end.
+    val pickupSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "origin") { parametersOf("ORIGIN") }
+    val dropoffSelectorViewModel: PlaceSelectorViewModel = koinViewModel(key = "destination") { parametersOf("DESTINATION") }
+    val selectorViewModel = when (state.direction) {
+        CampusDirection.ToCampus -> pickupSelectorViewModel
+        CampusDirection.FromCampus -> dropoffSelectorViewModel
+    }
+    val selectorState by selectorViewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -71,59 +70,38 @@ fun SearchRoutesScreen(
         }
     }
 
-    val onOriginSelected: (Place) -> Unit = { place ->
+    val onPlaceSelected: (Place) -> Unit = { place ->
         viewModel.onAction(SearchRoutesAction.OnPlaceSelected(place))
-        originSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
-    }
-    val onDestinationSelected: (Place) -> Unit = { place ->
-        viewModel.onAction(SearchRoutesAction.OnPlaceSelected(place))
-        destinationSelectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
+        selectorViewModel.onAction(PlaceSelectorAction.OnDismiss)
     }
     // Row taps (saved/campus place) call onPlaceSelected directly, but "use current location"
     // and search-suggestion taps only emit PlaceSelectorEvent.PlaceSelected, so they must be
     // observed here — otherwise those taps do nothing and the emit suspends with no collector.
-    ObserveAsEvents(originSelectorViewModel.events) { event ->
-        when (event) {
-            is PlaceSelectorEvent.PlaceSelected -> onOriginSelected(event.place)
-            PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
-            PlaceSelectorEvent.Dismiss -> Unit
-        }
-    }
-    ObserveAsEvents(destinationSelectorViewModel.events) { event ->
-        when (event) {
-            is PlaceSelectorEvent.PlaceSelected -> onDestinationSelected(event.place)
-            PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
-            PlaceSelectorEvent.Dismiss -> Unit
+    listOf(pickupSelectorViewModel, dropoffSelectorViewModel).forEach { selector ->
+        ObserveAsEvents(selector.events) { event ->
+            when (event) {
+                is PlaceSelectorEvent.PlaceSelected -> onPlaceSelected(event.place)
+                PlaceSelectorEvent.NavigateToAddPlace -> onNavigateToAddPlace()
+                PlaceSelectorEvent.Dismiss -> Unit
+            }
         }
     }
 
     // The selector is an inline content swap, not a real back-stack entry — without this, system
-    // back while it's open exits the whole search flow and discards the in-progress search.
-    BackHandler(enabled = state.selectionTarget != null) {
+    // back while it's open leaves the tab and discards the in-progress search.
+    BackHandler(enabled = state.isPickingPlace) {
         viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection)
     }
 
-    when (state.selectionTarget) {
-        SearchPlaceTarget.Origin -> PlaceSelectorContent(
-            state = originSelectorState,
-            onAction = originSelectorViewModel::onAction,
-            onPlaceSelected = onOriginSelected,
+    if (state.isPickingPlace) {
+        PlaceSelectorContent(
+            state = selectorState,
+            onAction = selectorViewModel::onAction,
+            onPlaceSelected = onPlaceSelected,
             onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
         )
-
-        SearchPlaceTarget.Destination -> PlaceSelectorContent(
-            state = destinationSelectorState,
-            onAction = destinationSelectorViewModel::onAction,
-            onPlaceSelected = onDestinationSelected,
-            onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
-        )
-
-        null -> SearchRoutesContent(
-            state = state,
-            user = user,
-            onAction = viewModel::onAction,
-            onNavigateToProfile = onNavigateToProfile
-        )
+    } else {
+        SearchRoutesContent(state = state, onAction = viewModel::onAction)
     }
 }
 
@@ -131,42 +109,18 @@ fun SearchRoutesScreen(
 @Composable
 fun SearchRoutesContent(
     state: SearchRoutesUiState,
-    user: User,
     onAction: (SearchRoutesAction) -> Unit,
-    onNavigateToProfile: () -> Unit
 ) {
-    val filtersSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val dateTimeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    Scaffold(
-        topBar = {
-            CarpoolTopBar(
-                title = stringResource(Res.string.passenger_home_title),
-                user = user,
-                onAvatarClick = onNavigateToProfile,
-            )
-        }
-    ) { padding ->
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            SearchCard(
-                state = state,
-                onAction = onAction,
-                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-            )
+            SearchHeader(state = state, onAction = onAction)
 
-            HorizontalDivider()
-
-            val pullRefreshState = rememberPullToRefreshState()
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = { onAction(SearchRoutesAction.Refresh) },
-                state = pullRefreshState,
-                modifier = Modifier.fillMaxSize(),
-            ) {
             when {
                 state.loadError != null -> ErrorState(
                     description = stringResource(state.loadError.asStringResource()),
@@ -174,54 +128,21 @@ fun SearchRoutesContent(
                     modifier = Modifier.fillMaxSize(),
                 )
 
-                state.isLoading -> ListSkeleton(
+                state.isLoading || !state.hasSearched -> ListSkeleton(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = Spacing.lg)
+                        .padding(top = Spacing.lg)
                 )
 
-                state.isSearching -> ListSkeleton(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = Spacing.lg)
-                )
-
-                state.hasSearched && state.results.isEmpty() -> SearchEmptyState(
+                state.results.isEmpty() -> SearchEmptyState(
                     relaxation = state.relaxation,
                     onAction = onAction,
                     modifier = Modifier.fillMaxSize(),
                 )
 
-                state.results.isNotEmpty() -> LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(Spacing.md),
-                    contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.md)
-                ) {
-                    items(state.results, key = { it.trip.id }) { result ->
-                        TripResultCard(
-                            result = result,
-                            onClick = { onAction(SearchRoutesAction.OnTripClick(result.trip.id)) }
-                        )
-                    }
-                }
-
-                else -> EmptyState(
-                    icon = vectorResource(Res.drawable.search_24px),
-                    title = stringResource(Res.string.search_prompt_title),
-                    description = stringResource(Res.string.search_prompt_subtitle),
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
+                else -> SearchResults(results = state.results, onAction = onAction)
             }
         }
-    }
-
-    if (state.showFiltersSheet) {
-        FiltersBottomSheet(
-            filters = state.filters,
-            sheetState = filtersSheetState,
-            onApply = { onAction(SearchRoutesAction.OnFiltersChanged(it)) },
-            onDismiss = { onAction(SearchRoutesAction.OnDismissFilters) }
-        )
     }
 
     if (state.showDateTimeSheet) {
@@ -237,22 +158,38 @@ fun SearchRoutesContent(
     }
 }
 
-private val previewUser = User(
-    id = "1",
-    email = "pasajero@eia.edu.co",
-    name = "Maria García",
-    isEmailVerified = true,
-)
+@Composable
+private fun SearchResults(results: List<TripResult>, onAction: (SearchRoutesAction) -> Unit) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
+    ) {
+        item(key = "summary") {
+            // Announced politely so screen-reader users hear the count change as they adjust
+            // the search, without having to look for it.
+            Text(
+                text = pluralStringResource(Res.plurals.search_results_count, results.size, results.size),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        }
+        items(results, key = { it.trip.id }) { result ->
+            TripResultCard(
+                result = result,
+                onClick = { onAction(SearchRoutesAction.OnTripClick(result.trip.id)) },
+            )
+        }
+    }
+}
 
 @Preview
 @Composable
 private fun SearchRoutesEmptyPreview() {
     CarpoolTheme {
         SearchRoutesContent(
-            state = SearchRoutesUiState(isLoading = false),
-            user = previewUser,
+            state = SearchRoutesUiState(isLoading = false, hasSearched = true),
             onAction = {},
-            onNavigateToProfile = {}
         )
     }
 }

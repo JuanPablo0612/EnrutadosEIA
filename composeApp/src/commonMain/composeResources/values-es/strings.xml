@@ -163,7 +163,7 @@
     <!-- Driver Home -->
 
     <!-- Passenger Home -->
-    <string name="passenger_home_title">Buscar Viaje</string>
+    <string name="passenger_home_title">Buscar viaje</string>
 
     <!-- Common -->
     <string name="logout_title">Cerrar sesión</string>
@@ -231,8 +231,6 @@
     <!-- Subtítulos de estado vacío -->
     <string name="search_empty_title">Sin viajes disponibles</string>
     <string name="search_empty_subtitle">Intenta otra búsqueda o vuelve más tarde</string>
-    <string name="search_prompt_title">Busca un viaje</string>
-    <string name="search_prompt_subtitle">Elige un origen, un destino y cuándo quieres viajar</string>
 
     <!-- Home Dashboard -->
 
@@ -628,42 +626,35 @@
     <!-- Seguridad -->
 
     <!-- SearchRoutes rediseño -->
-    <string name="search_origin_placeholder">Origen</string>
-    <string name="search_destination_placeholder">Destino</string>
     <string name="search_date_placeholder">Fecha y hora</string>
     <string name="search_date_field_placeholder">Fecha</string>
     <string name="search_time_field_placeholder">Hora</string>
     <string name="search_tolerance_label">Tolerancia</string>
-    <string name="search_button">Buscar</string>
-    <string name="search_filters_button">Filtros</string>
-    <string name="search_filters_title">Filtros</string>
-    <string name="search_filter_max_contribution">Aporte máximo</string>
-    <string name="search_filter_max_walk">Distancia máxima a pie</string>
-    <string name="search_filter_max_walk_hint">Distancia en línea recta desde tu origen y destino hasta las paradas del conductor</string>
-    <string name="search_adjust_button">Ajustar búsqueda</string>
+    <string name="search_direction_to_campus">Voy a la EIA</string>
+    <string name="search_direction_from_campus">Salgo de la EIA</string>
+    <string name="search_place_label_from">Desde</string>
+    <string name="search_place_label_to">Hacia</string>
+    <string name="search_place_placeholder_pickup">¿Dónde te recogen?</string>
+    <string name="search_place_placeholder_dropoff">¿A dónde vas?</string>
+    <string name="search_campus_label">Sede</string>
+    <string name="search_when_any">Cualquier hora</string>
+    <string name="search_when_value">%1$s · %2$s</string>
+    <plurals name="search_results_count">
+        <item quantity="one">%1$d viaje · los que mejor te sirven, primero</item>
+        <item quantity="other">%1$d viajes · los que mejor te sirven, primero</item>
+    </plurals>
+    <string name="search_result_day_and_origin">%1$s · sale de %2$s</string>
+    <string name="search_result_picks_up">Te recoge en %1$s</string>
+    <string name="search_result_drops_off">Te deja en %1$s</string>
+    <string name="search_result_last_seat">Último cupo</string>
+    <string name="cd_clear_place">Borrar lugar</string>
     <string name="trip_contribution_free">Gratis</string>
     <string name="trip_available_seats">%1$d cupos</string>
-    <string name="trip_result_view_detail">Ver detalle →</string>
-    <string name="distance_meters">%1$d m</string>
-    <string name="distance_km">%1$d,%2$d km</string>
-    <string name="search_result_pickup_distance">Te recoge en %1$s, a %2$s de tu origen</string>
-    <string name="search_result_pickup_here">Te recoge en %1$s, junto a tu origen</string>
-    <string name="search_result_dropoff_distance">Te deja en %1$s, a %2$s de tu destino</string>
     <string name="search_preset_to_campus">A %1$s</string>
     <string name="search_preset_from_campus">Desde %1$s</string>
     <string name="campus_short_las_palmas">Las Palmas</string>
     <string name="campus_short_zuniga">Zúñiga</string>
-    <string name="cd_clear_origin">Borrar origen</string>
-    <string name="cd_clear_destination">Borrar destino</string>
-    <string name="cd_clear_date">Borrar fecha y hora</string>
-    <string name="cd_search_field">%1$s: %2$s</string>
-    <string name="search_empty_nearby_title">No hay viajes cerca</string>
-    <string name="search_empty_widen_radius_action">Ampliar a %1$s</string>
     <string name="search_empty_any_time_action">Buscar a cualquier hora</string>
-    <plurals name="search_empty_widen_radius_hint">
-        <item quantity="one">Hay 1 viaje a menos de %2$s</item>
-        <item quantity="other">Hay %1$d viajes a menos de %2$s</item>
-    </plurals>
     <plurals name="search_empty_any_time_hint">
         <item quantity="one">Hay 1 viaje en otro horario</item>
         <item quantity="other">Hay %1$d viajes en otros horarios</item>
@@ -768,7 +759,6 @@
     <string name="cd_delete_route">Eliminar ruta</string>
     <string name="cd_add_place">Agregar lugar</string>
     <string name="cd_delete_place">Eliminar lugar</string>
-    <string name="cd_swap_origin_destination">Intercambiar origen y destino</string>
     <string name="cd_delete_notification">Eliminar notificación</string>
     <string name="cd_decrease">Disminuir</string>
     <string name="cd_increase">Aumentar</string>

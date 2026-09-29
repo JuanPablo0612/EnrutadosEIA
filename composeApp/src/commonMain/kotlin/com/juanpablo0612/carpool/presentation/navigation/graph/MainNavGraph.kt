@@ -1,12 +1,6 @@
 package com.juanpablo0612.carpool.presentation.navigation.graph
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -18,12 +12,10 @@ import com.juanpablo0612.carpool.presentation.mytrips.MyTripsScreen
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesScreen
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
-import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerScreen
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -64,20 +56,12 @@ fun NavGraphBuilder.mainNavGraph(
     }
 
     composable<Route.SearchTrips> {
-        val userSession: UserSession = koinInject()
-        val user by userSession.user.collectAsState()
-        user?.let { u ->
-            val viewModel: SearchRoutesViewModel = koinViewModel()
-            SearchRoutesScreen(
-                viewModel = viewModel,
-                user = u,
-                onNavigateToProfile = onNavigateToProfile,
-                onNavigateToTripDetail = onNavigateToTripDetail,
-                onNavigateToAddPlace = onNavigateToAddPlace
-            )
-        } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        val viewModel: SearchRoutesViewModel = koinViewModel()
+        SearchRoutesScreen(
+            viewModel = viewModel,
+            onNavigateToTripDetail = onNavigateToTripDetail,
+            onNavigateToAddPlace = onNavigateToAddPlace
+        )
     }
 
     composable<Route.MyTrips> { backStackEntry ->

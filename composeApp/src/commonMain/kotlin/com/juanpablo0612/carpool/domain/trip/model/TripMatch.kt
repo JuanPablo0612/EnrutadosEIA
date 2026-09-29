@@ -20,12 +20,7 @@ data class TripMatch(
     val availableSeats: Int,
 )
 
-/**
- * How an empty search could be relaxed: the smallest wider walking radius that would return
- * results (with how many), and how many trips match at any time of day.
- */
+/** How an empty search could be relaxed: how many trips would match at any time of day. */
 data class SearchRelaxation(
-    val widerRadiusMeters: Int?,
-    val widerRadiusCount: Int,
     val anyTimeCount: Int,
 )

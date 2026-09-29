@@ -38,20 +38,10 @@ class MatchTripsUseCase {
 
     /** How the search could be relaxed when [invoke] returns nothing for [criteria]. */
     fun suggestRelaxation(trips: List<Trip>, criteria: TripSearchCriteria): SearchRelaxation {
-        var widerRadius: Int? = null
-        var widerCount = 0
-        for (radius in TripSearchCriteria.WALK_RADIUS_OPTIONS_METERS.filter { it > criteria.maxWalkMeters }) {
-            val count = invoke(trips, criteria.copy(maxWalkMeters = radius)).size
-            if (count > 0) {
-                widerRadius = radius
-                widerCount = count
-                break
-            }
-        }
         val anyTimeCount = if (criteria.departureAroundEpochMs != null) {
             invoke(trips, criteria.copy(departureAroundEpochMs = null)).size
         } else 0
-        return SearchRelaxation(widerRadius, widerCount, anyTimeCount)
+        return SearchRelaxation(anyTimeCount)
     }
 
     private fun matchPath(trip: Trip, criteria: TripSearchCriteria): TripMatch? {

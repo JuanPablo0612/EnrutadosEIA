@@ -10,10 +10,10 @@ import com.juanpablo0612.carpool.domain.trip.usecase.MatchTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.PublishRecurringTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.PublishTripUseCase
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
-import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
-import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
+import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
+import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -31,7 +31,7 @@ val tripModule = module {
     factoryOf(::PublishRecurringTripsUseCase)
     // SearchRoutesViewModel lives in presentation/route/search/ but depends on trip matching and
     // trip data, so it is registered with the trip feature.
-    viewModel { SearchRoutesViewModel(get(), get(), get(), get(), get()) }
+    viewModel { SearchRoutesViewModel(get(), get()) }
     viewModel { (routeId: String?) -> PublishTripViewModel(routeId, get(), get(), get(), get(), get(), get()) }
     viewModel { (routeId: String) -> PublishWeekViewModel(routeId, get(), get(), get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
