@@ -247,6 +247,16 @@ fun AppNavigation(
                     onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
+                    onNavigateToSearchResult = { tripId, meetingStop ->
+                        navController.navigate(
+                            Route.TripDetailPassenger(
+                                tripId = tripId,
+                                meetingStopIndex = meetingStop?.pathIndex,
+                                meetingIsDropoff = meetingStop?.isDropoff ?: false,
+                            )
+                        )
+                    },
+                    onNavigateToUserProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
                     onBookingCreated = {
                         // Leave the booked trip out of the Search tab's saved stack.
                         navController.popBackStack<Route.TripDetailPassenger>(inclusive = true)

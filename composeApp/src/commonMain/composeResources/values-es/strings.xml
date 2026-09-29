@@ -171,20 +171,17 @@
 
     <!-- Reservas -->
     <string name="cancel_booking_button">Cancelar Reserva</string>
-    <string name="confirm_button">Confirmar</string>
     <string name="reject_button">Rechazar</string>
     <string name="booking_status_pending">Pendiente</string>
     <string name="booking_status_confirmed">Confirmada</string>
     <string name="booking_status_rejected">Rechazada</string>
     <string name="booking_status_cancelled">Cancelada</string>
-    <string name="available_seats_label">%1$d asientos disponibles</string>
     <string name="no_seats_available">Sin asientos disponibles</string>
     <string name="error_no_seats_available">No hay asientos disponibles en este vehículo</string>
     <string name="error_already_booked">Ya tienes una reserva en esta ruta</string>
-    <string name="error_booking_vehicle_not_found">Falta la información del vehículo de este viaje — por favor contacta al conductor</string>
 
     <!-- Detalle de ruta (pasajero) -->
-    <string name="route_detail_passenger_title">Detalles de la Ruta</string>
+    <string name="route_detail_passenger_title">Detalle del viaje</string>
 
     <!-- Reservas del pasajero -->
 
@@ -661,17 +658,34 @@
     </plurals>
 
     <!-- RouteDetailPassenger rediseño -->
-    <string name="trip_driver_section">Conductor</string>
     <string name="trip_driver_placeholder">Conductor de la ruta</string>
-    <string name="trip_stops_section">Paradas</string>
-    <string name="trip_contribution_label">Aporte: %1$s</string>
-    <string name="trip_message_driver_label">Mensaje del conductor</string>
     <string name="book_request_button">Solicitar cupo</string>
-    <string name="book_request_subtext">El conductor debe confirmar</string>
+    <string name="book_request_subtext">El conductor confirma tu cupo</string>
     <string name="book_request_sent">Solicitud enviada</string>
     <string name="confirm_request_title">Confirma tu solicitud</string>
-    <string name="passenger_message_label">Mensaje al conductor (opcional)</string>
+    <string name="passenger_message_label">Mensaje para el conductor (opcional)</string>
     <string name="passenger_message_counter">%1$d / 140</string>
+    <string name="trip_detail_departs_at">Sale a las %1$s</string>
+    <string name="trip_detail_departure_caption">Salida · %1$s</string>
+    <string name="trip_detail_arrival">Llegada</string>
+    <string name="trip_detail_you_get_on">Tú subes aquí</string>
+    <string name="trip_detail_you_get_off">Te bajas aquí</string>
+    <string name="trip_detail_contribution">Aporte</string>
+    <string name="trip_detail_free_seats">Cupos libres</string>
+    <string name="trip_detail_seats_value">%1$d de %2$d</string>
+    <string name="trip_detail_route">Recorrido</string>
+    <string name="trip_detail_driver_says">%1$s dice</string>
+    <string name="trip_detail_load_failed">No pudimos cargar este viaje. Puede que lo hayan cancelado.</string>
+    <string name="trip_detail_unavailable_title">Este viaje ya no está disponible</string>
+    <string name="confirm_row_driver">Conductor</string>
+    <string name="confirm_row_get_on">Subes en</string>
+    <string name="confirm_row_get_off">Te bajas en</string>
+    <string name="confirm_row_route">Recorrido</string>
+    <string name="route_from_to">%1$s → %2$s</string>
+    <string name="confirm_row_contribution">Aporte</string>
+    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte. Te avisamos al instante.</string>
+    <string name="request_quick_luggage">Llevo maleta</string>
+    <string name="request_quick_on_time">Estaré a tiempo</string>
     <string name="send_request_button">Enviar solicitud</string>
 
     <!-- PassengerBookings rediseño -->
@@ -836,6 +850,12 @@
     <string name="route_last_used_separator">%1$s · %2$s</string>
 
     <string name="booking_request_rating">Calificación %1$s</string>
+    <string name="rating_value">%1$d,%2$d</string>
+    <string name="cd_rating">Calificación de %1$s sobre 5</string>
+    <plurals name="rating_count">
+        <item quantity="one">%1$d calificación</item>
+        <item quantity="other">%1$d calificaciones</item>
+    </plurals>
 
     <!-- Confirmaciones destructivas -->
     <string name="notifications_clear_all_confirm_title">¿Borrar todas las notificaciones?</string>

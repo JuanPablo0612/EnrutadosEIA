@@ -9,6 +9,7 @@ import com.juanpablo0612.carpool.domain.trip.model.TripSearchCriteria
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.MatchTripsUseCase
 import com.juanpablo0612.carpool.presentation.trip.TripError
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,7 +89,8 @@ class SearchRoutesViewModel(
             }
             SearchRoutesAction.OnSearchAnyTime -> updateAndSearch { it.copy(selectedEpochMs = null) }
             is SearchRoutesAction.OnTripClick -> viewModelScope.launch {
-                _events.emit(SearchRoutesEvent.NavigateToTripDetail(action.tripId))
+                val result = _uiState.value.results.firstOrNull { it.trip.id == action.tripId }
+                _events.emit(SearchRoutesEvent.NavigateToTripDetail(action.tripId, result?.meetingStop()))
             }
             SearchRoutesAction.RetryLoad -> {
                 _uiState.update { it.copy(isLoading = true, loadError = null) }
@@ -100,6 +102,20 @@ class SearchRoutesViewModel(
     private fun updateAndSearch(transform: (SearchRoutesUiState) -> SearchRoutesUiState) {
         _uiState.update(transform)
         search()
+    }
+
+    /**
+     * The stop that meets the passenger: where they get on going to campus, where they get off
+     * leaving it. A campus end is not worth marking, so it is ignored.
+     */
+    private fun TripResult.meetingStop(): TripMeetingStop? {
+        val pickupStop = pickup?.takeUnless { it.place.isCampusPreset }
+        val dropoffStop = dropoff?.takeUnless { it.place.isCampusPreset }
+        return when {
+            pickupStop != null -> TripMeetingStop(pickupStop.pathIndex, isDropoff = false)
+            dropoffStop != null -> TripMeetingStop(dropoffStop.pathIndex, isDropoff = true)
+            else -> null
+        }
     }
 
     /** Matching is pure and in memory, so it runs synchronously on each change. */

@@ -65,8 +65,17 @@ sealed interface Route {
     @Serializable
     data class MyTrips(val tab: MyTripsTab = MyTripsTab.Passenger) : Route
 
+    /**
+     * A trip as a passenger sees it. From a search, [meetingStopIndex] marks the stop where it meets
+     * the passenger (on the path `[origin, waypoints…, destination]`), and [meetingIsDropoff] says
+     * whether they get off there rather than on.
+     */
     @Serializable
-    data class TripDetailPassenger(val tripId: String) : Route
+    data class TripDetailPassenger(
+        val tripId: String,
+        val meetingStopIndex: Int? = null,
+        val meetingIsDropoff: Boolean = false,
+    ) : Route
 
     @Serializable
     data object DriverBookingRequests : Route

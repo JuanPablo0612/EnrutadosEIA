@@ -23,6 +23,7 @@ import com.juanpablo0612.carpool.domain.trip.model.TripDriver
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.model.TripVehicle
 import com.juanpablo0612.carpool.presentation.route.search.TripResult
+import com.juanpablo0612.carpool.presentation.trip.description
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -141,7 +142,7 @@ private fun DriverRow(driver: TripDriver, vehicle: TripVehicle) {
         UserAvatar(name = name, photoUrl = driver.photoUrl, size = 36.dp)
         Column(modifier = Modifier.weight(1f)) {
             Text(text = name, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            vehicle.describe()?.let {
+            vehicle.description()?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodySmall,
@@ -154,10 +155,6 @@ private fun DriverRow(driver: TripDriver, vehicle: TripVehicle) {
         }
     }
 }
-
-/** "Mazda 3 · Gris", or null when the snapshot is empty. */
-internal fun TripVehicle.describe(): String? =
-    listOf("$brand $model".trim(), color).filter { it.isNotBlank() }.joinToString(" · ").ifBlank { null }
 
 private val previewNow = Clock.System.now().toEpochMilliseconds()
 

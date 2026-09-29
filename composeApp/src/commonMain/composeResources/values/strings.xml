@@ -171,20 +171,17 @@
 
     <!-- Booking -->
     <string name="cancel_booking_button">Cancel Booking</string>
-    <string name="confirm_button">Confirm</string>
     <string name="reject_button">Reject</string>
     <string name="booking_status_pending">Pending</string>
     <string name="booking_status_confirmed">Confirmed</string>
     <string name="booking_status_rejected">Rejected</string>
     <string name="booking_status_cancelled">Cancelled</string>
-    <string name="available_seats_label">%1$d seats available</string>
     <string name="no_seats_available">No seats available</string>
     <string name="error_no_seats_available">No seats available on this vehicle</string>
     <string name="error_already_booked">You already have a booking on this route</string>
-    <string name="error_booking_vehicle_not_found">This trip's vehicle info is missing — please contact the driver</string>
 
     <!-- Route Detail Passenger -->
-    <string name="route_detail_passenger_title">Route Details</string>
+    <string name="route_detail_passenger_title">Trip details</string>
 
     <!-- Passenger Bookings -->
 
@@ -444,17 +441,34 @@
     </plurals>
 
     <!-- RouteDetailPassenger redesign -->
-    <string name="trip_driver_section">Driver</string>
     <string name="trip_driver_placeholder">Route driver</string>
-    <string name="trip_stops_section">Stops</string>
-    <string name="trip_contribution_label">Contribution: %1$s</string>
-    <string name="trip_message_driver_label">Driver\'s message</string>
     <string name="book_request_button">Request seat</string>
-    <string name="book_request_subtext">The driver must confirm</string>
+    <string name="book_request_subtext">The driver confirms your seat</string>
     <string name="book_request_sent">Request sent</string>
     <string name="confirm_request_title">Confirm your request</string>
-    <string name="passenger_message_label">Message to driver (optional)</string>
+    <string name="passenger_message_label">Message for the driver (optional)</string>
     <string name="passenger_message_counter">%1$d / 140</string>
+    <string name="trip_detail_departs_at">Leaves at %1$s</string>
+    <string name="trip_detail_departure_caption">Departure · %1$s</string>
+    <string name="trip_detail_arrival">Arrival</string>
+    <string name="trip_detail_you_get_on">You get on here</string>
+    <string name="trip_detail_you_get_off">You get off here</string>
+    <string name="trip_detail_contribution">Contribution</string>
+    <string name="trip_detail_free_seats">Free seats</string>
+    <string name="trip_detail_seats_value">%1$d of %2$d</string>
+    <string name="trip_detail_route">Route</string>
+    <string name="trip_detail_driver_says">%1$s says</string>
+    <string name="trip_detail_load_failed">We couldn\'t load this trip. It may have been cancelled.</string>
+    <string name="trip_detail_unavailable_title">This trip is no longer available</string>
+    <string name="confirm_row_driver">Driver</string>
+    <string name="confirm_row_get_on">You get on at</string>
+    <string name="confirm_row_get_off">You get off at</string>
+    <string name="confirm_row_route">Route</string>
+    <string name="route_from_to">%1$s → %2$s</string>
+    <string name="confirm_row_contribution">Contribution</string>
+    <string name="confirm_request_note">Your seat is held once the driver accepts. We\'ll let you know right away.</string>
+    <string name="request_quick_luggage">I\'m bringing a bag</string>
+    <string name="request_quick_on_time">I\'ll be there on time</string>
     <string name="send_request_button">Send request</string>
 
     <!-- PassengerBookings redesign -->
@@ -834,6 +848,12 @@
     <string name="route_last_used_separator">%1$s · %2$s</string>
 
     <string name="booking_request_rating">Rating %1$s</string>
+    <string name="rating_value">%1$d.%2$d</string>
+    <string name="cd_rating">Rated %1$s out of 5</string>
+    <plurals name="rating_count">
+        <item quantity="one">%1$d rating</item>
+        <item quantity="other">%1$d ratings</item>
+    </plurals>
 
     <!-- Destructive confirmations -->
     <string name="notifications_clear_all_confirm_title">Clear all notifications?</string>

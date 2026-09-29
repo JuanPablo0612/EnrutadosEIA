@@ -27,5 +27,4 @@ class RatingRepositoryImpl(
             Result.failure(AppException.RatingException.Unknown)
         }
     }
-
 }

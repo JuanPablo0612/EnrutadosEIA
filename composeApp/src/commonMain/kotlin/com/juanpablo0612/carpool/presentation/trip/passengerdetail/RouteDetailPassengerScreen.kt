@@ -1,60 +1,59 @@
 package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
-import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.domain.rating.model.RatingSummary
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripDriver
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
-import com.juanpablo0612.carpool.presentation.booking.asStringResource
-import com.juanpablo0612.carpool.presentation.place.add.components.MapRoutePreview
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.BookingCtaSection
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.ConfirmRequestSheetContent
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverAndVehicleSection
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverMessageSection
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.StopsSection
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripSummarySection
+import com.juanpablo0612.carpool.domain.trip.model.TripVehicle
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.BookingBar
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.ConfirmRequestSheet
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverCard
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverMessageCard
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripDetailHeader
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripRouteCard
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripStats
+import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
-import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
-import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
-import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
+import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.booking_request_sent_notice
+import enrutadoseia.composeapp.generated.resources.cd_back
+import enrutadoseia.composeapp.generated.resources.error_24px
 import enrutadoseia.composeapp.generated.resources.route_detail_passenger_title
+import enrutadoseia.composeapp.generated.resources.trip_detail_load_failed
+import enrutadoseia.composeapp.generated.resources.trip_detail_unavailable_title
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Clock
 
 @Composable
 fun RouteDetailPassengerScreen(
     viewModel: RouteDetailPassengerViewModel,
     onBackClick: () -> Unit,
-    onBookingCreated: () -> Unit
+    onBookingCreated: () -> Unit,
+    onOpenDriverProfile: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val notificationPermission = rememberNotificationPermissionState()
@@ -68,118 +67,68 @@ fun RouteDetailPassengerScreen(
         when (event) {
             RouteDetailPassengerEvent.NavigateBack -> onBackClick()
             RouteDetailPassengerEvent.NavigateToPassengerBookings -> onBookingCreated()
+            is RouteDetailPassengerEvent.NavigateToDriverProfile -> onOpenDriverProfile(event.userId)
         }
     }
 
-    RouteDetailPassengerContent(
-        state = state,
-        onAction = viewModel::onAction
-    )
+    RouteDetailPassengerContent(state = state, onAction = viewModel::onAction)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RouteDetailPassengerContent(
     state: RouteDetailPassengerUiState,
-    onAction: (RouteDetailPassengerAction) -> Unit
+    onAction: (RouteDetailPassengerAction) -> Unit,
+    now: Long = rememberNowMs(),
 ) {
     val confirmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val trip = state.trip
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.route_detail_passenger_title),
                 onBack = { onAction(RouteDetailPassengerAction.OnBackClick) },
             )
-        }
+        },
+        bottomBar = {
+            // The driver sees their own trip without a booking bar.
+            if (trip != null && !state.isOwner) BookingBar(state = state, onAction = onAction)
+        },
     ) { padding ->
         when {
             state.isLoading -> DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(bottom = Spacing.xl)
-                ) {
-                    state.trip?.let { trip ->
-                        item {
-                            DriverAndVehicleSection(
-                                driver = state.driver,
-                                vehicle = state.vehicle,
-                                driverAverageRating = state.driverAverageRating,
-                                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
-                            )
-                        }
-                        item { HorizontalDivider() }
-                        item {
-                            TripSummarySection(
-                                trip = trip,
-                                availableSeats = state.availableSeats,
-                                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
-                            )
-                        }
-                        item { HorizontalDivider() }
-                        item {
-                            StopsSection(
-                                trip = trip,
-                                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
-                            )
-                        }
-                        item {
-                            val stops = remember(trip.id) {
-                                (listOf(trip.origin) + trip.waypoints + trip.destination)
-                                    .map { Coordinates(it.latitude, it.longitude) }
-                            }
-                            MapRoutePreview(
-                                markers = stops,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(160.dp) // matches Route Detail's map preview height
-                                    .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-                                    .clip(MaterialTheme.shapes.medium),
-                            )
-                        }
-                        if (trip.messageToPassengers.isNotBlank()) {
-                            item { HorizontalDivider() }
-                            item {
-                                DriverMessageSection(
-                                    message = trip.messageToPassengers,
-                                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
-                                )
-                            }
-                        }
-                        if (!state.isOwner) {
-                            item { HorizontalDivider() }
-                            item {
-                                BookingCtaSection(
-                                    availableSeats = state.availableSeats,
-                                    alreadyRequested = state.alreadyRequested,
-                                    isBooking = state.isBooking,
-                                    onAction = onAction,
-                                    modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md)
-                                )
-                            }
-                            if (state.bookingRequestSent) {
-                                item {
-                                    SuccessMessage(
-                                        message = stringResource(Res.string.booking_request_sent_notice),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-                                    )
-                                }
-                            }
-                        }
-                        state.error?.let { error ->
-                            item {
-                                ErrorMessage(
-                                    message = stringResource(error.asStringResource()),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-                                        .clickable { onAction(RouteDetailPassengerAction.OnDismissError) },
-                                )
-                            }
-                        }
+            // The trip listener retries on its own, so a failure here almost always means the
+            // trip was cancelled or deleted: offer a way back rather than a retry.
+            trip == null || state.loadFailed -> EmptyState(
+                icon = vectorResource(Res.drawable.error_24px),
+                title = stringResource(Res.string.trip_detail_unavailable_title),
+                description = stringResource(Res.string.trip_detail_load_failed),
+                primaryAction = ActionButton(
+                    label = stringResource(Res.string.cd_back),
+                    onClick = { onAction(RouteDetailPassengerAction.OnBackClick) },
+                ),
+                modifier = Modifier.fillMaxSize().padding(padding),
+            )
+            else -> LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+            ) {
+                item(key = "header") { TripDetailHeader(trip = trip, now = now) }
+                item(key = "stats") { TripStats(trip = trip, availableSeats = state.availableSeats) }
+                item(key = "route") { TripRouteCard(trip = trip, meetingStop = state.meetingStop) }
+                item(key = "driver") {
+                    DriverCard(
+                        trip = trip,
+                        rating = state.driver?.rating,
+                        onClick = { onAction(RouteDetailPassengerAction.OnOpenDriverProfile) },
+                    )
+                }
+                if (trip.messageToPassengers.isNotBlank()) {
+                    item(key = "message") {
+                        DriverMessageCard(driverName = trip.driver.name, message = trip.messageToPassengers)
                     }
                 }
             }
@@ -187,17 +136,29 @@ fun RouteDetailPassengerContent(
     }
 
     if (state.showConfirmSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { onAction(RouteDetailPassengerAction.OnDismissConfirmSheet) },
-            sheetState = confirmSheetState
-        ) {
-            ConfirmRequestSheetContent(
-                state = state,
-                onAction = onAction
-            )
-        }
+        ConfirmRequestSheet(state = state, sheetState = confirmSheetState, onAction = onAction)
     }
 }
+
+private val previewNow = Clock.System.now().toEpochMilliseconds()
+
+private val previewTrip = Trip(
+    id = "t1",
+    routeId = "",
+    driverId = "d1",
+    vehicleId = "v1",
+    driver = TripDriver(name = "Carolina Restrepo"),
+    vehicle = TripVehicle(brand = "Mazda", model = "3", color = "Gris"),
+    origin = Place(name = "Viva Envigado", address = "", latitude = 6.17, longitude = -75.59),
+    destination = Place.EIA_LAS_PALMAS,
+    waypoints = listOf(Place(name = "Parque de Envigado", address = "", latitude = 6.17, longitude = -75.58)),
+    departureTime = previewNow + 2 * 3_600_000L,
+    seatCount = 3,
+    confirmedSeats = 1,
+    contributionPerPassenger = 4_000,
+    messageToPassengers = "Salgo puntual. Te espero máximo 5 minutos frente a la iglesia.",
+    status = TripStatus.Active,
+)
 
 @Preview
 @Composable
@@ -206,22 +167,12 @@ private fun RouteDetailPassengerContentPreview() {
         RouteDetailPassengerContent(
             state = RouteDetailPassengerUiState(
                 isLoading = false,
-                trip = Trip(
-                    id = "1", routeId = "r1", driverId = "d1", vehicleId = "v1",
-                    origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
-                    destination = Place.UNIVERSITY_EIA,
-                    waypoints = emptyList(),
-                    departureTime = 1746360000000L,
-                    status = TripStatus.Active
-                ),
-                vehicle = Vehicle(
-                    id = "v1", driverId = "d1", brand = "Toyota", model = "Corolla",
-                    licensePlate = "ABC123", color = "Blanco", year = 2020, seatsAvailable = 3
-                ),
-                driver = PublicProfile(id = "d1", name = "Juan Pablo"),
-                availableSeats = 3
+                trip = previewTrip,
+                driver = PublicProfile(id = "d1", name = "Carolina Restrepo", rating = RatingSummary(4.8, 27)),
+                meetingStop = TripMeetingStop(pathIndex = 1, isDropoff = false),
             ),
-            onAction = {}
+            onAction = {},
+            now = previewNow,
         )
     }
 }

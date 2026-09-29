@@ -17,6 +17,7 @@ import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerScreen
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -35,6 +36,9 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToNotifications: () -> Unit,
     onNavigateToDriverBookingRequests: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
+    /** Opens a search result, marking the stop where the trip meets the passenger. */
+    onNavigateToSearchResult: (tripId: String, meetingStop: TripMeetingStop?) -> Unit,
+    onNavigateToUserProfile: (userId: String) -> Unit,
     onBookingCreated: () -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
@@ -62,7 +66,7 @@ fun NavGraphBuilder.mainNavGraph(
         val viewModel: SearchRoutesViewModel = koinViewModel { parametersOf(args.campusId, args.fromCampus) }
         SearchRoutesScreen(
             viewModel = viewModel,
-            onNavigateToTripDetail = onNavigateToTripDetail,
+            onNavigateToTripDetail = onNavigateToSearchResult,
             onNavigateToAddPlace = onNavigateToAddPlace
         )
     }
@@ -100,11 +104,13 @@ fun NavGraphBuilder.mainNavGraph(
 
     composable<Route.TripDetailPassenger> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.TripDetailPassenger>()
-        val viewModel: RouteDetailPassengerViewModel = koinViewModel { parametersOf(args.tripId) }
+        val meetingStop = args.meetingStopIndex?.let { TripMeetingStop(it, args.meetingIsDropoff) }
+        val viewModel: RouteDetailPassengerViewModel = koinViewModel { parametersOf(args.tripId, meetingStop) }
         RouteDetailPassengerScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
-            onBookingCreated = onBookingCreated
+            onBookingCreated = onBookingCreated,
+            onOpenDriverProfile = onNavigateToUserProfile,
         )
     }
 }

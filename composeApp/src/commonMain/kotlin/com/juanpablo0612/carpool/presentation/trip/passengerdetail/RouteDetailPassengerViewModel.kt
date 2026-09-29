@@ -5,12 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
-import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
-import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,114 +14,98 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val BOOKING_SENT_BANNER_DURATION_MS = 900L
+private const val MAX_PASSENGER_MESSAGE_LENGTH = 140
 
-@OptIn(ExperimentalCoroutinesApi::class)
+/**
+ * One listener on the trip document keeps the seats and status current; the driver's name, photo
+ * and car come with it. The only other reads are the driver's profile (for the rating) and the
+ * check for a request the passenger already made.
+ */
 class RouteDetailPassengerViewModel(
     private val tripId: String,
+    meetingStop: TripMeetingStop?,
     private val tripRepository: TripRepository,
-    private val vehicleRepository: VehicleRepository,
-    private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(RouteDetailPassengerUiState())
+    private val _state = MutableStateFlow(RouteDetailPassengerUiState(meetingStop = meetingStop))
     val state: StateFlow<RouteDetailPassengerUiState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<RouteDetailPassengerEvent>()
     val events: SharedFlow<RouteDetailPassengerEvent> = _events.asSharedFlow()
 
+    private var extrasLoaded = false
+
     init {
-        loadTrip()
+        observeTrip()
     }
 
-    private fun loadTrip() {
-        viewModelScope.launch {
-            tripRepository.getTripById(tripId)
-                .onSuccess { trip ->
-                    val isOwner = authRepository.getCurrentUserId() == trip.driverId
-                    _state.update { it.copy(isLoading = false, trip = trip, isOwner = isOwner) }
-                    // A failed probe falls back to "not yet requested": CreateBookingUseCase re-checks for an
-                    // existing booking before it creates one, so this cannot produce a duplicate.
-                    val alreadyRequested = checkExistingBookingUseCase(tripId).getOrDefault(false)
-                    _state.update { it.copy(alreadyRequested = alreadyRequested) }
-                    observeVehicleAndSeats(trip.driverId, trip.vehicleId, trip.id)
-                    loadDriverProfile(trip.driverId)
+    private fun observeTrip() {
+        tripRepository.getTripByIdFlow(tripId)
+            .onEach { trip ->
+                if (trip == null) {
+                    _state.update { it.copy(isLoading = false, loadFailed = true) }
+                    return@onEach
                 }
-                .onFailure {
-                    _state.update { it.copy(isLoading = false) }
+                val isOwner = authRepository.getCurrentUserId() == trip.driverId
+                _state.update { it.copy(isLoading = false, loadFailed = false, trip = trip, isOwner = isOwner) }
+                if (!extrasLoaded) {
+                    extrasLoaded = true
+                    loadExtras(driverId = trip.driverId, isOwner = isOwner)
                 }
-        }
-    }
-
-    // Available seats are driven by trip.seatCount, not the vehicle's capacity — the vehicle
-    // flow is only consulted here for display (photo/brand/model). flatMapLatest re-subscribes the
-    // seats flow whenever the vehicle list changes, instead of collecting it nested inside onEach,
-    // which would block this flow from ever processing a later vehicle emission.
-    private fun observeVehicleAndSeats(driverId: String, vehicleId: String, tripId: String) {
-        vehicleRepository.getUserVehicles(driverId)
-            .flatMapLatest { vehicles ->
-                val vehicle = vehicles.find { it.id == vehicleId }
-                getTripAvailableSeatsUseCase(tripId).map { seats -> vehicle to seats }
             }
-            .onEach { (vehicle, seats) ->
-                _state.update { it.copy(vehicle = vehicle, availableSeats = seats) }
-            }
+            .catch { _state.update { it.copy(isLoading = false, loadFailed = true) } }
             .launchIn(viewModelScope)
     }
 
-    // A failed profile fetch degrades to null (Driver section falls back to the placeholder
-    // label) — it must never fail the whole trip-detail load.
-    private fun loadDriverProfile(driverId: String) {
+    /** One-off reads that don't need to follow the trip: the driver's rating and our own request. */
+    private fun loadExtras(driverId: String, isOwner: Boolean) {
         viewModelScope.launch {
-            // The rating comes with the profile, from the same document read.
+            // A failed profile read only hides the rating; it never fails the screen.
             val profile = authRepository.getPublicProfile(driverId).getOrNull()
-            _state.update { it.copy(driver = profile, driverAverageRating = profile?.rating?.average) }
+            _state.update { it.copy(driver = profile) }
+        }
+        if (!isOwner) {
+            viewModelScope.launch {
+                // A failed probe falls back to "not yet requested": CreateBookingUseCase re-checks
+                // for an existing booking before it creates one, so this cannot produce a duplicate.
+                val alreadyRequested = checkExistingBookingUseCase(tripId).getOrDefault(false)
+                _state.update { it.copy(alreadyRequested = alreadyRequested) }
+            }
         }
     }
 
     fun onAction(action: RouteDetailPassengerAction) {
         when (action) {
-            RouteDetailPassengerAction.OnBackClick -> viewModelScope.launch {
-                _events.emit(RouteDetailPassengerEvent.NavigateBack)
-            }
-            RouteDetailPassengerAction.OnBookClick,
-            RouteDetailPassengerAction.OnOpenConfirmSheet ->
-                _state.update { it.copy(showConfirmSheet = true) }
-
-            RouteDetailPassengerAction.OnDismissConfirmSheet ->
-                _state.update { it.copy(showConfirmSheet = false) }
-
+            RouteDetailPassengerAction.OnBackClick -> emit(RouteDetailPassengerEvent.NavigateBack)
+            RouteDetailPassengerAction.OnOpenConfirmSheet -> _state.update { it.copy(showConfirmSheet = true, error = null) }
+            RouteDetailPassengerAction.OnDismissConfirmSheet -> _state.update { it.copy(showConfirmSheet = false) }
             is RouteDetailPassengerAction.OnPassengerMessageChanged ->
-                _state.update { it.copy(passengerMessage = action.message.take(140)) }
-
+                _state.update { it.copy(passengerMessage = action.message.take(MAX_PASSENGER_MESSAGE_LENGTH)) }
+            is RouteDetailPassengerAction.OnQuickMessage -> _state.update {
+                val combined = listOf(it.passengerMessage.trim(), action.text).filter(String::isNotEmpty).joinToString(" ")
+                it.copy(passengerMessage = combined.take(MAX_PASSENGER_MESSAGE_LENGTH))
+            }
             RouteDetailPassengerAction.OnConfirmBookingRequest -> book()
-
-            RouteDetailPassengerAction.OnDismissError ->
-                _state.update { it.copy(error = null) }
+            RouteDetailPassengerAction.OnOpenDriverProfile -> _state.value.trip?.let {
+                emit(RouteDetailPassengerEvent.NavigateToDriverProfile(it.driverId))
+            }
         }
     }
 
     private fun book() {
         val trip = _state.value.trip ?: return
-        if (_state.value.isOwner) return
-        if (_state.value.vehicle == null) {
-            // The vehicle is only used for display here (seats come from trip.seatCount),
-            // but a missing vehicle still means the trip's data is incomplete — surface it instead
-            // of leaving the confirm button silently doing nothing.
-            _state.update { it.copy(error = BookingError.VehicleNotFound) }
-            return
-        }
-        _state.update { it.copy(isBooking = true, error = null, showConfirmSheet = false) }
+        if (_state.value.isOwner || _state.value.isBooking) return
+        _state.update { it.copy(isBooking = true, error = null) }
         viewModelScope.launch {
             createBookingUseCase(
                 tripId = tripId,
@@ -136,15 +116,22 @@ class RouteDetailPassengerViewModel(
                 passengerMessage = _state.value.passengerMessage.ifBlank { null }
             )
                 .onSuccess {
-                    _state.update { it.copy(isBooking = false, alreadyRequested = true, bookingRequestSent = true) }
+                    _state.update {
+                        it.copy(isBooking = false, showConfirmSheet = false, alreadyRequested = true, bookingRequestSent = true)
+                    }
                     // Brief inline confirmation before navigating away, so "request sent"
                     // isn't only communicated by an unannounced screen change.
                     delay(BOOKING_SENT_BANNER_DURATION_MS)
                     _events.emit(RouteDetailPassengerEvent.NavigateToPassengerBookings)
                 }
                 .onFailure { throwable ->
+                    // The sheet stays open so the error shows where the passenger acted.
                     _state.update { it.copy(isBooking = false, error = throwable.toBookingError()) }
                 }
         }
+    }
+
+    private fun emit(event: RouteDetailPassengerEvent) {
+        viewModelScope.launch { _events.emit(event) }
     }
 }

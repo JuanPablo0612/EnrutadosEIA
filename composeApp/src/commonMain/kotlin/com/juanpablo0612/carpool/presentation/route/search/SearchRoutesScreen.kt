@@ -33,6 +33,7 @@ import com.juanpablo0612.carpool.presentation.route.search.components.SearchEmpt
 import com.juanpablo0612.carpool.presentation.route.search.components.SearchHeader
 import com.juanpablo0612.carpool.presentation.route.search.components.TripResultCard
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -49,7 +50,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun SearchRoutesScreen(
     viewModel: SearchRoutesViewModel,
-    onNavigateToTripDetail: (String) -> Unit,
+    onNavigateToTripDetail: (tripId: String, meetingStop: TripMeetingStop?) -> Unit,
     onNavigateToAddPlace: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -66,7 +67,7 @@ fun SearchRoutesScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is SearchRoutesEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId)
+            is SearchRoutesEvent.NavigateToTripDetail -> onNavigateToTripDetail(event.tripId, event.meetingStop)
         }
     }
 
