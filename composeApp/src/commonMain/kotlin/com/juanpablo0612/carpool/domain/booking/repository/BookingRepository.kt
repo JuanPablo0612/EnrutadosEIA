@@ -11,6 +11,16 @@ interface BookingRepository {
     fun getDriverBookingRequests(driverId: String): Flow<List<Booking>>
     fun getAllDriverBookings(driverId: String): Flow<List<Booking>>
 
+    /**
+     * The driver's open bookings (pending or confirmed) on trips departing at or after
+     * [departingAfter]: what "Solicitudes" answers and lists. Closed requests and past trips are
+     * left to the server, so the listener doesn't grow with the driver's history.
+     */
+    fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<Booking>>
+
+    /** Every open booking (pending or confirmed) on one of the driver's own trips. */
+    fun getOpenBookingsForTrip(tripId: String, driverId: String): Flow<List<Booking>>
+
     // Both party-scoped so the `bookings` read rule (passengerId == uid || driverId == uid) is
     // statically provable from the query itself: the driver stream returns every CONFIRMED
     // passenger on the trip, the passenger stream returns only their own (0 or 1 item).

@@ -52,6 +52,36 @@ class FirebaseBookingRemoteDataSource(
             }
     }
 
+    override fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<BookingDto>> {
+        return firestore.collection(COLLECTION_NAME)
+            .where {
+                all(
+                    "driverId" equalTo driverId,
+                    "status" inArray OPEN_STATUSES,
+                    "departureTime" greaterThanOrEqualTo departingAfter,
+                )
+            }
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents.map { it.data(BookingDto.serializer()) }
+            }
+    }
+
+    override fun getOpenBookingsForTrip(tripId: String, driverId: String): Flow<List<BookingDto>> {
+        return firestore.collection(COLLECTION_NAME)
+            .where {
+                all(
+                    "tripId" equalTo tripId,
+                    "driverId" equalTo driverId,
+                    "status" inArray OPEN_STATUSES,
+                )
+            }
+            .snapshots
+            .map { snapshot ->
+                snapshot.documents.map { it.data(BookingDto.serializer()) }
+            }
+    }
+
     // Full CONFIRMED passenger list for the trip's own driver — used by TripTrackingViewModel to
     // render pickup status per passenger. Scoping driverId server-side (instead of client-side)
     // makes the query itself provably satisfy the `bookings` read rule.
@@ -140,7 +170,7 @@ class FirebaseBookingRemoteDataSource(
                 all(
                     "passengerId" equalTo passengerId,
                     "tripId" equalTo tripId,
-                    "status" inArray listOf("PENDING", "CONFIRMED"),
+                    "status" inArray OPEN_STATUSES,
                 )
             }
             .get()
@@ -150,5 +180,8 @@ class FirebaseBookingRemoteDataSource(
     companion object {
         private const val COLLECTION_NAME = "bookings"
         private const val TRIPS_COLLECTION_NAME = "trips"
+
+        /** A request still waiting for an answer or a seat already given: not yet closed. */
+        private val OPEN_STATUSES = listOf("PENDING", "CONFIRMED")
     }
 }
