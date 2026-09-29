@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
-import com.juanpablo0612.carpool.presentation.ui.theme.Alpha
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_status_cancelled
@@ -37,11 +36,9 @@ import enrutadoseia.composeapp.generated.resources.trip_status_scheduled
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Every status resolves to a paired M3 `*Container`/`on*Container` role, which Material's colour
- * generation guarantees meets contrast; a same-hue foreground over an alpha-tinted background of
- * that hue fails 4.5:1 for several statuses. The border adds a visible edge independent of
- * contrast, since a badge can render on a same-hue parent (e.g. inside [HighlightCard]'s
- * primary-container hero).
+ * A status pill. Every status resolves to a paired `*Container`/`on*Container` role (from the
+ * Material scheme or [LocalExtendedColors]), which keeps the label at 4.5:1 or better; a same-hue
+ * foreground over an alpha tint of that hue would fail for several statuses.
  *
  * The dot and label are merged into one accessibility node via [Res.string.cd_status]. Status is
  * never colour-only — [text] always renders.
@@ -55,13 +52,12 @@ private fun StatusBadge(
 ) {
     val description = stringResource(Res.string.cd_status, text)
     Surface(
-        shape = MaterialTheme.shapes.extraSmall,
+        shape = CircleShape,
         color = containerColor,
-        border = BorderStroke(1.dp, contentColor.copy(alpha = Alpha.BADGE_CONTAINER)),
         modifier = modifier.clearAndSetSemantics { contentDescription = description }
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
@@ -85,14 +81,14 @@ fun TripStatusBadge(status: TripStatus, modifier: Modifier = Modifier) {
     val (text, container, content) = when (status) {
         TripStatus.Active -> Triple(
             stringResource(Res.string.trip_status_scheduled),
-            scheme.tertiaryContainer,
-            scheme.onTertiaryContainer,
+            scheme.secondaryContainer,
+            scheme.onSecondaryContainer,
         )
 
         TripStatus.InProgress -> Triple(
             stringResource(Res.string.trip_status_in_progress),
-            scheme.primaryContainer,
-            scheme.onPrimaryContainer,
+            scheme.primary,
+            scheme.onPrimary,
         )
 
         TripStatus.Completed -> Triple(
@@ -113,17 +109,18 @@ fun TripStatusBadge(status: TripStatus, modifier: Modifier = Modifier) {
 @Composable
 fun BookingStatusBadge(status: BookingStatus, modifier: Modifier = Modifier) {
     val scheme = MaterialTheme.colorScheme
+    val extended = LocalExtendedColors.current
     val (text, container, content) = when (status) {
         BookingStatus.Pending -> Triple(
             stringResource(Res.string.booking_status_pending),
-            scheme.secondaryContainer,
-            scheme.onSecondaryContainer,
+            extended.warningContainer,
+            extended.onWarningContainer,
         )
 
         BookingStatus.Confirmed -> Triple(
             stringResource(Res.string.booking_status_confirmed),
-            scheme.primaryContainer,
-            scheme.onPrimaryContainer,
+            extended.successContainer,
+            extended.onSuccessContainer,
         )
 
         BookingStatus.Rejected -> Triple(
@@ -132,10 +129,11 @@ fun BookingStatusBadge(status: BookingStatus, modifier: Modifier = Modifier) {
             scheme.onErrorContainer,
         )
 
+        // Cancelled is an outcome, not a problem: neutral, so it doesn't shout like a rejection.
         BookingStatus.Cancelled -> Triple(
             stringResource(Res.string.booking_status_cancelled),
-            scheme.errorContainer,
-            scheme.onErrorContainer,
+            scheme.surfaceVariant,
+            scheme.onSurfaceVariant,
         )
     }
     StatusBadge(text = text, containerColor = container, contentColor = content, modifier = modifier)

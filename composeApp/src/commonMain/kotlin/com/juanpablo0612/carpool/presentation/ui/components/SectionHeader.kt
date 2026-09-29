@@ -8,11 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 
 /**
- * Header for a group of rows in a list screen: a primary-coloured `labelMedium` title with an
- * optional trailing [action] (e.g. an add button).
+ * Header for a group of rows in a list screen: a `titleMedium` title with an optional trailing
+ * [action] (e.g. "Ver todas"). Marked as a heading so screen-reader users can jump between groups.
  */
 @Composable
 fun SectionHeader(
@@ -28,9 +30,11 @@ fun SectionHeader(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .weight(1f)
+                .semantics { heading() },
         )
         action?.invoke()
     }

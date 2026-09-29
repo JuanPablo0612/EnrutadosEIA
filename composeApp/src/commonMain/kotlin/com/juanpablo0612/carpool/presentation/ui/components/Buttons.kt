@@ -1,16 +1,13 @@
 package com.juanpablo0612.carpool.presentation.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +27,13 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 
+/** Minimum height of the app's full-width buttons; `heightIn` so labels survive large font scales. */
+private val ButtonMinHeight = 52.dp
+
+/**
+ * The screen's main call to action. Full width by default: in a [androidx.compose.foundation.layout.Row]
+ * give it `Modifier.weight(1f)` to share the row with a [SecondaryButton].
+ */
 @Composable
 fun PrimaryButton(
     text: String,
@@ -40,15 +44,14 @@ fun PrimaryButton(
     shape: Shape = MaterialTheme.shapes.medium,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-    trailingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            // heightIn, not height: this is the app's universal CTA, and a fixed height clips
-            // its label at large system font scales.
-            .heightIn(min = 56.dp),
+            .heightIn(min = ButtonMinHeight),
         enabled = enabled && !isLoading,
         shape = shape,
         // Disabled colours are left to ButtonDefaults, which already applies the spec-correct
@@ -65,23 +68,12 @@ fun PrimaryButton(
                 strokeWidth = 2.dp
             )
         } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                if (trailingIcon != null) {
-                    Spacer(modifier = Modifier.width(Spacing.sm))
-                    Icon(imageVector = trailingIcon, contentDescription = null)
-                }
-            }
+            ButtonContent(text = text, leadingIcon = leadingIcon, trailingIcon = trailingIcon)
         }
     }
 }
 
+/** A secondary action next to or below a [PrimaryButton]; outlined so it never competes with it. */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -89,27 +81,38 @@ fun SecondaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = MaterialTheme.shapes.medium,
-    borderColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = MaterialTheme.colorScheme.primary
+    contentColor: Color = MaterialTheme.colorScheme.primary,
+    leadingIcon: ImageVector? = null,
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            // heightIn so the label survives large font scales; see PrimaryButton.
-            .heightIn(min = 56.dp),
+            .heightIn(min = ButtonMinHeight),
         enabled = enabled,
         shape = shape,
-        border = BorderStroke(1.dp, borderColor),
+        border = ButtonDefaults.outlinedButtonBorder(enabled),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = contentColor
         )
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
+        ButtonContent(text = text, leadingIcon = leadingIcon, trailingIcon = null)
+    }
+}
+
+@Composable
+private fun ButtonContent(text: String, leadingIcon: ImageVector?, trailingIcon: ImageVector?) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm, Alignment.CenterHorizontally)
+    ) {
+        if (leadingIcon != null) {
+            Icon(imageVector = leadingIcon, contentDescription = null, modifier = Modifier.size(20.dp))
+        }
+        Text(text = text, style = MaterialTheme.typography.titleMedium)
+        if (trailingIcon != null) {
+            Icon(imageVector = trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp))
+        }
     }
 }
 

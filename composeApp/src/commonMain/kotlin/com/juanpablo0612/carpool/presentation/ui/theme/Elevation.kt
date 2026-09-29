@@ -5,8 +5,9 @@ import androidx.compose.ui.unit.dp
 /**
  * Elevation steps, both shadow and tonal.
  *
- * Prefer letting Material 3's tonal surface containers carry separation and keeping cards at
- * [card]; reach for [raised] only when an element must read as floating above its siblings.
+ * Cards are flat ([none]) and separated by a hairline border and the tonal step from the ground;
+ * reach for [raised] only when an element must read as floating above its siblings (a FAB, a
+ * map overlay).
  */
 object Elevation {
     /** Flat against its parent surface. */
