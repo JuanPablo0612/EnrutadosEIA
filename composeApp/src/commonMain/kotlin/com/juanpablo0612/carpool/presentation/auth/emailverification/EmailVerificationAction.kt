@@ -9,4 +9,7 @@ sealed class EmailVerificationAction {
 
     /** The screen came to the foreground, e.g. back from the mail app or the browser. */
     data object OnScreenResumed : EmailVerificationAction()
+
+    /** The address was wrong: leave this account and sign up again. */
+    data object OnUseAnotherEmail : EmailVerificationAction()
 }

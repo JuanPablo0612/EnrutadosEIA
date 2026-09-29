@@ -213,6 +213,12 @@ fun AppNavigation(
                     onNavigateToRegister = { navController.navigate(Route.Register) },
                     onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                     onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
+                    onSignUpAgain = {
+                        // The verification screen can be the only entry (reached from Splash),
+                        // so rebuild the auth stack rather than popping: Login below Register.
+                        navController.navigate(Route.Login) { popUpTo(0) { inclusive = true } }
+                        navController.navigate(Route.Register)
+                    },
                     onNavigateBack = { navController.popBackStack() },
                     canNavigateBack = { navController.previousBackStackEntry != null }
                 )

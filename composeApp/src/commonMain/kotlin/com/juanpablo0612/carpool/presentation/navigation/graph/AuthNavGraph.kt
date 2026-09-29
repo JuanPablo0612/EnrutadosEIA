@@ -19,6 +19,7 @@ fun NavGraphBuilder.authNavGraph(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
+    onSignUpAgain: () -> Unit,
     onNavigateBack: () -> Unit,
     canNavigateBack: () -> Boolean = { true }
 ) {
@@ -59,7 +60,7 @@ fun NavGraphBuilder.authNavGraph(
         EmailVerificationScreen(
             viewModel = viewModel,
             onNavigateToApp = onAuthSuccess,
-            onBackClick = onNavigateBack
+            onNavigateToSignUp = onSignUpAgain,
         )
     }
 }

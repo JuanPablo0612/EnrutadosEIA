@@ -43,6 +43,7 @@ class EmailVerificationViewModel(
             }
             EmailVerificationAction.OnCheckVerification -> checkVerification(userInitiated = true)
             EmailVerificationAction.OnScreenResumed -> checkVerification(userInitiated = false)
+            EmailVerificationAction.OnUseAnotherEmail -> useAnotherEmail()
         }
     }
 
@@ -95,6 +96,21 @@ class EmailVerificationViewModel(
                 isStillUnverified = report && stillUnverified,
                 error = if (report) error else it.error,
             )
+        }
+    }
+
+    /**
+     * Signs out of the unverified account before sending the user back to sign-up; otherwise
+     * they would register the corrected address while still signed in to the old one.
+     */
+    private fun useAnotherEmail() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            authRepository.logout()
+                .onSuccess { _events.emit(EmailVerificationEvent.NavigateToSignUp) }
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
+                }
         }
     }
 

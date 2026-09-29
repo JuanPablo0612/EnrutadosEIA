@@ -53,7 +53,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun EmailVerificationScreen(
     viewModel: EmailVerificationViewModel,
     onNavigateToApp: (User) -> Unit,
-    onBackClick: () -> Unit
+    onNavigateToSignUp: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -67,13 +67,13 @@ fun EmailVerificationScreen(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is EmailVerificationEvent.NavigateToApp -> onNavigateToApp(event.user)
+            EmailVerificationEvent.NavigateToSignUp -> onNavigateToSignUp()
         }
     }
 
     EmailVerificationContent(
         state = state,
         onAction = viewModel::onAction,
-        onBackClick = onBackClick
     )
 }
 
@@ -81,10 +81,10 @@ fun EmailVerificationScreen(
 fun EmailVerificationContent(
     state: EmailVerificationUiState,
     onAction: (EmailVerificationAction) -> Unit,
-    onBackClick: () -> Unit
 ) {
     AuthFormLayout(
-        topBar = { AuthTopBar(onBackClick = onBackClick, showBackButton = false) },
+        // No back arrow: the account already exists, so "back" is the explicit sign-out below.
+        topBar = { AuthTopBar(onBackClick = {}, showBackButton = false) },
         footer = {
             if (state.isStillUnverified) {
                 Text(
@@ -114,7 +114,10 @@ fun EmailVerificationContent(
                 onClick = { onAction(EmailVerificationAction.OnResendEmail) },
                 enabled = state.resendCountdown == 0 && !state.isLoading
             )
-            TextButton(onClick = onBackClick) {
+            TextButton(
+                onClick = { onAction(EmailVerificationAction.OnUseAnotherEmail) },
+                enabled = !state.isLoading,
+            ) {
                 Text(
                     text = stringResource(Res.string.email_verification_wrong_email),
                     style = MaterialTheme.typography.titleSmall,
@@ -183,7 +186,6 @@ private fun EmailVerificationPreview() {
                 resendCountdown = 25
             ),
             onAction = {},
-            onBackClick = {}
         )
     }
 }
