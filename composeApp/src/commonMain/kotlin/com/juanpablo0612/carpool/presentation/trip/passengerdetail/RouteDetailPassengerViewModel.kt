@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import kotlinx.coroutines.delay
@@ -108,12 +109,9 @@ class RouteDetailPassengerViewModel(
         _state.update { it.copy(isBooking = true, error = null) }
         viewModelScope.launch {
             createBookingUseCase(
-                tripId = tripId,
-                driverId = trip.driverId,
-                originName = trip.origin.name,
-                destinationName = trip.destination.name,
-                departureTime = trip.departureTime,
-                passengerMessage = _state.value.passengerMessage.ifBlank { null }
+                trip = trip,
+                meetingStop = _state.value.meetingStop,
+                passengerMessage = _state.value.passengerMessage,
             )
                 .onSuccess {
                     _state.update {

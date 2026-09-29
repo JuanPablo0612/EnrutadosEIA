@@ -1,8 +1,11 @@
 package com.juanpablo0612.carpool.data.booking.model
 
+import com.juanpablo0612.carpool.data.trip.model.TripDriverDto
 import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.domain.booking.model.BookingMeetingStop
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.model.RejectReason
+import com.juanpablo0612.carpool.domain.trip.model.TripDriver
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,6 +16,9 @@ data class BookingDto(
     val driverId: String = "",
     val passengerName: String = "",
     val passengerEmail: String = "",
+    val passengerPhotoUrl: String? = null,
+    val driver: TripDriverDto = TripDriverDto(),
+    val meetingStop: BookingMeetingStopDto? = null,
     val originName: String = "",
     val destinationName: String = "",
     val departureTime: Long = 0L,
@@ -29,6 +35,9 @@ data class BookingDto(
         driverId = driverId,
         passengerName = passengerName,
         passengerEmail = passengerEmail,
+        passengerPhotoUrl = passengerPhotoUrl,
+        driver = TripDriver(name = driver.name, photoUrl = driver.photoUrl),
+        meetingStop = meetingStop?.let { BookingMeetingStop(name = it.name, isDropoff = it.isDropoff) },
         originName = originName,
         destinationName = destinationName,
         departureTime = departureTime,
@@ -58,6 +67,9 @@ data class BookingDto(
             driverId = booking.driverId,
             passengerName = booking.passengerName,
             passengerEmail = booking.passengerEmail,
+            passengerPhotoUrl = booking.passengerPhotoUrl,
+            driver = TripDriverDto(name = booking.driver.name, photoUrl = booking.driver.photoUrl),
+            meetingStop = booking.meetingStop?.let { BookingMeetingStopDto(name = it.name, isDropoff = it.isDropoff) },
             originName = booking.originName,
             destinationName = booking.destinationName,
             departureTime = booking.departureTime,
@@ -80,3 +92,9 @@ data class BookingDto(
         )
     }
 }
+
+@Serializable
+data class BookingMeetingStopDto(
+    val name: String = "",
+    val isDropoff: Boolean = false,
+)

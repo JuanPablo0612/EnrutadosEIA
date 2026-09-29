@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.booking.BookingError
 
 data class RouteDetailPassengerUiState(

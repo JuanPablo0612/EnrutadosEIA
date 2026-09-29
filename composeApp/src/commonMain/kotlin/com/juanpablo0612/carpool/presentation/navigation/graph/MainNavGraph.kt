@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.booking.passenger.PassengerBookingsScreen
 import com.juanpablo0612.carpool.presentation.booking.passenger.PassengerBookingsViewModel
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
@@ -17,7 +18,6 @@ import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerScreen
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

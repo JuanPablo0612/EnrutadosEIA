@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.model.TripSearchCriteria
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.MatchTripsUseCase
 import com.juanpablo0612.carpool.presentation.trip.TripError
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

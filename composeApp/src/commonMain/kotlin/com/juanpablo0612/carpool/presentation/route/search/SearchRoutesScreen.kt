@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
@@ -33,7 +34,6 @@ import com.juanpablo0612.carpool.presentation.route.search.components.SearchEmpt
 import com.juanpablo0612.carpool.presentation.route.search.components.SearchHeader
 import com.juanpablo0612.carpool.presentation.route.search.components.TripResultCard
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme

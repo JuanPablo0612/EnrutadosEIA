@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.di
 import com.juanpablo0612.carpool.data.trip.datasource.FirebaseTripRemoteDataSource
 import com.juanpablo0612.carpool.data.trip.datasource.TripRemoteDataSource
 import com.juanpablo0612.carpool.data.trip.repository.TripRepositoryImpl
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.trip.usecase.GenerateRecurringTripSlotsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
@@ -12,7 +13,6 @@ import com.juanpablo0612.carpool.domain.trip.usecase.PublishTripUseCase
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingViewModel

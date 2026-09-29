@@ -17,8 +17,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.rating.model.RatingSummary
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.trip.description
-import com.juanpablo0612.carpool.presentation.trip.passengerdetail.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.RatingBadge
 import com.juanpablo0612.carpool.presentation.ui.components.RouteTimeline
