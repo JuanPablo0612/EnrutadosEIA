@@ -85,22 +85,57 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+/**
+ * Semantic colours Material 3 has no role for, paired the same way as the scheme's own roles.
+ *
+ *  - `success` / `warning`: solid colour for text, icons and progress on a surface.
+ *  - `*Container` / `on*Container`: tinted fill and its content for status pills and banners
+ *    (confirmed, pending, "last seat").
+ *  - `rating`: the star fill, kept apart from `warning` so ratings don't read as an alert.
+ */
 data class ExtendedColors(
     val success: Color,
     val onSuccess: Color,
+    val successContainer: Color,
+    val onSuccessContainer: Color,
     val warning: Color,
     val onWarning: Color,
+    val warningContainer: Color,
+    val onWarningContainer: Color,
     val info: Color,
     val onInfo: Color,
+    val rating: Color,
 )
 
-val LocalExtendedColors = staticCompositionLocalOf {
-    ExtendedColors(
-        success = successLight, onSuccess = onSuccessLight,
-        warning = warningLight, onWarning = onWarningLight,
-        info = infoLight, onInfo = onInfoLight,
-    )
-}
+private val LightExtendedColors = ExtendedColors(
+    success = successLight,
+    onSuccess = onSuccessLight,
+    successContainer = successContainerLight,
+    onSuccessContainer = onSuccessContainerLight,
+    warning = warningLight,
+    onWarning = onWarningLight,
+    warningContainer = warningContainerLight,
+    onWarningContainer = onWarningContainerLight,
+    info = infoLight,
+    onInfo = onInfoLight,
+    rating = ratingLight,
+)
+
+private val DarkExtendedColors = ExtendedColors(
+    success = successDark,
+    onSuccess = onSuccessDark,
+    successContainer = successContainerDark,
+    onSuccessContainer = onSuccessContainerDark,
+    warning = warningDark,
+    onWarning = onWarningDark,
+    warningContainer = warningContainerDark,
+    onWarningContainer = onWarningContainerDark,
+    info = infoDark,
+    onInfo = onInfoDark,
+    rating = ratingDark,
+)
+
+val LocalExtendedColors = staticCompositionLocalOf { LightExtendedColors }
 
 @Composable
 fun CarpoolTheme(
@@ -111,11 +146,7 @@ fun CarpoolTheme(
         darkTheme -> darkScheme
         else -> lightScheme
     }
-    val extendedColors = if (darkTheme) {
-        ExtendedColors(successDark, onSuccessDark, warningDark, onWarningDark, infoDark, onInfoDark)
-    } else {
-        ExtendedColors(successLight, onSuccessLight, warningLight, onWarningLight, infoLight, onInfoLight)
-    }
+    val extendedColors = if (darkTheme) DarkExtendedColors else LightExtendedColors
     CompositionLocalProvider(LocalExtendedColors provides extendedColors) {
         MaterialTheme(
             colorScheme = colorScheme,
