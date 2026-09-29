@@ -119,7 +119,7 @@ fun CarpoolTheme(
     CompositionLocalProvider(LocalExtendedColors provides extendedColors) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = AppTypography,
+            typography = appTypography(),
             shapes = AppShapes,
             content = content,
         )
