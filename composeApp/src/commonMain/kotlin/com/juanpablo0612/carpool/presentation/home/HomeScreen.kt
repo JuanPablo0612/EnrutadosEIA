@@ -44,9 +44,9 @@ import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.home_action_publish_trip
 import enrutadoseia.composeapp.generated.resources.home_later_title
 import enrutadoseia.composeapp.generated.resources.home_next_up_title
-import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Clock
 
 @Composable
 fun HomeScreen(

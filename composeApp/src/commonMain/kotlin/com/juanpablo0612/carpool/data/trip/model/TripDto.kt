@@ -3,8 +3,8 @@ package com.juanpablo0612.carpool.data.trip.model
 import com.juanpablo0612.carpool.data.place.model.PlaceDto
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripDriver
-import com.juanpablo0612.carpool.domain.trip.model.TripVehicle
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
+import com.juanpablo0612.carpool.domain.trip.model.TripVehicle
 import kotlinx.serialization.Serializable
 
 @Serializable

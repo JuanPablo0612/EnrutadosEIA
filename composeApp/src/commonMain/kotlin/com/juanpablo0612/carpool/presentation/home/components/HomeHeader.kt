@@ -19,11 +19,11 @@ import com.juanpablo0612.carpool.presentation.home.homeHeaderDate
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notifications_24px
 import enrutadoseia.composeapp.generated.resources.notifications_title
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Instant
 
 /** Today's date over a time-of-day greeting, with the notifications entry point beside it. */
 @Composable

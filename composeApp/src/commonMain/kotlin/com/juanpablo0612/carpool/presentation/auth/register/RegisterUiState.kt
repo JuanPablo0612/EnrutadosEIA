@@ -1,9 +1,9 @@
 package com.juanpablo0612.carpool.presentation.auth.register
 
-import com.juanpablo0612.carpool.presentation.auth.AuthError
 import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
 import com.juanpablo0612.carpool.domain.auth.validation.PasswordStrength
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
+import com.juanpablo0612.carpool.presentation.auth.AuthError
 import io.github.vinceglb.filekit.PlatformFile
 
 data class RegisterUiState(

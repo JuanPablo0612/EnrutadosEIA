@@ -118,8 +118,6 @@ import enrutadoseia.composeapp.generated.resources.trip_bottom_summary_with_cont
 import enrutadoseia.composeapp.generated.resources.trip_no_vehicle_title
 import enrutadoseia.composeapp.generated.resources.trip_register_another_vehicle
 import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
-import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -132,6 +130,8 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

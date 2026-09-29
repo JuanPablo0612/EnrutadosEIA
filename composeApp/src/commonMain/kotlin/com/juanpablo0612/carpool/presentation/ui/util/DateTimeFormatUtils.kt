@@ -18,8 +18,6 @@ import enrutadoseia.composeapp.generated.resources.relative_today
 import enrutadoseia.composeapp.generated.resources.relative_tomorrow
 import enrutadoseia.composeapp.generated.resources.time_am
 import enrutadoseia.composeapp.generated.resources.time_pm
-import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -28,6 +26,8 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /** The current time frozen at first composition — shared by every screen that needs a stable
  *  "now" to compare list items against without re-reading the clock on each recomposition. */

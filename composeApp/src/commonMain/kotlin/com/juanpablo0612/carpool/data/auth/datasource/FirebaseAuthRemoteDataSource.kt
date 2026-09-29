@@ -2,9 +2,9 @@ package com.juanpablo0612.carpool.data.auth.datasource
 
 import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.data.auth.model.UserDto
+import com.juanpablo0612.carpool.data.notification.datasource.PushTokenRemoteDataSource
 import com.juanpablo0612.carpool.data.vehicle.datasource.upload
 import dev.gitlive.firebase.auth.FirebaseAuth
-import com.juanpablo0612.carpool.data.notification.datasource.PushTokenRemoteDataSource
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.functions.FirebaseFunctions
 import dev.gitlive.firebase.storage.FirebaseStorage
