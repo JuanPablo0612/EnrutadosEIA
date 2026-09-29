@@ -246,13 +246,7 @@ fun AppNavigation(
                     },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
-                    onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
-                        // Rating from "Como pasajero": the ratee is always the driver, which
-                        // selects the "clean car / safe driving" chip set.
-                        navController.navigate(
-                            Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = true)
-                        )
-                    },
+                    onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
                     onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                     onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
                         navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
@@ -281,12 +275,7 @@ fun AppNavigation(
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
                     onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
-                    onNavigateToRating = { bookingId, tripId, rateeId, rateeName ->
-                        // Rating from a trip the user drove: the ratee is always the passenger.
-                        navController.navigate(
-                            Route.PostTripRating(bookingId, tripId, rateeId, rateeName, rateeIsDriver = false)
-                        )
-                    },
+                    onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
                     onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
                         navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
                     },

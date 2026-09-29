@@ -126,7 +126,11 @@ sealed interface Route {
          * Whether the person **being rated** drives — it selects which chip set the rater is
          * offered, not which role the rater holds. A passenger rating their driver passes `true`.
          */
-        val rateeIsDriver: Boolean
+        val rateeIsDriver: Boolean,
+        val rateePhotoUrl: String? = null,
+        val departureTime: Long? = null,
+        val originName: String = "",
+        val destinationName: String = "",
     ) : Route
 
     @Serializable

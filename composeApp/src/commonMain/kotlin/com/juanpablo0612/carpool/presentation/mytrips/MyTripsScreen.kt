@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.booking.components.PendingRequestsBanner
 import com.juanpablo0612.carpool.presentation.mytrips.components.MyTripCard
+import com.juanpablo0612.carpool.presentation.rating.RatingTarget
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
@@ -82,7 +83,7 @@ fun MyTripsScreen(
     onSearchTrips: () -> Unit,
     onPublishTrip: () -> Unit,
     onOpenChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
-    onRateDriver: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
+    onRateDriver: (RatingTarget) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -95,7 +96,7 @@ fun MyTripsScreen(
             MyTripsEvent.NavigateToSearch -> onSearchTrips()
             MyTripsEvent.NavigateToPublish -> onPublishTrip()
             is MyTripsEvent.NavigateToChat -> onOpenChat(event.bookingId, event.tripId, event.otherPartyName, event.isReadOnly)
-            is MyTripsEvent.NavigateToRating -> onRateDriver(event.bookingId, event.tripId, event.rateeId, event.rateeName)
+            is MyTripsEvent.NavigateToRating -> onRateDriver(event.target)
         }
     }
 

@@ -15,24 +15,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RatingViewModel(
-    private val bookingId: String,
-    private val tripId: String,
-    private val rateeId: String,
-    private val rateeName: String,
-    private val rateeIsDriver: Boolean,
+    private val target: RatingTarget,
     private val createRatingUseCase: CreateRatingUseCase,
     private val authRepository: AuthRepository,
     private val ratingRepository: RatingRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(
-        RatingUiState(
-            bookingId = bookingId,
-            rateeId = rateeId,
-            rateeName = rateeName,
-            rateeIsDriver = rateeIsDriver
-        )
-    )
+    private val _state = MutableStateFlow(RatingUiState(target = target))
     val state: StateFlow<RatingUiState> = _state.asStateFlow()
 
     private val _events = MutableSharedFlow<RatingEvent>()
@@ -49,8 +38,7 @@ class RatingViewModel(
             return
         }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            ratingRepository.hasRatedBooking(bookingId, raterId).fold(
+            ratingRepository.hasRatedBooking(target.bookingId, raterId).fold(
                 onSuccess = { hasRated ->
                     _state.update { it.copy(isLoading = false, alreadyRated = hasRated) }
                 },
@@ -80,18 +68,18 @@ class RatingViewModel(
 
     private fun submit() {
         val state = _state.value
-        if (state.selectedStars == 0) return
+        if (!state.canSubmit) return
         val raterId = authRepository.getCurrentUserId() ?: return
         viewModelScope.launch {
-            _state.update { it.copy(isSubmitting = true) }
+            _state.update { it.copy(isSubmitting = true, error = null) }
             createRatingUseCase(
-                tripId = tripId,
-                bookingId = bookingId,
+                tripId = target.tripId,
+                bookingId = target.bookingId,
                 raterId = raterId,
-                rateeId = rateeId,
+                rateeId = target.rateeId,
                 stars = state.selectedStars,
                 chips = state.selectedChips.toList(),
-                comment = state.comment.ifBlank { null }
+                comment = state.comment.trim().ifEmpty { null }
             ).fold(
                 onSuccess = {
                     _state.update { it.copy(isSubmitting = false) }

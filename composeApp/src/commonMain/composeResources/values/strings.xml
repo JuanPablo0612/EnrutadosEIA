@@ -659,14 +659,24 @@
     <string name="edit_profile_error_bio_too_long">Maximum 200 characters</string>
 
     <!-- Rating -->
-    <string name="rating_title">How was your trip with %1$s?</string>
+    <string name="rating_title">How did it go with %1$s?</string>
     <string name="rating_default_ratee_name">your travel companion</string>
     <string name="rating_submit">Submit rating</string>
-    <string name="rating_skip">Saltar</string>
+    <string name="rating_skip">Not now</string>
     <string name="rating_comment_hint">Comment (optional)</string>
     <string name="rating_comment_counter">%1$d / %2$d</string>
-    <string name="cd_rating_star">Rate %1$d of 5 stars</string>
-    <string name="rating_highlights">What would you highlight? (optional)</string>
+    <string name="cd_rating_star">%1$d of 5 stars</string>
+    <string name="rating_highlights">What stood out?</string>
+    <string name="rating_highlights_hint">Pick any that apply</string>
+    <string name="rating_comment_placeholder">Tell us how it went…</string>
+    <string name="rating_stars_1">Bad</string>
+    <string name="rating_stars_2">Okay</string>
+    <string name="rating_stars_3">Good</string>
+    <string name="rating_stars_4">Very good</string>
+    <string name="rating_stars_5">Excellent</string>
+    <string name="rating_stars_prompt">Tap a star to rate</string>
+    <string name="rating_already_rated_body">Thanks, your rating for this trip is already in.</string>
+    <string name="rating_back">Back</string>
     <string name="rating_chip_puntual">Puntual</string>
     <string name="rating_chip_amable">Amable</string>
     <string name="rating_chip_carro_limpio">Carro limpio</string>

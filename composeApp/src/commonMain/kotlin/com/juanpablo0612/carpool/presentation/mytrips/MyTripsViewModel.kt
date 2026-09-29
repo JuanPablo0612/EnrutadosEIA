@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.presentation.rating.RatingTarget
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -108,14 +109,24 @@ class MyTripsViewModel(
                     isReadOnly = action.isReadOnly,
                 )
             )
-            is MyTripsAction.OnRateDriver -> emit(
-                MyTripsEvent.NavigateToRating(
-                    bookingId = action.item.booking.id,
-                    tripId = action.item.tripId,
-                    rateeId = action.item.booking.driverId,
-                    rateeName = action.item.booking.driver.name,
+            is MyTripsAction.OnRateDriver -> {
+                val booking = action.item.booking
+                emit(
+                    MyTripsEvent.NavigateToRating(
+                        RatingTarget(
+                            bookingId = booking.id,
+                            tripId = booking.tripId,
+                            rateeId = booking.driverId,
+                            rateeName = booking.driver.name,
+                            rateePhotoUrl = booking.driver.photoUrl,
+                            rateeIsDriver = true,
+                            departureTime = booking.departureTime,
+                            originName = booking.originName,
+                            destinationName = booking.destinationName,
+                        )
+                    )
                 )
-            )
+            }
             MyTripsAction.OnConfirm -> confirm()
             MyTripsAction.OnDismissConfirmation -> _state.update { it.copy(confirmation = null) }
             MyTripsAction.OnDismissError -> _state.update { it.copy(error = null) }

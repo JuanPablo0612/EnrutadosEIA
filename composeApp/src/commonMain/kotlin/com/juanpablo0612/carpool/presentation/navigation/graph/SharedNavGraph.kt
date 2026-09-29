@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.presentation.chat.ChatScreen
 import com.juanpablo0612.carpool.presentation.chat.ChatViewModel
 import com.juanpablo0612.carpool.presentation.navigation.ObserveMapPickResult
 import com.juanpablo0612.carpool.presentation.navigation.Route
+import com.juanpablo0612.carpool.presentation.navigation.toTarget
 import com.juanpablo0612.carpool.presentation.notification.NotificationsScreen
 import com.juanpablo0612.carpool.presentation.notification.NotificationsViewModel
 import com.juanpablo0612.carpool.presentation.place.add.AddPlaceAction
@@ -156,9 +157,7 @@ fun NavGraphBuilder.sharedNavGraph(
 
     composable<Route.PostTripRating> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.PostTripRating>()
-        val viewModel: RatingViewModel = koinViewModel {
-            parametersOf(args.bookingId, args.tripId, args.rateeId, args.rateeName, args.rateeIsDriver)
-        }
+        val viewModel: RatingViewModel = koinViewModel { parametersOf(args.toTarget()) }
         RatingScreen(
             viewModel = viewModel,
             onDismiss = onNavigateBack

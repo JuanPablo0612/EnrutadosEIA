@@ -25,9 +25,20 @@ object NotificationDeepLink {
     fun chat(bookingId: String, tripId: String, otherPartyName: String): String =
         "${SCHEME}chat/$bookingId/$tripId/${encodeSegment(otherPartyName)}"
 
-    /** Rating the driver of a completed trip. */
-    fun rateDriver(bookingId: String, tripId: String, driverId: String, driverName: String): String =
-        "${SCHEME}rate/$bookingId/$tripId/$driverId/${encodeSegment(driverName)}"
+    /**
+     * Rating the driver of a completed trip. The trip's departure and route travel along so the
+     * rating screen can say which trip it was without reading it.
+     */
+    fun rateDriver(
+        bookingId: String,
+        tripId: String,
+        driverId: String,
+        driverName: String,
+        departureTime: Long?,
+        originName: String,
+        destinationName: String,
+    ): String = "${SCHEME}rate/$bookingId/$tripId/$driverId/${encodeSegment(driverName)}/" +
+        "${departureTime ?: ""}/${encodeSegment(originName)}/${encodeSegment(destinationName)}"
 
     /** Where tapping a notification of [type] should go, or `null` if it has nowhere to go. */
     fun forNotification(type: NotificationType, params: Map<String, String>): String? {
@@ -45,7 +56,15 @@ object NotificationDeepLink {
             NotificationType.TripCompleted -> {
                 val driverId = param(NotificationParams.DRIVER_ID)
                 if (bookingId != null && tripId != null && driverId != null) {
-                    rateDriver(bookingId, tripId, driverId, params[NotificationParams.DRIVER_NAME].orEmpty())
+                    rateDriver(
+                        bookingId = bookingId,
+                        tripId = tripId,
+                        driverId = driverId,
+                        driverName = params[NotificationParams.DRIVER_NAME].orEmpty(),
+                        departureTime = param(NotificationParams.DEPARTURE_TIME)?.toLongOrNull(),
+                        originName = params[NotificationParams.ORIGIN_NAME].orEmpty(),
+                        destinationName = params[NotificationParams.DESTINATION_NAME].orEmpty(),
+                    )
                 } else {
                     passengerBookings()
                 }
@@ -88,6 +107,9 @@ object NotificationDeepLink {
                     rateeId = driverId,
                     rateeName = decodeSegment(segments.getOrNull(4).orEmpty()),
                     rateeIsDriver = true,
+                    departureTime = segments.getOrNull(5)?.toLongOrNull(),
+                    originName = decodeSegment(segments.getOrNull(6).orEmpty()),
+                    destinationName = decodeSegment(segments.getOrNull(7).orEmpty()),
                 )
             }
             else -> null

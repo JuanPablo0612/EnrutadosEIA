@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.mytrips
 
+import com.juanpablo0612.carpool.presentation.rating.RatingTarget
+
 sealed class MyTripsEvent {
     data class NavigateToTripDetail(val tripId: String) : MyTripsEvent()
     data class NavigateToPassengers(val tripId: String) : MyTripsEvent()
@@ -13,10 +15,5 @@ sealed class MyTripsEvent {
         val otherPartyName: String,
         val isReadOnly: Boolean,
     ) : MyTripsEvent()
-    data class NavigateToRating(
-        val bookingId: String,
-        val tripId: String,
-        val rateeId: String,
-        val rateeName: String,
-    ) : MyTripsEvent()
+    data class NavigateToRating(val target: RatingTarget) : MyTripsEvent()
 }

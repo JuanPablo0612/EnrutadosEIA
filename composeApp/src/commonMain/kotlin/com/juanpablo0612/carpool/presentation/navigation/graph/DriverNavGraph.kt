@@ -10,6 +10,7 @@ import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersViewM
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileViewModel
+import com.juanpablo0612.carpool.presentation.rating.RatingTarget
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteScreen
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteViewModel
 import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailScreen
@@ -46,7 +47,7 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
     onNavigateToPassengerProfile: (String) -> Unit,
-    onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
+    onNavigateToRating: (RatingTarget) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onNavigateBack: () -> Unit,
 ) {

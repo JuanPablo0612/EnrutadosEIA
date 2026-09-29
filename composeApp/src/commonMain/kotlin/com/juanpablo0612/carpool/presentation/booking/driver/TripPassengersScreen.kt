@@ -25,6 +25,7 @@ import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingD
 import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingRequestCard
 import com.juanpablo0612.carpool.presentation.booking.driver.components.PassengerCard
 import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisionAction
+import com.juanpablo0612.carpool.presentation.rating.RatingTarget
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
@@ -59,7 +60,7 @@ fun TripPassengersScreen(
     viewModel: TripPassengersViewModel,
     onBackClick: () -> Unit,
     onNavigateToPassengerProfile: (String) -> Unit,
-    onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit,
+    onNavigateToRating: (RatingTarget) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
@@ -69,8 +70,7 @@ fun TripPassengersScreen(
             is TripPassengersEvent.NavigateToPassengerProfile -> onNavigateToPassengerProfile(event.passengerId)
             is TripPassengersEvent.NavigateToChat ->
                 onNavigateToChat(event.bookingId, event.tripId, event.passengerName, event.isReadOnly)
-            is TripPassengersEvent.NavigateToRating ->
-                onNavigateToRating(event.bookingId, event.tripId, event.rateeId, event.rateeName)
+            is TripPassengersEvent.NavigateToRating -> onNavigateToRating(event.target)
         }
     }
 

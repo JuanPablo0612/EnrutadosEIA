@@ -534,14 +534,24 @@
     <string name="edit_profile_error_bio_too_long">Máximo 200 caracteres</string>
 
     <!-- Calificación -->
-    <string name="rating_title">¿Cómo estuvo tu viaje con %1$s?</string>
+    <string name="rating_title">¿Cómo te fue con %1$s?</string>
     <string name="rating_default_ratee_name">tu compañero/a de viaje</string>
     <string name="rating_submit">Enviar calificación</string>
-    <string name="rating_skip">Saltar</string>
+    <string name="rating_skip">Ahora no</string>
     <string name="rating_comment_hint">Comentario (opcional)</string>
     <string name="rating_comment_counter">%1$d / %2$d</string>
-    <string name="cd_rating_star">Calificar %1$d de 5 estrellas</string>
-    <string name="rating_highlights">¿Qué destacarías? (opcional)</string>
+    <string name="cd_rating_star">%1$d de 5 estrellas</string>
+    <string name="rating_highlights">¿Qué destacas?</string>
+    <string name="rating_highlights_hint">Elige las que quieras</string>
+    <string name="rating_comment_placeholder">Cuéntanos cómo fue…</string>
+    <string name="rating_stars_1">Mal</string>
+    <string name="rating_stars_2">Regular</string>
+    <string name="rating_stars_3">Bien</string>
+    <string name="rating_stars_4">Muy bien</string>
+    <string name="rating_stars_5">Excelente</string>
+    <string name="rating_stars_prompt">Toca una estrella para calificar</string>
+    <string name="rating_already_rated_body">Gracias, tu calificación de este viaje ya quedó registrada.</string>
+    <string name="rating_back">Volver</string>
     <string name="rating_chip_puntual">Puntual</string>
     <string name="rating_chip_amable">Amable</string>
     <string name="rating_chip_carro_limpio">Carro limpio</string>

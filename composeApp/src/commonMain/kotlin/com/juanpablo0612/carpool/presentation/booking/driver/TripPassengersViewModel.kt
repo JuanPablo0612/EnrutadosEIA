@@ -12,6 +12,7 @@ import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisions
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
+import com.juanpablo0612.carpool.presentation.rating.RatingTarget
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,14 +68,24 @@ class TripPassengersViewModel(
                     isReadOnly = screenState.value.isFinished,
                 )
             )
-            is TripPassengersAction.OnRatePassenger -> emit(
-                TripPassengersEvent.NavigateToRating(
-                    bookingId = action.booking.id,
-                    tripId = tripId,
-                    rateeId = action.booking.passengerId,
-                    rateeName = action.booking.passengerName,
+            is TripPassengersAction.OnRatePassenger -> {
+                val booking = action.booking
+                emit(
+                    TripPassengersEvent.NavigateToRating(
+                        RatingTarget(
+                            bookingId = booking.id,
+                            tripId = tripId,
+                            rateeId = booking.passengerId,
+                            rateeName = booking.passengerName,
+                            rateePhotoUrl = booking.passengerPhotoUrl,
+                            rateeIsDriver = false,
+                            departureTime = booking.departureTime,
+                            originName = booking.originName,
+                            destinationName = booking.destinationName,
+                        )
+                    )
                 )
-            )
+            }
             is TripPassengersAction.OnDecision -> decisions.onAction(action.action)
             TripPassengersAction.OnRetry -> load()
         }

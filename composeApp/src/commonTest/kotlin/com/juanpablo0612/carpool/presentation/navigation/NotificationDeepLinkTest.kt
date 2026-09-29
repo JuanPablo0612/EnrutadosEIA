@@ -21,9 +21,35 @@ class NotificationDeepLinkTest {
             NotificationParams.TRIP_ID to "t1",
             NotificationParams.DRIVER_ID to "d1",
             NotificationParams.DRIVER_NAME to "Laura Gómez",
+            NotificationParams.DEPARTURE_TIME to "1700000000000",
+            NotificationParams.ORIGIN_NAME to "Viva Envigado",
+            NotificationParams.DESTINATION_NAME to "EIA / Las Palmas",
         )
         val route = NotificationDeepLink.forNotification(NotificationType.TripCompleted, params)?.toRouteOrNull()
-        assertEquals(Route.PostTripRating("b1", "t1", "d1", "Laura Gómez", rateeIsDriver = true), route)
+        assertEquals(
+            Route.PostTripRating(
+                bookingId = "b1",
+                tripId = "t1",
+                rateeId = "d1",
+                rateeName = "Laura Gómez",
+                rateeIsDriver = true,
+                departureTime = 1_700_000_000_000,
+                originName = "Viva Envigado",
+                destinationName = "EIA / Las Palmas",
+            ),
+            route,
+        )
+    }
+
+    @Test
+    fun aRatingLinkWithoutTheTripStillOpens() {
+        val params = mapOf(
+            NotificationParams.BOOKING_ID to "b1",
+            NotificationParams.TRIP_ID to "t1",
+            NotificationParams.DRIVER_ID to "d1",
+        )
+        val route = NotificationDeepLink.forNotification(NotificationType.TripCompleted, params)?.toRouteOrNull()
+        assertEquals(Route.PostTripRating("b1", "t1", "d1", "", rateeIsDriver = true), route)
     }
 
     @Test
