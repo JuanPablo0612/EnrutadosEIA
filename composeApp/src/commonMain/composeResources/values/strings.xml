@@ -646,12 +646,12 @@
     <string name="history_empty_subtitle">Past trips with passengers will appear here.</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_slide1_title">Share the ride</string>
-    <string name="onboarding_slide1_body">Enrutados EIA connects students and professors traveling in the same direction.</string>
-    <string name="onboarding_slide2_title">Create routes, publish trips</string>
-    <string name="onboarding_slide2_body">As a driver, create a route and publish trips on specific dates. Accept requests from passengers with verified profiles.</string>
-    <string name="onboarding_slide3_title">Find and book</string>
-    <string name="onboarding_slide3_body">As a passenger, search for a trip, check out the driver and vehicle, and request a seat. The driver confirms and you\'re all set.</string>
+    <string name="onboarding_slide1_title">Share the ride to the EIA</string>
+    <string name="onboarding_slide1_body">Find people heading your way, or take others in your car and split the costs. One account does both.</string>
+    <string name="onboarding_slide2_title">Publish your trips in seconds</string>
+    <string name="onboarding_slide2_body">Save your usual route and publish one day or the whole week. You decide who rides with you.</string>
+    <string name="onboarding_slide3_title">Ask for a seat</string>
+    <string name="onboarding_slide3_body">Search trips to or from your campus, see who drives and request a seat. We'll let you know when you're accepted.</string>
     <string name="onboarding_next">Siguiente</string>
     <string name="onboarding_skip">Saltar</string>
     <string name="onboarding_start">Empezar</string>

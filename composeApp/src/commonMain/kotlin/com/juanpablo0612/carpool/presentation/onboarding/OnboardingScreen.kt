@@ -1,11 +1,13 @@
 package com.juanpablo0612.carpool.presentation.onboarding
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,8 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,16 +31,25 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.add_road_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.onboarding_next
 import enrutadoseia.composeapp.generated.resources.onboarding_skip
@@ -48,6 +60,7 @@ import enrutadoseia.composeapp.generated.resources.onboarding_slide2_title
 import enrutadoseia.composeapp.generated.resources.onboarding_slide3_body
 import enrutadoseia.composeapp.generated.resources.onboarding_slide3_title
 import enrutadoseia.composeapp.generated.resources.onboarding_start
+import enrutadoseia.composeapp.generated.resources.school_24px
 import enrutadoseia.composeapp.generated.resources.search_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -91,27 +104,28 @@ fun OnboardingContent(
         }
     }
 
-    Scaffold { padding ->
+    val isLastPage = state.currentPage == state.totalPages - 1
+
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(Spacing.screenHorizontalForm),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
                 horizontalArrangement = Arrangement.End
             ) {
                 // Space is reserved (not collapsed via AnimatedVisibility) so the row doesn't
                 // shift when Skip disappears on the last page.
-                val showSkip = state.currentPage < state.totalPages - 1
                 TextButton(
                     onClick = { onAction(OnboardingAction.OnSkip) },
-                    enabled = showSkip,
-                    modifier = Modifier.alpha(if (showSkip) 1f else 0f)
+                    enabled = !isLastPage,
+                    modifier = Modifier.alpha(if (isLastPage) 0f else 1f)
                 ) {
-                    Text(stringResource(Res.string.onboarding_skip))
+                    Text(stringResource(Res.string.onboarding_skip), style = MaterialTheme.typography.titleSmall)
                 }
             }
 
@@ -122,43 +136,45 @@ fun OnboardingContent(
                 OnboardingSlide(page = page)
             }
 
-            Row(
-                modifier = Modifier.padding(vertical = Spacing.xl),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+            Column(
+                modifier = Modifier.padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.xl),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(Spacing.xl),
             ) {
-                repeat(state.totalPages) { index ->
-                    Box(
-                        modifier = Modifier
-                            // Pager-dot dimensions are component-intrinsic, not spacing.
-                            .size(if (index == state.currentPage) 24.dp else 8.dp, 8.dp)
-                            .background(
-                                color = if (index == state.currentPage)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.outlineVariant,
-                                shape = CircleShape
-                            )
+                PageIndicator(current = state.currentPage, total = state.totalPages)
+                PrimaryButton(
+                    text = stringResource(if (isLastPage) Res.string.onboarding_start else Res.string.onboarding_next),
+                    onClick = {
+                        onAction(if (isLastPage) OnboardingAction.OnFinish else OnboardingAction.OnNextPage)
+                    },
+                )
+            }
+        }
+    }
+}
+
+/** Decorative: the slide's heading already tells screen-reader users where they are. */
+@Composable
+private fun PageIndicator(current: Int, total: Int) {
+    Row(
+        modifier = Modifier.clearAndSetSemantics {},
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        repeat(total) { index ->
+            val width by animateDpAsState(if (index == current) 24.dp else 8.dp, label = "pageDot")
+            Box(
+                modifier = Modifier
+                    // Pager-dot dimensions are component-intrinsic, not spacing.
+                    .size(width = width, height = 8.dp)
+                    .background(
+                        color = if (index == current) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.outlineVariant
+                        },
+                        shape = CircleShape
                     )
-                }
-            }
-
-            if (state.currentPage == state.totalPages - 1) {
-                Button(
-                    onClick = { onAction(OnboardingAction.OnFinish) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(Res.string.onboarding_start))
-                }
-            } else {
-                Button(
-                    onClick = { onAction(OnboardingAction.OnNextPage) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(Res.string.onboarding_next))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(Spacing.lg))
+            )
         }
     }
 }
@@ -170,54 +186,98 @@ private fun OnboardingSlide(page: Int) {
         1 -> stringResource(Res.string.onboarding_slide2_title) to stringResource(Res.string.onboarding_slide2_body)
         else -> stringResource(Res.string.onboarding_slide3_title) to stringResource(Res.string.onboarding_slide3_body)
     }
-    val icon: ImageVector = when (page) {
-        0 -> vectorResource(Res.drawable.directions_car_24px)
-        1 -> vectorResource(Res.drawable.add_road_24px)
+    val badge: ImageVector = when (page) {
+        0 -> vectorResource(Res.drawable.school_24px)
+        1 -> vectorResource(Res.drawable.directions_car_24px)
         else -> vectorResource(Res.drawable.search_24px)
     }
 
+    // Scrolls within the page so long copy at large font scales is never clipped.
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = Spacing.screenHorizontalForm),
     ) {
-        Box(
-            // Illustration placeholder dimensions are component-intrinsic, not spacing.
+        RouteIllustration(
+            badge = badge,
             modifier = Modifier
-                .size(300.dp, 260.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = MaterialTheme.shapes.extraLarge
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                // Component-intrinsic illustration icon size, not a spacing step.
-                modifier = Modifier.size(96.dp)
-            )
-        }
+                .fillMaxWidth()
+                .aspectRatio(1f)
+        )
 
-        // 40.dp falls between the xl(24)/xxl(32) steps; kept literal rather than nudging this
-        // gap onto the nearest token and altering the onboarding illustration's layout.
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.semantics { heading() },
         )
 
-        Spacer(modifier = Modifier.height(Spacing.lg))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
             text = body,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
         )
+    }
+}
+
+/**
+ * A stylised map: a street grid, a route from a hollow origin to a filled destination, and the
+ * slide's [badge] riding on the route. Drawn rather than bundled as an image so it follows the
+ * theme, dark mode included. Purely decorative.
+ */
+@Composable
+private fun RouteIllustration(badge: ImageVector, modifier: Modifier = Modifier) {
+    val ground = MaterialTheme.colorScheme.secondaryContainer
+    val streets = MaterialTheme.colorScheme.surfaceContainerLowest
+    val route = MaterialTheme.colorScheme.primary
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(ground)
+            .drawBehind {
+                val step = size.minDimension / 5f
+                val streetWidth = 3.dp.toPx()
+                var offset = step
+                while (offset < size.maxDimension) {
+                    drawLine(streets, Offset(offset, 0f), Offset(offset, size.height), streetWidth)
+                    drawLine(streets, Offset(0f, offset), Offset(size.width, offset), streetWidth)
+                    offset += step
+                }
+                val start = Offset(size.width * 0.18f, size.height * 0.82f)
+                val end = Offset(size.width * 0.82f, size.height * 0.18f)
+                val path = Path().apply {
+                    moveTo(start.x, start.y)
+                    cubicTo(
+                        size.width * 0.35f, size.height * 0.62f,
+                        size.width * 0.45f, size.height * 0.55f,
+                        size.width * 0.5f, size.height * 0.5f,
+                    )
+                    cubicTo(
+                        size.width * 0.6f, size.height * 0.42f,
+                        size.width * 0.78f, size.height * 0.36f,
+                        end.x, end.y,
+                    )
+                }
+                drawPath(path, route, style = Stroke(width = 7.dp.toPx(), cap = StrokeCap.Round))
+                drawCircle(streets, radius = 12.dp.toPx(), center = start)
+                drawCircle(route, radius = 12.dp.toPx(), center = start, style = Stroke(width = 5.dp.toPx()))
+                drawCircle(route, radius = 13.dp.toPx(), center = end)
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .shadow(Elevation.raised, CircleShape)
+                .background(streets, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(imageVector = badge, contentDescription = null, tint = route, modifier = Modifier.size(32.dp))
+        }
     }
 }
 

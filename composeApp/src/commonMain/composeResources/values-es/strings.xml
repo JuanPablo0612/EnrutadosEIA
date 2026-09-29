@@ -519,12 +519,12 @@
     <string name="history_empty_subtitle">Verás aquí los viajes con pasajeros pasados.</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_slide1_title">Comparte el camino</string>
-    <string name="onboarding_slide1_body">Enrutados EIA conecta a estudiantes y profesores que viajan en la misma dirección.</string>
-    <string name="onboarding_slide2_title">Crea rutas, publica viajes</string>
-    <string name="onboarding_slide2_body">Como conductor, crea una ruta y publica viajes en fechas específicas. Acepta solicitudes de pasajeros con perfiles verificados.</string>
-    <string name="onboarding_slide3_title">Encuentra y reserva</string>
-    <string name="onboarding_slide3_body">Como pasajero, busca un viaje, mira el conductor y el vehículo, y solicita un cupo. El conductor confirma y listos.</string>
+    <string name="onboarding_slide1_title">Comparte el camino a la EIA</string>
+    <string name="onboarding_slide1_body">Encuentra quién va para tu mismo lado, o lleva a otros en tu carro y dividan los gastos. Una sola cuenta para las dos cosas.</string>
+    <string name="onboarding_slide2_title">Publica tus viajes en segundos</string>
+    <string name="onboarding_slide2_body">Guarda tu ruta de siempre y publica un día o toda la semana. Tú decides a quién llevar.</string>
+    <string name="onboarding_slide3_title">Pide tu cupo</string>
+    <string name="onboarding_slide3_body">Busca viajes hacia o desde tu sede, mira quién conduce y solicita un cupo. Te avisamos cuando te acepten.</string>
     <string name="onboarding_next">Siguiente</string>
     <string name="onboarding_skip">Saltar</string>
     <string name="onboarding_start">Empezar</string>
