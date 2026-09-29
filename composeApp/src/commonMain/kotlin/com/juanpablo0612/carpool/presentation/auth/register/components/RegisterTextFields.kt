@@ -8,7 +8,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
-import com.juanpablo0612.carpool.presentation.ui.input.ColombianPhoneVisualTransformation
+import com.juanpablo0612.carpool.presentation.ui.input.PhoneDigitsVisualTransformation
 
 @Composable
 fun NameTextField(
@@ -62,7 +62,7 @@ fun PhoneTextField(
         supportingText = supportingText,
         // Only Colombian mobile numbers are accepted, so the country code is fixed.
         prefix = "+57 ",
-        visualTransformation = ColombianPhoneVisualTransformation(),
+        visualTransformation = PhoneDigitsVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Phone,
             imeAction = imeAction
