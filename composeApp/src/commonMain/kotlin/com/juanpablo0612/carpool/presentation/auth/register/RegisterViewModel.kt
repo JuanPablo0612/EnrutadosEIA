@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
+import com.juanpablo0612.carpool.domain.auth.validation.PasswordStrength
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.AuthEvent
@@ -31,7 +33,13 @@ class RegisterViewModel(
         when (action) {
             is RegisterAction.OnFullNameChanged -> _uiState.update { it.copy(fullName = action.fullName, fullNameError = null) }
             is RegisterAction.OnEmailChanged -> _uiState.update { it.copy(email = action.email, emailError = null) }
-            is RegisterAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password, passwordError = null) }
+            is RegisterAction.OnPasswordChanged -> _uiState.update {
+                it.copy(
+                    password = action.password,
+                    passwordError = null,
+                    passwordStrength = action.password.takeIf { p -> p.isNotEmpty() }?.let(PasswordStrength::of),
+                )
+            }
             is RegisterAction.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = action.confirmPassword, confirmPasswordError = null) }
             RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
@@ -50,7 +58,7 @@ class RegisterViewModel(
         if (state.currentStep != 1) return
 
         val nameResult = Validator.validateFullName(state.fullName)
-        val emailResult = Validator.validateEmail(state.email)
+        val emailResult = Validator.validateEmail(EiaEmail.fromInput(state.email))
         val passwordResult = Validator.validatePassword(state.password)
         val confirmResult = Validator.validateConfirmPassword(state.password, state.confirmPassword)
 
@@ -90,7 +98,7 @@ class RegisterViewModel(
                 return@launch
             }
             authRepository.register(
-                email = state.email,
+                email = EiaEmail.fromInput(state.email),
                 password = state.password,
                 name = state.fullName,
                 phone = state.phone,

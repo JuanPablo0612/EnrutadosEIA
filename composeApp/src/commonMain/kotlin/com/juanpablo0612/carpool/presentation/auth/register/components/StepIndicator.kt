@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.auth.validation.PasswordStrength
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -64,32 +65,32 @@ fun StepIndicator(
 
 @Composable
 fun PasswordStrengthIndicator(
-    password: String,
+    strength: PasswordStrength,
     modifier: Modifier = Modifier
 ) {
-    if (password.isEmpty()) return
-
-    val strength = when {
-        password.length < 8 -> 0f
-        password.length < 12 && (password.any { it.isDigit() } || password.any { it.isUpperCase() }) -> 0.6f
-        else -> 1f
-    }
     val extendedColors = LocalExtendedColors.current
-    val color = when {
-        strength < 0.4f -> MaterialTheme.colorScheme.error
-        strength < 0.8f -> extendedColors.warning
-        else -> extendedColors.success
+    val (progress, color, label) = when (strength) {
+        PasswordStrength.Weak -> Triple(
+            1f / 3f,
+            MaterialTheme.colorScheme.error,
+            stringResource(Res.string.password_strength_weak),
+        )
+        PasswordStrength.Medium -> Triple(
+            2f / 3f,
+            extendedColors.warning,
+            stringResource(Res.string.password_strength_medium),
+        )
+        PasswordStrength.Strong -> Triple(
+            1f,
+            extendedColors.success,
+            stringResource(Res.string.password_strength_strong),
+        )
     }
-    val label = when {
-        strength < 0.4f -> stringResource(Res.string.password_strength_weak)
-        strength < 0.8f -> stringResource(Res.string.password_strength_medium)
-        else -> stringResource(Res.string.password_strength_strong)
-    }
-    val animatedStrength by animateFloatAsState(targetValue = strength, label = "strength")
+    val animatedProgress by animateFloatAsState(targetValue = progress, label = "strength")
 
     Column(modifier = modifier.fillMaxWidth()) {
         LinearProgressIndicator(
-            progress = { animatedStrength },
+            progress = { animatedProgress },
             modifier = Modifier
                 .fillMaxWidth()
                 // Genuine hairline, not a Spacing step: the strength bar's own thickness.
@@ -120,11 +121,11 @@ private fun StepIndicatorPreview() {
 private fun PasswordStrengthIndicatorPreview() {
     CarpoolTheme {
         Column(modifier = Modifier.padding(Spacing.lg)) {
-            PasswordStrengthIndicator(password = "weak")
+            PasswordStrengthIndicator(strength = PasswordStrength.Weak)
             Spacer(modifier = Modifier.height(Spacing.md))
-            PasswordStrengthIndicator(password = "Medium12")
+            PasswordStrengthIndicator(strength = PasswordStrength.Medium)
             Spacer(modifier = Modifier.height(Spacing.md))
-            PasswordStrengthIndicator(password = "SuperStrong1234")
+            PasswordStrengthIndicator(strength = PasswordStrength.Strong)
         }
     }
 }

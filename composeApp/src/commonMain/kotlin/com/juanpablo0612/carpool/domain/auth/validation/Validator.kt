@@ -9,7 +9,7 @@ object Validator {
         return when {
             email.isBlank() -> ValidationResult.Error(ValidationError.EmailEmpty)
             !EMAIL_REGEX.matches(email) -> ValidationResult.Error(ValidationError.EmailInvalid)
-            !email.endsWith("@eia.edu.co", ignoreCase = true) -> ValidationResult.Error(ValidationError.EmailNotEia)
+            !email.endsWith("@${EiaEmail.DOMAIN}", ignoreCase = true) -> ValidationResult.Error(ValidationError.EmailNotEia)
             else -> ValidationResult.Success
         }
     }
@@ -17,7 +17,7 @@ object Validator {
     fun validatePassword(password: String): ValidationResult {
         return when {
             password.isBlank() -> ValidationResult.Error(ValidationError.PasswordEmpty)
-            password.length < 8 -> ValidationResult.Error(ValidationError.PasswordTooShort)
+            password.length < PasswordStrength.MIN_LENGTH -> ValidationResult.Error(ValidationError.PasswordTooShort)
             else -> ValidationResult.Success
         }
     }

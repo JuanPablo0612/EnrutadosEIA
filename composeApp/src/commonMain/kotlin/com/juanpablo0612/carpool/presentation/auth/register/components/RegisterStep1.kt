@@ -66,9 +66,9 @@ internal fun RegisterStep1(
             imeAction = ImeAction.Next
         )
 
-        if (state.password.isNotEmpty()) {
+        state.passwordStrength?.let { strength ->
             Spacer(modifier = Modifier.height(Spacing.sm))
-            PasswordStrengthIndicator(password = state.password)
+            PasswordStrengthIndicator(strength = strength)
         }
 
         Spacer(modifier = Modifier.height(Spacing.lg))

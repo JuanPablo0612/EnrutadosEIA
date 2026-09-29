@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.AuthEvent
@@ -36,7 +37,8 @@ class LoginViewModel(
 
     private fun login() {
         val state = _uiState.value
-        val emailResult = Validator.validateEmail(state.email)
+        val email = EiaEmail.fromInput(state.email)
+        val emailResult = Validator.validateEmail(email)
         val passwordResult = Validator.validatePassword(state.password)
 
         if (emailResult is ValidationResult.Error || passwordResult is ValidationResult.Error) {
@@ -51,7 +53,7 @@ class LoginViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            authRepository.login(state.email, state.password)
+            authRepository.login(email, state.password)
                 .onSuccess { navigateAfterAuth() }
                 .onFailure { throwable ->
                     _uiState.update { it.copy(isLoading = false, error = throwable.toAuthError()) }
