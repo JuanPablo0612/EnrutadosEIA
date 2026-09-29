@@ -296,7 +296,6 @@
     <string name="email_verification_subtitle">Enviamos un enlace de verificación a %1$s</string>
     <string name="email_verification_resend">Reenviar correo</string>
     <string name="email_verification_resend_countdown">Reenviar en %1$ds</string>
-    <string name="email_verification_open_gmail">Abrir Gmail</string>
     <string name="email_verification_wrong_email">¿Correo incorrecto? Volver</string>
 
     <!-- Pantalla de éxito de recuperar contraseña -->
@@ -304,7 +303,6 @@
     <string name="forgot_password_success_subtitle">Si tu correo está registrado, enviamos instrucciones a %1$s</string>
     <string name="forgot_password_resend_button">Reenviar enlace</string>
     <string name="forgot_password_resend_countdown">Reenviar en %1$ds</string>
-    <string name="forgot_password_open_gmail">Abrir Gmail</string>
 
     <!-- Selector de rol -->
 

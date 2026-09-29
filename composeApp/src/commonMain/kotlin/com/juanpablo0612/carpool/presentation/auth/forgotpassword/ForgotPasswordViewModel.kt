@@ -6,7 +6,6 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.AuthError
-import com.juanpablo0612.carpool.presentation.auth.EmailAppLauncher
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,7 +16,6 @@ import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
     private val authRepository: AuthRepository,
-    private val emailAppLauncher: EmailAppLauncher
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ForgotPasswordUiState())
@@ -33,7 +31,6 @@ class ForgotPasswordViewModel(
             ForgotPasswordAction.OnSendResetLink -> sendResetLink()
             ForgotPasswordAction.OnResendLink -> sendResetLink()
             ForgotPasswordAction.OnCountdownTick -> tick()
-            ForgotPasswordAction.OnOpenGmail -> emailAppLauncher.openEmailApp()
         }
     }
 

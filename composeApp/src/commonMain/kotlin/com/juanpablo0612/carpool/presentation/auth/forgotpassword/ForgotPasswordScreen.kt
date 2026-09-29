@@ -66,7 +66,6 @@ fun ForgotPasswordContent(
                     obfuscatedEmail = state.obfuscatedEmail,
                     resendCountdown = state.resendCountdown,
                     onResend = { onAction(ForgotPasswordAction.OnResendLink) },
-                    onOpenGmail = { onAction(ForgotPasswordAction.OnOpenGmail) },
                     onBack = onBackClick
                 )
             } else {
@@ -127,7 +126,6 @@ private fun ForgotPasswordSuccess(
     obfuscatedEmail: String,
     resendCountdown: Int,
     onResend: () -> Unit,
-    onOpenGmail: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -150,11 +148,6 @@ private fun ForgotPasswordSuccess(
         )
 
         Spacer(modifier = Modifier.height(Spacing.sm))
-
-        PrimaryButton(
-            text = stringResource(Res.string.forgot_password_open_gmail),
-            onClick = onOpenGmail
-        )
 
         val resendText = if (resendCountdown > 0) {
             stringResource(Res.string.forgot_password_resend_countdown, resendCountdown)

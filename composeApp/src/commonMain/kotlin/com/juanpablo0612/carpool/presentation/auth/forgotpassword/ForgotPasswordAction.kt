@@ -5,5 +5,4 @@ sealed class ForgotPasswordAction {
     data object OnSendResetLink : ForgotPasswordAction()
     data object OnResendLink : ForgotPasswordAction()
     data object OnCountdownTick : ForgotPasswordAction()
-    data object OnOpenGmail : ForgotPasswordAction()
 }

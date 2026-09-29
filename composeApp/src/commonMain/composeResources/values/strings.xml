@@ -296,7 +296,6 @@
     <string name="email_verification_subtitle">We sent a verification link to %1$s</string>
     <string name="email_verification_resend">Resend email</string>
     <string name="email_verification_resend_countdown">Resend in %1$ds</string>
-    <string name="email_verification_open_gmail">Open Gmail</string>
     <string name="email_verification_wrong_email">Wrong email? Go back</string>
 
     <!-- Forgot password success screen -->
@@ -304,7 +303,6 @@
     <string name="forgot_password_success_subtitle">If your email is registered, we sent reset instructions to %1$s</string>
     <string name="forgot_password_resend_button">Resend link</string>
     <string name="forgot_password_resend_countdown">Resend in %1$ds</string>
-    <string name="forgot_password_open_gmail">Open Gmail</string>
 
     <!-- Role selector -->
 

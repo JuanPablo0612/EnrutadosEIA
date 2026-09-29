@@ -83,13 +83,6 @@ fun EmailVerificationContent(
 
             Spacer(modifier = Modifier.height(Spacing.xxl))
 
-            PrimaryButton(
-                text = stringResource(Res.string.email_verification_open_gmail),
-                onClick = { onAction(EmailVerificationAction.OnOpenGmail) }
-            )
-
-            Spacer(modifier = Modifier.height(Spacing.md))
-
             val resendText = if (state.resendCountdown > 0) {
                 stringResource(Res.string.email_verification_resend_countdown, state.resendCountdown)
             } else {
