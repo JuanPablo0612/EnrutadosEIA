@@ -32,7 +32,7 @@ sealed class BottomNavItem<T : Any>(
     data object MyTrips : BottomNavItem<Route.MyTrips>(
         label = Res.string.nav_my_trips,
         icon = Res.drawable.calendar_month_24px,
-        route = Route.MyTrips()
+        route = Route.MyTrips
     )
 
     data object Profile : BottomNavItem<Route.Profile>(

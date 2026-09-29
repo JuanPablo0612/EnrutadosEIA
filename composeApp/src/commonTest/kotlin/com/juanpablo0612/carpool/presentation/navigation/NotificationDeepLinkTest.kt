@@ -2,7 +2,6 @@ package com.juanpablo0612.carpool.presentation.navigation
 
 import com.juanpablo0612.carpool.domain.notification.model.NotificationParams
 import com.juanpablo0612.carpool.domain.notification.model.NotificationType
-import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -28,9 +27,9 @@ class NotificationDeepLinkTest {
     }
 
     @Test
-    fun bookingUpdatesOpenMyTripsAsPassenger() {
+    fun bookingUpdatesOpenMyTrips() {
         val route = NotificationDeepLink.forNotification(NotificationType.BookingAccepted, emptyMap())?.toRouteOrNull()
-        assertEquals(Route.MyTrips(MyTripsTab.Passenger), route)
+        assertEquals(Route.MyTrips, route)
     }
 
     @Test

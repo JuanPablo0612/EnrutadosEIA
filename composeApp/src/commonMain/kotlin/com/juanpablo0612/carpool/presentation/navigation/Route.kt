@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
 import com.juanpablo0612.carpool.domain.place.model.Place
-import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -61,9 +60,9 @@ sealed interface Route {
     @Serializable
     data class SearchTrips(val campusId: String? = null, val fromCampus: Boolean = false) : Route
 
-    /** Bottom-bar "Mis viajes", opened on [tab]. */
+    /** Bottom-bar "Mis viajes": every trip the user drives or rides, in one list. */
     @Serializable
-    data class MyTrips(val tab: MyTripsTab = MyTripsTab.Passenger) : Route
+    data object MyTrips : Route
 
     /**
      * A trip as a passenger sees it. From a search, [meetingStopIndex] marks the stop where it meets

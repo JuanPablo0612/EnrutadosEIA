@@ -25,11 +25,11 @@ import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
+import com.juanpablo0612.carpool.presentation.booking.components.PendingRequestsBanner
 import com.juanpablo0612.carpool.presentation.home.components.GettingStartedCard
 import com.juanpablo0612.carpool.presentation.home.components.HomeHeader
 import com.juanpablo0612.carpool.presentation.home.components.HowItWorksSection
 import com.juanpablo0612.carpool.presentation.home.components.LaterTripRow
-import com.juanpablo0612.carpool.presentation.home.components.PendingRequestsBanner
 import com.juanpablo0612.carpool.presentation.home.components.SearchEntryCard
 import com.juanpablo0612.carpool.presentation.home.components.UpcomingTripCard
 import com.juanpablo0612.carpool.presentation.route.search.SearchShortcut

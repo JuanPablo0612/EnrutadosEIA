@@ -19,6 +19,7 @@ val appModule = module {
         vehicleModule,
         bookingModule,
         homeModule,
+        myTripsModule,
         ratingModule,
         chatModule,
         notificationModule

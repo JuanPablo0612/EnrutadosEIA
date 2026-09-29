@@ -169,7 +169,6 @@
     <string name="nav_search_routes">Buscar</string>
 
     <!-- Reservas -->
-    <string name="cancel_booking_button">Cancelar Reserva</string>
     <string name="reject_button">Rechazar</string>
     <string name="booking_status_pending">Pendiente</string>
     <string name="booking_status_confirmed">Confirmada</string>
@@ -236,13 +235,19 @@
     <!-- Home banners de incorporación -->
 
     <!-- Home estados vacíos -->
-    <string name="my_trips_tab_passenger">Como pasajero</string>
-    <string name="my_trips_tab_driver">Como conductor</string>
-    <string name="my_trips_requests_subtitle">Revisa, confirma o rechaza pasajeros</string>
-    <plurals name="my_trips_pending_requests">
-        <item quantity="one">%1$d solicitud pendiente</item>
-        <item quantity="other">%1$d solicitudes pendientes</item>
-    </plurals>
+    <string name="my_trips_segment_upcoming">Próximos</string>
+    <string name="my_trips_segment_history">Historial</string>
+    <string name="my_trips_filter_all">Todos</string>
+    <string name="my_trips_filter_driving">Conduzco</string>
+    <string name="my_trips_filter_riding">Voy de pasajero</string>
+    <string name="my_trips_with_driver">Con %1$s</string>
+    <string name="my_trips_gets_on_at">Sube en %1$s</string>
+    <string name="my_trips_gets_off_at">Baja en %1$s</string>
+    <string name="my_trips_more_actions">Más opciones de este viaje</string>
+    <string name="my_trips_empty_upcoming_title">No tienes viajes próximos</string>
+    <string name="my_trips_empty_upcoming_body">Busca un viaje a tu sede o, si vas en carro, publica el tuyo.</string>
+    <string name="my_trips_empty_history_title">Aún no hay nada aquí</string>
+    <string name="my_trips_empty_history_body">Aquí aparecen los viajes que termines y las solicitudes que se cerraron.</string>
 
     <!-- Login rediseño -->
     <string name="login_terms_footer">Al continuar aceptas los Términos de servicio y la Política de privacidad.</string>
@@ -375,8 +380,6 @@
     <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d cupos · %4$s</string>
 
     <!-- DriverTrips - pestañas -->
-    <string name="tab_upcoming">Próximos</string>
-    <string name="tab_past">Pasados</string>
 
     <!-- DriverTrips - encabezados de grupo por fecha -->
     <string name="relative_date_today">HOY</string>
@@ -391,7 +394,7 @@
     <!-- DriverTrips - tarjeta de viaje -->
     <string name="trip_seats_occupied">%1$d de %2$d cupos ocupados</string>
     <string name="trip_action_start">Iniciar viaje</string>
-    <string name="trip_action_track">Seguir viaje</string>
+    <string name="trip_action_track">Continuar viaje</string>
     <string name="trip_action_view_passengers">Ver pasajeros</string>
     <string name="booking_action_rate">Calificar</string>
 
@@ -403,13 +406,6 @@
     <string name="trip_passengers_empty_subtitle">Los pasajeros pendientes y confirmados de este viaje aparecerán aquí.</string>
 
     <!-- DriverTrips - estados vacíos -->
-    <string name="driver_trips_upcoming_empty_title">No tienes viajes próximos.</string>
-    <string name="driver_trips_upcoming_empty_subtitle">Publica tu próximo viaje y comparte el camino.</string>
-    <string name="driver_trips_past_empty_title">Aún no has hecho viajes.</string>
-    <string name="driver_trips_past_empty_subtitle">Cuando termines un viaje, aparecerá aquí.</string>
-    <string name="driver_trips_past_search_placeholder">Buscar viajes pasados</string>
-    <string name="driver_trips_past_search_no_results">Ningún viaje pasado coincide con "%1$s"</string>
-    <string name="publish_trip_fab">Publicar viaje</string>
     <string name="publish_trip_saved_routes_label">Tus rutas</string>
     <string name="publish_trip_route_section">Recorrido</string>
     <string name="publish_trip_linked_route_hint">Los cambios en el recorrido solo aplican a este viaje</string>
@@ -690,20 +686,7 @@
     <string name="send_request_button">Enviar solicitud</string>
 
     <!-- PassengerBookings rediseño -->
-    <string name="bookings_tab_upcoming">Próximas</string>
-    <string name="bookings_tab_past">Pasadas</string>
-    <string name="bookings_upcoming_empty_title">Sin viajes próximos</string>
-    <string name="bookings_upcoming_empty_subtitle">Cuando reserves un cupo, aparecerá aquí</string>
-    <string name="bookings_past_empty_title">Sin viajes pasados aún</string>
-    <string name="bookings_past_empty_subtitle">Tus viajes completados aparecerán aquí</string>
-    <string name="bookings_search_trips_action">Buscar un viaje</string>
-    <string name="bookings_past_search_placeholder">Buscar viajes pasados</string>
-    <string name="bookings_past_search_no_results">Ningún viaje pasado coincide con tu búsqueda</string>
-    <string name="booking_action_message_driver">Mensaje al conductor</string>
-    <string name="booking_status_subtitle_pending">Esperando confirmación del conductor</string>
-    <string name="booking_status_subtitle_confirmed">Viaje confirmado</string>
-    <string name="booking_status_subtitle_rejected">Solicitud rechazada</string>
-    <string name="booking_status_subtitle_cancelled">Cancelado</string>
+    <string name="booking_action_message_driver">Escribir al conductor</string>
     <string name="cancel_confirm_title">¿Cancelar reserva?</string>
     <string name="cancel_confirm_body">Siempre puedes buscar otro viaje.</string>
     <string name="cancel_confirm_button">Cancelar reserva</string>

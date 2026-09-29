@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -20,11 +19,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
-import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.driverNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.mainNavGraph
@@ -32,7 +29,6 @@ import com.juanpablo0612.carpool.presentation.navigation.graph.rootNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.sharedNavGraph
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -91,19 +87,6 @@ fun AppNavigation(
     LaunchedEffect(Unit) {
         if (userSession.user.value == null && authRepository.getCurrentUserId() != null) {
             authRepository.getCurrentUser().onSuccess(userSession::setUser)
-        }
-    }
-
-    // Seat requests waiting on the user as a driver, shown inside "Mis viajes".
-    val pendingRequestCount by produceState(initialValue = 0, currentUser?.id) {
-        val userId = currentUser?.id
-        if (userId.isNullOrBlank()) {
-            value = 0
-        } else {
-            bookingRepository.getDriverBookingRequests(userId)
-                .map { bookings -> bookings.count { it.status == BookingStatus.Pending } }
-                .catch { emit(0) }
-                .collect { value = it }
         }
     }
 
@@ -225,7 +208,6 @@ fun AppNavigation(
                 )
 
                 mainNavGraph(
-                    pendingRequestCount = { pendingRequestCount },
                     onNavigateToProfile = { navController.navigateToTopLevel(Route.Profile) },
                     onPublishTrip = onPublishTrip,
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
@@ -260,7 +242,7 @@ fun AppNavigation(
                     onBookingCreated = {
                         // Leave the booked trip out of the Search tab's saved stack.
                         navController.popBackStack<Route.TripDetailPassenger>(inclusive = true)
-                        navController.navigateToTopLevel(Route.MyTrips(MyTripsTab.Passenger), restoreState = false)
+                        navController.navigateToTopLevel(Route.MyTrips, restoreState = false)
                     },
                     onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                     onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
@@ -292,7 +274,7 @@ fun AppNavigation(
                         // stack, then land on the trips you drive.
                         navController.popBackStack<Route.PublishTrip>(inclusive = true)
                         navController.popBackStack<Route.PublishWeek>(inclusive = true)
-                        navController.navigateToTopLevel(Route.MyTrips(MyTripsTab.Driver), restoreState = false)
+                        navController.navigateToTopLevel(Route.MyTrips, restoreState = false)
                     },
                     onNavigateToPublishWeek = { routeId -> navController.navigate(Route.PublishWeek(routeId)) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },

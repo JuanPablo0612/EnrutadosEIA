@@ -1,4 +1,4 @@
-package com.juanpablo0612.carpool.presentation.home.components
+package com.juanpablo0612.carpool.presentation.booking.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

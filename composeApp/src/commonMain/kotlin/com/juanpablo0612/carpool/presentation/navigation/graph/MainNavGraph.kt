@@ -5,17 +5,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
-import com.juanpablo0612.carpool.presentation.booking.passenger.PassengerBookingsScreen
-import com.juanpablo0612.carpool.presentation.booking.passenger.PassengerBookingsViewModel
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
 import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.mytrips.MyTripsScreen
+import com.juanpablo0612.carpool.presentation.mytrips.MyTripsViewModel
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesScreen
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
 import com.juanpablo0612.carpool.presentation.route.search.SearchShortcut
-import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
-import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerScreen
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -26,7 +23,6 @@ import org.koin.core.parameter.parametersOf
  * [sharedNavGraph]) plus the trip detail a search result opens.
  */
 fun NavGraphBuilder.mainNavGraph(
-    pendingRequestCount: () -> Int,
     onNavigateToProfile: () -> Unit,
     onPublishTrip: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
@@ -71,34 +67,19 @@ fun NavGraphBuilder.mainNavGraph(
         )
     }
 
-    composable<Route.MyTrips> { backStackEntry ->
-        val args = backStackEntry.toRoute<Route.MyTrips>()
+    composable<Route.MyTrips> {
+        val viewModel: MyTripsViewModel = koinViewModel()
         MyTripsScreen(
-            initialTab = args.tab,
-            pendingRequestCount = pendingRequestCount(),
-            onOpenBookingRequests = onNavigateToDriverBookingRequests,
-            passengerContent = {
-                val viewModel: PassengerBookingsViewModel = koinViewModel()
-                PassengerBookingsScreen(
-                    viewModel = viewModel,
-                    onBackClick = onNavigateBack,
-                    onNavigateToTripTracking = onNavigateToTripTracking,
-                    // Here the user rides, so the ratee is always the driver.
-                    onNavigateToRating = onNavigateToRating,
-                    onNavigateToSearchTrips = { onNavigateToSearchTrips(null) },
-                    onNavigateToChat = onNavigateToChat,
-                )
-            },
-            driverContent = {
-                val viewModel: DriverTripsViewModel = koinViewModel()
-                DriverTripsScreen(
-                    viewModel = viewModel,
-                    onNavigateToRoutesList = onPublishTrip,
-                    onNavigateToTripDetail = onNavigateToTripDetail,
-                    onNavigateToPassengers = onNavigateToPassengers,
-                    onNavigateToTripTracking = onNavigateToTripTracking,
-                )
-            },
+            viewModel = viewModel,
+            onOpenTripDetail = onNavigateToTripDetail,
+            onOpenPassengers = onNavigateToPassengers,
+            onOpenTracking = onNavigateToTripTracking,
+            onOpenRequests = onNavigateToDriverBookingRequests,
+            onSearchTrips = { onNavigateToSearchTrips(null) },
+            onPublishTrip = onPublishTrip,
+            onOpenChat = onNavigateToChat,
+            // Here the user rides, so the ratee is always the driver.
+            onRateDriver = onNavigateToRating,
         )
     }
 

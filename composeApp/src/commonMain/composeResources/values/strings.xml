@@ -169,7 +169,6 @@
     <string name="nav_search_routes">Search</string>
 
     <!-- Booking -->
-    <string name="cancel_booking_button">Cancel Booking</string>
     <string name="reject_button">Reject</string>
     <string name="booking_status_pending">Pending</string>
     <string name="booking_status_confirmed">Confirmed</string>
@@ -236,13 +235,19 @@
     <!-- Home onboarding banners -->
 
     <!-- Home empty states -->
-    <string name="my_trips_tab_passenger">As passenger</string>
-    <string name="my_trips_tab_driver">As driver</string>
-    <string name="my_trips_requests_subtitle">Review, confirm or reject passengers</string>
-    <plurals name="my_trips_pending_requests">
-        <item quantity="one">%1$d pending request</item>
-        <item quantity="other">%1$d pending requests</item>
-    </plurals>
+    <string name="my_trips_segment_upcoming">Upcoming</string>
+    <string name="my_trips_segment_history">History</string>
+    <string name="my_trips_filter_all">All</string>
+    <string name="my_trips_filter_driving">I drive</string>
+    <string name="my_trips_filter_riding">I ride</string>
+    <string name="my_trips_with_driver">With %1$s</string>
+    <string name="my_trips_gets_on_at">Gets on at %1$s</string>
+    <string name="my_trips_gets_off_at">Gets off at %1$s</string>
+    <string name="my_trips_more_actions">More options for this trip</string>
+    <string name="my_trips_empty_upcoming_title">No upcoming trips</string>
+    <string name="my_trips_empty_upcoming_body">Find a trip to your campus, or publish yours if you drive.</string>
+    <string name="my_trips_empty_history_title">Nothing here yet</string>
+    <string name="my_trips_empty_history_body">Trips you finish, and requests that ended, show up here.</string>
 
     <!-- Login redesign -->
     <string name="login_terms_footer">By continuing you accept our Terms of Service and Privacy Policy.</string>
@@ -375,8 +380,6 @@
     <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d seats · %4$s</string>
 
     <!-- DriverTrips - tabs -->
-    <string name="tab_upcoming">Upcoming</string>
-    <string name="tab_past">Past</string>
 
     <!-- DriverTrips - date group headers -->
     <string name="relative_date_today">TODAY</string>
@@ -391,7 +394,7 @@
     <!-- DriverTrips - trip card -->
     <string name="trip_seats_occupied">%1$d of %2$d seats occupied</string>
     <string name="trip_action_start">Start trip</string>
-    <string name="trip_action_track">Track trip</string>
+    <string name="trip_action_track">Continue trip</string>
     <string name="trip_action_view_passengers">View passengers</string>
     <string name="booking_action_rate">Rate</string>
 
@@ -474,20 +477,7 @@
     <string name="send_request_button">Send request</string>
 
     <!-- PassengerBookings redesign -->
-    <string name="bookings_tab_upcoming">Upcoming</string>
-    <string name="bookings_tab_past">Past</string>
-    <string name="bookings_upcoming_empty_title">No upcoming trips</string>
-    <string name="bookings_upcoming_empty_subtitle">Book a seat to see it here</string>
-    <string name="bookings_past_empty_title">No past trips yet</string>
-    <string name="bookings_past_empty_subtitle">Completed trips will appear here</string>
-    <string name="bookings_search_trips_action">Search for a trip</string>
-    <string name="bookings_past_search_placeholder">Search past trips</string>
-    <string name="bookings_past_search_no_results">No past trips match your search</string>
-    <string name="booking_action_message_driver">Message driver</string>
-    <string name="booking_status_subtitle_pending">Waiting for driver confirmation</string>
-    <string name="booking_status_subtitle_confirmed">Trip confirmed</string>
-    <string name="booking_status_subtitle_rejected">Request rejected</string>
-    <string name="booking_status_subtitle_cancelled">Cancelled</string>
+    <string name="booking_action_message_driver">Message the driver</string>
     <string name="cancel_confirm_title">Cancel booking?</string>
     <string name="cancel_confirm_body">You can always find another trip.</string>
     <string name="cancel_confirm_button">Cancel booking</string>
@@ -541,13 +531,6 @@
     <string name="vehicle_update_button">Save changes</string>
 
     <!-- DriverTrips - empty states -->
-    <string name="driver_trips_upcoming_empty_title">No upcoming trips.</string>
-    <string name="driver_trips_upcoming_empty_subtitle">Publish your next trip and share the ride.</string>
-    <string name="driver_trips_past_empty_title">No trips yet.</string>
-    <string name="driver_trips_past_empty_subtitle">When you complete a trip, it will appear here.</string>
-    <string name="driver_trips_past_search_placeholder">Search past trips</string>
-    <string name="driver_trips_past_search_no_results">No past trips match "%1$s"</string>
-    <string name="publish_trip_fab">Publish trip</string>
     <string name="publish_trip_saved_routes_label">Your routes</string>
     <string name="publish_trip_route_section">Route</string>
     <string name="publish_trip_linked_route_hint">Changes to the stops only apply to this trip</string>

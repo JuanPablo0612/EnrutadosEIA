@@ -13,7 +13,6 @@ import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUse
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
 import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsViewModel
 import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersViewModel
-import com.juanpablo0612.carpool.presentation.booking.passenger.PassengerBookingsViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
@@ -30,7 +29,6 @@ val bookingModule = module {
     factoryOf(::RejectBookingUseCase)
     factoryOf(::CancelBookingUseCase)
     factoryOf(::CheckExistingBookingUseCase)
-    viewModel { PassengerBookingsViewModel(get(), get(), get(), get(), get()) }
     viewModel { BookingRequestsViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) ->
         TripPassengersViewModel(tripId, get(), get(), get(), get(), get(), get())

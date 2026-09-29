@@ -2,7 +2,6 @@ package com.juanpablo0612.carpool.presentation.navigation
 
 import com.juanpablo0612.carpool.domain.notification.model.NotificationParams
 import com.juanpablo0612.carpool.domain.notification.model.NotificationType
-import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 
 /**
  * The deep-link vocabulary for notifications, as plain text so it can travel through a push
@@ -68,7 +67,7 @@ object NotificationDeepLink {
         fun arg(index: Int) = segments.getOrNull(index)?.takeIf { it.isNotBlank() }
 
         return when (segments.first()) {
-            "passenger-bookings" -> Route.MyTrips(MyTripsTab.Passenger)
+            "passenger-bookings" -> Route.MyTrips
             "booking-requests" -> Route.DriverBookingRequests
             "trip" -> arg(1)?.let { Route.TripDetailPassenger(it) }
             "tracking" -> arg(1)?.let { Route.TripTracking(it) }
