@@ -227,18 +227,10 @@ fun AppNavigation(
                     pendingRequestCount = { pendingRequestCount },
                     onNavigateToProfile = { navController.navigateToTopLevel(Route.Profile) },
                     onPublishTrip = onPublishTrip,
-                    onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
-                    onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                     onNavigateToSearchTrips = { navController.navigateToTopLevel(Route.SearchTrips) },
-                    onNavigateToMyTrips = { tab ->
-                        if (tab == null) {
-                            navController.navigateToTopLevel(Route.MyTrips())
-                        } else {
-                            navController.navigateToTopLevel(Route.MyTrips(tab), restoreState = false)
-                        }
-                    },
+                    onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                     onBookingCreated = {

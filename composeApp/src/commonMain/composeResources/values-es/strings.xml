@@ -235,35 +235,13 @@
     <string name="search_prompt_subtitle">Elige un origen, un destino y cuándo quieres viajar</string>
 
     <!-- Home Dashboard -->
-    <string name="home_greeting_subtitle">¿Listo para tu viaje de hoy?</string>
-    <string name="home_next_trip_title">Tu próximo viaje · Conduces</string>
-    <string name="home_next_booking_title">Tu próximo viaje · Pasajero</string>
-    <string name="home_pending_requests_title">Solicitudes pendientes (%1$d)</string>
-    <string name="home_quick_actions_title">Acciones rápidas</string>
-    <string name="home_stats_title">Este mes</string>
-    <string name="home_stats_trips">Viajes</string>
-    <string name="home_stats_passengers">Pasajeros</string>
-    <string name="home_see_all_requests">Ver todas las solicitudes</string>
-    <string name="home_reject_confirm_title">¿Rechazar esta solicitud?</string>
-    <string name="home_reject_confirm_body">Se notificará al pasajero que su solicitud fue rechazada.</string>
 
     <!-- Home acciones rápidas -->
     <string name="home_action_publish_trip">Publicar viaje</string>
-    <string name="home_action_create_route">Crear ruta</string>
-    <string name="home_action_my_routes">Mis rutas</string>
-    <string name="home_action_my_trips">Mis viajes</string>
-    <string name="home_action_search_trip">Buscar viaje</string>
-    <string name="home_action_my_places">Mis lugares</string>
 
     <!-- Home banners de incorporación -->
-    <string name="home_no_vehicle_title">¿Tienes carro?</string>
-    <string name="home_no_vehicle_subtitle">Registra tu vehículo para publicar viajes.</string>
-    <string name="home_register_vehicle_cta">Registrar vehículo</string>
-    <string name="home_search_trip_cta">Buscar viaje</string>
 
     <!-- Home estados vacíos -->
-    <string name="home_passenger_empty_title">¡Encuentra tu primer viaje!</string>
-    <string name="home_passenger_empty_subtitle">Busca rutas disponibles y reserva tu cupo fácilmente.</string>
     <string name="my_trips_tab_passenger">Como pasajero</string>
     <string name="my_trips_tab_driver">Como conductor</string>
     <string name="my_trips_requests_subtitle">Revisa, confirma o rechaza pasajeros</string>
@@ -800,6 +778,29 @@
     <string name="home_greeting_morning">Buenos días, %1$s</string>
     <string name="home_greeting_afternoon">Buenas tardes, %1$s</string>
     <string name="home_greeting_evening">Buenas noches, %1$s</string>
+    <string name="home_search_prompt">¿A dónde vas hoy?</string>
+    <string name="home_next_up_title">Tu próximo viaje</string>
+    <string name="home_later_title">Después</string>
+    <string name="home_role_driving">Conduces</string>
+    <string name="home_role_riding">Pasajero</string>
+    <string name="home_departs_in">Sale en %1$d min</string>
+    <string name="home_pending_banner_subtitle">Respóndeles antes de salir</string>
+    <plurals name="home_pending_banner">
+        <item quantity="one">%1$d persona quiere un cupo</item>
+        <item quantity="other">%1$d personas quieren un cupo</item>
+    </plurals>
+    <string name="home_getting_started_title">Empieza en 3 pasos</string>
+    <string name="home_getting_started_progress">%1$d de %2$d</string>
+    <string name="home_step_account">Crea tu cuenta y verifica tu correo</string>
+    <string name="home_step_book">Busca tu primer viaje</string>
+    <string name="home_step_book_hint">Reservar un cupo toma menos de un minuto</string>
+    <string name="home_step_vehicle">¿Tienes carro? Regístralo</string>
+    <string name="home_step_vehicle_hint">Así podrás publicar viajes y dividir gastos</string>
+    <string name="home_how_it_works_title">Así funciona</string>
+    <string name="home_how_it_works_1">Busca un viaje hacia o desde tu sede y elige dónde te recogen.</string>
+    <string name="home_how_it_works_2">Pide tu cupo. Te avisamos cuando el conductor te acepte.</string>
+    <string name="home_how_it_works_3">Coordinen por el chat y, al llegar, califíquense.</string>
+    <string name="cd_step_done">Hecho: %1$s</string>
 
     <string name="relative_in_minutes">En %1$d min</string>
     <string name="relative_today">Hoy · %1$s</string>
@@ -876,5 +877,14 @@
         <item>octubre</item>
         <item>noviembre</item>
         <item>diciembre</item>
+    </string-array>
+    <string-array name="day_names_long">
+        <item>lunes</item>
+        <item>martes</item>
+        <item>miércoles</item>
+        <item>jueves</item>
+        <item>viernes</item>
+        <item>sábado</item>
+        <item>domingo</item>
     </string-array>
 </resources>

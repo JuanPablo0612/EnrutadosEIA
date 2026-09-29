@@ -15,7 +15,6 @@ import com.juanpablo0612.carpool.presentation.booking.passenger.PassengerBooking
 import com.juanpablo0612.carpool.presentation.home.HomeScreen
 import com.juanpablo0612.carpool.presentation.home.HomeViewModel
 import com.juanpablo0612.carpool.presentation.mytrips.MyTripsScreen
-import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesScreen
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
@@ -36,12 +35,10 @@ fun NavGraphBuilder.mainNavGraph(
     pendingRequestCount: () -> Int,
     onNavigateToProfile: () -> Unit,
     onPublishTrip: () -> Unit,
-    onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
-    onNavigateToSavedPlaces: () -> Unit,
     onNavigateToSearchTrips: () -> Unit,
-    onNavigateToMyTrips: (MyTripsTab?) -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onNavigateToDriverBookingRequests: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
     onBookingCreated: () -> Unit,
@@ -56,16 +53,13 @@ fun NavGraphBuilder.mainNavGraph(
         val viewModel: HomeViewModel = koinViewModel()
         HomeScreen(
             viewModel = viewModel,
-            onNavigateToProfile = onNavigateToProfile,
+            onSearchTrips = onNavigateToSearchTrips,
             onPublishTrip = onPublishTrip,
-            onNavigateToCreateRoute = onNavigateToCreateRoute,
-            onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
-            onNavigateToRoutesList = onNavigateToRoutesList,
-            onNavigateToMyTrips = onNavigateToMyTrips,
-            onNavigateToDriverBookingRequests = onNavigateToDriverBookingRequests,
-            onNavigateToSearchTrips = onNavigateToSearchTrips,
-            onNavigateToSavedPlaces = onNavigateToSavedPlaces,
-            onNavigateToTripDetail = onNavigateToTripDetail,
+            onRegisterVehicle = onNavigateToRegisterVehicle,
+            onOpenRequests = onNavigateToDriverBookingRequests,
+            onOpenNotifications = onNavigateToNotifications,
+            onOpenTripDetail = onNavigateToTripDetail,
+            onOpenPassengers = onNavigateToPassengers,
         )
     }
 

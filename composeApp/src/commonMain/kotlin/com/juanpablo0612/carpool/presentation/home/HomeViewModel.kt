@@ -2,18 +2,13 @@ package com.juanpablo0612.carpool.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
-import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
-import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
-import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
-import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import com.juanpablo0612.carpool.presentation.session.UserSession
+import kotlin.time.Clock
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,16 +24,18 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 
+/**
+ * Inicio listens to four queries, all scoped to the signed-in user: the trips they drive, the
+ * seat requests waiting on them, their vehicles and their bookings as a passenger. It shows
+ * counts and the next trip only; accepting or rejecting a request happens on the requests
+ * screen, which reads the requesters' details on demand.
+ */
 class HomeViewModel(
     private val userSession: UserSession,
     private val tripRepository: TripRepository,
     private val bookingRepository: BookingRepository,
     private val vehicleRepository: VehicleRepository,
-    private val routeRepository: RouteRepository,
-    private val confirmBookingUseCase: ConfirmBookingUseCase,
-    private val rejectBookingUseCase: RejectBookingUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -65,48 +62,32 @@ class HomeViewModel(
     }
 
     private suspend fun loadData(userId: String) {
-        val now = Clock.System.now().toEpochMilliseconds()
-        val drivingFlow = combine(
+        combine(
             tripRepository.getDriverTrips(userId),
             bookingRepository.getDriverBookingRequests(userId),
-            bookingRepository.getAllDriverBookings(userId),
             vehicleRepository.getUserVehicles(userId),
-            routeRepository.getUserRoutes(userId),
-        ) { trips, pendingBookings, allDriverBookings, vehicles, routes ->
-            val monthStart = startOfCurrentMonth(now)
-            DrivingSnapshot(
-                nextTrip = trips
-                    .filter { it.status == TripStatus.Active && it.departureTime > now }
-                    .minByOrNull { it.departureTime },
-                pendingRequests = pendingBookings.filter { it.status == BookingStatus.Pending },
-                hasVehicles = vehicles.isNotEmpty(),
-                hasRoutes = routes.isNotEmpty(),
-                hasTrips = trips.isNotEmpty(),
-                tripsThisMonth = trips.count { it.departureTime >= monthStart && it.status != TripStatus.Cancelled },
-                // getDriverBookingRequests is scoped to PENDING, so Confirmed bookings are counted
-                // over the full driver booking set.
-                passengersThisMonth = allDriverBookings.count {
-                    it.departureTime >= monthStart && it.status == BookingStatus.Confirmed
-                },
-            )
-        }
-
-        combine(drivingFlow, bookingRepository.getPassengerBookings(userId)) { driving, passengerBookings ->
-            val nextBooking = passengerBookings
+            bookingRepository.getPassengerBookings(userId),
+        ) { trips, requests, vehicles, passengerBookings ->
+            val now = Clock.System.now().toEpochMilliseconds()
+            val nextDrive = trips
+                .filter { it.status == TripStatus.Active && it.departureTime > now }
+                .minByOrNull { it.departureTime }
+                ?.let(UpcomingTrip::Driving)
+            val nextRide = passengerBookings
                 .filter { it.status == BookingStatus.Confirmed && it.departureTime > now }
                 .minByOrNull { it.departureTime }
+                ?.let(UpcomingTrip::Riding)
+            val upcoming = listOfNotNull(nextDrive, nextRide).sortedBy { it.departureTime }
             _state.update {
                 it.copy(
                     isLoading = false,
                     isRefreshing = false,
-                    nextTrip = driving.nextTrip,
-                    nextBooking = nextBooking,
-                    pendingRequests = driving.pendingRequests,
-                    hasVehicles = driving.hasVehicles,
-                    hasRoutes = driving.hasRoutes,
-                    hasTrips = driving.hasTrips,
-                    tripsThisMonth = driving.tripsThisMonth,
-                    passengersThisMonth = driving.passengersThisMonth,
+                    nextUp = upcoming.getOrNull(0),
+                    later = upcoming.getOrNull(1),
+                    // getDriverBookingRequests is already scoped to pending requests.
+                    pendingRequestCount = requests.count { request -> request.status == BookingStatus.Pending },
+                    hasVehicles = vehicles.isNotEmpty(),
+                    hasBookedBefore = passengerBookings.isNotEmpty(),
                     error = null,
                 )
             }
@@ -117,71 +98,25 @@ class HomeViewModel(
 
     fun onAction(action: HomeAction) {
         when (action) {
-            HomeAction.CreateRoute -> emit(HomeEvent.NavigateToCreateRoute)
-            HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
-            HomeAction.PublishTrip -> emit(HomeEvent.NavigateToPublishTrip)
-            HomeAction.ViewMyRoutes -> emit(HomeEvent.NavigateToRoutesList)
-            HomeAction.ViewMyTrips -> emit(HomeEvent.NavigateToMyTrips(tab = null))
-            HomeAction.OpenAllRequests -> emit(HomeEvent.NavigateToDriverBookingRequests)
             HomeAction.SearchTrips -> emit(HomeEvent.NavigateToSearchTrips)
-            HomeAction.ViewSavedPlaces -> emit(HomeEvent.NavigateToSavedPlaces)
-            HomeAction.Refresh -> handleRefresh()
-            is HomeAction.AcceptRequest -> confirmBooking(action.bookingId)
-            is HomeAction.OnRejectRequestClick ->
-                _state.update { it.copy(pendingRejectBookingId = action.bookingId) }
-            HomeAction.OnConfirmReject -> {
-                val bookingId = _state.value.pendingRejectBookingId
-                _state.update { it.copy(pendingRejectBookingId = null) }
-                if (bookingId != null) rejectBooking(bookingId)
-            }
-            HomeAction.OnDismissRejectConfirm -> _state.update { it.copy(pendingRejectBookingId = null) }
+            HomeAction.PublishTrip -> emit(HomeEvent.NavigateToPublishTrip)
+            HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
+            HomeAction.OpenRequests -> emit(HomeEvent.NavigateToRequests)
+            HomeAction.OpenNotifications -> emit(HomeEvent.NavigateToNotifications)
+            HomeAction.Refresh -> refresh()
             is HomeAction.OpenTrip -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
-            is HomeAction.OpenBooking -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
-            HomeAction.DismissBookingActionError -> _state.update { it.copy(error = null) }
+            is HomeAction.OpenPassengers -> emit(HomeEvent.NavigateToPassengers(action.tripId))
         }
     }
 
-    private fun handleRefresh() {
+    private fun refresh() {
         val userId = _state.value.user?.id ?: return
         _state.update { it.copy(isRefreshing = true, error = null) }
         dataJob?.cancel()
         dataJob = viewModelScope.launch { loadData(userId) }
     }
 
-    private fun confirmBooking(bookingId: String) {
-        if (bookingId in _state.value.processingBookingIds) return
-        val tripId = _state.value.pendingRequests.firstOrNull { it.id == bookingId }?.tripId ?: return
-        _state.update { it.copy(processingBookingIds = it.processingBookingIds + bookingId) }
-        viewModelScope.launch {
-            confirmBookingUseCase(bookingId, tripId).onFailure { e ->
-                _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
-            }
-            _state.update { it.copy(processingBookingIds = it.processingBookingIds - bookingId) }
-        }
-    }
-
-    private fun rejectBooking(bookingId: String) {
-        if (bookingId in _state.value.processingBookingIds) return
-        _state.update { it.copy(processingBookingIds = it.processingBookingIds + bookingId) }
-        viewModelScope.launch {
-            rejectBookingUseCase(bookingId).onFailure { e ->
-                _state.update { it.copy(error = HomeError.BookingAction(e.toBookingError())) }
-            }
-            _state.update { it.copy(processingBookingIds = it.processingBookingIds - bookingId) }
-        }
-    }
-
     private fun emit(event: HomeEvent) {
         viewModelScope.launch { _events.emit(event) }
     }
 }
-
-private data class DrivingSnapshot(
-    val nextTrip: Trip?,
-    val pendingRequests: List<Booking>,
-    val hasVehicles: Boolean,
-    val hasRoutes: Boolean,
-    val hasTrips: Boolean,
-    val tripsThisMonth: Int,
-    val passengersThisMonth: Int,
-)

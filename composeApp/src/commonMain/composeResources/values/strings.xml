@@ -235,35 +235,13 @@
     <string name="search_prompt_subtitle">Pick an origin, a destination, and when you want to travel</string>
 
     <!-- Home Dashboard -->
-    <string name="home_greeting_subtitle">Ready for today\'s trip?</string>
-    <string name="home_next_trip_title">Your next drive</string>
-    <string name="home_next_booking_title">Your next ride</string>
-    <string name="home_pending_requests_title">Solicitudes pendientes (%1$d)</string>
-    <string name="home_quick_actions_title">Acciones rápidas</string>
-    <string name="home_stats_title">Este mes</string>
-    <string name="home_stats_trips">Trips</string>
-    <string name="home_stats_passengers">Pasajeros</string>
-    <string name="home_see_all_requests">See all requests</string>
-    <string name="home_reject_confirm_title">Reject this request?</string>
-    <string name="home_reject_confirm_body">The passenger will be notified that their request was rejected.</string>
 
     <!-- Home quick actions -->
     <string name="home_action_publish_trip">Publish trip</string>
-    <string name="home_action_create_route">Create route</string>
-    <string name="home_action_my_routes">My routes</string>
-    <string name="home_action_my_trips">My trips</string>
-    <string name="home_action_search_trip">Search trip</string>
-    <string name="home_action_my_places">Mis lugares</string>
 
     <!-- Home onboarding banners -->
-    <string name="home_no_vehicle_title">Have a car?</string>
-    <string name="home_no_vehicle_subtitle">Register your vehicle to publish trips.</string>
-    <string name="home_register_vehicle_cta">Register vehicle</string>
-    <string name="home_search_trip_cta">Search trip</string>
 
     <!-- Home empty states -->
-    <string name="home_passenger_empty_title">Find your first trip!</string>
-    <string name="home_passenger_empty_subtitle">Search available routes and book your seat easily.</string>
     <string name="my_trips_tab_passenger">As passenger</string>
     <string name="my_trips_tab_driver">As driver</string>
     <string name="my_trips_requests_subtitle">Review, confirm or reject passengers</string>
@@ -798,6 +776,29 @@
     <string name="home_greeting_morning">Good morning, %1$s</string>
     <string name="home_greeting_afternoon">Good afternoon, %1$s</string>
     <string name="home_greeting_evening">Good evening, %1$s</string>
+    <string name="home_search_prompt">Where are you going today?</string>
+    <string name="home_next_up_title">Your next trip</string>
+    <string name="home_later_title">After that</string>
+    <string name="home_role_driving">You drive</string>
+    <string name="home_role_riding">Passenger</string>
+    <string name="home_departs_in">Leaves in %1$d min</string>
+    <string name="home_pending_banner_subtitle">Reply before you leave</string>
+    <plurals name="home_pending_banner">
+        <item quantity="one">%1$d person wants a seat</item>
+        <item quantity="other">%1$d people want a seat</item>
+    </plurals>
+    <string name="home_getting_started_title">Get started in 3 steps</string>
+    <string name="home_getting_started_progress">%1$d of %2$d</string>
+    <string name="home_step_account">Create your account and verify your email</string>
+    <string name="home_step_book">Find your first trip</string>
+    <string name="home_step_book_hint">Booking a seat takes under a minute</string>
+    <string name="home_step_vehicle">Got a car? Register it</string>
+    <string name="home_step_vehicle_hint">So you can publish trips and split costs</string>
+    <string name="home_how_it_works_title">How it works</string>
+    <string name="home_how_it_works_1">Search for a trip to or from your campus and pick where you get on.</string>
+    <string name="home_how_it_works_2">Ask for your seat. We\'ll let you know when the driver accepts.</string>
+    <string name="home_how_it_works_3">Coordinate in the chat and rate each other after the trip.</string>
+    <string name="cd_step_done">Done: %1$s</string>
 
     <string name="relative_in_minutes">In %1$d min</string>
     <string name="relative_today">Today · %1$s</string>
@@ -874,5 +875,14 @@
         <item>October</item>
         <item>November</item>
         <item>December</item>
+    </string-array>
+    <string-array name="day_names_long">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
 </resources>

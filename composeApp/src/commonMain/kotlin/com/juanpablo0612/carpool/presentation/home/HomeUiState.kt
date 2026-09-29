@@ -4,25 +4,44 @@ import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 
+/** One upcoming trip on Inicio, whichever side of it the user is on. */
+sealed class UpcomingTrip {
+    abstract val tripId: String
+    abstract val departureTime: Long
+
+    /** A trip the user drives. */
+    data class Driving(val trip: Trip) : UpcomingTrip() {
+        override val tripId: String get() = trip.id
+        override val departureTime: Long get() = trip.departureTime
+    }
+
+    /** A confirmed seat the user has in someone else's trip. */
+    data class Riding(val booking: Booking) : UpcomingTrip() {
+        override val tripId: String get() = booking.tripId
+        override val departureTime: Long get() = booking.departureTime
+    }
+}
+
 data class HomeUiState(
     val user: User? = null,
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
-    /** The next trip the user drives. */
-    val nextTrip: Trip? = null,
-    /** The next confirmed seat the user has as a passenger. */
-    val nextBooking: Booking? = null,
-    val pendingRequests: List<Booking> = emptyList(),
+    /** The soonest upcoming trip, driving or riding. */
+    val nextUp: UpcomingTrip? = null,
+    /** The soonest trip on the other side, shown compactly below [nextUp]. */
+    val later: UpcomingTrip? = null,
+    /** Seat requests waiting on the user as a driver. */
+    val pendingRequestCount: Int = 0,
     val hasVehicles: Boolean = false,
-    val hasRoutes: Boolean = false,
-    val hasTrips: Boolean = false,
-    val tripsThisMonth: Int = 0,
-    val passengersThisMonth: Int = 0,
+    /** Whether the user has ever asked for a seat, whatever became of it. */
+    val hasBookedBefore: Boolean = false,
     val error: HomeError? = null,
-    val pendingRejectBookingId: String? = null,
-    val processingBookingIds: Set<String> = emptySet(),
 ) {
-    /** Whether the user has started driving, so driver shortcuts are worth showing. */
-    val showDriverSections: Boolean
-        get() = hasVehicles || hasRoutes || hasTrips || pendingRequests.isNotEmpty()
+    /** The getting-started checklist stays until both optional steps are done. */
+    val showGettingStarted: Boolean
+        get() = !hasBookedBefore || !hasVehicles
+
+    /** A brand-new user with nothing coming up also gets the "how it works" primer. */
+    val showHowItWorks: Boolean
+        get() = nextUp == null && !hasBookedBefore
 }
