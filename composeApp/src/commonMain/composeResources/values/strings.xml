@@ -376,7 +376,7 @@
     <string name="trip_register_vehicle_action">Register vehicle</string>
     <string name="trip_change_vehicle">Change</string>
     <string name="trip_bottom_summary">%1$s · %2$s · %3$d seats</string>
-    <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d seats · $%4$s</string>
+    <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d seats · %4$s</string>
 
     <!-- DriverTrips - tabs -->
     <string name="tab_upcoming">Upcoming</string>

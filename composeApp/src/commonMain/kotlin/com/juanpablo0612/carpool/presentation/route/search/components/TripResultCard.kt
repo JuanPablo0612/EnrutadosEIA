@@ -8,17 +8,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.MatchedStop
@@ -30,9 +30,10 @@ import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.DriverRatingBadge
 import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.util.contributionLabel
 import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.location_on_24px
@@ -40,7 +41,6 @@ import enrutadoseia.composeapp.generated.resources.search_result_dropoff_distanc
 import enrutadoseia.composeapp.generated.resources.search_result_pickup_distance
 import enrutadoseia.composeapp.generated.resources.search_result_pickup_here
 import enrutadoseia.composeapp.generated.resources.trip_available_seats
-import enrutadoseia.composeapp.generated.resources.trip_contribution_free
 import enrutadoseia.composeapp.generated.resources.trip_driver_placeholder
 import enrutadoseia.composeapp.generated.resources.trip_result_view_detail
 import org.jetbrains.compose.resources.stringResource
@@ -109,10 +109,8 @@ fun TripResultCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val contributionLabel = result.formattedContribution?.let { "$$it" }
-                ?: stringResource(Res.string.trip_contribution_free)
             Text(
-                text = contributionLabel,
+                text = contributionLabel(result.trip.contributionPerPassenger),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -10,10 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.juanpablo0612.carpool.domain.trip.model.Trip
-import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.contributionLabel
+import com.juanpablo0612.carpool.presentation.ui.util.formatDayMonthTime
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.trip_contribution_free
 import enrutadoseia.composeapp.generated.resources.trip_contribution_label
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,12 +35,8 @@ internal fun TripSummarySection(
         )
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm), verticalAlignment = Alignment.CenterVertically) {
             SeatsBadge(availableSeats = availableSeats)
-            val contribText = if ((trip.contributionPerPassenger ?: 0) > 0)
-                "$${trip.contributionPerPassenger}"
-            else
-                stringResource(Res.string.trip_contribution_free)
             Text(
-                text = stringResource(Res.string.trip_contribution_label, contribText),
+                text = stringResource(Res.string.trip_contribution_label, contributionLabel(trip.contributionPerPassenger)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

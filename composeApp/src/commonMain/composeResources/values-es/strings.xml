@@ -376,7 +376,7 @@
     <string name="trip_register_vehicle_action">Registrar vehículo</string>
     <string name="trip_change_vehicle">Cambiar</string>
     <string name="trip_bottom_summary">%1$s · %2$s · %3$d cupos</string>
-    <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d cupos · $%4$s</string>
+    <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d cupos · %4$s</string>
 
     <!-- DriverTrips - pestañas -->
     <string name="tab_upcoming">Próximos</string>

@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
@@ -40,8 +41,8 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.rotate
@@ -51,7 +52,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.KeyboardOptions
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.trip.validation.TripDraftValidator
@@ -71,7 +71,6 @@ import com.juanpablo0612.carpool.presentation.trip.publish.components.TripSeatsS
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripTimeSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripWhenSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
-import com.juanpablo0612.carpool.presentation.trip.publish.components.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
@@ -86,6 +85,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
+import com.juanpablo0612.carpool.presentation.ui.util.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import enrutadoseia.composeapp.generated.resources.Res
@@ -118,6 +118,8 @@ import enrutadoseia.composeapp.generated.resources.trip_bottom_summary_with_cont
 import enrutadoseia.composeapp.generated.resources.trip_no_vehicle_title
 import enrutadoseia.composeapp.generated.resources.trip_register_another_vehicle
 import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -130,8 +132,6 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

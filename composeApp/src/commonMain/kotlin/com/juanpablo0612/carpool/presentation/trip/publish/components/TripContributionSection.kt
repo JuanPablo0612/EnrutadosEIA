@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.groupThousands
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_contribution_hint
 import enrutadoseia.composeapp.generated.resources.trip_contribution_section
@@ -61,7 +62,7 @@ internal fun TripContributionSection(
 private class PesosVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val original = text.text
-        val formatted = formatPesos(original.toIntOrNull() ?: 0)
+        val formatted = groupThousands(original.toIntOrNull() ?: 0)
             .takeIf { original.isNotEmpty() } ?: ""
 
         val offsetMapping = object : OffsetMapping {
@@ -70,12 +71,4 @@ private class PesosVisualTransformation : VisualTransformation {
         }
         return TransformedText(AnnotatedString(formatted), offsetMapping)
     }
-}
-
-internal fun formatPesos(amount: Int): String {
-    return amount.toString()
-        .reversed()
-        .chunked(3)
-        .joinToString(".")
-        .reversed()
 }
