@@ -7,24 +7,23 @@ import androidx.compose.ui.unit.dp
 /**
  * The app's corner-radius scale.
  *
- * These values are Material 3's defaults, stated explicitly. Wiring them into `MaterialTheme`
- * changes nothing on screen; it gives the ~34 hand-written `RoundedCornerShape(N.dp)` call sites
- * a named token to point at, and one place to tune the app's roundness.
+ * Softer than Material's defaults: cards and fields round enough to read as friendly, touchable
+ * objects, while staying a step below the fully rounded pills used for chips and status badges.
  *
  * Canonical assignment:
- *  | Badge, chip, skeleton block | extraSmall |
- *  | Image clip, small surface   | small      |
+ *  | Skeleton block, inline tag  | extraSmall |
+ *  | Segmented-control thumb     | small      |
  *  | Text field, button          | medium     |
  *  | List-item card              | large      |
  *  | Dialog, bottom sheet        | extraLarge |
  *
- * Genuinely circular affordances (avatars, dots, steppers) use `CircleShape` directly, and chat
- * bubbles use an asymmetric shape — neither belongs on this scale.
+ * Genuinely circular affordances (avatars, dots, steppers, chips, status pills) use `CircleShape`
+ * directly, and chat bubbles use an asymmetric shape — neither belongs on this scale.
  */
 val AppShapes = Shapes(
-    extraSmall = RoundedCornerShape(4.dp),
-    small = RoundedCornerShape(8.dp),
-    medium = RoundedCornerShape(12.dp),
-    large = RoundedCornerShape(16.dp),
+    extraSmall = RoundedCornerShape(6.dp),
+    small = RoundedCornerShape(10.dp),
+    medium = RoundedCornerShape(14.dp),
+    large = RoundedCornerShape(20.dp),
     extraLarge = RoundedCornerShape(28.dp),
 )
