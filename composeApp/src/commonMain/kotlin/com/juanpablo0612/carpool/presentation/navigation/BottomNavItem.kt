@@ -26,7 +26,7 @@ sealed class BottomNavItem<T : Any>(
     data object SearchTrips : BottomNavItem<Route.SearchTrips>(
         label = Res.string.nav_search_routes,
         icon = Res.drawable.search_24px,
-        route = Route.SearchTrips
+        route = Route.SearchTrips()
     )
 
     data object MyTrips : BottomNavItem<Route.MyTrips>(

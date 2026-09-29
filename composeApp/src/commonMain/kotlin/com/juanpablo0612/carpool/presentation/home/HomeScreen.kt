@@ -32,6 +32,7 @@ import com.juanpablo0612.carpool.presentation.home.components.LaterTripRow
 import com.juanpablo0612.carpool.presentation.home.components.PendingRequestsBanner
 import com.juanpablo0612.carpool.presentation.home.components.SearchEntryCard
 import com.juanpablo0612.carpool.presentation.home.components.UpcomingTripCard
+import com.juanpablo0612.carpool.presentation.route.search.SearchShortcut
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
@@ -51,7 +52,7 @@ import kotlin.time.Clock
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onSearchTrips: () -> Unit,
+    onSearchTrips: (SearchShortcut?) -> Unit,
     onPublishTrip: () -> Unit,
     onRegisterVehicle: () -> Unit,
     onOpenRequests: () -> Unit,
@@ -63,7 +64,7 @@ fun HomeScreen(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            HomeEvent.NavigateToSearchTrips -> onSearchTrips()
+            is HomeEvent.NavigateToSearchTrips -> onSearchTrips(event.shortcut)
             HomeEvent.NavigateToPublishTrip -> onPublishTrip()
             HomeEvent.NavigateToRegisterVehicle -> onRegisterVehicle()
             HomeEvent.NavigateToRequests -> onOpenRequests()
@@ -140,7 +141,10 @@ private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) 
             )
         }
         item(key = "search") {
-            SearchEntryCard(onSearch = { onAction(HomeAction.SearchTrips) })
+            SearchEntryCard(
+                onSearch = { onAction(HomeAction.SearchTrips) },
+                onShortcut = { onAction(HomeAction.SearchShortcutSelected(it)) },
+            )
         }
         state.nextUp?.let { next ->
             item(key = "next_up") {

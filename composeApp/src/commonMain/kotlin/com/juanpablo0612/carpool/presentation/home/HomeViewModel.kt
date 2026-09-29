@@ -98,7 +98,8 @@ class HomeViewModel(
 
     fun onAction(action: HomeAction) {
         when (action) {
-            HomeAction.SearchTrips -> emit(HomeEvent.NavigateToSearchTrips)
+            HomeAction.SearchTrips -> emit(HomeEvent.NavigateToSearchTrips(shortcut = null))
+            is HomeAction.SearchShortcutSelected -> emit(HomeEvent.NavigateToSearchTrips(action.shortcut))
             HomeAction.PublishTrip -> emit(HomeEvent.NavigateToPublishTrip)
             HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
             HomeAction.OpenRequests -> emit(HomeEvent.NavigateToRequests)

@@ -54,9 +54,12 @@ sealed interface Route {
     @Serializable
     data class PublishWeek(val routeId: String) : Route
 
-    /** Bottom-bar "Buscar". */
+    /**
+     * Bottom-bar "Buscar". Inicio's campus shortcuts open it on [campusId] (a campus preset id)
+     * in the given direction; the bottom bar opens it with the defaults.
+     */
     @Serializable
-    data object SearchTrips : Route
+    data class SearchTrips(val campusId: String? = null, val fromCampus: Boolean = false) : Route
 
     /** Bottom-bar "Mis viajes", opened on [tab]. */
     @Serializable

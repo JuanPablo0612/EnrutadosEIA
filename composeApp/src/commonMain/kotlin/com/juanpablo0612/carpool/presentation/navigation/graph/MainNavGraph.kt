@@ -12,6 +12,7 @@ import com.juanpablo0612.carpool.presentation.mytrips.MyTripsScreen
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesScreen
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesViewModel
+import com.juanpablo0612.carpool.presentation.route.search.SearchShortcut
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsScreen
 import com.juanpablo0612.carpool.presentation.trip.driverlist.DriverTripsViewModel
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerScreen
@@ -29,7 +30,8 @@ fun NavGraphBuilder.mainNavGraph(
     onPublishTrip: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
     onNavigateToRoutesList: () -> Unit,
-    onNavigateToSearchTrips: () -> Unit,
+    /** Switches to Buscar; a shortcut opens it on that campus search. */
+    onNavigateToSearchTrips: (SearchShortcut?) -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToDriverBookingRequests: () -> Unit,
     onNavigateToTripDetail: (String) -> Unit,
@@ -55,8 +57,9 @@ fun NavGraphBuilder.mainNavGraph(
         )
     }
 
-    composable<Route.SearchTrips> {
-        val viewModel: SearchRoutesViewModel = koinViewModel()
+    composable<Route.SearchTrips> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.SearchTrips>()
+        val viewModel: SearchRoutesViewModel = koinViewModel { parametersOf(args.campusId, args.fromCampus) }
         SearchRoutesScreen(
             viewModel = viewModel,
             onNavigateToTripDetail = onNavigateToTripDetail,
@@ -78,7 +81,7 @@ fun NavGraphBuilder.mainNavGraph(
                     onNavigateToTripTracking = onNavigateToTripTracking,
                     // Here the user rides, so the ratee is always the driver.
                     onNavigateToRating = onNavigateToRating,
-                    onNavigateToSearchTrips = onNavigateToSearchTrips,
+                    onNavigateToSearchTrips = { onNavigateToSearchTrips(null) },
                     onNavigateToChat = onNavigateToChat,
                 )
             },

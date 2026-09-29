@@ -2,6 +2,8 @@ package com.juanpablo0612.carpool.presentation.route.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripSearchCriteria
 import com.juanpablo0612.carpool.domain.trip.usecase.GetAvailableTripsUseCase
@@ -25,11 +27,21 @@ import kotlinx.coroutines.launch
  * so there is no pull-to-refresh.
  */
 class SearchRoutesViewModel(
+    initialCampusId: String?,
+    initialFromCampus: Boolean,
     private val getAvailableTripsUseCase: GetAvailableTripsUseCase,
     private val matchTripsUseCase: MatchTripsUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SearchRoutesUiState())
+    private val _uiState = MutableStateFlow(
+        SearchRoutesUiState().let { default ->
+            default.copy(
+                // Unknown ids fall back to the default campus rather than failing the screen.
+                campus = Place.campusPresets.firstOrNull { it.id == initialCampusId } ?: default.campus,
+                direction = if (initialFromCampus) CampusDirection.FromCampus else CampusDirection.ToCampus,
+            )
+        }
+    )
     val uiState = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<SearchRoutesEvent>()

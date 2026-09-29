@@ -23,6 +23,7 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
+import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.presentation.mytrips.MyTripsTab
 import com.juanpablo0612.carpool.presentation.navigation.graph.authNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.driverNavGraph
@@ -229,7 +230,20 @@ fun AppNavigation(
                     onPublishTrip = onPublishTrip,
                     onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
                     onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
-                    onNavigateToSearchTrips = { navController.navigateToTopLevel(Route.SearchTrips) },
+                    onNavigateToSearchTrips = { shortcut ->
+                        if (shortcut == null) {
+                            navController.navigateToTopLevel(Route.SearchTrips())
+                        } else {
+                            // A fresh entry, not the saved one, so the search opens on the shortcut.
+                            navController.navigateToTopLevel(
+                                Route.SearchTrips(
+                                    campusId = shortcut.campus.id,
+                                    fromCampus = shortcut.direction == CampusDirection.FromCampus,
+                                ),
+                                restoreState = false,
+                            )
+                        }
+                    },
                     onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                     onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
                     onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },

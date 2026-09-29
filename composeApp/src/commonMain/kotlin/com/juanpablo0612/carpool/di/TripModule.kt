@@ -31,7 +31,7 @@ val tripModule = module {
     factoryOf(::PublishRecurringTripsUseCase)
     // SearchRoutesViewModel lives in presentation/route/search/ but depends on trip matching and
     // trip data, so it is registered with the trip feature.
-    viewModel { SearchRoutesViewModel(get(), get()) }
+    viewModel { (campusId: String?, fromCampus: Boolean) -> SearchRoutesViewModel(campusId, fromCampus, get(), get()) }
     viewModel { (routeId: String?) -> PublishTripViewModel(routeId, get(), get(), get(), get(), get(), get()) }
     viewModel { (routeId: String) -> PublishWeekViewModel(routeId, get(), get(), get(), get(), get(), get()) }
     viewModel { DriverTripsViewModel(get(), get(), get(), get()) }
