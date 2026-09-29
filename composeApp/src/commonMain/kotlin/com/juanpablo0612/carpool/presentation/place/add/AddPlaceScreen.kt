@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.PlaceType
 import com.juanpablo0612.carpool.presentation.place.add.components.MapPreview
-import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -110,9 +110,9 @@ fun AddPlaceContent(
 
     Scaffold(
         topBar = {
-            AuthTopBar(
+            CarpoolBackTopBar(
                 title = stringResource(Res.string.add_new_place_title),
-                onBackClick = { onAction(AddPlaceAction.OnBackClick) }
+                onBack = { onAction(AddPlaceAction.OnBackClick) }
             )
         }
     ) { padding ->

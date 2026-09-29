@@ -28,7 +28,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.FormProgressIndicator
@@ -210,12 +210,12 @@ fun RegisterVehicleContent(
 
     Scaffold(
         topBar = {
-            AuthTopBar(
+            CarpoolBackTopBar(
                 title = if (state.mode == RegisterVehicleUiState.Mode.Edit)
                     stringResource(Res.string.edit_vehicle_title)
                 else
                     stringResource(Res.string.register_vehicle_title),
-                onBackClick = { onAction(RegisterVehicleAction.OnBackClick) }
+                onBack = { onAction(RegisterVehicleAction.OnBackClick) }
             )
         }
     ) { padding ->

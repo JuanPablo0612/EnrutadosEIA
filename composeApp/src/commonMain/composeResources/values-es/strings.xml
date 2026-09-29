@@ -1,23 +1,21 @@
 <resources>
-    <string name="login_title">Enrutados EIA</string>
-    <string name="login_welcome_back">Bienvenido de nuevo</string>
-    <string name="email_label">Correo electrónico</string>
-    <string name="email_placeholder">Correo universitario</string>
+    <string name="login_welcome_back">Hola de nuevo</string>
+    <string name="login_subtitle">Entra con tu correo de la EIA.</string>
+    <string name="email_label">Correo universitario</string>
+    <string name="email_placeholder">nombre.apellido</string>
     <string name="password_label">Contraseña</string>
-    <string name="password_placeholder">Contraseña</string>
+    <string name="password_placeholder">Tu contraseña</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_button">Iniciar sesión</string>
-    <string name="dont_have_account_question">¿Aún no tienes una cuenta?</string>
-    <string name="signup_button">Regístrate</string>
+    <string name="dont_have_account_question">¿Primera vez aquí?</string>
+    <string name="signup_button">Crea tu cuenta</string>
 
-    <string name="register_title">Regístrate</string>
     <string name="full_name_label">Nombre completo</string>
     <string name="full_name_placeholder">Juan Pérez</string>
-    <string name="confirm_password_label">Confirmar contraseña</string>
+    <string name="confirm_password_label">Repite la contraseña</string>
     <string name="create_account_button">Crear cuenta</string>
     <string name="already_have_account_question">¿Ya tienes una cuenta?</string>
     <string name="login_link">Inicia sesión</string>
-    <string name="terms_and_privacy">AL CREAR UNA CUENTA, ACEPTAS NUESTROS TÉRMINOS DE SERVICIO Y POLÍTICA DE PRIVACIDAD</string>
 
     <string name="error_invalid_credentials">Correo o contraseña incorrectos</string>
     <string name="error_network">Error de red, por favor intenta de nuevo</string>
@@ -83,10 +81,10 @@
     <string name="show_password">Mostrar contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
 
-    <string name="forgot_password_title">Restablecer contraseña</string>
-    <string name="forgot_password_subtitle">Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.</string>
+    <string name="forgot_password_title">Restablece tu contraseña</string>
+    <string name="forgot_password_subtitle">Escribe tu correo de la EIA y te enviaremos un enlace para crear una nueva.</string>
     <string name="send_reset_link">Enviar enlace</string>
-    <string name="back_to_login">Volver al inicio</string>
+    <string name="back_to_login">Volver a iniciar sesión</string>
     <string name="error_user_not_found">No se encontró una cuenta con este correo.</string>
 
     <!-- Route Creation -->
@@ -275,36 +273,46 @@
     </plurals>
 
     <!-- Login rediseño -->
-    <string name="login_terms_footer">Al iniciar sesión aceptas nuestros Términos de Servicio</string>
-    <string name="login_compact_tagline">Tu carpool universitario</string>
+    <string name="login_terms_footer">Al continuar aceptas los Términos de servicio y la Política de privacidad.</string>
 
     <!-- Pasos de registro -->
     <string name="register_step_1_title">Crea tu cuenta</string>
-    <string name="register_step_2_title">Completa tu perfil</string>
-    <string name="register_step_indicator">Paso %1$d de %2$d</string>
+    <string name="register_step_1_subtitle">Solo para la comunidad EIA: estudiantes, profes y personal.</string>
+    <string name="register_step_2_title">Así te verán tus compañeros</string>
+    <string name="register_step_2_subtitle">Una foto ayuda a que te reconozcan al recogerte.</string>
+    <string name="register_step_indicator">%1$d de %2$d</string>
+    <string name="register_email_hint">Te enviaremos un enlace para verificarlo.</string>
+    <string name="register_photo_add">Agregar foto</string>
+    <string name="register_photo_change">Cambiar foto</string>
+    <string name="register_photo_hint">Opcional · cámara o galería</string>
+    <string name="register_phone_hint">No se lo mostramos a otros usuarios.</string>
     <string name="register_photo_placeholder">Agregar foto de perfil (opcional)</string>
     <string name="register_photo_error">No pudimos leer esa foto. Elige otra.</string>
     <string name="register_photo_action_camera">Cámara</string>
     <string name="register_photo_action_gallery">Galería</string>
-    <string name="register_phone_label">Número de teléfono</string>
+    <string name="register_phone_label">Celular</string>
     <string name="register_phone_placeholder">300 123 4567</string>
-    <string name="register_terms_checkbox">Acepto los términos y condiciones</string>
+    <string name="register_terms_checkbox">Acepto los Términos de servicio y la Política de privacidad</string>
     <string name="register_continue_button">Continuar</string>
 
     <!-- Verificación de correo -->
-    <string name="email_verification_title">Verifica tu correo</string>
-    <string name="email_verification_subtitle">Enviamos un enlace de verificación a %1$s</string>
+    <string name="email_verification_title">Revisa tu correo</string>
+    <string name="email_verification_subtitle">Enviamos un enlace a %1$s. Ábrelo desde tu correo institucional, en este celular o en el computador.</string>
+    <string name="email_verification_step_1">Entra a tu correo de la EIA</string>
+    <string name="email_verification_step_2">Abre el mensaje de Enrutados EIA y toca el enlace</string>
+    <string name="email_verification_step_3">Vuelve aquí y toca «Ya lo verifiqué»</string>
     <string name="email_verification_resend">Reenviar correo</string>
-    <string name="email_verification_resend_countdown">Reenviar en %1$ds</string>
-    <string name="email_verification_wrong_email">¿Correo incorrecto? Volver</string>
+    <string name="email_verification_resend_countdown">Reenviar en %1$d s</string>
+    <string name="email_verification_wrong_email">¿Correo equivocado? Usa otro</string>
     <string name="email_verification_check_button">Ya lo verifiqué</string>
     <string name="email_verification_still_unverified">Tu correo aún no aparece verificado. Abre el enlace que te enviamos y vuelve a intentarlo.</string>
 
     <!-- Pantalla de éxito de recuperar contraseña -->
     <string name="forgot_password_success_title">Revisa tu correo</string>
     <string name="forgot_password_success_subtitle">Si tu correo está registrado, enviamos instrucciones a %1$s</string>
+    <string name="auth_spam_hint">¿No lo ves? Revisa la carpeta de correo no deseado; puede tardar un par de minutos.</string>
     <string name="forgot_password_resend_button">Reenviar enlace</string>
-    <string name="forgot_password_resend_countdown">Reenviar en %1$ds</string>
+    <string name="forgot_password_resend_countdown">Reenviar en %1$d s</string>
 
     <!-- Selector de rol -->
 

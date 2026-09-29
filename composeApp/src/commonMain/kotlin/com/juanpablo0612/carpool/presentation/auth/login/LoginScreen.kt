@@ -1,29 +1,53 @@
 package com.juanpablo0612.carpool.presentation.auth.login
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.auth.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
-import com.juanpablo0612.carpool.presentation.ui.components.*
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.components.AuthFormLayout
+import com.juanpablo0612.carpool.presentation.ui.components.AuthHeader
+import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.EiaEmailTextField
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.PasswordTextField
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import enrutadoseia.composeapp.generated.resources.*
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.dont_have_account_question
+import enrutadoseia.composeapp.generated.resources.email_label
+import enrutadoseia.composeapp.generated.resources.email_placeholder
+import enrutadoseia.composeapp.generated.resources.forgot_password
+import enrutadoseia.composeapp.generated.resources.login_button
+import enrutadoseia.composeapp.generated.resources.login_subtitle
+import enrutadoseia.composeapp.generated.resources.login_terms_footer
+import enrutadoseia.composeapp.generated.resources.login_welcome_back
+import enrutadoseia.composeapp.generated.resources.password_label
+import enrutadoseia.composeapp.generated.resources.password_placeholder
+import enrutadoseia.composeapp.generated.resources.signup_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onLoginSuccess: (com.juanpablo0612.carpool.domain.auth.model.User) -> Unit,
+    onLoginSuccess: (User) -> Unit,
     onNavigateToRegister: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
@@ -58,63 +82,40 @@ fun LoginContent(
     onBackClick: () -> Unit,
     canNavigateBack: Boolean = true
 ) {
-    Scaffold(
-        topBar = {
-            AuthTopBar(
-                title = stringResource(Res.string.login_title),
-                onBackClick = onBackClick,
-                showBackButton = canNavigateBack
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = Spacing.screenHorizontalForm)
-                .verticalScroll(rememberScrollState())
-                .imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(Spacing.lg))
-
-            CompactAuthHeader(screenTitle = stringResource(Res.string.login_welcome_back))
-
-            Spacer(modifier = Modifier.height(Spacing.xxl))
-
-            LoginForm(
-                state = state,
-                onAction = onAction,
-                onForgotPasswordClick = onForgotPasswordClick
-            )
-
-            Spacer(modifier = Modifier.height(Spacing.xl))
-
-            Text(
-                text = stringResource(Res.string.dont_have_account_question),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
+    AuthFormLayout(
+        topBar = { AuthTopBar(onBackClick = onBackClick, showBackButton = canNavigateBack) },
+        footer = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(Res.string.dont_have_account_question),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                TextButton(onClick = onNavigateToRegister) {
+                    Text(text = stringResource(Res.string.signup_button), style = MaterialTheme.typography.titleMedium)
+                }
+            }
             Spacer(modifier = Modifier.height(Spacing.sm))
-
-            SecondaryButton(
-                text = stringResource(Res.string.signup_button),
-                onClick = onNavigateToRegister
-            )
-
-            Spacer(modifier = Modifier.height(Spacing.lg))
-
             Text(
                 text = stringResource(Res.string.login_terms_footer),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = Spacing.lg)
             )
+        },
+    ) {
+        AuthHeader(
+            title = stringResource(Res.string.login_welcome_back),
+            subtitle = stringResource(Res.string.login_subtitle),
+        )
 
-            Spacer(modifier = Modifier.height(Spacing.xl))
-        }
+        Spacer(modifier = Modifier.height(Spacing.xxl))
+
+        LoginForm(
+            state = state,
+            onAction = onAction,
+            onForgotPasswordClick = onForgotPasswordClick
+        )
     }
 }
 
@@ -126,7 +127,7 @@ private fun LoginForm(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        EmailTextField(
+        EiaEmailTextField(
             value = state.email,
             onValueChange = { onAction(LoginAction.OnEmailChanged(it)) },
             label = stringResource(Res.string.email_label),
@@ -151,23 +152,19 @@ private fun LoginForm(
             )
         )
 
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
+        TextButton(
+            onClick = onForgotPasswordClick,
+            modifier = Modifier.align(Alignment.End)
         ) {
-            LinkText(
-                text = stringResource(Res.string.forgot_password),
-                onClick = onForgotPasswordClick,
-                modifier = Modifier.padding(vertical = Spacing.sm)
-            )
+            Text(text = stringResource(Res.string.forgot_password), style = MaterialTheme.typography.titleSmall)
         }
 
         state.error?.let {
-            Spacer(modifier = Modifier.height(Spacing.lg))
+            Spacer(modifier = Modifier.height(Spacing.sm))
             ErrorMessage(message = stringResource(it.asStringResource()))
         }
 
-        Spacer(modifier = Modifier.height(Spacing.xl))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         PrimaryButton(
             text = stringResource(Res.string.login_button),

@@ -1,23 +1,21 @@
 <resources>
-    <string name="login_title">Enrutados EIA</string>
-    <string name="login_welcome_back">Welcome Back</string>
-    <string name="email_label">Email</string>
-    <string name="email_placeholder">University email</string>
+    <string name="login_welcome_back">Welcome back</string>
+    <string name="login_subtitle">Sign in with your EIA email.</string>
+    <string name="email_label">University email</string>
+    <string name="email_placeholder">name.surname</string>
     <string name="password_label">Password</string>
-    <string name="password_placeholder">Password</string>
+    <string name="password_placeholder">Your password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="login_button">Login</string>
-    <string name="dont_have_account_question">Don\'t have an account yet?</string>
-    <string name="signup_button">Sign up</string>
+    <string name="dont_have_account_question">First time here?</string>
+    <string name="signup_button">Create your account</string>
 
-    <string name="register_title">Sign Up</string>
     <string name="full_name_label">Full Name</string>
     <string name="full_name_placeholder">Jane Doe</string>
-    <string name="confirm_password_label">Confirm password</string>
+    <string name="confirm_password_label">Repeat your password</string>
     <string name="create_account_button">Create account</string>
     <string name="already_have_account_question">Already have an account?</string>
     <string name="login_link">Log in</string>
-    <string name="terms_and_privacy">BY CREATING AN ACCOUNT, YOU AGREE TO OUR TERMS OF SERVICE &amp; PRIVACY POLICY</string>
 
     <string name="error_invalid_credentials">Invalid email or password</string>
     <string name="error_network">Network error, please try again</string>
@@ -38,10 +36,10 @@
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
 
-    <string name="forgot_password_title">Reset Password</string>
-    <string name="forgot_password_subtitle">Enter your email and we\'ll send you instructions to reset your password.</string>
+    <string name="forgot_password_title">Reset your password</string>
+    <string name="forgot_password_subtitle">Enter your EIA email and we\'ll send you a link to create a new one.</string>
     <string name="send_reset_link">Send Reset Link</string>
-    <string name="back_to_login">Back to Login</string>
+    <string name="back_to_login">Back to sign in</string>
     <string name="error_user_not_found">No account found with this email.</string>
 
     <!-- Route Creation -->
@@ -275,36 +273,46 @@
     </plurals>
 
     <!-- Login redesign -->
-    <string name="login_terms_footer">By signing in you agree to our Terms of Service</string>
-    <string name="login_compact_tagline">Your university carpool</string>
+    <string name="login_terms_footer">By continuing you accept our Terms of Service and Privacy Policy.</string>
 
     <!-- Register steps -->
     <string name="register_step_1_title">Create your account</string>
-    <string name="register_step_2_title">Complete your profile</string>
-    <string name="register_step_indicator">Step %1$d of %2$d</string>
+    <string name="register_step_1_subtitle">Only for the EIA community: students, faculty and staff.</string>
+    <string name="register_step_2_title">This is how others will see you</string>
+    <string name="register_step_2_subtitle">A photo helps people recognise you at pickup.</string>
+    <string name="register_step_indicator">%1$d of %2$d</string>
+    <string name="register_email_hint">We\'ll send you a link to verify it.</string>
+    <string name="register_photo_add">Add photo</string>
+    <string name="register_photo_change">Change photo</string>
+    <string name="register_photo_hint">Optional · camera or gallery</string>
+    <string name="register_phone_hint">We never show it to other users.</string>
     <string name="register_photo_placeholder">Add profile photo (optional)</string>
     <string name="register_photo_error">Couldn\'t read that photo. Please pick another one.</string>
     <string name="register_photo_action_camera">Camera</string>
     <string name="register_photo_action_gallery">Gallery</string>
-    <string name="register_phone_label">Phone number</string>
+    <string name="register_phone_label">Mobile number</string>
     <string name="register_phone_placeholder">300 123 4567</string>
-    <string name="register_terms_checkbox">I accept the terms and conditions</string>
+    <string name="register_terms_checkbox">I accept the Terms of Service and the Privacy Policy</string>
     <string name="register_continue_button">Continue</string>
 
     <!-- Email verification -->
-    <string name="email_verification_title">Verify your email</string>
-    <string name="email_verification_subtitle">We sent a verification link to %1$s</string>
+    <string name="email_verification_title">Check your email</string>
+    <string name="email_verification_subtitle">We sent a link to %1$s. Open it from your university mail, on this phone or on a computer.</string>
+    <string name="email_verification_step_1">Open your EIA mail</string>
+    <string name="email_verification_step_2">Open the Enrutados EIA message and tap the link</string>
+    <string name="email_verification_step_3">Come back here and tap “I\'ve verified it”</string>
     <string name="email_verification_resend">Resend email</string>
-    <string name="email_verification_resend_countdown">Resend in %1$ds</string>
-    <string name="email_verification_wrong_email">Wrong email? Go back</string>
+    <string name="email_verification_resend_countdown">Resend in %1$d s</string>
+    <string name="email_verification_wrong_email">Wrong email? Use another one</string>
     <string name="email_verification_check_button">I\'ve verified it</string>
     <string name="email_verification_still_unverified">Your email isn\'t verified yet. Open the link we sent you and try again.</string>
 
     <!-- Forgot password success screen -->
     <string name="forgot_password_success_title">Check your email</string>
     <string name="forgot_password_success_subtitle">If your email is registered, we sent reset instructions to %1$s</string>
+    <string name="auth_spam_hint">Can\'t see it? Check your spam folder; it can take a couple of minutes.</string>
     <string name="forgot_password_resend_button">Resend link</string>
-    <string name="forgot_password_resend_countdown">Resend in %1$ds</string>
+    <string name="forgot_password_resend_countdown">Resend in %1$d s</string>
 
     <!-- Role selector -->
 

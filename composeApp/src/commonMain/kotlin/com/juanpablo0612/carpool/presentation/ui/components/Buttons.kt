@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -116,22 +114,6 @@ private fun ButtonContent(text: String, leadingIcon: ImageVector?, trailingIcon:
     }
 }
 
-@Composable
-fun LinkText(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
-    fontWeight: FontWeight = FontWeight.Bold
-) {
-    Text(
-        text = text,
-        modifier = modifier.clickable { onClick() },
-        color = color,
-        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = fontWeight)
-    )
-}
-
 @Preview
 @Composable
 private fun PrimaryButtonPreview() {
@@ -148,13 +130,5 @@ private fun PrimaryButtonPreview() {
 private fun SecondaryButtonPreview() {
     CarpoolTheme {
         SecondaryButton(text = "Cancel", onClick = {}, modifier = Modifier.padding(Spacing.lg))
-    }
-}
-
-@Preview
-@Composable
-private fun LinkTextPreview() {
-    CarpoolTheme {
-        LinkText(text = "Forgot your password?", onClick = {}, modifier = Modifier.padding(Spacing.lg))
     }
 }

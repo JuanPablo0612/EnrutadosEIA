@@ -28,8 +28,6 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_24px
 import enrutadoseia.composeapp.generated.resources.hide_password
-import enrutadoseia.composeapp.generated.resources.lock_24px
-import enrutadoseia.composeapp.generated.resources.mail_24px
 import enrutadoseia.composeapp.generated.resources.show_password
 import enrutadoseia.composeapp.generated.resources.visibility_24px
 import enrutadoseia.composeapp.generated.resources.visibility_off_24px
@@ -142,37 +140,6 @@ fun carpoolTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors
 )
 
 @Composable
-fun EmailTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    errorMessage: String? = null,
-    supportingText: @Composable (() -> Unit)? = null,
-    imeAction: ImeAction = ImeAction.Next,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    leadingIcon: ImageVector = vectorResource(Res.drawable.mail_24px)
-) {
-    CarpoolTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = label,
-        placeholder = placeholder,
-        modifier = modifier,
-        errorMessage = errorMessage,
-        supportingText = supportingText,
-        leadingIcon = { Icon(imageVector = leadingIcon, contentDescription = null) },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email,
-            imeAction = imeAction,
-            autoCorrectEnabled = false
-        ),
-        keyboardActions = keyboardActions
-    )
-}
-
-@Composable
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
@@ -185,7 +152,7 @@ fun PasswordTextField(
     supportingText: @Composable (() -> Unit)? = null,
     imeAction: ImeAction = ImeAction.Done,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    leadingIcon: ImageVector = vectorResource(Res.drawable.lock_24px)
+    leadingIcon: ImageVector? = null,
 ) {
     CarpoolTextField(
         value = value,
@@ -195,7 +162,7 @@ fun PasswordTextField(
         modifier = modifier,
         errorMessage = errorMessage,
         supportingText = supportingText,
-        leadingIcon = { Icon(imageVector = leadingIcon, contentDescription = null) },
+        leadingIcon = leadingIcon?.let { { Icon(imageVector = it, contentDescription = null) } },
         trailingIcon = {
             IconButton(onClick = onTogglePasswordVisibility) {
                 val icon = if (isPasswordVisible) {

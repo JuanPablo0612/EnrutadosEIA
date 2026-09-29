@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.auth.forgotpassword
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.AuthError
@@ -35,7 +36,7 @@ class ForgotPasswordViewModel(
     }
 
     private fun sendResetLink() {
-        val email = _uiState.value.email
+        val email = EiaEmail.fromInput(_uiState.value.email)
         val emailResult = Validator.validateEmail(email)
 
         if (emailResult is ValidationResult.Error) {

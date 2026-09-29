@@ -1,22 +1,42 @@
 package com.juanpablo0612.carpool.presentation.auth.forgotpassword
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
-import com.juanpablo0612.carpool.presentation.ui.components.*
+import com.juanpablo0612.carpool.presentation.ui.components.AuthFormLayout
+import com.juanpablo0612.carpool.presentation.ui.components.AuthHeader
+import com.juanpablo0612.carpool.presentation.ui.components.AuthNote
+import com.juanpablo0612.carpool.presentation.ui.components.AuthTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.EiaEmailTextField
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.components.SecondaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import enrutadoseia.composeapp.generated.resources.*
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.auth_spam_hint
+import enrutadoseia.composeapp.generated.resources.back_to_login
+import enrutadoseia.composeapp.generated.resources.email_label
+import enrutadoseia.composeapp.generated.resources.email_placeholder
+import enrutadoseia.composeapp.generated.resources.forgot_password_resend_button
+import enrutadoseia.composeapp.generated.resources.forgot_password_resend_countdown
+import enrutadoseia.composeapp.generated.resources.forgot_password_subtitle
+import enrutadoseia.composeapp.generated.resources.forgot_password_success_subtitle
+import enrutadoseia.composeapp.generated.resources.forgot_password_success_title
+import enrutadoseia.composeapp.generated.resources.forgot_password_title
+import enrutadoseia.composeapp.generated.resources.lock_24px
+import enrutadoseia.composeapp.generated.resources.mail_24px
+import enrutadoseia.composeapp.generated.resources.send_reset_link
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun ForgotPasswordScreen(
@@ -38,42 +58,10 @@ fun ForgotPasswordContent(
     onAction: (ForgotPasswordAction) -> Unit,
     onBackClick: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            AuthTopBar(
-                title = stringResource(Res.string.forgot_password_title),
-                onBackClick = onBackClick
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = Spacing.screenHorizontalForm)
-                .verticalScroll(rememberScrollState())
-                .imePadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(Spacing.lg))
-
-            CompactAuthHeader(screenTitle = stringResource(Res.string.forgot_password_title))
-
-            Spacer(modifier = Modifier.height(Spacing.xxl))
-
-            if (state.isSuccess) {
-                ForgotPasswordSuccess(
-                    obfuscatedEmail = state.obfuscatedEmail,
-                    resendCountdown = state.resendCountdown,
-                    onResend = { onAction(ForgotPasswordAction.OnResendLink) },
-                    onBack = onBackClick
-                )
-            } else {
-                ForgotPasswordForm(state = state, onAction = onAction)
-            }
-
-            Spacer(modifier = Modifier.height(Spacing.xl))
-        }
+    if (state.isSuccess) {
+        ForgotPasswordSent(state = state, onAction = onAction, onBackClick = onBackClick)
+    } else {
+        ForgotPasswordForm(state = state, onAction = onAction, onBackClick = onBackClick)
     }
 }
 
@@ -81,20 +69,29 @@ fun ForgotPasswordContent(
 private fun ForgotPasswordForm(
     state: ForgotPasswordUiState,
     onAction: (ForgotPasswordAction) -> Unit,
-    modifier: Modifier = Modifier
+    onBackClick: () -> Unit,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(Res.string.forgot_password_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+    AuthFormLayout(
+        topBar = { AuthTopBar(onBackClick = onBackClick) },
+        footer = {
+            PrimaryButton(
+                text = stringResource(Res.string.send_reset_link),
+                onClick = { onAction(ForgotPasswordAction.OnSendResetLink) },
+                isLoading = state.isLoading
+            )
+        },
+    ) {
+        AuthHeader(
+            title = stringResource(Res.string.forgot_password_title),
+            subtitle = stringResource(Res.string.forgot_password_subtitle),
+            icon = vectorResource(Res.drawable.lock_24px),
+            iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
         )
 
         Spacer(modifier = Modifier.height(Spacing.xl))
 
-        EmailTextField(
+        EiaEmailTextField(
             value = state.email,
             onValueChange = { onAction(ForgotPasswordAction.OnEmailChanged(it)) },
             label = stringResource(Res.string.email_label),
@@ -110,61 +107,50 @@ private fun ForgotPasswordForm(
             Spacer(modifier = Modifier.height(Spacing.lg))
             ErrorMessage(message = stringResource(it.asStringResource()))
         }
-
-        Spacer(modifier = Modifier.height(Spacing.xl))
-
-        PrimaryButton(
-            text = stringResource(Res.string.send_reset_link),
-            onClick = { onAction(ForgotPasswordAction.OnSendResetLink) },
-            isLoading = state.isLoading
-        )
     }
 }
 
 @Composable
-private fun ForgotPasswordSuccess(
-    obfuscatedEmail: String,
-    resendCountdown: Int,
-    onResend: () -> Unit,
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier
+private fun ForgotPasswordSent(
+    state: ForgotPasswordUiState,
+    onAction: (ForgotPasswordAction) -> Unit,
+    onBackClick: () -> Unit,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Spacing.lg)
+    AuthFormLayout(
+        topBar = { AuthTopBar(onBackClick = onBackClick) },
+        footer = {
+            PrimaryButton(
+                text = stringResource(Res.string.back_to_login),
+                onClick = onBackClick
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+            SecondaryButton(
+                text = if (state.resendCountdown > 0) {
+                    stringResource(Res.string.forgot_password_resend_countdown, state.resendCountdown)
+                } else {
+                    stringResource(Res.string.forgot_password_resend_button)
+                },
+                onClick = { onAction(ForgotPasswordAction.OnResendLink) },
+                enabled = state.resendCountdown == 0 && !state.isLoading
+            )
+        },
     ) {
-        Text(
-            text = stringResource(Res.string.forgot_password_success_title),
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
+        AuthHeader(
+            title = stringResource(Res.string.forgot_password_success_title),
+            subtitle = stringResource(Res.string.forgot_password_success_subtitle, state.obfuscatedEmail),
+            icon = vectorResource(Res.drawable.mail_24px),
+            iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
         )
 
-        Text(
-            text = stringResource(Res.string.forgot_password_success_subtitle, obfuscatedEmail),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        AuthNote(text = stringResource(Res.string.auth_spam_hint))
 
-        val resendText = if (resendCountdown > 0) {
-            stringResource(Res.string.forgot_password_resend_countdown, resendCountdown)
-        } else {
-            stringResource(Res.string.forgot_password_resend_button)
+        state.error?.let {
+            Spacer(modifier = Modifier.height(Spacing.lg))
+            ErrorMessage(message = stringResource(it.asStringResource()))
         }
-
-        SecondaryButton(
-            text = resendText,
-            onClick = onResend,
-            enabled = resendCountdown == 0
-        )
-
-        LinkText(
-            text = stringResource(Res.string.back_to_login),
-            onClick = onBack
-        )
     }
 }
 
@@ -173,7 +159,7 @@ private fun ForgotPasswordSuccess(
 private fun ForgotPasswordFormPreview() {
     CarpoolTheme {
         ForgotPasswordContent(
-            state = ForgotPasswordUiState(),
+            state = ForgotPasswordUiState(email = "juan.perez"),
             onAction = {},
             onBackClick = {}
         )
@@ -182,14 +168,10 @@ private fun ForgotPasswordFormPreview() {
 
 @Preview
 @Composable
-private fun ForgotPasswordSuccessPreview() {
+private fun ForgotPasswordSentPreview() {
     CarpoolTheme {
         ForgotPasswordContent(
-            state = ForgotPasswordUiState(
-                isSuccess = true,
-                obfuscatedEmail = "j***@eia.edu.co",
-                resendCountdown = 25
-            ),
+            state = ForgotPasswordUiState(isSuccess = true, obfuscatedEmail = "j***@eia.edu.co", resendCountdown = 24),
             onAction = {},
             onBackClick = {}
         )
