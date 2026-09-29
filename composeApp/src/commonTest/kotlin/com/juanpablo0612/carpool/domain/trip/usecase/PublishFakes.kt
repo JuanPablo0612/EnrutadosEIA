@@ -24,7 +24,9 @@ class FakeAuthRepository(private val uid: String?) : AuthRepository {
     override suspend fun refreshEmailVerification() = unused()
     override suspend fun logout() = unused()
     override suspend fun sendPasswordResetEmail(email: String) = unused()
-    override suspend fun getCurrentUser(): Result<User> = unused()
+    override suspend fun getCurrentUser(): Result<User> =
+        uid?.let { Result.success(User(id = it, email = "$it@eia.edu.co", name = "Carolina Restrepo", isEmailVerified = true, photoUrl = "https://photo")) }
+            ?: Result.failure(Exception())
     override suspend fun getPublicProfile(userId: String): Result<PublicProfile> = unused()
     override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User> = unused()
     override suspend fun deleteAccount() = unused()

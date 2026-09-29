@@ -2,6 +2,8 @@ package com.juanpablo0612.carpool.data.trip.model
 
 import com.juanpablo0612.carpool.data.place.model.PlaceDto
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripDriver
+import com.juanpablo0612.carpool.domain.trip.model.TripVehicle
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import kotlinx.serialization.Serializable
 
@@ -11,6 +13,8 @@ data class TripDto(
     val routeId: String = "",
     val driverId: String = "",
     val vehicleId: String = "",
+    val driver: TripDriverDto = TripDriverDto(),
+    val vehicle: TripVehicleDto = TripVehicleDto(),
     val origin: PlaceDto = PlaceDto(name = "", address = "", latitude = 0.0, longitude = 0.0),
     val destination: PlaceDto = PlaceDto(name = "", address = "", latitude = 0.0, longitude = 0.0),
     val waypoints: List<PlaceDto> = emptyList(),
@@ -29,6 +33,8 @@ data class TripDto(
         routeId = routeId,
         driverId = driverId,
         vehicleId = vehicleId,
+        driver = TripDriver(name = driver.name, photoUrl = driver.photoUrl),
+        vehicle = TripVehicle(brand = vehicle.brand, model = vehicle.model, color = vehicle.color),
         origin = origin.toDomain(),
         destination = destination.toDomain(),
         waypoints = waypoints.map { it.toDomain() },
@@ -54,6 +60,8 @@ data class TripDto(
             routeId = trip.routeId,
             driverId = trip.driverId,
             vehicleId = trip.vehicleId,
+            driver = TripDriverDto(name = trip.driver.name, photoUrl = trip.driver.photoUrl),
+            vehicle = TripVehicleDto(brand = trip.vehicle.brand, model = trip.vehicle.model, color = trip.vehicle.color),
             origin = PlaceDto.fromDomain(trip.origin),
             destination = PlaceDto.fromDomain(trip.destination),
             waypoints = trip.waypoints.map { PlaceDto.fromDomain(it) },
@@ -74,3 +82,16 @@ data class TripDto(
         )
     }
 }
+
+@Serializable
+data class TripDriverDto(
+    val name: String = "",
+    val photoUrl: String? = null,
+)
+
+@Serializable
+data class TripVehicleDto(
+    val brand: String = "",
+    val model: String = "",
+    val color: String = "",
+)

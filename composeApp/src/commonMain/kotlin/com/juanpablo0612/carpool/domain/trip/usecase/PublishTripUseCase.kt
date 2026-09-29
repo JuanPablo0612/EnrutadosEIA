@@ -5,6 +5,8 @@ import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripDriver
+import com.juanpablo0612.carpool.domain.trip.model.TripVehicle
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.trip.validation.TripDraft
@@ -52,6 +54,11 @@ class PublishTripUseCase(
         val vehicle = vehicleRepository.getVehicleById(vehicleId).getOrNull()
             ?.takeIf { it.driverId == driverId }
             ?: return Result.failure(AppException.TripException.VehicleNotFound)
+        // One read per publish, so each trip can carry the driver's name and photo and nobody
+        // browsing trips has to read the profile.
+        val driver = authRepository.getCurrentUser().getOrElse {
+            return Result.failure(AppException.TripException.Unknown)
+        }
 
         val checked = draft.copy(
             vehicleCapacity = vehicle.seatsAvailable,
@@ -81,6 +88,8 @@ class PublishTripUseCase(
             routeId = routeId,
             driverId = driverId,
             vehicleId = vehicle.id,
+            driver = TripDriver.from(driver),
+            vehicle = TripVehicle.from(vehicle),
             origin = origin,
             destination = destination,
             waypoints = checked.waypoints,

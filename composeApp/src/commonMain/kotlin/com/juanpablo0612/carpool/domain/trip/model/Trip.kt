@@ -7,6 +7,10 @@ data class Trip(
     val routeId: String,
     val driverId: String,
     val vehicleId: String,
+    /** Snapshot of the driver at publish time; see [TripDriver]. */
+    val driver: TripDriver = TripDriver(),
+    /** Snapshot of the car at publish time; see [TripVehicle]. */
+    val vehicle: TripVehicle = TripVehicle(),
     val origin: Place,
     val destination: Place,
     val waypoints: List<Place>,
