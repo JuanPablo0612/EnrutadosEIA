@@ -3,169 +3,110 @@ package com.juanpablo0612.carpool.presentation.booking.driver.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.presentation.booking.model.BookingWithPassenger
-import com.juanpablo0612.carpool.presentation.booking.model.PassengerSummary
-import com.juanpablo0612.carpool.presentation.ui.util.relativeTime
+import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.domain.booking.model.RejectReason
+import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisionAction
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
-import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
-import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.components.SecondaryButton
+import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.booking_request_rating
 import enrutadoseia.composeapp.generated.resources.booking_request_accept_button
-import enrutadoseia.composeapp.generated.resources.booking_request_eia_verified
-import enrutadoseia.composeapp.generated.resources.booking_request_trip_context
-import enrutadoseia.composeapp.generated.resources.booking_request_trips_count
-import enrutadoseia.composeapp.generated.resources.booking_request_view_profile
+import enrutadoseia.composeapp.generated.resources.booking_request_last_seat
+import enrutadoseia.composeapp.generated.resources.booking_request_message_quote
+import enrutadoseia.composeapp.generated.resources.booking_request_trip_full
+import enrutadoseia.composeapp.generated.resources.error_24px
+import enrutadoseia.composeapp.generated.resources.info_24px
 import enrutadoseia.composeapp.generated.resources.reject_button
 import enrutadoseia.composeapp.generated.resources.relative_days_ago
 import enrutadoseia.composeapp.generated.resources.relative_hours_ago
 import enrutadoseia.composeapp.generated.resources.relative_just_now
 import enrutadoseia.composeapp.generated.resources.relative_minutes_ago
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
+/**
+ * A seat request waiting on the driver: who asks, where they get on or off, what they wrote and
+ * the answer. What the trip's seats allow is spelled out before the buttons, so accepting never
+ * fails by surprise: a full trip can only reject (with "trip full" already chosen as the reason).
+ */
 @Composable
-fun BookingRequestCard(
-    item: BookingWithPassenger,
-    processingIds: Set<String>,
-    // Passed in rather than defaulted to `now`, matching ConfirmedBookingCard: a default read
-    // during composition makes this composable non-idempotent and re-reads the clock on every
-    // recomposition.
+internal fun BookingRequestCard(
+    booking: Booking,
+    isTripFull: Boolean,
+    isLastSeatContested: Boolean,
+    isBusy: Boolean,
     nowMs: Long,
-    onAccept: (String, String) -> Unit,
-    onReject: (String) -> Unit,
-    onViewProfile: (String) -> Unit,
+    onDecision: (BookingDecisionAction) -> Unit,
+    onViewProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val booking = item.booking
-    val passenger = item.passenger
-    val isProcessing = booking.id in processingIds
-    val firstName = remember(passenger.name) { passenger.name.split(" ").firstOrNull() ?: passenger.name }
-
     CarpoolListCard(modifier = modifier) {
-        // Header row: avatar + name/reputation + timestamp
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            UserAvatar(name = passenger.name, size = 48.dp) // component-intrinsic avatar diameter
-            Spacer(modifier = Modifier.width(Spacing.md))
-            Column(modifier = Modifier.weight(1f)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            PassengerHeader(booking = booking, onViewProfile = onViewProfile) {
                 Text(
-                    text = passenger.name,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                )
-                ReputationLine(passenger = passenger)
-            }
-            Spacer(modifier = Modifier.width(Spacing.sm))
-            Text(
-                text = relativeCreatedAt(booking.createdAt, nowMs),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        // Trip context
-        Text(
-            text = stringResource(
-                Res.string.booking_request_trip_context,
-                relativeTime(booking.departureTime),
-            ),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Spacer(modifier = Modifier.height(2.dp)) // below the 4dp spacing floor; a hairline-level text gap
-        RouteLineRow(origin = booking.originName, destination = booking.destinationName)
-
-        // Optional passenger message
-        if (!booking.passengerMessage.isNullOrBlank()) {
-            Spacer(modifier = Modifier.height(Spacing.sm))
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    // No emoji prefix: the tinted surface, the italic and the quotes already say
-                    // "quoted message", and an emoji ignores `tint` — it stayed full-colour in
-                    // dark mode while everything around it followed the theme.
-                    text = "\"${booking.passengerMessage}\"",
-                    style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
+                    text = requestedAgo(booking.createdAt, nowMs),
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(Spacing.sm),
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        // Action buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-        ) {
-            Button(
-                onClick = { onAccept(booking.id, booking.tripId) },
-                enabled = !isProcessing,
-                modifier = Modifier.weight(1f),
-            ) {
-                if (isProcessing) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary,
+            booking.meetingStop?.let { MeetingStopLine(stop = it) }
+            booking.passengerMessage?.takeIf { it.isNotBlank() }?.let { message ->
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = stringResource(Res.string.booking_request_message_quote, message),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
                     )
-                } else {
-                    Text(text = stringResource(Res.string.booking_request_accept_button))
                 }
             }
-            OutlinedButton(
-                onClick = { onReject(booking.id) },
-                enabled = !isProcessing,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error,
-                ),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error),
-                ),
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(text = stringResource(Res.string.reject_button))
+            when {
+                isTripFull -> SeatNotice(
+                    icon = vectorResource(Res.drawable.error_24px),
+                    text = stringResource(Res.string.booking_request_trip_full),
+                    color = MaterialTheme.colorScheme.error,
+                )
+                isLastSeatContested -> SeatNotice(
+                    icon = vectorResource(Res.drawable.info_24px),
+                    text = stringResource(Res.string.booking_request_last_seat),
+                    color = LocalExtendedColors.current.onWarningContainer,
+                )
             }
-        }
-
-        // View profile link
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-        ) {
-            TextButton(onClick = { onViewProfile(booking.passengerId) }) {
-                Text(
-                    text = stringResource(Res.string.booking_request_view_profile, firstName),
-                    style = MaterialTheme.typography.labelMedium,
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                SecondaryButton(
+                    text = stringResource(Res.string.reject_button),
+                    onClick = {
+                        val suggested = if (isTripFull) RejectReason.TripFull else null
+                        onDecision(BookingDecisionAction.Reject(booking, suggested))
+                    },
+                    enabled = !isBusy,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                PrimaryButton(
+                    text = stringResource(Res.string.booking_request_accept_button),
+                    onClick = { onDecision(BookingDecisionAction.Accept(booking)) },
+                    enabled = !isTripFull,
+                    isLoading = isBusy,
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -173,39 +114,20 @@ fun BookingRequestCard(
 }
 
 @Composable
-private fun ReputationLine(passenger: PassengerSummary) {
-    val parts = buildList {
-        if (passenger.averageRating != null) {
-            val r = passenger.averageRating
-            val formatted = "${r.toInt()}.${((r * 10).toInt() % 10)}"
-            // A localized label rather than a ⭐ prefix: an emoji ignores `tint`, renders
-            // differently per platform, and would bypass stringResource unlike its siblings.
-            add(stringResource(Res.string.booking_request_rating, formatted))
-        }
-        if (passenger.tripsCompleted > 0) add(
-            stringResource(Res.string.booking_request_trips_count, passenger.tripsCompleted)
-        )
-        if (passenger.isEiaVerified) add(stringResource(Res.string.booking_request_eia_verified))
-    }
-    if (parts.isNotEmpty()) {
-        Text(
-            text = parts.joinToString(" · "),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+private fun SeatNotice(icon: ImageVector, text: String, color: Color) {
+    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm), verticalAlignment = Alignment.Top) {
+        Icon(imageVector = icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+        Text(text = text, style = MaterialTheme.typography.bodyMedium, color = color)
     }
 }
 
 @Composable
-private fun relativeCreatedAt(createdAtMs: Long, nowMs: Long): String {
-    val diffMs = nowMs - createdAtMs
-    val diffMin = diffMs / 60_000
-    val diffHour = diffMs / 3_600_000
-    val diffDay = diffMs / 86_400_000
+private fun requestedAgo(createdAtMs: Long, nowMs: Long): String {
+    val minutes = (nowMs - createdAtMs).coerceAtLeast(0) / 60_000
     return when {
-        diffMin < 1 -> stringResource(Res.string.relative_just_now)
-        diffMin < 60 -> stringResource(Res.string.relative_minutes_ago, diffMin)
-        diffHour < 24 -> stringResource(Res.string.relative_hours_ago, diffHour)
-        else -> stringResource(Res.string.relative_days_ago, diffDay)
+        minutes < 1 -> stringResource(Res.string.relative_just_now)
+        minutes < 60 -> stringResource(Res.string.relative_minutes_ago, minutes)
+        minutes < 24 * 60 -> stringResource(Res.string.relative_hours_ago, minutes / 60)
+        else -> stringResource(Res.string.relative_days_ago, minutes / (24 * 60))
     }
 }

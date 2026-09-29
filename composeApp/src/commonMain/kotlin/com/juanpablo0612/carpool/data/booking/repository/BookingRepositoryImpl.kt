@@ -34,11 +34,6 @@ class BookingRepositoryImpl(
             .map { list -> list.map { it.toDomain() } }
     }
 
-    override fun getAllDriverBookings(driverId: String): Flow<List<Booking>> {
-        return remoteDataSource.getAllDriverBookings(driverId)
-            .map { list -> list.map { it.toDomain() } }
-    }
-
     override fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<Booking>> {
         return remoteDataSource.getOpenDriverBookings(driverId, departingAfter)
             .map { list -> list.map { it.toDomain() } }

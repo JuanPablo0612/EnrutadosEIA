@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.booking.driver
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,297 +8,209 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.clickable
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
-import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingCancelConfirmDialog
-import com.juanpablo0612.carpool.presentation.booking.driver.components.HistoryBookingCard
-import com.juanpablo0612.carpool.presentation.booking.driver.components.RejectBottomSheet
-import com.juanpablo0612.carpool.presentation.booking.driver.components.confirmedBookingItems
-import com.juanpablo0612.carpool.presentation.booking.driver.components.pendingBookingItems
-import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingDecisionDialogs
+import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingRequestCard
+import com.juanpablo0612.carpool.presentation.booking.driver.components.PassengerCard
+import com.juanpablo0612.carpool.presentation.booking.driver.components.TripBookingsHeader
+import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisionAction
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.booking_history_search_placeholder
+import enrutadoseia.composeapp.generated.resources.action_dismiss
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_confirmed
-import enrutadoseia.composeapp.generated.resources.booking_requests_tab_history
 import enrutadoseia.composeapp.generated.resources.booking_requests_tab_pending
 import enrutadoseia.composeapp.generated.resources.booking_requests_title
-import enrutadoseia.composeapp.generated.resources.booking_trip_now_full
 import enrutadoseia.composeapp.generated.resources.confirmed_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.confirmed_empty_title
-import enrutadoseia.composeapp.generated.resources.history_empty_subtitle
-import enrutadoseia.composeapp.generated.resources.history_empty_title
 import enrutadoseia.composeapp.generated.resources.inbox_24px
+import enrutadoseia.composeapp.generated.resources.label_pair
 import enrutadoseia.composeapp.generated.resources.pending_empty_subtitle
 import enrutadoseia.composeapp.generated.resources.pending_empty_title
+import enrutadoseia.composeapp.generated.resources.person_24px
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun BookingRequestsScreen(
     viewModel: BookingRequestsViewModel,
-    onNavigateToPassengerProfile: (String) -> Unit = {},
-    onNavigateToRating: (bookingId: String, tripId: String, rateeId: String, rateeName: String) -> Unit = { _, _, _, _ -> },
-    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
+    onNavigateToPassengerProfile: (String) -> Unit,
+    onNavigateToTripPassengers: (String) -> Unit,
+    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            is BookingRequestsEvent.NavigateToPassengerProfile ->
-                onNavigateToPassengerProfile(event.passengerId)
-            is BookingRequestsEvent.NavigateToRating ->
-                onNavigateToRating(event.bookingId, event.tripId, event.rateeId, event.rateeName)
+            is BookingRequestsEvent.NavigateToPassengerProfile -> onNavigateToPassengerProfile(event.passengerId)
+            is BookingRequestsEvent.NavigateToTripPassengers -> onNavigateToTripPassengers(event.tripId)
+            // Only upcoming trips are listed here, so the chat is always writable.
+            is BookingRequestsEvent.NavigateToChat ->
+                onNavigateToChat(event.bookingId, event.tripId, event.passengerName, false)
         }
     }
 
-    BookingRequestsContent(
-        state = state,
-        onAction = viewModel::onAction,
-        onNavigateToChat = onNavigateToChat,
-        onBackClick = onBackClick,
-    )
+    BookingRequestsContent(state = state, onAction = viewModel::onAction, onBackClick = onBackClick)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingRequestsContent(
     state: BookingRequestsUiState,
     onAction: (BookingRequestsAction) -> Unit,
-    onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit = { _, _, _, _ -> },
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit,
+    nowMs: Long = rememberNowMs(),
 ) {
-    val nowMs = rememberNowMs()
-    val pullRefreshState = rememberPullToRefreshState()
-    if (state.pendingRejectionFor != null) {
-        RejectBottomSheet(
-            selectedReason = state.selectedRejectReason,
-            comment = state.rejectComment,
-            onSelectReason = { onAction(BookingRequestsAction.SelectRejectReason(it)) },
-            onCommentChange = { onAction(BookingRequestsAction.UpdateRejectComment(it)) },
-            onConfirm = { onAction(BookingRequestsAction.ConfirmReject(state.pendingRejectionFor)) },
-            onDismiss = { onAction(BookingRequestsAction.DismissReject) },
-        )
-    }
-
-    if (state.cancelConfirmFor != null) {
-        BookingCancelConfirmDialog(
-            onConfirm = { onAction(BookingRequestsAction.CancelConfirmed(state.cancelConfirmFor)) },
-            onDismiss = { onAction(BookingRequestsAction.DismissCancelConfirmed) },
-        )
-    }
+    val onDecision: (BookingDecisionAction) -> Unit = { onAction(BookingRequestsAction.OnDecision(it)) }
+    BookingDecisionDialogs(state = state.decisions, onDecision = onDecision)
 
     Scaffold(
-        topBar = {
-            CarpoolBackTopBar(
-                title = stringResource(Res.string.booking_requests_title),
-                onBack = onBackClick,
-            )
-        },
+        topBar = { CarpoolBackTopBar(title = stringResource(Res.string.booking_requests_title), onBack = onBackClick) },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
-        PullToRefreshBox(
-            isRefreshing = state.isRefreshing,
-            onRefresh = { onAction(BookingRequestsAction.Refresh) },
-            state = pullRefreshState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-        ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-        ) {
-            if (state.tripJustFilled) {
-                TripFilledBanner(
-                    onDismiss = { onAction(BookingRequestsAction.DismissTripFilledNotice) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-                )
-            }
-
-            state.error?.let { error ->
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            RequestTabs(state = state, onAction = onAction)
+            state.decisions.error?.let { error ->
+                val dismissLabel = stringResource(Res.string.action_dismiss)
                 ErrorMessage(
                     message = stringResource(error.asStringResource()),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-                        .clickable { onAction(BookingRequestsAction.DismissError) },
+                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        .clickable(onClickLabel = dismissLabel) { onDecision(BookingDecisionAction.DismissError) },
                 )
             }
-
-            val tabs = DriverBookingsTab.entries
-            val selectedIndex = tabs.indexOf(state.tab)
-
-            SecondaryTabRow(selectedTabIndex = selectedIndex) {
-                Tab(
-                    selected = state.tab == DriverBookingsTab.Pending,
-                    onClick = { onAction(BookingRequestsAction.SelectTab(DriverBookingsTab.Pending)) },
-                    text = {
-                        BadgedBox(
-                            badge = {
-                                if (state.pending.isNotEmpty()) {
-                                    Badge { Text(state.pending.size.toString()) }
-                                }
-                            },
-                        ) {
-                            Text(stringResource(Res.string.booking_requests_tab_pending))
-                        }
-                    },
-                )
-                Tab(
-                    selected = state.tab == DriverBookingsTab.Confirmed,
-                    onClick = { onAction(BookingRequestsAction.SelectTab(DriverBookingsTab.Confirmed)) },
-                    text = { Text(stringResource(Res.string.booking_requests_tab_confirmed)) },
-                )
-                Tab(
-                    selected = state.tab == DriverBookingsTab.History,
-                    onClick = { onAction(BookingRequestsAction.SelectTab(DriverBookingsTab.History)) },
-                    text = { Text(stringResource(Res.string.booking_requests_tab_history)) },
-                )
+            val groups = when (state.tab) {
+                BookingRequestsTab.Pending -> state.pending
+                BookingRequestsTab.Accepted -> state.accepted
             }
-
-            if (state.tab == DriverBookingsTab.History && !state.isLoading) {
-                OutlinedTextField(
-                    value = state.historyQuery,
-                    onValueChange = { onAction(BookingRequestsAction.OnHistoryQueryChange(it)) },
-                    placeholder = { Text(stringResource(Res.string.booking_history_search_placeholder)) },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-                )
-            }
-
             when {
                 state.isLoading -> ListSkeleton(modifier = Modifier.fillMaxSize())
-                else -> when (state.tab) {
-                    DriverBookingsTab.Pending -> TabContent(
-                        isEmpty = state.pending.isEmpty(),
-                        emptyTitle = stringResource(Res.string.pending_empty_title),
-                        emptySubtitle = stringResource(Res.string.pending_empty_subtitle),
-                    ) {
-                        pendingBookingItems(
-                            items = state.pending,
-                            processingIds = state.processingIds,
-                            nowMs = nowMs,
-                            key = { it.booking.id },
-                            onAccept = { id, tripId -> onAction(BookingRequestsAction.Accept(id, tripId)) },
-                            onReject = { onAction(BookingRequestsAction.OpenReject(it)) },
-                            onViewProfile = { onAction(BookingRequestsAction.OpenPassengerProfile(it)) },
-                        )
-                    }
+                state.loadError != null -> ErrorState(
+                    description = stringResource(state.loadError.asStringResource()),
+                    onRetry = { onAction(BookingRequestsAction.OnRetry) },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                groups.isEmpty() -> RequestsEmptyState(tab = state.tab)
+                else -> RequestGroups(state = state, groups = groups, nowMs = nowMs, onAction = onAction)
+            }
+        }
+    }
+}
 
-                    DriverBookingsTab.Confirmed -> TabContent(
-                        isEmpty = state.confirmed.isEmpty(),
-                        emptyTitle = stringResource(Res.string.confirmed_empty_title),
-                        emptySubtitle = stringResource(Res.string.confirmed_empty_subtitle),
-                    ) {
-                        confirmedBookingItems(
-                            items = state.confirmed,
-                            processingIds = state.processingIds,
-                            nowMs = nowMs,
-                            key = { it.booking.id },
-                            onMessage = { item, isPast ->
-                                onNavigateToChat(item.booking.id, item.booking.tripId, item.passenger.name, isPast)
-                            },
-                            onCancel = { onAction(BookingRequestsAction.OpenCancelConfirmed(it)) },
-                            onRate = { item ->
-                                onAction(
-                                    BookingRequestsAction.OnRateBooking(
-                                        bookingId = item.booking.id,
-                                        tripId = item.booking.tripId,
-                                        rateeId = item.passenger.id,
-                                        rateeName = item.passenger.name,
-                                    )
-                                )
-                            },
-                        )
-                    }
+@Composable
+private fun RequestTabs(state: BookingRequestsUiState, onAction: (BookingRequestsAction) -> Unit) {
+    val tabs = listOf(
+        Triple(BookingRequestsTab.Pending, Res.string.booking_requests_tab_pending, state.pendingCount),
+        Triple(BookingRequestsTab.Accepted, Res.string.booking_requests_tab_confirmed, state.acceptedCount),
+    )
+    SingleChoiceSegmentedButtonRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+    ) {
+        tabs.forEachIndexed { index, (tab, label, count) ->
+            SegmentedButton(
+                selected = state.tab == tab,
+                onClick = { onAction(BookingRequestsAction.OnTabSelected(tab)) },
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = tabs.size),
+                icon = {},
+            ) {
+                Text(text = tabLabel(label, count, isLoading = state.isLoading), style = MaterialTheme.typography.titleSmall)
+            }
+        }
+    }
+}
 
-                    DriverBookingsTab.History -> TabContent(
-                        isEmpty = state.filteredHistory.isEmpty(),
-                        emptyTitle = stringResource(Res.string.history_empty_title),
-                        emptySubtitle = stringResource(Res.string.history_empty_subtitle),
-                    ) {
-                        items(state.filteredHistory, key = { it.booking.id }) { item ->
-                            HistoryBookingCard(item = item)
-                        }
-                    }
+/** "Por responder · 2": the count only once it's known and worth showing. */
+@Composable
+private fun tabLabel(label: StringResource, count: Int, isLoading: Boolean): String {
+    val text = stringResource(label)
+    return if (isLoading || count == 0) text else stringResource(Res.string.label_pair, text, count.toString())
+}
+
+@Composable
+private fun RequestGroups(
+    state: BookingRequestsUiState,
+    groups: List<TripBookings>,
+    nowMs: Long,
+    onAction: (BookingRequestsAction) -> Unit,
+) {
+    val onDecision: (BookingDecisionAction) -> Unit = { onAction(BookingRequestsAction.OnDecision(it)) }
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+    ) {
+        groups.forEach { group ->
+            item(key = "trip_${group.tripId}") {
+                TripBookingsHeader(
+                    group = group,
+                    nowMs = nowMs,
+                    onClick = { onAction(BookingRequestsAction.OnTripClick(group.tripId)) },
+                    modifier = Modifier.padding(top = Spacing.sm),
+                )
+            }
+            items(group.bookings, key = { it.id }) { booking ->
+                val isBusy = booking.id in state.decisions.busyIds
+                val onViewProfile = { onAction(BookingRequestsAction.OnViewProfile(booking.passengerId)) }
+                when (state.tab) {
+                    BookingRequestsTab.Pending -> BookingRequestCard(
+                        booking = booking,
+                        isTripFull = group.isFull,
+                        isLastSeatContested = group.isLastSeatContested,
+                        isBusy = isBusy,
+                        nowMs = nowMs,
+                        onDecision = onDecision,
+                        onViewProfile = onViewProfile,
+                    )
+                    BookingRequestsTab.Accepted -> PassengerCard(
+                        booking = booking,
+                        isBusy = isBusy,
+                        canCancel = true,
+                        onMessage = { onAction(BookingRequestsAction.OnMessagePassenger(booking)) },
+                        onRate = null,
+                        onDecision = onDecision,
+                        onViewProfile = onViewProfile,
+                    )
                 }
             }
         }
-        }
-    }
-}
-
-// Inline, dismiss-on-tap notice for the "trip is now full" signal — the app uses no SnackBars.
-@Composable
-private fun TripFilledBanner(
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = MaterialTheme.shapes.medium,
-        modifier = modifier.clickable(onClick = onDismiss),
-    ) {
-        Text(
-            text = stringResource(Res.string.booking_trip_now_full),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(Spacing.lg),
-        )
     }
 }
 
 @Composable
-private fun TabContent(
-    isEmpty: Boolean,
-    emptyTitle: String,
-    emptySubtitle: String,
-    modifier: Modifier = Modifier,
-    content: LazyListScope.() -> Unit,
-) {
-    if (isEmpty) {
-        EmptyState(
+private fun RequestsEmptyState(tab: BookingRequestsTab) {
+    when (tab) {
+        BookingRequestsTab.Pending -> EmptyState(
             icon = vectorResource(Res.drawable.inbox_24px),
-            title = emptyTitle,
-            description = emptySubtitle,
-            modifier = modifier.fillMaxSize(),
+            title = stringResource(Res.string.pending_empty_title),
+            description = stringResource(Res.string.pending_empty_subtitle),
+            modifier = Modifier.fillMaxSize(),
         )
-    } else {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(Spacing.lg),
-            verticalArrangement = Arrangement.spacedBy(Spacing.md),
-            content = content,
+        BookingRequestsTab.Accepted -> EmptyState(
+            icon = vectorResource(Res.drawable.person_24px),
+            title = stringResource(Res.string.confirmed_empty_title),
+            description = stringResource(Res.string.confirmed_empty_subtitle),
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
@@ -306,9 +219,6 @@ private fun TabContent(
 @Composable
 private fun BookingRequestsEmptyPreview() {
     CarpoolTheme {
-        BookingRequestsContent(
-            state = BookingRequestsUiState(isLoading = false),
-            onAction = {},
-        )
+        BookingRequestsContent(state = BookingRequestsUiState(isLoading = false), onAction = {}, onBackClick = {})
     }
 }

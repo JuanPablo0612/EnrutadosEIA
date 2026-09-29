@@ -184,7 +184,7 @@
     <!-- Passenger Bookings -->
 
     <!-- Driver Booking Requests -->
-    <string name="booking_requests_title">Booking requests</string>
+    <string name="booking_requests_title">Requests</string>
 
     <!-- Navigation -->
     <string name="nav_my_trips">My trips</string>
@@ -376,6 +376,7 @@
     <string name="trip_no_vehicle_title">You need a vehicle to publish trips.</string>
     <string name="trip_register_vehicle_action">Register vehicle</string>
     <string name="action_change">Change</string>
+    <string name="action_dismiss">Dismiss</string>
     <string name="trip_bottom_summary">%1$s · %2$s · %3$d seats</string>
     <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d seats · %4$s</string>
 
@@ -400,10 +401,10 @@
 
     <!-- TripPassengers screen -->
     <string name="trip_passengers_title">Trip Passengers</string>
-    <string name="trip_passengers_section_pending">Pending requests</string>
-    <string name="trip_passengers_section_confirmed">Confirmed passengers</string>
+    <string name="trip_passengers_section_pending">To answer</string>
+    <string name="trip_passengers_section_confirmed">Confirmed</string>
     <string name="trip_passengers_empty_title">No passengers yet</string>
-    <string name="trip_passengers_empty_subtitle">Pending and confirmed passengers for this trip will appear here.</string>
+    <string name="trip_passengers_empty_subtitle">Requests and confirmed passengers for this trip show up here.</string>
 
     <!-- VehiclesList - header & FAB -->
     <string name="vehicles_list_subtitle">Vehicles you use to offer seats</string>
@@ -567,16 +568,20 @@
     <string name="trip_cancel_confirm_button">Cancel trip</string>
 
     <!-- BookingRequests tabs -->
-    <string name="booking_requests_tab_pending">Pending</string>
-    <string name="booking_requests_tab_confirmed">Confirmed</string>
-    <string name="booking_requests_tab_history">History</string>
+    <string name="booking_requests_tab_pending">To answer</string>
+    <string name="booking_requests_tab_confirmed">Accepted</string>
 
     <!-- BookingRequests card -->
-    <string name="booking_request_trip_context">For your trip %1$s</string>
     <string name="booking_request_accept_button">Accept</string>
-    <string name="booking_request_view_profile">View %1$s\'s profile →</string>
-    <string name="booking_request_eia_verified">✓ EIA</string>
-    <string name="booking_request_trips_count">%1$d trips</string>
+    <string name="booking_request_view_profile">See profile and rating</string>
+    <string name="booking_request_message_quote">“%1$s”</string>
+    <string name="booking_request_last_seat">It\'s your last seat: accepting this one leaves the other requests waiting.</string>
+    <string name="booking_request_trip_full">This trip is full. Reject the request or free up a seat first.</string>
+    <string name="booking_requests_trip_full">Full</string>
+    <plurals name="booking_requests_free_seats">
+        <item quantity="one">%1$d free</item>
+        <item quantity="other">%1$d free</item>
+    </plurals>
 
     <!-- Relative timestamps (for booking creation) -->
     <string name="relative_just_now">Just now</string>
@@ -586,7 +591,7 @@
 
     <!-- Reject sheet -->
     <string name="reject_sheet_title">Why are you rejecting this request?</string>
-    <string name="reject_sheet_subtitle">This helps us improve; the passenger sees a generic message.</string>
+    <string name="reject_sheet_subtitle">The passenger sees this reason in their notification.</string>
     <string name="reject_reason_trip_full">Trip is full</string>
     <string name="reject_reason_trip_cancelled">I\'m going to cancel the trip</string>
     <string name="reject_reason_pickup_not_possible">Can\'t pick up at that location</string>
@@ -595,22 +600,20 @@
     <string name="reject_confirm_button">Reject request</string>
 
     <!-- Accept/action snackbars -->
-    <string name="booking_trip_now_full">Your trip is now full. Other pending requests will be rejected automatically.</string>
 
     <!-- Confirmed tab card -->
     <string name="confirmed_booking_message_button">Message</string>
-    <string name="confirmed_booking_cancel_button">Cancel</string>
-    <string name="confirmed_cancel_dialog_title">Cancel booking?</string>
-    <string name="confirmed_cancel_dialog_body">The passenger will be notified.</string>
+    <string name="confirmed_booking_cancel_button">Cancel their seat</string>
+    <string name="passenger_more_actions">More options for this passenger</string>
+    <string name="confirmed_cancel_dialog_title">Cancel %1$s\'s seat?</string>
+    <string name="confirmed_cancel_dialog_body">We\'ll let them know, and the seat opens up for another request.</string>
     <string name="confirmed_cancel_dialog_button">Cancel booking</string>
 
     <!-- Empty states per tab -->
     <string name="pending_empty_title">All caught up</string>
     <string name="pending_empty_subtitle">You have no pending requests. We\'ll notify you when someone wants to book a seat.</string>
     <string name="confirmed_empty_title">No confirmed passengers yet</string>
-    <string name="confirmed_empty_subtitle">When you accept a request, it will appear here.</string>
-    <string name="history_empty_title">Your history is empty</string>
-    <string name="history_empty_subtitle">Past trips with passengers will appear here.</string>
+    <string name="confirmed_empty_subtitle">When you accept a request for an upcoming trip, it shows up here.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_slide1_title">Share the ride to the EIA</string>
@@ -823,7 +826,6 @@
     <string name="notification_delete_confirm_button">Delete</string>
     <string name="form_progress_label">%1$d of %2$d required fields completed</string>
     <string name="booking_request_sent_notice">Request sent — the driver will confirm shortly</string>
-    <string name="booking_history_search_placeholder">Search by passenger name</string>
 
     <plurals name="route_trips_count">
         <item quantity="one">%1$d trip</item>
@@ -831,7 +833,6 @@
     </plurals>
     <string name="route_last_used_separator">%1$s · %2$s</string>
 
-    <string name="booking_request_rating">Rating %1$s</string>
     <string name="rating_value">%1$d.%2$d</string>
     <string name="cd_rating">Rated %1$s out of 5</string>
     <plurals name="rating_count">

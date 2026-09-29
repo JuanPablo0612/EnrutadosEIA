@@ -1,11 +1,8 @@
 package com.juanpablo0612.carpool.domain.booking.usecase
 
 import com.juanpablo0612.carpool.core.exception.AppException
-import com.juanpablo0612.carpool.domain.booking.model.Booking
 import com.juanpablo0612.carpool.domain.booking.model.BookingMeetingStop
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
-import com.juanpablo0612.carpool.domain.booking.model.RejectReason
-import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripDriver
@@ -13,7 +10,6 @@ import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.usecase.FakeAuthRepository
 import com.juanpablo0612.carpool.domain.trip.usecase.FakeTripRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -89,24 +85,4 @@ class CreateBookingUseCaseTest {
         val bookings = FakeBookingRepository(hasActive = true)
         assertEquals(AppException.BookingException.AlreadyBooked, useCase(bookings)(trip()).exceptionOrNull())
     }
-}
-
-private fun unused(): Nothing = error("not used by these tests")
-
-private class FakeBookingRepository(private val hasActive: Boolean = false) : BookingRepository {
-    val created = mutableListOf<Booking>()
-    override suspend fun createBooking(booking: Booking): Result<Unit> {
-        created += booking
-        return Result.success(Unit)
-    }
-    override suspend fun hasActiveBooking(passengerId: String, tripId: String) = Result.success(hasActive)
-    override fun getPassengerBookings(passengerId: String): Flow<List<Booking>> = unused()
-    override fun getDriverBookingRequests(driverId: String): Flow<List<Booking>> = unused()
-    override fun getAllDriverBookings(driverId: String): Flow<List<Booking>> = unused()
-    override fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<Booking>> = unused()
-    override fun getOpenBookingsForTrip(tripId: String, driverId: String): Flow<List<Booking>> = unused()
-    override fun getBookingsForTripAsDriver(tripId: String, driverId: String): Flow<List<Booking>> = unused()
-    override fun getBookingsForTripAsPassenger(tripId: String, passengerId: String): Flow<List<Booking>> = unused()
-    override suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): Result<Unit> = unused()
-    override suspend fun rejectBookingWithReason(bookingId: String, reason: RejectReason, comment: String?): Result<Unit> = unused()
 }

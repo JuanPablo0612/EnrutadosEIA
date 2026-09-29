@@ -1,30 +1,39 @@
 package com.juanpablo0612.carpool.presentation.booking.driver.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.booking.model.RejectReason
+import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisionAction
+import com.juanpablo0612.carpool.presentation.booking.driver.decision.RejectionDraft
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.cancel_button
 import enrutadoseia.composeapp.generated.resources.reject_comment_placeholder
 import enrutadoseia.composeapp.generated.resources.reject_confirm_button
 import enrutadoseia.composeapp.generated.resources.reject_reason_other
@@ -35,92 +44,86 @@ import enrutadoseia.composeapp.generated.resources.reject_sheet_subtitle
 import enrutadoseia.composeapp.generated.resources.reject_sheet_title
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * Why the driver says no. A reason is required (the passenger's notification depends on it);
+ * a comment is only offered for "other", where the reason alone says nothing.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RejectBottomSheet(
-    selectedReason: RejectReason?,
-    comment: String,
-    onSelectReason: (RejectReason) -> Unit,
-    onCommentChange: (String) -> Unit,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
+internal fun RejectBottomSheet(
+    draft: RejectionDraft,
+    onDecision: (BookingDecisionAction) -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
+        onDismissRequest = { onDecision(BookingDecisionAction.DismissReject) },
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.lg)
-                .navigationBarsPadding(),
+                .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
+                .padding(horizontal = Spacing.xl)
+                .padding(bottom = Spacing.xl),
+            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
-            Text(
-                text = stringResource(Res.string.reject_sheet_title),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            )
-            Spacer(modifier = Modifier.height(Spacing.xs))
-            Text(
-                text = stringResource(Res.string.reject_sheet_subtitle),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(Spacing.md))
-
-            RejectReason.entries.forEach { reason ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    RadioButton(
-                        selected = selectedReason == reason,
-                        onClick = { onSelectReason(reason) },
-                    )
-                    Text(
-                        text = stringResource(reason.labelRes()),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-
-            if (selectedReason == RejectReason.Other) {
-                Spacer(modifier = Modifier.height(Spacing.sm))
-                OutlinedTextField(
-                    value = comment,
-                    onValueChange = onCommentChange,
-                    placeholder = {
-                        Text(
-                            text = stringResource(Res.string.reject_comment_placeholder),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2,
-                    maxLines = 4,
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                Text(
+                    text = stringResource(Res.string.reject_sheet_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Text(
+                    text = stringResource(Res.string.reject_sheet_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
-            Spacer(modifier = Modifier.height(Spacing.lg))
-            Button(
-                onClick = onConfirm,
-                enabled = selectedReason != null,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(Res.string.reject_confirm_button))
+            Column(modifier = Modifier.selectableGroup()) {
+                RejectReason.entries.forEach { reason ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp)
+                            .selectable(
+                                selected = draft.reason == reason,
+                                role = Role.RadioButton,
+                                onClick = { onDecision(BookingDecisionAction.OnRejectReasonSelected(reason)) },
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    ) {
+                        // The row handles the click, so the radio stays a plain indicator.
+                        RadioButton(selected = draft.reason == reason, onClick = null)
+                        Text(text = stringResource(reason.labelRes()), style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
             }
-            TextButton(
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(Res.string.cancel_button))
+
+            if (draft.reason == RejectReason.Other) {
+                CarpoolTextField(
+                    value = draft.comment,
+                    onValueChange = { onDecision(BookingDecisionAction.OnRejectCommentChanged(it)) },
+                    label = stringResource(Res.string.reject_reason_other),
+                    placeholder = stringResource(Res.string.reject_comment_placeholder),
+                    singleLine = false,
+                    minLines = 2,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Done,
+                    ),
+                )
             }
-            Spacer(modifier = Modifier.height(Spacing.sm))
+
+            PrimaryButton(
+                text = stringResource(Res.string.reject_confirm_button),
+                onClick = { onDecision(BookingDecisionAction.ConfirmReject) },
+                enabled = draft.reason != null,
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError,
+            )
         }
     }
 }

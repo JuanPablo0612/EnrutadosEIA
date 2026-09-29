@@ -184,7 +184,7 @@
     <!-- Reservas del pasajero -->
 
     <!-- Solicitudes del conductor -->
-    <string name="booking_requests_title">Solicitudes de reserva</string>
+    <string name="booking_requests_title">Solicitudes</string>
 
     <!-- Navegación -->
     <string name="nav_my_trips">Mis viajes</string>
@@ -376,6 +376,7 @@
     <string name="trip_no_vehicle_title">Necesitas un vehículo para publicar viajes.</string>
     <string name="trip_register_vehicle_action">Registrar vehículo</string>
     <string name="action_change">Cambiar</string>
+    <string name="action_dismiss">Descartar</string>
     <string name="trip_bottom_summary">%1$s · %2$s · %3$d cupos</string>
     <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d cupos · %4$s</string>
 
@@ -400,10 +401,10 @@
 
     <!-- TripPassengers screen -->
     <string name="trip_passengers_title">Pasajeros del viaje</string>
-    <string name="trip_passengers_section_pending">Solicitudes pendientes</string>
-    <string name="trip_passengers_section_confirmed">Pasajeros confirmados</string>
+    <string name="trip_passengers_section_pending">Por responder</string>
+    <string name="trip_passengers_section_confirmed">Confirmados</string>
     <string name="trip_passengers_empty_title">Aún no hay pasajeros</string>
-    <string name="trip_passengers_empty_subtitle">Los pasajeros pendientes y confirmados de este viaje aparecerán aquí.</string>
+    <string name="trip_passengers_empty_subtitle">Las solicitudes y los pasajeros confirmados de este viaje aparecerán aquí.</string>
 
     <!-- DriverTrips - estados vacíos -->
     <string name="publish_trip_saved_routes_label">Tus rutas</string>
@@ -442,16 +443,20 @@
     <string name="trip_cancel_confirm_button">Cancelar viaje</string>
 
     <!-- Pestañas de solicitudes -->
-    <string name="booking_requests_tab_pending">Pendientes</string>
-    <string name="booking_requests_tab_confirmed">Confirmadas</string>
-    <string name="booking_requests_tab_history">Historial</string>
+    <string name="booking_requests_tab_pending">Por responder</string>
+    <string name="booking_requests_tab_confirmed">Aceptadas</string>
 
     <!-- Tarjeta de solicitud -->
-    <string name="booking_request_trip_context">Para tu viaje %1$s</string>
-    <string name="booking_request_accept_button">✓ Aceptar</string>
-    <string name="booking_request_view_profile">Ver perfil de %1$s →</string>
-    <string name="booking_request_eia_verified">✓ EIA</string>
-    <string name="booking_request_trips_count">%1$d viajes</string>
+    <string name="booking_request_accept_button">Aceptar</string>
+    <string name="booking_request_view_profile">Ver perfil y calificación</string>
+    <string name="booking_request_message_quote">«%1$s»</string>
+    <string name="booking_request_last_seat">Es tu último cupo: si aceptas esta, las demás solicitudes quedarán esperando.</string>
+    <string name="booking_request_trip_full">Este viaje está lleno. Rechaza la solicitud o libera un cupo primero.</string>
+    <string name="booking_requests_trip_full">Lleno</string>
+    <plurals name="booking_requests_free_seats">
+        <item quantity="one">%1$d libre</item>
+        <item quantity="other">%1$d libres</item>
+    </plurals>
 
     <!-- Marcas de tiempo relativas (para creación de reserva) -->
     <string name="relative_just_now">Justo ahora</string>
@@ -461,7 +466,7 @@
 
     <!-- Hoja de rechazo -->
     <string name="reject_sheet_title">¿Por qué rechazas esta solicitud?</string>
-    <string name="reject_sheet_subtitle">Esto nos ayuda a mejorar; el pasajero ve un mensaje genérico.</string>
+    <string name="reject_sheet_subtitle">El pasajero verá este motivo en su notificación.</string>
     <string name="reject_reason_trip_full">Cupo lleno</string>
     <string name="reject_reason_trip_cancelled">Voy a cancelar el viaje</string>
     <string name="reject_reason_pickup_not_possible">No puedo recoger en ese punto</string>
@@ -470,22 +475,20 @@
     <string name="reject_confirm_button">Rechazar solicitud</string>
 
     <!-- Snackbars de acción -->
-    <string name="booking_trip_now_full">Tu viaje ya está lleno. Otras solicitudes para este viaje se rechazarán automáticamente.</string>
 
     <!-- Tarjeta de confirmadas -->
-    <string name="confirmed_booking_message_button">Mensaje</string>
-    <string name="confirmed_booking_cancel_button">Cancelar</string>
-    <string name="confirmed_cancel_dialog_title">¿Cancelar reserva?</string>
-    <string name="confirmed_cancel_dialog_body">El pasajero será notificado.</string>
+    <string name="confirmed_booking_message_button">Escribir</string>
+    <string name="confirmed_booking_cancel_button">Cancelar su cupo</string>
+    <string name="passenger_more_actions">Más opciones de este pasajero</string>
+    <string name="confirmed_cancel_dialog_title">¿Cancelar el cupo de %1$s?</string>
+    <string name="confirmed_cancel_dialog_body">Le avisaremos y el cupo quedará libre para otra solicitud.</string>
     <string name="confirmed_cancel_dialog_button">Cancelar reserva</string>
 
     <!-- Estados vacíos por pestaña -->
     <string name="pending_empty_title">Todo al día</string>
     <string name="pending_empty_subtitle">No tienes solicitudes pendientes. Te avisaremos cuando alguien quiera reservar un cupo.</string>
     <string name="confirmed_empty_title">Aún no tienes pasajeros confirmados</string>
-    <string name="confirmed_empty_subtitle">Cuando aceptes una solicitud, aparecerá aquí.</string>
-    <string name="history_empty_title">Tu historial está vacío</string>
-    <string name="history_empty_subtitle">Verás aquí los viajes con pasajeros pasados.</string>
+    <string name="confirmed_empty_subtitle">Cuando aceptes una solicitud para un próximo viaje, aparecerá aquí.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_slide1_title">Comparte el camino a la EIA</string>
@@ -825,7 +828,6 @@
     <string name="notification_delete_confirm_button">Eliminar</string>
     <string name="form_progress_label">%1$d de %2$d campos obligatorios completados</string>
     <string name="booking_request_sent_notice">Solicitud enviada — el conductor confirmará pronto</string>
-    <string name="booking_history_search_placeholder">Buscar por nombre del pasajero</string>
 
     <plurals name="route_trips_count">
         <item quantity="one">%1$d viaje</item>
@@ -833,7 +835,6 @@
     </plurals>
     <string name="route_last_used_separator">%1$s · %2$s</string>
 
-    <string name="booking_request_rating">Calificación %1$s</string>
     <string name="rating_value">%1$d,%2$d</string>
     <string name="cd_rating">Calificación de %1$s sobre 5</string>
     <plurals name="rating_count">

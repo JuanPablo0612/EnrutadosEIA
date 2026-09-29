@@ -9,7 +9,6 @@ interface BookingRepository {
     suspend fun createBooking(booking: Booking): Result<Unit>
     fun getPassengerBookings(passengerId: String): Flow<List<Booking>>
     fun getDriverBookingRequests(driverId: String): Flow<List<Booking>>
-    fun getAllDriverBookings(driverId: String): Flow<List<Booking>>
 
     /**
      * The driver's open bookings (pending or confirmed) on trips departing at or after

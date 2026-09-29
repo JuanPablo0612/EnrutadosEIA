@@ -43,15 +43,6 @@ class FirebaseBookingRemoteDataSource(
             }
     }
 
-    override fun getAllDriverBookings(driverId: String): Flow<List<BookingDto>> {
-        return firestore.collection(COLLECTION_NAME)
-            .where { "driverId" equalTo driverId }
-            .snapshots
-            .map { snapshot ->
-                snapshot.documents.map { it.data(BookingDto.serializer()) }
-            }
-    }
-
     override fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<BookingDto>> {
         return firestore.collection(COLLECTION_NAME)
             .where {

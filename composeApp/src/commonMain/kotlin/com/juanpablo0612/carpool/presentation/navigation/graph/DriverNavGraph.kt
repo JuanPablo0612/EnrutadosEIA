@@ -17,9 +17,9 @@ import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripScreen
+import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekScreen
 import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
-import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListScreen
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.register.RegisterVehicleScreen
@@ -146,7 +146,7 @@ fun NavGraphBuilder.driverNavGraph(
         BookingRequestsScreen(
             viewModel = viewModel,
             onNavigateToPassengerProfile = onNavigateToPassengerProfile,
-            onNavigateToRating = onNavigateToRating,
+            onNavigateToTripPassengers = onNavigateToPassengers,
             onNavigateToChat = onNavigateToChat,
             onBackClick = onNavigateBack,
         )

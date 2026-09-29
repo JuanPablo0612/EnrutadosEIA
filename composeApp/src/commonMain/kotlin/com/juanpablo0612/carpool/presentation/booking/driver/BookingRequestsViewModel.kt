@@ -4,187 +4,122 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
-import com.juanpablo0612.carpool.presentation.booking.model.toBookingWithPassenger
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
-import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
+import com.juanpablo0612.carpool.presentation.booking.BookingError
+import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisions
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
+/**
+ * "Solicitudes": the driver's open bookings on upcoming trips, grouped by trip. One listener for
+ * the bookings (the query leaves closed requests and past trips on the server) and one per trip
+ * that has any, for its free seats; requester details come from the bookings themselves.
+ */
 class BookingRequestsViewModel(
-    private val bookingRepository: BookingRepository,
-    private val confirmBookingUseCase: ConfirmBookingUseCase,
-    private val rejectBookingUseCase: RejectBookingUseCase,
-    private val cancelBookingUseCase: CancelBookingUseCase,
-    private val tripRepository: TripRepository,
-    private val getTripAvailableSeatsUseCase: GetTripAvailableSeatsUseCase,
     private val authRepository: AuthRepository,
+    private val bookingRepository: BookingRepository,
+    private val getTripAvailableSeats: GetTripAvailableSeatsUseCase,
+    confirmBooking: ConfirmBookingUseCase,
+    rejectBooking: RejectBookingUseCase,
+    cancelBooking: CancelBookingUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(BookingRequestsUiState())
-    val state: StateFlow<BookingRequestsUiState> = _state.asStateFlow()
+    private val decisions = BookingDecisions(confirmBooking, rejectBooking, cancelBooking, viewModelScope)
+
+    private val screenState = MutableStateFlow(BookingRequestsUiState())
+    val state: StateFlow<BookingRequestsUiState> = combine(screenState, decisions.state) { screen, decisions ->
+        screen.copy(decisions = decisions)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), BookingRequestsUiState())
 
     private val _events = MutableSharedFlow<BookingRequestsEvent>()
     val events: SharedFlow<BookingRequestsEvent> = _events.asSharedFlow()
 
-    private var bookingsJob: Job? = null
+    private var loadJob: Job? = null
 
     init {
-        loadBookings()
-    }
-
-    private fun loadBookings() {
-        // Cancel any previous collector first — Refresh calls this again, and each collector is a
-        // live Firestore listener that would otherwise leak.
-        bookingsJob?.cancel()
-        val driverId = authRepository.getCurrentUserId() ?: run {
-            _state.update { it.copy(isLoading = false, isRefreshing = false) }
-            return
-        }
-        bookingsJob = viewModelScope.launch {
-            bookingRepository.getAllDriverBookings(driverId)
-                .catch { _state.update { it.copy(isLoading = false, isRefreshing = false) } }
-                .collect { bookings ->
-                    val items = bookings.map { it.toBookingWithPassenger() }
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            isRefreshing = false,
-                            pending = items
-                                .filter { b -> b.booking.status is BookingStatus.Pending }
-                                .sortedByDescending { b -> b.booking.createdAt },
-                            confirmed = items
-                                .filter { b -> b.booking.status is BookingStatus.Confirmed }
-                                .sortedBy { b -> b.booking.departureTime },
-                            history = items
-                                .filter { b ->
-                                    b.booking.status is BookingStatus.Rejected ||
-                                        b.booking.status is BookingStatus.Cancelled
-                                }
-                                .sortedByDescending { b -> b.booking.departureTime },
-                        )
-                    }
-                }
-        }
+        load()
     }
 
     fun onAction(action: BookingRequestsAction) {
         when (action) {
-            is BookingRequestsAction.SelectTab -> _state.update { it.copy(tab = action.tab) }
-            is BookingRequestsAction.Accept -> acceptBooking(action.bookingId, action.tripId)
-            is BookingRequestsAction.OpenReject -> _state.update {
-                it.copy(
-                    pendingRejectionFor = action.bookingId,
-                    selectedRejectReason = null,
-                    rejectComment = "",
+            is BookingRequestsAction.OnTabSelected -> screenState.update { it.copy(tab = action.tab) }
+            is BookingRequestsAction.OnTripClick -> emit(BookingRequestsEvent.NavigateToTripPassengers(action.tripId))
+            is BookingRequestsAction.OnViewProfile ->
+                emit(BookingRequestsEvent.NavigateToPassengerProfile(action.passengerId))
+            is BookingRequestsAction.OnMessagePassenger -> emit(
+                BookingRequestsEvent.NavigateToChat(
+                    bookingId = action.booking.id,
+                    tripId = action.booking.tripId,
+                    passengerName = action.booking.passengerName,
                 )
-            }
-            is BookingRequestsAction.SelectRejectReason -> _state.update {
-                it.copy(selectedRejectReason = action.reason)
-            }
-            is BookingRequestsAction.UpdateRejectComment -> _state.update {
-                it.copy(rejectComment = action.comment)
-            }
-            is BookingRequestsAction.ConfirmReject -> {
-                val reason = _state.value.selectedRejectReason ?: return
-                val comment = _state.value.rejectComment.takeIf { it.isNotBlank() }
-                _state.update { it.copy(pendingRejectionFor = null) }
-                rejectBooking(action.bookingId, reason, comment)
-            }
-            is BookingRequestsAction.DismissReject -> _state.update {
-                it.copy(pendingRejectionFor = null)
-            }
-            is BookingRequestsAction.OpenCancelConfirmed -> _state.update {
-                it.copy(cancelConfirmFor = action.bookingId)
-            }
-            is BookingRequestsAction.DismissCancelConfirmed -> _state.update {
-                it.copy(cancelConfirmFor = null)
-            }
-            is BookingRequestsAction.CancelConfirmed -> {
-                _state.update { it.copy(cancelConfirmFor = null) }
-                cancelBooking(action.bookingId)
-            }
-            is BookingRequestsAction.OpenPassengerProfile -> viewModelScope.launch {
-                _events.emit(BookingRequestsEvent.NavigateToPassengerProfile(action.passengerId))
-            }
-            is BookingRequestsAction.OnRateBooking -> viewModelScope.launch {
-                _events.emit(
-                    BookingRequestsEvent.NavigateToRating(
-                        bookingId = action.bookingId,
-                        tripId = action.tripId,
-                        rateeId = action.rateeId,
-                        rateeName = action.rateeName
-                    )
-                )
-            }
-            is BookingRequestsAction.Refresh -> {
-                _state.update { it.copy(isRefreshing = true) }
-                loadBookings()
-            }
-            is BookingRequestsAction.OnHistoryQueryChange -> _state.update { it.copy(historyQuery = action.query) }
-            BookingRequestsAction.DismissError -> _state.update { it.copy(error = null) }
-            BookingRequestsAction.DismissTripFilledNotice -> _state.update { it.copy(tripJustFilled = false) }
+            )
+            is BookingRequestsAction.OnDecision -> decisions.onAction(action.action)
+            BookingRequestsAction.OnRetry -> load()
         }
     }
 
-    private fun acceptBooking(bookingId: String, tripId: String) {
-        if (bookingId in _state.value.processingIds) return
-        viewModelScope.launch {
-            _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            confirmBookingUseCase(bookingId, tripId)
-                .onSuccess {
-                    checkTripFull(tripId)
-                }
-                .onFailure { error ->
-                    _state.update { it.copy(error = error.toBookingError()) }
-                }
-            _state.update { it.copy(processingIds = it.processingIds - bookingId) }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun load() {
+        loadJob?.cancel()
+        val driverId = authRepository.getCurrentUserId() ?: run {
+            screenState.update { it.copy(isLoading = false, loadError = BookingError.NotAuthenticated) }
+            return
         }
-    }
+        screenState.update { it.copy(isLoading = true, loadError = null) }
+        loadJob = viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            // Shared so the seat listeners below don't open a second bookings listener.
+            val bookings = bookingRepository.getOpenDriverBookings(driverId, departingAfter = now)
+                .shareIn(this, SharingStarted.WhileSubscribed(), replay = 1)
+            val freeSeats = bookings
+                .map { list -> list.map { it.tripId }.toSet() }
+                .distinctUntilChanged()
+                .flatMapLatest(::freeSeatsOf)
 
-    private fun rejectBooking(bookingId: String, reason: com.juanpablo0612.carpool.domain.booking.model.RejectReason, comment: String?) {
-        if (bookingId in _state.value.processingIds) return
-        viewModelScope.launch {
-            _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            rejectBookingUseCase(bookingId, reason, comment)
-                .onFailure { error ->
-                    _state.update { it.copy(error = error.toBookingError()) }
-                }
-            _state.update { it.copy(processingIds = it.processingIds - bookingId) }
-        }
-    }
-
-    private fun cancelBooking(bookingId: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            cancelBookingUseCase(bookingId)
-                .onFailure { error ->
-                    _state.update { it.copy(error = error.toBookingError()) }
-                }
-            _state.update { it.copy(processingIds = it.processingIds - bookingId) }
-        }
-    }
-
-    private fun checkTripFull(tripId: String) {
-        viewModelScope.launch {
-            tripRepository.getTripById(tripId).getOrNull() ?: return@launch
-            val available = getTripAvailableSeatsUseCase(tripId).first()
-            if (available == 0) {
-                _state.update { it.copy(tripJustFilled = true) }
+            combine(bookings, freeSeats) { list, seats ->
+                val pending = list.filter { it.status == BookingStatus.Pending }.groupByTrip(seats)
+                val accepted = list.filter { it.status == BookingStatus.Confirmed }.groupByTrip(seats)
+                pending to accepted
             }
+                .catch { error -> screenState.update { it.copy(isLoading = false, loadError = error.toBookingError()) } }
+                .collect { (pending, accepted) ->
+                    screenState.update { it.copy(isLoading = false, pending = pending, accepted = accepted) }
+                }
         }
+    }
+
+    /** Each trip's free seats, live, keyed by trip id. */
+    private fun freeSeatsOf(tripIds: Set<String>): Flow<Map<String, Int>> =
+        if (tripIds.isEmpty()) {
+            flowOf(emptyMap())
+        } else {
+            combine(tripIds.map { id -> getTripAvailableSeats(id).map { id to it } }) { it.toMap() }
+        }
+
+    private fun emit(event: BookingRequestsEvent) {
+        viewModelScope.launch { _events.emit(event) }
     }
 }

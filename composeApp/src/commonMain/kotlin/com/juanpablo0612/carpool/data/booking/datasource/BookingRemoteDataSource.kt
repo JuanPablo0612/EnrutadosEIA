@@ -7,7 +7,6 @@ interface BookingRemoteDataSource {
     suspend fun createBooking(booking: BookingDto): BookingDto
     fun getPassengerBookings(passengerId: String): Flow<List<BookingDto>>
     fun getDriverBookingRequests(driverId: String): Flow<List<BookingDto>>
-    fun getAllDriverBookings(driverId: String): Flow<List<BookingDto>>
     fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<BookingDto>>
     fun getOpenBookingsForTrip(tripId: String, driverId: String): Flow<List<BookingDto>>
 

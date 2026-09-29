@@ -4,166 +4,111 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
-import com.juanpablo0612.carpool.domain.booking.model.RejectReason
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
-import com.juanpablo0612.carpool.domain.booking.usecase.GetBookingsForTripUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
-import com.juanpablo0612.carpool.presentation.booking.model.toBookingWithPassenger
+import com.juanpablo0612.carpool.presentation.booking.BookingError
+import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisions
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * One trip's passengers, for its driver: two live listeners, the trip (seats and status) and its
+ * open bookings, so accepting a request or a passenger cancelling shows up without refreshing.
+ */
 class TripPassengersViewModel(
     private val tripId: String,
-    private val getBookingsForTripUseCase: GetBookingsForTripUseCase,
-    private val confirmBookingUseCase: ConfirmBookingUseCase,
-    private val rejectBookingUseCase: RejectBookingUseCase,
-    private val cancelBookingUseCase: CancelBookingUseCase,
     private val authRepository: AuthRepository,
+    private val bookingRepository: BookingRepository,
     private val tripRepository: TripRepository,
+    confirmBooking: ConfirmBookingUseCase,
+    rejectBooking: RejectBookingUseCase,
+    cancelBooking: CancelBookingUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TripPassengersUiState())
-    val state: StateFlow<TripPassengersUiState> = _state.asStateFlow()
+    private val decisions = BookingDecisions(confirmBooking, rejectBooking, cancelBooking, viewModelScope)
+
+    private val screenState = MutableStateFlow(TripPassengersUiState())
+    val state: StateFlow<TripPassengersUiState> = combine(screenState, decisions.state) { screen, decisions ->
+        screen.copy(decisions = decisions)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TripPassengersUiState())
 
     private val _events = MutableSharedFlow<TripPassengersEvent>()
     val events: SharedFlow<TripPassengersEvent> = _events.asSharedFlow()
 
+    private var loadJob: Job? = null
+
     init {
-        loadTrip()
-        loadBookings()
-    }
-
-    // Fetched directly from the trip itself rather than derived from the first pending/confirmed
-    // booking, so the trip-context header still renders even when a trip has zero bookings.
-    private fun loadTrip() {
-        viewModelScope.launch {
-            tripRepository.getTripById(tripId)
-                .onSuccess { trip -> _state.update { it.copy(trip = trip) } }
-        }
-    }
-
-    private fun loadBookings() {
-        val driverId = authRepository.getCurrentUserId() ?: run {
-            _state.update { it.copy(isLoading = false) }
-            return
-        }
-        viewModelScope.launch {
-            getBookingsForTripUseCase(tripId, driverId, isDriver = true)
-                .catch { _state.update { it.copy(isLoading = false) } }
-                .collect { bookings ->
-                    val items = bookings.map { it.toBookingWithPassenger() }
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            pending = items
-                                .filter { b -> b.booking.status is BookingStatus.Pending }
-                                .sortedByDescending { b -> b.booking.createdAt },
-                            confirmed = items
-                                .filter { b -> b.booking.status is BookingStatus.Confirmed }
-                                .sortedBy { b -> b.booking.departureTime },
-                        )
-                    }
-                }
-        }
-    }
-
-    // Bookings are already live via the persistent collector started in init — re-subscribing on
-    // every pull-to-refresh would stack up duplicate collectors. Only the trip needs a fresh
-    // one-shot fetch here; the refreshing indicator clears once that resolves.
-    private fun refresh() {
-        _state.update { it.copy(isRefreshing = true) }
-        viewModelScope.launch {
-            tripRepository.getTripById(tripId)
-                .onSuccess { trip -> _state.update { it.copy(trip = trip) } }
-            _state.update { it.copy(isRefreshing = false) }
-        }
+        load()
     }
 
     fun onAction(action: TripPassengersAction) {
         when (action) {
-            is TripPassengersAction.Accept -> acceptBooking(action.bookingId, action.tripId)
-            is TripPassengersAction.OpenReject -> _state.update {
-                it.copy(
-                    pendingRejectionFor = action.bookingId,
-                    selectedRejectReason = null,
-                    rejectComment = "",
+            is TripPassengersAction.OnViewProfile ->
+                emit(TripPassengersEvent.NavigateToPassengerProfile(action.passengerId))
+            is TripPassengersAction.OnMessagePassenger -> emit(
+                TripPassengersEvent.NavigateToChat(
+                    bookingId = action.booking.id,
+                    tripId = tripId,
+                    passengerName = action.booking.passengerName,
+                    isReadOnly = screenState.value.isFinished,
                 )
-            }
-            is TripPassengersAction.SelectRejectReason -> _state.update {
-                it.copy(selectedRejectReason = action.reason)
-            }
-            is TripPassengersAction.UpdateRejectComment -> _state.update {
-                it.copy(rejectComment = action.comment)
-            }
-            is TripPassengersAction.ConfirmReject -> {
-                val reason = _state.value.selectedRejectReason ?: return
-                val comment = _state.value.rejectComment.takeIf { it.isNotBlank() }
-                _state.update { it.copy(pendingRejectionFor = null) }
-                rejectBooking(action.bookingId, reason, comment)
-            }
-            is TripPassengersAction.DismissReject -> _state.update { it.copy(pendingRejectionFor = null) }
-            is TripPassengersAction.OpenCancelConfirmed -> _state.update {
-                it.copy(cancelConfirmFor = action.bookingId)
-            }
-            is TripPassengersAction.DismissCancelConfirmed -> _state.update { it.copy(cancelConfirmFor = null) }
-            is TripPassengersAction.CancelConfirmed -> {
-                _state.update { it.copy(cancelConfirmFor = null) }
-                cancelBooking(action.bookingId)
-            }
-            is TripPassengersAction.OpenPassengerProfile -> viewModelScope.launch {
-                _events.emit(TripPassengersEvent.NavigateToPassengerProfile(action.passengerId))
-            }
-            is TripPassengersAction.OnRateBooking -> viewModelScope.launch {
-                _events.emit(
-                    TripPassengersEvent.NavigateToRating(
-                        bookingId = action.bookingId,
-                        tripId = action.tripId,
-                        rateeId = action.rateeId,
-                        rateeName = action.rateeName,
+            )
+            is TripPassengersAction.OnRatePassenger -> emit(
+                TripPassengersEvent.NavigateToRating(
+                    bookingId = action.booking.id,
+                    tripId = tripId,
+                    rateeId = action.booking.passengerId,
+                    rateeName = action.booking.passengerName,
+                )
+            )
+            is TripPassengersAction.OnDecision -> decisions.onAction(action.action)
+            TripPassengersAction.OnRetry -> load()
+        }
+    }
+
+    private fun load() {
+        loadJob?.cancel()
+        val driverId = authRepository.getCurrentUserId() ?: run {
+            screenState.update { it.copy(isLoading = false, loadError = BookingError.NotAuthenticated) }
+            return
+        }
+        screenState.update { it.copy(isLoading = true, loadError = null) }
+        loadJob = viewModelScope.launch {
+            combine(
+                tripRepository.getTripByIdFlow(tripId),
+                bookingRepository.getOpenBookingsForTrip(tripId, driverId),
+            ) { trip, bookings ->
+                screenState.update {
+                    it.copy(
+                        isLoading = false,
+                        // A trip that no longer exists has nothing to show.
+                        loadError = if (trip == null) BookingError.Unknown else null,
+                        trip = trip,
+                        pending = bookings.filter { b -> b.status == BookingStatus.Pending }.sortedBy { b -> b.createdAt },
+                        confirmed = bookings.filter { b -> b.status == BookingStatus.Confirmed }.sortedBy { b -> b.createdAt },
                     )
-                )
+                }
             }
-            TripPassengersAction.DismissError -> _state.update { it.copy(error = null) }
-            TripPassengersAction.Refresh -> refresh()
+                .catch { error -> screenState.update { it.copy(isLoading = false, loadError = error.toBookingError()) } }
+                .collect {}
         }
     }
 
-    private fun acceptBooking(bookingId: String, tripId: String) {
-        if (bookingId in _state.value.processingIds) return
-        viewModelScope.launch {
-            _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            confirmBookingUseCase(bookingId, tripId)
-                .onFailure { error -> _state.update { it.copy(error = error.toBookingError()) } }
-            _state.update { it.copy(processingIds = it.processingIds - bookingId) }
-        }
-    }
-
-    private fun rejectBooking(bookingId: String, reason: RejectReason, comment: String?) {
-        if (bookingId in _state.value.processingIds) return
-        viewModelScope.launch {
-            _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            rejectBookingUseCase(bookingId, reason, comment)
-                .onFailure { error -> _state.update { it.copy(error = error.toBookingError()) } }
-            _state.update { it.copy(processingIds = it.processingIds - bookingId) }
-        }
-    }
-
-    private fun cancelBooking(bookingId: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(processingIds = it.processingIds + bookingId) }
-            cancelBookingUseCase(bookingId)
-                .onFailure { error -> _state.update { it.copy(error = error.toBookingError()) } }
-            _state.update { it.copy(processingIds = it.processingIds - bookingId) }
-        }
+    private fun emit(event: TripPassengersEvent) {
+        viewModelScope.launch { _events.emit(event) }
     }
 }
