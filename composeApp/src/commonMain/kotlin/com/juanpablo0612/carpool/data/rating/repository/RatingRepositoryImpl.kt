@@ -28,11 +28,4 @@ class RatingRepositoryImpl(
         }
     }
 
-    override suspend fun getUserAverageRating(userId: String): Result<Double?> {
-        return try {
-            Result.success(remoteDataSource.getUserRatingSummary(userId).average)
-        } catch (_: Exception) {
-            Result.failure(AppException.RatingException.Unknown)
-        }
-    }
 }

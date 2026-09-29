@@ -3,13 +3,12 @@ package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
-import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.GetTripAvailableSeatsUseCase
-import com.juanpablo0612.carpool.domain.rating.repository.RatingRepository
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
+import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -37,7 +36,6 @@ class RouteDetailPassengerViewModel(
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
     private val authRepository: AuthRepository,
-    private val ratingRepository: RatingRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState())
@@ -89,12 +87,9 @@ class RouteDetailPassengerViewModel(
     // label) — it must never fail the whole trip-detail load.
     private fun loadDriverProfile(driverId: String) {
         viewModelScope.launch {
+            // The rating comes with the profile, from the same document read.
             val profile = authRepository.getPublicProfile(driverId).getOrNull()
-            _state.update { it.copy(driver = profile) }
-        }
-        viewModelScope.launch {
-            val rating = ratingRepository.getUserAverageRating(driverId).getOrNull()
-            _state.update { it.copy(driverAverageRating = rating) }
+            _state.update { it.copy(driver = profile, driverAverageRating = profile?.rating?.average) }
         }
     }
 

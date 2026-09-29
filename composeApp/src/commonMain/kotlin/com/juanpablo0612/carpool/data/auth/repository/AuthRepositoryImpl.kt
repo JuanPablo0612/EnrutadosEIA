@@ -88,8 +88,7 @@ class AuthRepositoryImpl(
 
     override suspend fun getCurrentUser(): Result<User> {
         return try {
-            val dto = remoteDataSource.getCurrentUser()
-            Result.success(dto.toDomain())
+            Result.success(remoteDataSource.getCurrentUser().toDomain())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }
@@ -97,8 +96,7 @@ class AuthRepositoryImpl(
 
     override suspend fun getPublicProfile(userId: String): Result<PublicProfile> {
         return try {
-            val dto = remoteDataSource.getPublicProfile(userId)
-            Result.success(dto.toPublicProfile())
+            Result.success(remoteDataSource.getPublicProfile(userId).toPublicProfile())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }
@@ -106,8 +104,7 @@ class AuthRepositoryImpl(
 
     override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User> {
         return try {
-            val dto = remoteDataSource.updateProfile(name, phone, bio, photoBytes)
-            Result.success(dto.toDomain())
+            Result.success(remoteDataSource.updateProfile(name, phone, bio, photoBytes).toDomain())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }

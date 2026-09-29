@@ -1,6 +1,6 @@
 package com.juanpablo0612.carpool.data.auth.datasource
 
-import com.juanpablo0612.carpool.data.auth.model.UserDto
+import com.juanpablo0612.carpool.data.auth.model.UserDocument
 
 interface AuthRemoteDataSource {
     suspend fun signIn(email: String, password: String)
@@ -17,8 +17,8 @@ interface AuthRemoteDataSource {
     suspend fun sendPasswordResetEmail(email: String)
     fun getCurrentUserId(): String?
     fun getCurrentUserEmail(): String?
-    suspend fun getCurrentUser(): UserDto
-    suspend fun getPublicProfile(userId: String): UserDto
-    suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDto
+    suspend fun getCurrentUser(): UserDocument
+    suspend fun getPublicProfile(userId: String): UserDocument
+    suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDocument
     suspend fun deleteAccount()
 }

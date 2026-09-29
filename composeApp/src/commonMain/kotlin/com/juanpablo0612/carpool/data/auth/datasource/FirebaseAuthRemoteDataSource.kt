@@ -1,10 +1,13 @@
 package com.juanpablo0612.carpool.data.auth.datasource
 
 import com.juanpablo0612.carpool.core.config.FeatureFlags
+import com.juanpablo0612.carpool.data.auth.model.UserDocument
 import com.juanpablo0612.carpool.data.auth.model.UserDto
+import com.juanpablo0612.carpool.data.auth.model.UserRatingDto
 import com.juanpablo0612.carpool.data.notification.datasource.PushTokenRemoteDataSource
 import com.juanpablo0612.carpool.data.vehicle.datasource.upload
 import dev.gitlive.firebase.auth.FirebaseAuth
+import dev.gitlive.firebase.firestore.DocumentSnapshot
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.functions.FirebaseFunctions
 import dev.gitlive.firebase.storage.FirebaseStorage
@@ -100,26 +103,23 @@ class FirebaseAuthRemoteDataSource(
         return firebaseAuth.currentUser?.email
     }
 
-    override suspend fun getCurrentUser(): UserDto {
+    override suspend fun getCurrentUser(): UserDocument {
         val user = checkNotNull(firebaseAuth.currentUser) { "User not authenticated" }
         // The Firestore isEmailVerified field is only a copy written once at sign-up; the auth
         // token is the source of truth, so refresh it before trusting isEmailVerified.
         user.reload()
         val isVerified = firebaseAuth.currentUser?.isEmailVerified ?: user.isEmailVerified
-        val snapshot = firestore.collection("users").document(user.uid).get()
-        val dto = snapshot.data(UserDto.serializer())
-        if (isVerified && !dto.isEmailVerified) {
+        val document = firestore.collection("users").document(user.uid).get().toUserDocument()
+        if (isVerified && !document.profile.isEmailVerified) {
             firestore.collection("users").document(user.uid).update(mapOf("isEmailVerified" to true))
         }
-        return dto.copy(isEmailVerified = isVerified)
+        return document.copy(profile = document.profile.copy(isEmailVerified = isVerified))
     }
 
-    override suspend fun getPublicProfile(userId: String): UserDto {
-        val snapshot = firestore.collection("users").document(userId).get()
-        return snapshot.data(UserDto.serializer())
-    }
+    override suspend fun getPublicProfile(userId: String): UserDocument =
+        firestore.collection("users").document(userId).get().toUserDocument()
 
-    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDto {
+    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDocument {
         val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
         val updates = mutableMapOf<String, Any?>(
             "name" to name,
@@ -138,9 +138,14 @@ class FirebaseAuthRemoteDataSource(
             updates["photoUrl"] = ref.getDownloadUrl()
         }
         firestore.collection("users").document(userId).update(updates)
-        val snapshot = firestore.collection("users").document(userId).get()
-        return snapshot.data(UserDto.serializer())
+        return firestore.collection("users").document(userId).get().toUserDocument()
     }
+
+    /** One read, two views of it: the profile the app writes and the server-owned rating. */
+    private fun DocumentSnapshot.toUserDocument() = UserDocument(
+        profile = data(UserDto.serializer()),
+        rating = data(UserRatingDto.serializer()),
+    )
 
     override suspend fun deleteAccount() {
         checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }

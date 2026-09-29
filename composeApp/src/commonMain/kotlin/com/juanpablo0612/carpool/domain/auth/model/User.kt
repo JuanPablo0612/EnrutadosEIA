@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.domain.auth.model
 
+import com.juanpablo0612.carpool.domain.rating.model.RatingSummary
+
 data class User(
     val id: String,
     val email: String,
@@ -7,5 +9,7 @@ data class User(
     val isEmailVerified: Boolean,
     val phone: String? = null,
     val photoUrl: String? = null,
-    val bio: String? = null
+    val bio: String? = null,
+    /** Null until someone rates the user. */
+    val rating: RatingSummary? = null,
 )
