@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.trip.publishweek.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
@@ -14,10 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.trip.model.RecurringTripSlot
 import com.juanpablo0612.carpool.domain.trip.model.SlotStatus
+import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.label_pair
 import enrutadoseia.composeapp.generated.resources.publish_week_slot_already_published
 import enrutadoseia.composeapp.generated.resources.publish_week_slot_conflict
 import enrutadoseia.composeapp.generated.resources.publish_week_slot_passed
@@ -54,13 +58,14 @@ internal fun WeekSlotRow(
         modifier = modifier
             .fillMaxWidth()
             .then(rowModifier)
-            .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
+            .heightIn(min = 56.dp)
+            .padding(horizontal = Spacing.xs, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(checked = publishable && isSelected, onCheckedChange = null, enabled = publishable)
         Column(modifier = Modifier.padding(start = Spacing.sm)) {
             Text(
-                text = "$dayLabel · $timeLabel",
+                text = stringResource(Res.string.label_pair, dayLabel, timeLabel),
                 style = MaterialTheme.typography.bodyLarge,
                 color = if (publishable) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -68,8 +73,12 @@ internal fun WeekSlotRow(
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (slot.status is SlotStatus.Conflict) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    // A clash is a heads-up to the driver, not a failure: warning, not error.
+                    color = when (slot.status) {
+                        is SlotStatus.Conflict -> LocalExtendedColors.current.warning
+                        is SlotStatus.AlreadyPublished -> LocalExtendedColors.current.success
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                 )
             }
         }

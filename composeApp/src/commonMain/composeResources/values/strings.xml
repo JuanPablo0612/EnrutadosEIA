@@ -51,7 +51,6 @@
     <string name="select_location_placeholder">Select location</string>
     <string name="route_stop_remove">Remove stop</string>
     <string name="departure_time_label">Departure: %1$s</string>
-    <string name="departure_time_section_label">Departure Time</string>
     <string name="save_route_button">Save Route</string>
     <string name="error_origin_destination_required">Origin and destination are required</string>
 
@@ -361,15 +360,17 @@
     <!-- CreateTrip - sections -->
     <string name="trip_when_section">When are you leaving?</string>
     <string name="trip_seats_section">Seats for passengers</string>
-    <string name="trip_seats_helper">Your %1$s has %2$d seats.</string>
-    <string name="trip_contribution_section">Contribution per passenger (optional)</string>
-    <string name="trip_contribution_hint">Suggested: $5,000 — You can leave it at zero.</string>
+    <string name="trip_seats_helper">Your %1$s has %2$d seats</string>
+    <string name="trip_contribution_section">Contribution per passenger</string>
+    <string name="trip_contribution_hint">Only to split costs. Up to $50.000.</string>
+    <string name="trip_contribution_other">Other</string>
+    <string name="trip_contribution_custom_label">Amount per passenger</string>
     <string name="trip_message_section">Message (optional)</string>
     <string name="trip_message_placeholder">e.g. I leave on time, I\'ll wait 5 min at the gate.</string>
     <string name="trip_message_counter">%1$d / 140</string>
     <string name="trip_no_vehicle_title">You need a vehicle to publish trips.</string>
     <string name="trip_register_vehicle_action">Register vehicle</string>
-    <string name="trip_change_vehicle">Change</string>
+    <string name="action_change">Change</string>
     <string name="trip_bottom_summary">%1$s · %2$s · %3$d seats</string>
     <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d seats · %4$s</string>
 
@@ -465,6 +466,7 @@
     <string name="confirm_row_get_off">You get off at</string>
     <string name="confirm_row_route">Route</string>
     <string name="route_from_to">%1$s → %2$s</string>
+    <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Contribution</string>
     <string name="confirm_request_note">Your seat is held once the driver accepts. We\'ll let you know right away.</string>
     <string name="request_quick_luggage">I\'m bringing a bag</string>
@@ -553,13 +555,12 @@
     <string name="publish_trip_save_as_route">Save as a frequent route</string>
     <string name="publish_trip_save_as_route_description">Reuse these stops next time, or publish your whole week at once</string>
     <string name="publish_trip_review_button">Review and publish</string>
-    <string name="publish_trip_summary_title">Confirm your trip</string>
+    <string name="publish_trip_summary_title">Review before publishing</string>
+    <string name="publish_trip_summary_subtitle">Passengers will see exactly this.</string>
+    <string name="publish_summary_row_date">Date</string>
+    <string name="publish_summary_row_seats">Seats</string>
     <string name="publish_trip_summary_will_save_route">The route "%1$s" will be saved</string>
     <string name="publish_trip_summary_edit">Edit</string>
-    <plurals name="publish_trip_summary_stops">
-        <item quantity="one">%1$d stop</item>
-        <item quantity="other">%1$d stops</item>
-    </plurals>
     <string name="trip_register_another_vehicle">Register another vehicle</string>
     <string name="publish_week_title">Publish my week</string>
     <string name="publish_week_window_label">Next 7 days</string>

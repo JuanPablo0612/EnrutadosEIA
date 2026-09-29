@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,17 +17,16 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
@@ -47,11 +45,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.trip.validation.TripDraftValidator
@@ -62,26 +60,28 @@ import com.juanpablo0612.carpool.presentation.place.stops.stopsEditorItems
 import com.juanpablo0612.carpool.presentation.trip.TripError
 import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.trip.publish.components.DateChip
+import com.juanpablo0612.carpool.presentation.trip.publish.components.PublishSummary
 import com.juanpablo0612.carpool.presentation.trip.publish.components.PublishSummarySheet
 import com.juanpablo0612.carpool.presentation.trip.publish.components.SectionLabel
 import com.juanpablo0612.carpool.presentation.trip.publish.components.SingleVehicleCard
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripContributionSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripMessageSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripSeatsSection
-import com.juanpablo0612.carpool.presentation.trip.publish.components.TripTimeSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripWhenSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
+import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
@@ -107,6 +107,7 @@ import enrutadoseia.composeapp.generated.resources.publish_trip_save_as_route
 import enrutadoseia.composeapp.generated.resources.publish_trip_save_as_route_description
 import enrutadoseia.composeapp.generated.resources.publish_trip_saved_routes_label
 import enrutadoseia.composeapp.generated.resources.recurrence_section_title
+import enrutadoseia.composeapp.generated.resources.route_from_to
 import enrutadoseia.composeapp.generated.resources.route_name_label
 import enrutadoseia.composeapp.generated.resources.route_name_placeholder
 import enrutadoseia.composeapp.generated.resources.select_vehicle_section
@@ -242,24 +243,29 @@ fun PublishTripContent(
     }
 
     if (state.showSummary) {
-        val vehicle = state.selectedVehicle
         PublishSummarySheet(
-            originName = state.stops.origin?.name.orEmpty(),
-            destinationName = state.stops.destination?.name.orEmpty(),
-            waypointCount = state.stops.waypoints.size,
-            whenText = "$formattedDate · $formattedTime",
-            vehicleText = listOfNotNull(
-                vehicle?.let { "${it.brand} ${it.model} · ${it.licensePlate}" },
-                bottomSummary(state, formattedDate, formattedTime).substringAfterLast(" · ").takeIf { state.contributionPerPassenger != null },
-            ).joinToString(" · "),
-            message = state.message,
-            routeNameToSave = state.routeName.trim().takeIf { state.isFromScratch && state.saveAsRoute },
+            summary = PublishSummary(
+                stopNames = listOfNotNull(state.stops.origin?.name) +
+                    state.stops.waypoints.map { it.name } +
+                    listOfNotNull(state.stops.destination?.name),
+                dateText = formattedDate,
+                timeText = formattedTime,
+                seatCount = state.seatCount,
+                contributionPerPassenger = state.contributionPerPassenger,
+                vehicleText = state.selectedVehicle?.let {
+                    listOf("${it.brand} ${it.model}".trim(), it.licensePlate).filter(String::isNotBlank).joinToString(" · ")
+                },
+                message = state.message,
+                routeNameToSave = state.routeName.trim().takeIf { state.isFromScratch && state.saveAsRoute },
+            ),
+            isPublishing = state.isPublishing,
             onConfirm = { onAction(PublishTripAction.OnConfirmPublish) },
             onDismiss = { onAction(PublishTripAction.OnDismissSummary) },
         )
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.create_trip_title),
@@ -268,29 +274,26 @@ fun PublishTripContent(
         },
         bottomBar = {
             if (!state.isLoading) {
-                Surface(tonalElevation = Elevation.raised, modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(Spacing.lg)) {
-                        Text(
-                            text = bottomSummary(state, formattedDate, formattedTime),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.sm))
-                        // Stays enabled: tapping it with problems shows them next to each field.
-                        Button(
-                            onClick = { onAction(PublishTripAction.OnReviewClick) },
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = !state.isPublishing,
+                Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest, modifier = Modifier.fillMaxWidth()) {
+                    Column {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Column(
+                            modifier = Modifier
+                                .navigationBarsPadding()
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
                         ) {
-                            if (state.isPublishing) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp), // component-intrinsic spinner size
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp,
-                                )
-                            } else {
-                                Text(stringResource(Res.string.publish_trip_review_button))
-                            }
+                            Text(
+                                text = bottomSummary(state, formattedDate, formattedTime),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            // Stays enabled: tapping it with problems shows them next to each field.
+                            PrimaryButton(
+                                text = stringResource(Res.string.publish_trip_review_button),
+                                onClick = { onAction(PublishTripAction.OnReviewClick) },
+                                isLoading = state.isPublishing,
+                            )
                         }
                     }
                 }
@@ -319,6 +322,7 @@ fun PublishTripContent(
             item(key = "route_header") {
                 SectionHeader(
                     title = stringResource(Res.string.publish_trip_route_section),
+                    modifier = Modifier.padding(top = Spacing.md),
                     action = {
                         IconButton(onClick = { onAction(PublishTripAction.OnReverseStops) }, enabled = state.stops.isComplete) {
                             Icon(
@@ -344,7 +348,7 @@ fun PublishTripContent(
                         text = stringResource(Res.string.publish_trip_linked_route_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = Spacing.lg),
+                        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal),
                     )
                 }
             }
@@ -358,13 +362,13 @@ fun PublishTripContent(
                         else -> DateChip.Other
                     },
                     formattedDate = formattedDate,
+                    formattedTime = formattedTime,
                     onSelectToday = { onAction(PublishTripAction.OnSelectToday) },
                     onSelectTomorrow = { onAction(PublishTripAction.OnSelectTomorrow) },
                     onShowDatePicker = { onAction(PublishTripAction.OnShowDatePicker) },
+                    onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) },
+                    modifier = Modifier.sectionPadding(),
                 )
-            }
-            item(key = "time") {
-                TripTimeSection(formattedTime = formattedTime, onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) })
             }
             fieldErrorItem("when_error", state.fieldErrors, TripError.DepartureTooSoon, TripError.DepartureTooFar)
 
@@ -376,6 +380,7 @@ fun PublishTripContent(
                         seatCount = state.seatCount,
                         selectedVehicle = state.selectedVehicle,
                         onChange = { onAction(PublishTripAction.OnSetSeats(it)) },
+                        modifier = Modifier.sectionPadding(),
                     )
                 }
                 fieldErrorItem("seats_error", state.fieldErrors, TripError.SeatsOutOfRange)
@@ -383,6 +388,7 @@ fun PublishTripContent(
                     TripContributionSection(
                         contributionPerPassenger = state.contributionPerPassenger,
                         onContributionChange = { onAction(PublishTripAction.OnSetContribution(it)) },
+                        modifier = Modifier.sectionPadding(),
                     )
                 }
                 fieldErrorItem("contribution_error", state.fieldErrors, TripError.ContributionOutOfRange)
@@ -390,6 +396,7 @@ fun PublishTripContent(
                     TripMessageSection(
                         message = state.message,
                         onMessageChange = { onAction(PublishTripAction.OnSetMessage(it)) },
+                        modifier = Modifier.sectionPadding(),
                     )
                 }
                 fieldErrorItem("message_error", state.fieldErrors, TripError.MessageTooLong)
@@ -405,7 +412,7 @@ fun PublishTripContent(
                         message = stringResource(error.asStringResource()),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
                             .semantics { liveRegion = LiveRegionMode.Polite },
                     )
                 }
@@ -429,17 +436,19 @@ private fun SavedRouteChips(routes: List<Route>, selectedRouteId: String?, onRou
     Column {
         SectionLabel(
             text = stringResource(Res.string.publish_trip_saved_routes_label),
-            modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.lg, bottom = Spacing.sm),
+            modifier = Modifier.padding(start = Spacing.screenHorizontal, end = Spacing.screenHorizontal, top = Spacing.lg, bottom = Spacing.sm),
         )
         LazyRow(
-            contentPadding = PaddingValues(horizontal = Spacing.lg),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal),
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             items(routes, key = { it.id }) { route ->
                 FilterChip(
                     selected = route.id == selectedRouteId,
                     onClick = { onRouteClick(route.id) },
-                    label = { Text(route.name.ifBlank { "${route.origin.name} → ${route.destination.name}" }) },
+                    label = {
+                        Text(route.name.ifBlank { stringResource(Res.string.route_from_to, route.origin.name, route.destination.name) })
+                    },
                 )
             }
         }
@@ -450,7 +459,9 @@ private fun LazyListScope.vehicleItems(state: PublishTripUiState, onAction: (Pub
     item(key = "vehicle_label") {
         SectionLabel(
             text = stringResource(Res.string.select_vehicle_section),
-            modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.lg, bottom = Spacing.sm),
+            modifier = Modifier
+                .sectionPadding()
+                .padding(bottom = Spacing.sm),
         )
     }
     when {
@@ -470,12 +481,12 @@ private fun LazyListScope.vehicleItems(state: PublishTripUiState, onAction: (Pub
             SingleVehicleCard(
                 vehicle = state.vehicles.first(),
                 onChangeClick = null,
-                modifier = Modifier.padding(horizontal = Spacing.lg),
+                modifier = Modifier.padding(horizontal = Spacing.screenHorizontal),
             )
         }
         else -> item(key = "vehicle_list") {
             LazyRow(
-                contentPadding = PaddingValues(horizontal = Spacing.lg),
+                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 items(state.vehicles, key = { it.id }) { vehicle ->
@@ -501,36 +512,42 @@ private fun LazyListScope.vehicleItems(state: PublishTripUiState, onAction: (Pub
 
 @Composable
 private fun SaveAsRouteSection(state: PublishTripUiState, onAction: (PublishTripAction) -> Unit) {
-    Column(modifier = Modifier.padding(top = Spacing.lg)) {
+    CarpoolListCard(modifier = Modifier.sectionPadding()) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg),
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(
+                    value = state.saveAsRoute,
+                    role = Role.Switch,
+                    onValueChange = { onAction(PublishTripAction.OnToggleSaveAsRoute(it)) },
+                ),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(Res.string.publish_trip_save_as_route), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(Res.string.publish_trip_save_as_route), style = MaterialTheme.typography.titleMedium)
                 Text(
                     stringResource(Res.string.publish_trip_save_as_route_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(checked = state.saveAsRoute, onCheckedChange = { onAction(PublishTripAction.OnToggleSaveAsRoute(it)) })
+            // onCheckedChange = null: the whole row toggles, so the switch is not a second target.
+            Switch(checked = state.saveAsRoute, onCheckedChange = null)
         }
         AnimatedVisibility(visible = state.saveAsRoute) {
-            Column(modifier = Modifier.padding(horizontal = Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+            Column(
+                modifier = Modifier.padding(top = Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.md),
+            ) {
                 val nameError = TripError.RouteNameRequired in state.fieldErrors
-                OutlinedTextField(
+                CarpoolTextField(
                     value = state.routeName,
                     onValueChange = { onAction(PublishTripAction.OnRouteNameChange(it)) },
-                    label = { Text(stringResource(Res.string.route_name_label)) },
-                    placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
-                    singleLine = true,
-                    isError = nameError,
-                    supportingText = if (nameError) {
-                        { Text(stringResource(TripError.RouteNameRequired.asStringResource())) }
-                    } else null,
+                    label = stringResource(Res.string.route_name_label),
+                    placeholder = stringResource(Res.string.route_name_placeholder),
+                    errorMessage = if (nameError) stringResource(TripError.RouteNameRequired.asStringResource()) else null,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
                 )
                 Text(stringResource(Res.string.recurrence_section_title), style = MaterialTheme.typography.titleSmall)
                 DaySelector(
@@ -543,6 +560,10 @@ private fun SaveAsRouteSection(state: PublishTripUiState, onAction: (PublishTrip
     }
 }
 
+/** Each field group sits in the screen gutter with room above it to separate it from the last. */
+private fun Modifier.sectionPadding(): Modifier =
+    padding(start = Spacing.screenHorizontal, end = Spacing.screenHorizontal, top = Spacing.xl)
+
 /** An inline error under a section, for whichever of [relevant] is in [errors]. */
 private fun LazyListScope.fieldErrorItem(key: String, errors: Set<TripError>, vararg relevant: TripError) {
     val error = relevant.firstOrNull { it in errors } ?: return
@@ -552,7 +573,7 @@ private fun LazyListScope.fieldErrorItem(key: String, errors: Set<TripError>, va
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier
-                .padding(horizontal = Spacing.lg, vertical = Spacing.xs)
+                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)
                 .semantics { liveRegion = LiveRegionMode.Polite },
         )
     }

@@ -96,7 +96,6 @@
     <string name="select_location_placeholder">Seleccionar ubicación</string>
     <string name="route_stop_remove">Eliminar parada</string>
     <string name="departure_time_label">Salida: %1$s</string>
-    <string name="departure_time_section_label">Hora de salida</string>
     <string name="save_route_button">Guardar Ruta</string>
     <string name="error_origin_destination_required">El origen y el destino son obligatorios</string>
 
@@ -361,15 +360,17 @@
     <!-- CreateTrip - secciones -->
     <string name="trip_when_section">¿Cuándo sales?</string>
     <string name="trip_seats_section">Cupos para pasajeros</string>
-    <string name="trip_seats_helper">Tu %1$s tiene %2$d cupos.</string>
-    <string name="trip_contribution_section">Aporte por pasajero (opcional)</string>
-    <string name="trip_contribution_hint">Sugerido: $5.000 — Puedes dejarlo en cero.</string>
+    <string name="trip_seats_helper">Tu %1$s tiene %2$d cupos</string>
+    <string name="trip_contribution_section">Aporte por pasajero</string>
+    <string name="trip_contribution_hint">Solo para dividir gastos. Máximo $50.000.</string>
+    <string name="trip_contribution_other">Otro</string>
+    <string name="trip_contribution_custom_label">Monto por pasajero</string>
     <string name="trip_message_section">Mensaje (opcional)</string>
     <string name="trip_message_placeholder">Ej. Salgo puntual, espero 5 min en la portería.</string>
     <string name="trip_message_counter">%1$d / 140</string>
     <string name="trip_no_vehicle_title">Necesitas un vehículo para publicar viajes.</string>
     <string name="trip_register_vehicle_action">Registrar vehículo</string>
-    <string name="trip_change_vehicle">Cambiar</string>
+    <string name="action_change">Cambiar</string>
     <string name="trip_bottom_summary">%1$s · %2$s · %3$d cupos</string>
     <string name="trip_bottom_summary_with_contribution">%1$s · %2$s · %3$d cupos · %4$s</string>
 
@@ -416,13 +417,12 @@
     <string name="publish_trip_save_as_route">Guardar como ruta frecuente</string>
     <string name="publish_trip_save_as_route_description">Reutiliza este recorrido la próxima vez o publica toda tu semana de una vez</string>
     <string name="publish_trip_review_button">Revisar y publicar</string>
-    <string name="publish_trip_summary_title">Confirma tu viaje</string>
+    <string name="publish_trip_summary_title">Revisa antes de publicar</string>
+    <string name="publish_trip_summary_subtitle">Los pasajeros verán exactamente esto.</string>
+    <string name="publish_summary_row_date">Fecha</string>
+    <string name="publish_summary_row_seats">Cupos</string>
     <string name="publish_trip_summary_will_save_route">Se guardará la ruta «%1$s»</string>
     <string name="publish_trip_summary_edit">Editar</string>
-    <plurals name="publish_trip_summary_stops">
-        <item quantity="one">%1$d parada</item>
-        <item quantity="other">%1$d paradas</item>
-    </plurals>
     <string name="trip_register_another_vehicle">Registrar otro vehículo</string>
     <string name="publish_week_title">Publicar mi semana</string>
     <string name="publish_week_window_label">Próximos 7 días</string>
@@ -682,6 +682,7 @@
     <string name="confirm_row_get_off">Te bajas en</string>
     <string name="confirm_row_route">Recorrido</string>
     <string name="route_from_to">%1$s → %2$s</string>
+    <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Aporte</string>
     <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte. Te avisamos al instante.</string>
     <string name="request_quick_luggage">Llevo maleta</string>
