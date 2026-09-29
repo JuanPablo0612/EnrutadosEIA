@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.ui.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,17 +16,21 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 /**
  * Header for a group of rows in a list screen: a `titleMedium` title with an optional trailing
  * [action] (e.g. "Ver todas"). Marked as a heading so screen-reader users can jump between groups.
+ *
+ * The default [contentPadding] suits a header placed straight on the screen; pass zero inside a
+ * list that already pads its items.
  */
 @Composable
 fun SectionHeader(
     title: String,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
     action: @Composable (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+            .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

@@ -3,7 +3,11 @@ package com.juanpablo0612.carpool.presentation.ui.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.date_of_connector
+import enrutadoseia.composeapp.generated.resources.date_today
+import enrutadoseia.composeapp.generated.resources.date_tomorrow
 import enrutadoseia.composeapp.generated.resources.day_names_short
+import enrutadoseia.composeapp.generated.resources.month_names
 import enrutadoseia.composeapp.generated.resources.relative_date_later
 import enrutadoseia.composeapp.generated.resources.relative_date_this_week
 import enrutadoseia.composeapp.generated.resources.relative_date_today
@@ -14,6 +18,8 @@ import enrutadoseia.composeapp.generated.resources.relative_today
 import enrutadoseia.composeapp.generated.resources.relative_tomorrow
 import enrutadoseia.composeapp.generated.resources.time_am
 import enrutadoseia.composeapp.generated.resources.time_pm
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -22,8 +28,6 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 /** The current time frozen at first composition — shared by every screen that needs a stable
  *  "now" to compare list items against without re-reading the clock on each recomposition. */
@@ -58,6 +62,41 @@ fun formatDayMonthTime(epochMs: Long): String {
         pmMarker = stringResource(Res.string.time_pm),
     )
     return "${formatDayMonth(local.date)} · $time"
+}
+
+/** The clock time of [epochMs] in the device time zone, e.g. "6:30 p. m.". */
+@Composable
+fun formatTime(epochMs: Long): String {
+    val local = Instant.fromEpochMilliseconds(epochMs).toLocalDateTime(TimeZone.currentSystemDefault())
+    return formatShortTime(
+        hour = local.hour,
+        minute = local.minute,
+        amMarker = stringResource(Res.string.time_am),
+        pmMarker = stringResource(Res.string.time_pm),
+    )
+}
+
+/**
+ * The day of [epochMs] relative to [now]: "Hoy", "Mañana", or "vie. 3 de octubre" further out.
+ * Pairs with [formatTime] wherever a departure is shown as a big time plus its day.
+ */
+@Composable
+fun departureDayLabel(epochMs: Long, now: Long): String {
+    val tz = TimeZone.currentSystemDefault()
+    val date = Instant.fromEpochMilliseconds(epochMs).toLocalDateTime(tz).date
+    val today = Instant.fromEpochMilliseconds(now).toLocalDateTime(tz).date
+    return when (date) {
+        today -> stringResource(Res.string.date_today)
+        today.plus(1, DateTimeUnit.DAY) -> stringResource(Res.string.date_tomorrow)
+        else -> formatLongDate(
+            year = date.year,
+            month = date.month.number,
+            day = date.day,
+            dayNames = stringArrayResource(Res.array.day_names_short),
+            monthNames = stringArrayResource(Res.array.month_names),
+            connector = stringResource(Res.string.date_of_connector),
+        )
+    }
 }
 
 /**

@@ -33,8 +33,7 @@ import org.jetbrains.compose.resources.vectorResource
  * fragments.
  *
  * [style]/[textColor]/[iconTint] default to the row's most common call-site look (semibold body
- * text, muted icon); override them for a variant with different emphasis or a tinted container
- * (e.g. [HighlightCard]'s primary-container hero card).
+ * text, muted icon); override them for a variant with different emphasis or a tinted container.
  */
 @Composable
 fun RouteLineRow(
