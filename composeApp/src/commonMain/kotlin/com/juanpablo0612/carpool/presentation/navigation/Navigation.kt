@@ -93,20 +93,7 @@ fun AppNavigation(
         }
     }
 
-    // The only unread-item signal anywhere in the nav chrome — otherwise a user has to drill into
-    // Profile > Notifications just to find out whether anything is new.
-    val unreadNotificationCount by produceState(initialValue = 0, currentUser?.id) {
-        val userId = currentUser?.id
-        if (userId.isNullOrBlank()) {
-            value = 0
-        } else {
-            notificationRepository.getNotifications(userId).collect { notifications ->
-                value = notifications.count { !it.isRead }
-            }
-        }
-    }
-
-    // Seat requests waiting on the user as a driver, badged on "Mis viajes".
+    // Seat requests waiting on the user as a driver, shown inside "Mis viajes".
     val pendingRequestCount by produceState(initialValue = 0, currentUser?.id) {
         val userId = currentUser?.id
         if (userId.isNullOrBlank()) {
@@ -166,10 +153,6 @@ fun AppNavigation(
                     BottomNavigationBar(
                         currentDestination = currentDestination,
                         items = topLevelItems,
-                        badgeCounts = mapOf(
-                            Route.Profile::class to unreadNotificationCount,
-                            Route.MyTrips::class to pendingRequestCount,
-                        ),
                         onNavigate = { route -> navController.navigateToTopLevel(route as Route) }
                     )
                 }

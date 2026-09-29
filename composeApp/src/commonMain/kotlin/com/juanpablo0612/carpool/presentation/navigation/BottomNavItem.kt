@@ -1,7 +1,7 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
 import enrutadoseia.composeapp.generated.resources.Res
-import enrutadoseia.composeapp.generated.resources.directions_car_24px
+import enrutadoseia.composeapp.generated.resources.calendar_month_24px
 import enrutadoseia.composeapp.generated.resources.home_24px
 import enrutadoseia.composeapp.generated.resources.nav_home
 import enrutadoseia.composeapp.generated.resources.nav_my_trips
@@ -31,7 +31,7 @@ sealed class BottomNavItem<T : Any>(
 
     data object MyTrips : BottomNavItem<Route.MyTrips>(
         label = Res.string.nav_my_trips,
-        icon = Res.drawable.directions_car_24px,
+        icon = Res.drawable.calendar_month_24px,
         route = Route.MyTrips()
     )
 
