@@ -71,6 +71,14 @@ class FirebaseAuthRemoteDataSource(
         user.sendEmailVerification()
     }
 
+    override suspend fun reloadEmailVerified(): Boolean {
+        val user = checkNotNull(firebaseAuth.currentUser) { "No authenticated user" }
+        user.reload()
+        // reload() refreshes the cached user in place; read it back through the auth instance so
+        // the value reflects the refreshed token rather than the pre-reload snapshot.
+        return firebaseAuth.currentUser?.isEmailVerified ?: user.isEmailVerified
+    }
+
     override suspend fun signOut() {
         // Stop this device receiving the user's pushes. Best effort and bounded: signing out
         // must work offline, and the backend prunes tokens FCM later reports as dead.
@@ -86,6 +94,10 @@ class FirebaseAuthRemoteDataSource(
 
     override fun getCurrentUserId(): String? {
         return firebaseAuth.currentUser?.uid
+    }
+
+    override fun getCurrentUserEmail(): String? {
+        return firebaseAuth.currentUser?.email
     }
 
     override suspend fun getCurrentUser(): UserDto {

@@ -12,9 +12,11 @@ interface AuthRemoteDataSource {
         photoBytes: ByteArray? = null
     )
     suspend fun sendEmailVerification()
+    suspend fun reloadEmailVerified(): Boolean
     suspend fun signOut()
     suspend fun sendPasswordResetEmail(email: String)
     fun getCurrentUserId(): String?
+    fun getCurrentUserEmail(): String?
     suspend fun getCurrentUser(): UserDto
     suspend fun getPublicProfile(userId: String): UserDto
     suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDto

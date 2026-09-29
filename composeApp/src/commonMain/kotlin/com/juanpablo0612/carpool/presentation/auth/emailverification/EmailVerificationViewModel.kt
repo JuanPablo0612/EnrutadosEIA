@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.presentation.auth.AuthError
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -25,11 +26,13 @@ class EmailVerificationViewModel(
     val events = _events.asSharedFlow()
 
     private var countdownJob: Job? = null
-    private var pollingJob: Job? = null
+    private var checkJob: Job? = null
+
+    /** Whether the check in flight should report its outcome; see [checkVerification]. */
+    private var reportCheckResult = false
 
     init {
         loadUserEmail()
-        startPolling()
     }
 
     fun onAction(action: EmailVerificationAction) {
@@ -38,32 +41,60 @@ class EmailVerificationViewModel(
             EmailVerificationAction.OnCountdownTick -> {
                 _uiState.update { it.copy(resendCountdown = (it.resendCountdown - 1).coerceAtLeast(0)) }
             }
+            EmailVerificationAction.OnCheckVerification -> checkVerification(userInitiated = true)
+            EmailVerificationAction.OnScreenResumed -> checkVerification(userInitiated = false)
         }
     }
 
     private fun loadUserEmail() {
-        viewModelScope.launch {
-            authRepository.getCurrentUser().onSuccess { user ->
-                val email = user.email
-                val atIndex = email.indexOf('@')
-                val obfuscated = if (atIndex > 1) email[0] + "***" + email.substring(atIndex) else email
-                _uiState.update { it.copy(obfuscatedEmail = obfuscated) }
+        val email = authRepository.getCurrentUserEmail() ?: return
+        val atIndex = email.indexOf('@')
+        val obfuscated = if (atIndex > 1) email[0] + "***" + email.substring(atIndex) else email
+        _uiState.update { it.copy(obfuscatedEmail = obfuscated) }
+    }
+
+    /**
+     * Checks the auth token for a verified email. This replaces polling: the check runs when the
+     * screen resumes (the user usually comes back from their mail) and when they tap the button,
+     * and only refreshes Firebase Auth. The user's Firestore document is read once, on success.
+     *
+     * Only a check the user asked for reports back ("still unverified" or an error); a silent
+     * check on resume stays quiet. A tap during a silent check joins it rather than being lost.
+     */
+    private fun checkVerification(userInitiated: Boolean) {
+        if (userInitiated) {
+            reportCheckResult = true
+            _uiState.update { it.copy(isChecking = true, isStillUnverified = false, error = null) }
+        }
+        if (checkJob?.isActive == true) return
+        checkJob = viewModelScope.launch {
+            val verified = if (FeatureFlags.EMAIL_VERIFICATION_REQUIRED) {
+                authRepository.refreshEmailVerification().getOrElse { throwable ->
+                    finishCheck(error = throwable.toAuthError())
+                    return@launch
+                }
+            } else {
+                true
             }
+            if (!verified) {
+                finishCheck(stillUnverified = true)
+                return@launch
+            }
+            authRepository.getCurrentUser()
+                .onSuccess { user -> _events.emit(EmailVerificationEvent.NavigateToApp(user)) }
+                .onFailure { throwable -> finishCheck(error = throwable.toAuthError()) }
         }
     }
 
-    private fun startPolling() {
-        pollingJob?.cancel()
-        pollingJob = viewModelScope.launch {
-            while (true) {
-                delay(5000)
-                authRepository.getCurrentUser().onSuccess { user ->
-                    if (user.isEmailVerified || !FeatureFlags.EMAIL_VERIFICATION_REQUIRED) {
-                        pollingJob?.cancel()
-                        _events.emit(EmailVerificationEvent.NavigateToApp(user))
-                    }
-                }
-            }
+    private fun finishCheck(stillUnverified: Boolean = false, error: AuthError? = null) {
+        val report = reportCheckResult
+        reportCheckResult = false
+        _uiState.update {
+            it.copy(
+                isChecking = false,
+                isStillUnverified = report && stillUnverified,
+                error = if (report) error else it.error,
+            )
         }
     }
 
@@ -94,7 +125,6 @@ class EmailVerificationViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        pollingJob?.cancel()
         countdownJob?.cancel()
     }
 }

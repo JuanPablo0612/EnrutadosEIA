@@ -13,9 +13,20 @@ interface AuthRepository {
         photoBytes: ByteArray? = null
     ): Result<Unit>
     suspend fun sendEmailVerification(): Result<Unit>
+
+    /**
+     * Refreshes the signed-in user's auth token and reports whether their email is now verified.
+     * Touches Firebase Auth only — no Firestore read — so it is cheap to call whenever the user
+     * comes back to the verification screen.
+     */
+    suspend fun refreshEmailVerification(): Result<Boolean>
     suspend fun logout(): Result<Unit>
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
     fun getCurrentUserId(): String?
+
+    /** The signed-in user's email as Firebase Auth knows it; no Firestore read. */
+    fun getCurrentUserEmail(): String?
+
     suspend fun getCurrentUser(): Result<User>
     suspend fun getPublicProfile(userId: String): Result<PublicProfile>
     suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User>

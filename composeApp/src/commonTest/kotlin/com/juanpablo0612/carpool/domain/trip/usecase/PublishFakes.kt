@@ -17,9 +17,11 @@ private fun unused(): Nothing = error("not used by these tests")
 
 class FakeAuthRepository(private val uid: String?) : AuthRepository {
     override fun getCurrentUserId(): String? = uid
+    override fun getCurrentUserEmail(): String? = unused()
     override suspend fun login(email: String, password: String) = unused()
     override suspend fun register(email: String, password: String, name: String, phone: String, photoBytes: ByteArray?) = unused()
     override suspend fun sendEmailVerification() = unused()
+    override suspend fun refreshEmailVerification() = unused()
     override suspend fun logout() = unused()
     override suspend fun sendPasswordResetEmail(email: String) = unused()
     override suspend fun getCurrentUser(): Result<User> = unused()

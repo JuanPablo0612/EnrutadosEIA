@@ -297,6 +297,8 @@
     <string name="email_verification_resend">Reenviar correo</string>
     <string name="email_verification_resend_countdown">Reenviar en %1$ds</string>
     <string name="email_verification_wrong_email">¿Correo incorrecto? Volver</string>
+    <string name="email_verification_check_button">Ya lo verifiqué</string>
+    <string name="email_verification_still_unverified">Tu correo aún no aparece verificado. Abre el enlace que te enviamos y vuelve a intentarlo.</string>
 
     <!-- Pantalla de éxito de recuperar contraseña -->
     <string name="forgot_password_success_title">Revisa tu correo</string>

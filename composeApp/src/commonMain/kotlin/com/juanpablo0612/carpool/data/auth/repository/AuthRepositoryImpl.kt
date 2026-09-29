@@ -48,6 +48,16 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun refreshEmailVerification(): Result<Boolean> {
+        return try {
+            Result.success(remoteDataSource.reloadEmailVerified())
+        } catch (e: FirebaseAuthException) {
+            Result.failure(e.toAppException())
+        } catch (_: Exception) {
+            Result.failure(AppException.AuthException.Unknown)
+        }
+    }
+
     override suspend fun logout(): Result<Unit> {
         return try {
             remoteDataSource.signOut()
@@ -70,6 +80,10 @@ class AuthRepositoryImpl(
 
     override fun getCurrentUserId(): String? {
         return remoteDataSource.getCurrentUserId()
+    }
+
+    override fun getCurrentUserEmail(): String? {
+        return remoteDataSource.getCurrentUserEmail()
     }
 
     override suspend fun getCurrentUser(): Result<User> {

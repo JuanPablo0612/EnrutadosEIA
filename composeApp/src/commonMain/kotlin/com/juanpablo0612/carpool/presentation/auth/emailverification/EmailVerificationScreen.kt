@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.*
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -24,6 +25,13 @@ fun EmailVerificationScreen(
     onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    // Most users verify from their mail app or a browser and then return here, so resuming is
+    // the moment to look; this is what replaces polling.
+    LifecycleResumeEffect(viewModel) {
+        viewModel.onAction(EmailVerificationAction.OnScreenResumed)
+        onPauseOrDispose { }
+    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -82,6 +90,24 @@ fun EmailVerificationContent(
             )
 
             Spacer(modifier = Modifier.height(Spacing.xxl))
+
+            PrimaryButton(
+                text = stringResource(Res.string.email_verification_check_button),
+                onClick = { onAction(EmailVerificationAction.OnCheckVerification) },
+                isLoading = state.isChecking
+            )
+
+            if (state.isStillUnverified) {
+                Spacer(modifier = Modifier.height(Spacing.sm))
+                Text(
+                    text = stringResource(Res.string.email_verification_still_unverified),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.md))
 
             val resendText = if (state.resendCountdown > 0) {
                 stringResource(Res.string.email_verification_resend_countdown, state.resendCountdown)

@@ -297,6 +297,8 @@
     <string name="email_verification_resend">Resend email</string>
     <string name="email_verification_resend_countdown">Resend in %1$ds</string>
     <string name="email_verification_wrong_email">Wrong email? Go back</string>
+    <string name="email_verification_check_button">I\'ve verified it</string>
+    <string name="email_verification_still_unverified">Your email isn\'t verified yet. Open the link we sent you and try again.</string>
 
     <!-- Forgot password success screen -->
     <string name="forgot_password_success_title">Check your email</string>
