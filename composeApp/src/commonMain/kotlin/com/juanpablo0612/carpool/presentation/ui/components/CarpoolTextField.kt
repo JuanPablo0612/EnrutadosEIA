@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -37,6 +36,17 @@ import enrutadoseia.composeapp.generated.resources.visibility_off_24px
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
+/**
+ * The app's text field: a bold label above a white outlined field, with inline error text below.
+ *
+ * The label is drawn outside the field so it never collapses into the border; it comes right
+ * before the field in reading order.
+ *
+ * An error adds a trailing error icon only when the caller has no trailing control of its own
+ * (a password toggle must stay reachable while the field is in error).
+ *
+ * [prefix] and [suffix] render fixed text around the value, e.g. "+57" or "@eia.edu.co".
+ */
 @Composable
 fun CarpoolTextField(
     value: String,
@@ -46,27 +56,23 @@ fun CarpoolTextField(
     modifier: Modifier = Modifier,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    prefix: String? = null,
+    suffix: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     errorMessage: String? = null,
     supportingText: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
+    minLines: Int = 1,
     enabled: Boolean = true,
     shape: Shape = MaterialTheme.shapes.medium,
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = MaterialTheme.colorScheme.primary,
-        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-        errorBorderColor = MaterialTheme.colorScheme.error,
-        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        errorLeadingIconColor = MaterialTheme.colorScheme.error,
-    )
+    colors: TextFieldColors = carpoolTextFieldColors(),
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            style = MaterialTheme.typography.titleSmall,
             color = if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             // Not a Spacing step (4/8dp both read as an even bigger jump from the label than the
             // original 6dp): this is a tight label-to-field coupling, not layout rhythm.
@@ -76,19 +82,26 @@ fun CarpoolTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
+            textStyle = MaterialTheme.typography.bodyLarge,
             placeholder = {
                 Text(
                     text = placeholder,
-                    style = MaterialTheme.typography.bodyMedium,
-                    // Deliberately softer than Alpha.DEEMPHASIS (0.6): placeholder hint text reads
-                    // as a distinct, dimmer tier from secondary body/icon content.
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             leadingIcon = leadingIcon,
-            trailingIcon = if (errorMessage != null) {
-                { Icon(vectorResource(Res.drawable.error_24px), contentDescription = null, tint = MaterialTheme.colorScheme.error) }
-            } else trailingIcon,
+            trailingIcon = when {
+                trailingIcon != null -> trailingIcon
+                errorMessage != null -> {
+                    { Icon(vectorResource(Res.drawable.error_24px), contentDescription = null, tint = MaterialTheme.colorScheme.error) }
+                }
+                else -> null
+            },
+            prefix = prefix?.let { { Text(text = it, style = MaterialTheme.typography.bodyLarge) } },
+            suffix = suffix?.let {
+                { Text(text = it, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            },
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
@@ -97,11 +110,12 @@ fun CarpoolTextField(
             shape = shape,
             colors = colors,
             singleLine = singleLine,
+            minLines = minLines,
             supportingText = errorMessage?.let {
                 {
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -109,6 +123,23 @@ fun CarpoolTextField(
         )
     }
 }
+
+/**
+ * White field on the neutral ground. The resting border uses `outline`, which keeps the 3:1
+ * contrast a field boundary needs; `outlineVariant` is reserved for decorative hairlines.
+ */
+@Composable
+fun carpoolTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    errorContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+    errorBorderColor = MaterialTheme.colorScheme.error,
+    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorLeadingIconColor = MaterialTheme.colorScheme.error,
+)
 
 @Composable
 fun EmailTextField(
