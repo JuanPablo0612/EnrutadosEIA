@@ -790,18 +790,22 @@
         <item quantity="one">%1$d persona quiere un cupo</item>
         <item quantity="other">%1$d personas quieren un cupo</item>
     </plurals>
-    <string name="home_getting_started_title">Empieza en 3 pasos</string>
-    <string name="home_getting_started_progress">%1$d de %2$d</string>
-    <string name="home_step_account">Crea tu cuenta y verifica tu correo</string>
-    <string name="home_step_book">Busca tu primer viaje</string>
-    <string name="home_step_book_hint">Reservar un cupo toma menos de un minuto</string>
-    <string name="home_step_vehicle">¿Tienes carro? Regístralo</string>
-    <string name="home_step_vehicle_hint">Así podrás publicar viajes y dividir gastos</string>
     <string name="home_how_it_works_title">Así funciona</string>
-    <string name="home_how_it_works_1">Busca un viaje hacia o desde tu sede y elige dónde te recogen.</string>
-    <string name="home_how_it_works_2">Pide tu cupo. Te avisamos cuando el conductor te acepte.</string>
-    <string name="home_how_it_works_3">Coordinen por el chat y, al llegar, califíquense.</string>
-    <string name="cd_step_done">Hecho: %1$s</string>
+    <string name="home_how_it_works_1">Quien tiene carro publica su viaje a la EIA con hora, ruta y paradas.</string>
+    <string name="home_how_it_works_2">Quien busca cupo lo pide en la parada que le sirve, y el conductor lo acepta.</string>
+    <string name="home_how_it_works_3">Se coordinan por el chat y, al terminar el viaje, se califican entre ustedes.</string>
+    <string name="home_start_title">¿Cómo vas a usar Enrutados?</string>
+    <string name="home_start_subtitle">Elige para empezar. Puedes hacer las dos cosas cuando quieras.</string>
+    <string name="home_start_rider_title">Busco cupo</string>
+    <string name="home_start_rider_body">Encuentra un viaje a la EIA y pide tu puesto.</string>
+    <string name="home_start_rider_action">Buscar viajes</string>
+    <string name="home_start_driver_title">Tengo carro</string>
+    <string name="home_start_driver_body">Regístralo, publica tus viajes y divide gastos.</string>
+    <string name="home_start_driver_action">Registrar carro</string>
+    <string name="home_vehicle_suggestion_title">¿También tienes carro?</string>
+    <string name="home_vehicle_suggestion_body">Publica tus viajes a la EIA y divide los gastos con quien va para allá.</string>
+    <string name="home_vehicle_suggestion_action">Registrar mi carro</string>
+    <string name="cd_hide_vehicle_suggestion">Ocultar sugerencia</string>
 
     <string name="relative_in_minutes">En %1$d min</string>
     <string name="relative_today">Hoy · %1$s</string>

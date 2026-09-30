@@ -35,13 +35,18 @@ data class HomeUiState(
     val hasVehicles: Boolean = false,
     /** Whether the user has ever asked for a seat, whatever became of it. */
     val hasBookedBefore: Boolean = false,
+    val vehicleSuggestionDismissed: Boolean = false,
     val error: HomeError? = null,
 ) {
-    /** The getting-started checklist stays until both optional steps are done. */
-    val showGettingStarted: Boolean
-        get() = !hasBookedBefore || !hasVehicles
+    val welcome: HomeWelcome
+        get() = HomeWelcome.of(
+            hasBookedBefore = hasBookedBefore,
+            hasVehicles = hasVehicles,
+            hasUpcomingTrip = nextUp != null,
+            vehicleSuggestionDismissed = vehicleSuggestionDismissed,
+        )
 
-    /** A brand-new user with nothing coming up also gets the "how it works" primer. */
-    val showHowItWorks: Boolean
-        get() = nextUp == null && !hasBookedBefore
+    /** Publishing needs a vehicle; without one the button would lead to a dead end. */
+    val canPublishTrip: Boolean
+        get() = hasVehicles
 }

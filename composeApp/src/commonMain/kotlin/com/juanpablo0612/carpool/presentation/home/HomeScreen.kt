@@ -26,12 +26,13 @@ import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.booking.components.PendingRequestsBanner
-import com.juanpablo0612.carpool.presentation.home.components.GettingStartedCard
 import com.juanpablo0612.carpool.presentation.home.components.HomeHeader
 import com.juanpablo0612.carpool.presentation.home.components.HowItWorksSection
+import com.juanpablo0612.carpool.presentation.home.components.HowToStartSection
 import com.juanpablo0612.carpool.presentation.home.components.LaterTripRow
 import com.juanpablo0612.carpool.presentation.home.components.SearchEntryCard
 import com.juanpablo0612.carpool.presentation.home.components.UpcomingTripCard
+import com.juanpablo0612.carpool.presentation.home.components.VehicleSuggestionCard
 import com.juanpablo0612.carpool.presentation.route.search.SearchShortcut
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
@@ -87,13 +88,15 @@ internal fun HomeContent(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { onAction(HomeAction.PublishTrip) },
-                icon = { Icon(vectorResource(Res.drawable.add_24px), contentDescription = null) },
-                text = { Text(stringResource(Res.string.home_action_publish_trip), style = MaterialTheme.typography.titleMedium) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            )
+            if (state.canPublishTrip) {
+                ExtendedFloatingActionButton(
+                    onClick = { onAction(HomeAction.PublishTrip) },
+                    icon = { Icon(vectorResource(Res.drawable.add_24px), contentDescription = null) },
+                    text = { Text(stringResource(Res.string.home_action_publish_trip), style = MaterialTheme.typography.titleMedium) },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
         },
     ) { innerPadding ->
         PullToRefreshBox(
@@ -124,12 +127,12 @@ internal fun HomeContent(
 @Composable
 private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit) {
     LazyColumn(
-        // Bottom room so the last card can scroll clear of the publish button.
+        // With the publish button, bottom room so the last card can scroll clear of it.
         contentPadding = PaddingValues(
             start = Spacing.screenHorizontal,
             end = Spacing.screenHorizontal,
             top = Spacing.lg,
-            bottom = 96.dp,
+            bottom = if (state.canPublishTrip) 96.dp else Spacing.xl,
         ),
         verticalArrangement = Arrangement.spacedBy(Spacing.xl),
     ) {
@@ -185,18 +188,23 @@ private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) 
                 }
             }
         }
-        if (state.showGettingStarted) {
-            item(key = "getting_started") {
-                GettingStartedCard(
-                    hasBookedBefore = state.hasBookedBefore,
-                    hasVehicles = state.hasVehicles,
-                    onSearch = { onAction(HomeAction.SearchTrips) },
+        when (state.welcome) {
+            HomeWelcome.ChooseHowToStart -> {
+                item(key = "how_to_start") {
+                    HowToStartSection(
+                        onFindSeat = { onAction(HomeAction.SearchTrips) },
+                        onRegisterVehicle = { onAction(HomeAction.RegisterVehicle) },
+                    )
+                }
+                item(key = "how_it_works") { HowItWorksSection() }
+            }
+            HomeWelcome.SuggestVehicle -> item(key = "vehicle_suggestion") {
+                VehicleSuggestionCard(
                     onRegisterVehicle = { onAction(HomeAction.RegisterVehicle) },
+                    onDismiss = { onAction(HomeAction.DismissVehicleSuggestion) },
                 )
             }
-        }
-        if (state.showHowItWorks) {
-            item(key = "how_it_works") { HowItWorksSection() }
+            HomeWelcome.None -> Unit
         }
     }
 }
@@ -265,6 +273,23 @@ private fun HomeContentPopulatedPreview() {
                 later = UpcomingTrip.Riding(previewBooking),
                 pendingRequestCount = 2,
                 hasVehicles = true,
+                hasBookedBefore = true,
+            ),
+            onAction = {},
+            now = previewNow,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeContentRiderPreview() {
+    CarpoolTheme {
+        HomeContent(
+            state = HomeUiState(
+                user = previewUser,
+                isLoading = false,
+                nextUp = UpcomingTrip.Riding(previewBooking),
                 hasBookedBefore = true,
             ),
             onAction = {},

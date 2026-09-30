@@ -788,18 +788,22 @@
         <item quantity="one">%1$d person wants a seat</item>
         <item quantity="other">%1$d people want a seat</item>
     </plurals>
-    <string name="home_getting_started_title">Get started in 3 steps</string>
-    <string name="home_getting_started_progress">%1$d of %2$d</string>
-    <string name="home_step_account">Create your account and verify your email</string>
-    <string name="home_step_book">Find your first trip</string>
-    <string name="home_step_book_hint">Booking a seat takes under a minute</string>
-    <string name="home_step_vehicle">Got a car? Register it</string>
-    <string name="home_step_vehicle_hint">So you can publish trips and split costs</string>
     <string name="home_how_it_works_title">How it works</string>
-    <string name="home_how_it_works_1">Search for a trip to or from your campus and pick where you get on.</string>
-    <string name="home_how_it_works_2">Ask for your seat. We\'ll let you know when the driver accepts.</string>
-    <string name="home_how_it_works_3">Coordinate in the chat and rate each other after the trip.</string>
-    <string name="cd_step_done">Done: %1$s</string>
+    <string name="home_how_it_works_1">People with a car publish their trip to EIA with its time, route and stops.</string>
+    <string name="home_how_it_works_2">People looking for a seat ask for one at the stop that suits them, and the driver accepts.</string>
+    <string name="home_how_it_works_3">You coordinate in the chat and rate each other after the trip.</string>
+    <string name="home_start_title">How will you use Enrutados?</string>
+    <string name="home_start_subtitle">Pick one to begin. You can do both whenever you like.</string>
+    <string name="home_start_rider_title">I need a seat</string>
+    <string name="home_start_rider_body">Find a trip to EIA and ask for your seat.</string>
+    <string name="home_start_rider_action">Find trips</string>
+    <string name="home_start_driver_title">I have a car</string>
+    <string name="home_start_driver_body">Register it, publish your trips and split costs.</string>
+    <string name="home_start_driver_action">Register car</string>
+    <string name="home_vehicle_suggestion_title">Do you also have a car?</string>
+    <string name="home_vehicle_suggestion_body">Publish your trips to EIA and split costs with people heading there.</string>
+    <string name="home_vehicle_suggestion_action">Register my car</string>
+    <string name="cd_hide_vehicle_suggestion">Hide suggestion</string>
 
     <string name="relative_in_minutes">In %1$d min</string>
     <string name="relative_today">Today · %1$s</string>

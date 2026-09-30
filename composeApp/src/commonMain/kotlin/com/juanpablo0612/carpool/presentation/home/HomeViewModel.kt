@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
+import com.juanpablo0612.carpool.domain.preferences.repository.UserPreferencesRepository
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
@@ -27,7 +28,8 @@ import kotlin.time.Clock
 
 /**
  * Inicio listens to four queries, all scoped to the signed-in user: the trips they drive, the
- * seat requests waiting on them, their vehicles and their bookings as a passenger. It shows
+ * seat requests waiting on them, their vehicles and their bookings as a passenger, plus one
+ * local preference (whether they hid the vehicle suggestion). It shows
  * counts and the next trip only; accepting or rejecting a request happens on the requests
  * screen, which reads the requesters' details on demand.
  */
@@ -36,6 +38,7 @@ class HomeViewModel(
     private val tripRepository: TripRepository,
     private val bookingRepository: BookingRepository,
     private val vehicleRepository: VehicleRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -67,7 +70,8 @@ class HomeViewModel(
             bookingRepository.getDriverBookingRequests(userId),
             vehicleRepository.getUserVehicles(userId),
             bookingRepository.getPassengerBookings(userId),
-        ) { trips, requests, vehicles, passengerBookings ->
+            userPreferencesRepository.isVehicleSuggestionDismissed(userId),
+        ) { trips, requests, vehicles, passengerBookings, vehicleSuggestionDismissed ->
             val now = Clock.System.now().toEpochMilliseconds()
             val nextDrive = trips
                 .filter { it.status == TripStatus.Active && it.departureTime > now }
@@ -88,6 +92,7 @@ class HomeViewModel(
                     pendingRequestCount = requests.count { request -> request.status == BookingStatus.Pending },
                     hasVehicles = vehicles.isNotEmpty(),
                     hasBookedBefore = passengerBookings.isNotEmpty(),
+                    vehicleSuggestionDismissed = vehicleSuggestionDismissed,
                     error = null,
                 )
             }
@@ -102,12 +107,19 @@ class HomeViewModel(
             is HomeAction.SearchShortcutSelected -> emit(HomeEvent.NavigateToSearchTrips(action.shortcut))
             HomeAction.PublishTrip -> emit(HomeEvent.NavigateToPublishTrip)
             HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
+            HomeAction.DismissVehicleSuggestion -> dismissVehicleSuggestion()
             HomeAction.OpenRequests -> emit(HomeEvent.NavigateToRequests)
             HomeAction.OpenNotifications -> emit(HomeEvent.NavigateToNotifications)
             HomeAction.Refresh -> refresh()
             is HomeAction.OpenTrip -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
             is HomeAction.OpenPassengers -> emit(HomeEvent.NavigateToPassengers(action.tripId))
         }
+    }
+
+    private fun dismissVehicleSuggestion() {
+        val userId = _state.value.user?.id ?: return
+        // The preference flow feeding loadData hides it once the local write lands.
+        viewModelScope.launch { userPreferencesRepository.dismissVehicleSuggestion(userId) }
     }
 
     private fun refresh() {

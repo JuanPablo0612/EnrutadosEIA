@@ -7,6 +7,7 @@ sealed class HomeAction {
     data class SearchShortcutSelected(val shortcut: SearchShortcut) : HomeAction()
     data object PublishTrip : HomeAction()
     data object RegisterVehicle : HomeAction()
+    data object DismissVehicleSuggestion : HomeAction()
     data object OpenRequests : HomeAction()
     data object OpenNotifications : HomeAction()
     data object Refresh : HomeAction()
