@@ -5,7 +5,7 @@ import com.juanpablo0612.carpool.data.auth.model.UserDocument
 import com.juanpablo0612.carpool.data.auth.model.UserDto
 import com.juanpablo0612.carpool.data.auth.model.UserRatingDto
 import com.juanpablo0612.carpool.data.notification.datasource.PushTokenRemoteDataSource
-import com.juanpablo0612.carpool.data.vehicle.datasource.upload
+import com.juanpablo0612.carpool.data.vehicle.datasource.uploadJpeg
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.firestore.DocumentSnapshot
 import dev.gitlive.firebase.firestore.FirebaseFirestore
@@ -47,7 +47,7 @@ class FirebaseAuthRemoteDataSource(
                 imageFormat = ImageFormat.JPEG
             )
             val ref = storage.reference.child("users/${user.uid}/profile.jpg")
-            ref.upload(compressed)
+            ref.uploadJpeg(compressed)
             photoUrl = ref.getDownloadUrl()
         }
 
@@ -134,7 +134,7 @@ class FirebaseAuthRemoteDataSource(
                 imageFormat = ImageFormat.JPEG
             )
             val ref = storage.reference.child("users/$userId/profile.jpg")
-            ref.upload(compressed)
+            ref.uploadJpeg(compressed)
             updates["photoUrl"] = ref.getDownloadUrl()
         }
         firestore.collection("users").document(userId).update(updates)

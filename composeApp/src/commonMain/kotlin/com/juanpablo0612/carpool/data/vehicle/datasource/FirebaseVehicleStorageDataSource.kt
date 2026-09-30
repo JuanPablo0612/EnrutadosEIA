@@ -8,7 +8,7 @@ class FirebaseVehicleStorageDataSource(
 
     override suspend fun uploadVehiclePhoto(driverId: String, vehicleId: String, bytes: ByteArray): String {
         val photoRef = storage.reference.child("$STORAGE_PATH/$driverId/$vehicleId.jpg")
-        photoRef.upload(bytes)
+        photoRef.uploadJpeg(bytes)
         return photoRef.getDownloadUrl()
     }
 
