@@ -9,6 +9,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -44,7 +45,12 @@ fun BottomNavigationBar(
                         Icon(imageVector = vectorResource(item.icon), contentDescription = null)
                     },
                     label = {
-                        Text(text = stringResource(item.label), style = MaterialTheme.typography.labelMedium)
+                        Text(
+                            text = stringResource(item.label),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     },
                     selected = selected,
                     alwaysShowLabel = true,

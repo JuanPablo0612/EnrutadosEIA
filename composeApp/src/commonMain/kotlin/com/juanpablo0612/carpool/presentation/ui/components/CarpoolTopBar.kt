@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
@@ -43,7 +44,7 @@ fun CarpoolTopBar(
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
-        title = { Text(title) },
+        title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         windowInsets = TopBarInsets,
         navigationIcon = {
             val avatarLabel = stringResource(Res.string.cd_open_profile)
@@ -92,16 +93,22 @@ fun CarpoolBackTopBar(
         windowInsets = TopBarInsets,
         title = {
             Column {
+                // One line each: the bar has a fixed height, so a long name (a chat partner, a
+                // route) or a large font scale would otherwise be cut through the middle.
                 Text(
                     // titleLarge is Bold by default; no .copy() override needed.
                     text = title,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 subtitle?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

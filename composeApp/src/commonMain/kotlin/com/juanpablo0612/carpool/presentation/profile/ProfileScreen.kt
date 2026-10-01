@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import com.juanpablo0612.carpool.presentation.profile.components.DeleteAccountDialog
 import com.juanpablo0612.carpool.presentation.profile.components.ProfileListItem
 import com.juanpablo0612.carpool.presentation.profile.components.UserHeader
@@ -124,7 +125,9 @@ fun ProfileContent(
                 title = {
                     Text(
                         text = stringResource(Res.string.profile_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
