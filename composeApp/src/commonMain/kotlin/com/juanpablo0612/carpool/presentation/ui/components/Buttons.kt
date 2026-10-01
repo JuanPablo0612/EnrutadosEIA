@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -97,6 +99,33 @@ fun SecondaryButton(
         ButtonContent(text = text, leadingIcon = leadingIcon, trailingIcon = null)
     }
 }
+
+/**
+ * A [SecondaryButton] and a [PrimaryButton] sharing a row, or stacked full width (primary on top)
+ * once the font scale is large enough that half a row would wrap their labels.
+ * Each slot receives the modifier that sizes it.
+ */
+@Composable
+fun ButtonPair(
+    secondary: @Composable (Modifier) -> Unit,
+    primary: @Composable (Modifier) -> Unit,
+    modifier: Modifier = Modifier,
+    spacing: Dp = Spacing.md,
+) {
+    if (LocalDensity.current.fontScale >= StackedButtonsFontScale) {
+        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing)) {
+            primary(Modifier.fillMaxWidth())
+            secondary(Modifier.fillMaxWidth())
+        }
+    } else {
+        Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(spacing)) {
+            secondary(Modifier.weight(1f))
+            primary(Modifier.weight(1f))
+        }
+    }
+}
+
+private const val StackedButtonsFontScale = 1.5f
 
 @Composable
 private fun ButtonContent(text: String, leadingIcon: ImageVector?, trailingIcon: ImageVector?) {

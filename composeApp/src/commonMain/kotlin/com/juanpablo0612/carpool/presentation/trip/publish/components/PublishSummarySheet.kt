@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import com.juanpablo0612.carpool.presentation.ui.components.ButtonPair
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.RouteTimeline
 import com.juanpablo0612.carpool.presentation.ui.components.SecondaryButton
@@ -139,20 +140,24 @@ internal fun PublishSummarySheet(
                 )
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                SecondaryButton(
-                    text = stringResource(Res.string.publish_trip_summary_edit),
-                    onClick = onDismiss,
-                    enabled = !isPublishing,
-                    modifier = Modifier.weight(1f),
-                )
-                PrimaryButton(
-                    text = stringResource(Res.string.publish_trip_confirm_button),
-                    onClick = onConfirm,
-                    isLoading = isPublishing,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            ButtonPair(
+                secondary = {
+                    SecondaryButton(
+                        text = stringResource(Res.string.publish_trip_summary_edit),
+                        onClick = onDismiss,
+                        enabled = !isPublishing,
+                        modifier = it,
+                    )
+                },
+                primary = {
+                    PrimaryButton(
+                        text = stringResource(Res.string.publish_trip_confirm_button),
+                        onClick = onConfirm,
+                        isLoading = isPublishing,
+                        modifier = it,
+                    )
+                },
+            )
         }
     }
 }

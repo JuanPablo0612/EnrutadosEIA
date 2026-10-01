@@ -26,6 +26,7 @@ import com.juanpablo0612.carpool.presentation.mytrips.MyTripItem
 import com.juanpablo0612.carpool.presentation.mytrips.MyTripsAction
 import com.juanpablo0612.carpool.presentation.mytrips.canRate
 import com.juanpablo0612.carpool.presentation.ui.components.BookingStatusBadge
+import com.juanpablo0612.carpool.presentation.ui.components.ButtonPair
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.Pill
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
@@ -165,20 +166,25 @@ private fun Actions(item: MyTripItem, isUpcoming: Boolean, isBusy: Boolean, onAc
                     onClick = { onAction(MyTripsAction.OnContinueTrip(trip.id)) },
                     enabled = enabled,
                 )
-                isUpcoming -> Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    SecondaryButton(
-                        text = stringResource(Res.string.trip_action_view_passengers),
-                        onClick = { onAction(MyTripsAction.OnViewPassengers(trip.id)) },
-                        enabled = enabled,
-                        modifier = Modifier.weight(1f),
-                    )
-                    PrimaryButton(
-                        text = stringResource(Res.string.trip_action_start),
-                        onClick = { onAction(MyTripsAction.OnStartTrip(trip.id)) },
-                        isLoading = isBusy,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                isUpcoming -> ButtonPair(
+                    spacing = Spacing.sm,
+                    secondary = {
+                        SecondaryButton(
+                            text = stringResource(Res.string.trip_action_view_passengers),
+                            onClick = { onAction(MyTripsAction.OnViewPassengers(trip.id)) },
+                            enabled = enabled,
+                            modifier = it,
+                        )
+                    },
+                    primary = {
+                        PrimaryButton(
+                            text = stringResource(Res.string.trip_action_start),
+                            onClick = { onAction(MyTripsAction.OnStartTrip(trip.id)) },
+                            isLoading = isBusy,
+                            modifier = it,
+                        )
+                    },
+                )
                 // A finished trip still leads to its passengers, where the driver rates them.
                 trip.status != TripStatus.Cancelled -> SecondaryButton(
                     text = stringResource(Res.string.trip_action_view_passengers),
