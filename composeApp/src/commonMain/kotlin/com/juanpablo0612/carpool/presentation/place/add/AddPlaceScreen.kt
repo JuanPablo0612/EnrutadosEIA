@@ -51,6 +51,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_new_place_title
 import enrutadoseia.composeapp.generated.resources.add_place_address_hint
@@ -229,9 +230,7 @@ fun AddPlaceContent(
                     coordinates = state.coordinates,
                     onPinDragged = { onAction(AddPlaceAction.DragPin(it)) },
                     onPoiSelected = { onAction(AddPlaceAction.SelectMapPoi(it)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp), // map preview intrinsic height
+                    modifier = Modifier.mediaPreviewSize(),
                 )
 
                 Text(

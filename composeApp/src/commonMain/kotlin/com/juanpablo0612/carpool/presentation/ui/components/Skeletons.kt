@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 
 @Composable
 private fun shimmerBrush(): Brush {
@@ -94,12 +95,10 @@ fun DetailSkeleton(modifier: Modifier = Modifier) {
         modifier = modifier.padding(Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg)
     ) {
-        // Hero image placeholder: a fixed height is correct here (it stands in for an image,
-        // not text), so it's left as a literal rather than heightIn.
+        // Hero image placeholder, sized like the map and photo previews it stands in for.
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
+                .mediaPreviewSize()
                 .background(brush, MaterialTheme.shapes.medium)
         )
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {

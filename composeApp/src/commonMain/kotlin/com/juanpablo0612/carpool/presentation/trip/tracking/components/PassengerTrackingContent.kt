@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.presentation.place.add.components.MapPreview
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingAction
@@ -28,6 +27,7 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingUiState
 import com.juanpablo0612.carpool.presentation.trip.tracking.previewTrip
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_tracking_message_driver
 import enrutadoseia.composeapp.generated.resources.trip_tracking_no_location
@@ -93,9 +93,7 @@ internal fun PassengerTrackingContent(
                         // Read-only: the passenger only observes the driver's position, so a
                         // dragged pin is discarded rather than fed back into any action.
                         onPinDragged = {},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp), // component-intrinsic: matches the map preview used elsewhere (AddPlace, MapPicker)
+                        modifier = Modifier.mediaPreviewSize(),
                     )
                 } else {
                     Text(

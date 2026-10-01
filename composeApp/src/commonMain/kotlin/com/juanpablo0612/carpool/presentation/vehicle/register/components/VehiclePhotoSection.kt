@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.presentation.ui.theme.Alpha
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.vehicle_change_photo
@@ -48,8 +49,7 @@ internal fun VehiclePhotoSection(
     )
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp) // component-intrinsic: fixed photo-preview height, not a spacing value
+            .mediaPreviewSize()
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
             .clickable { onShowPhotoSheet() },

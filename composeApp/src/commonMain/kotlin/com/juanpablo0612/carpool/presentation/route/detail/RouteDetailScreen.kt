@@ -40,6 +40,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -213,9 +214,8 @@ internal fun RouteDetailReadContent(
                 MapRoutePreview(
                     markers = stops,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp) // component-intrinsic preview height, not a spacing value
                         .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        .mediaPreviewSize()
                         .clip(MaterialTheme.shapes.medium),
                 )
             }
