@@ -18,6 +18,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.presentation.ui.components.AdaptiveTimePicker
 import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -102,7 +103,7 @@ fun CreateRouteContent(
                 showTimePicker = false
             }
         ) {
-            TimePicker(state = timePickerState)
+            AdaptiveTimePicker(state = timePickerState)
         }
     }
 

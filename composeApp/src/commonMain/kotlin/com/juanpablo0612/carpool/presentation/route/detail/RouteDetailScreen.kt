@@ -24,6 +24,7 @@ import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.presentation.place.add.components.MapRoutePreview
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
+import com.juanpablo0612.carpool.presentation.ui.components.AdaptiveTimePicker
 import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
 import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.route.detail.components.RecurrenceRow
@@ -316,7 +317,7 @@ internal fun RouteDetailEditContent(
                 showTimePicker = false
             }
         ) {
-            TimePicker(state = timePickerState)
+            AdaptiveTimePicker(state = timePickerState)
         }
     }
 

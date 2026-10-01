@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -16,7 +18,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -28,6 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.juanpablo0612.carpool.presentation.ui.components.AdaptiveTimePicker
+import com.juanpablo0612.carpool.presentation.ui.components.adaptiveDatePickerDisplayMode
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import enrutadoseia.composeapp.generated.resources.Res
@@ -73,7 +76,8 @@ internal fun DateTimeBottomSheet(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = (selectedDate ?: Clock.System.now().toLocalDateTime(TimeZone.UTC).date).let {
             LocalDateTime(it, LocalTime(0, 0)).toInstant(TimeZone.UTC).toEpochMilliseconds()
-        }
+        },
+        initialDisplayMode = adaptiveDatePickerDisplayMode(),
     )
     val timePickerState = rememberTimePickerState(
         initialHour = selectedTime?.hour ?: 7,
@@ -148,7 +152,12 @@ internal fun DateTimeBottomSheet(
                 }
             }
 
-            DateTimeSheetMode.DATE -> Column(modifier = Modifier.padding(bottom = Spacing.xl)) {
+            // DATE and TIME scroll so their buttons stay reachable on a phone in landscape.
+            DateTimeSheetMode.DATE -> Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = Spacing.xl)
+            ) {
                 DatePicker(state = datePickerState, modifier = Modifier.fillMaxWidth())
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg),
@@ -169,10 +178,13 @@ internal fun DateTimeBottomSheet(
             }
 
             DateTimeSheetMode.TIME -> Column(
-                modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(Spacing.lg),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TimePicker(state = timePickerState)
+                AdaptiveTimePicker(state = timePickerState)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End

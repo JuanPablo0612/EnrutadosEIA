@@ -34,7 +34,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -72,6 +71,7 @@ import com.juanpablo0612.carpool.presentation.trip.publish.components.TripSeatsS
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripWhenSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
+import com.juanpablo0612.carpool.presentation.ui.components.AdaptiveTimePicker
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
@@ -83,6 +83,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
+import com.juanpablo0612.carpool.presentation.ui.components.adaptiveDatePickerDisplayMode
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
@@ -217,6 +218,7 @@ fun PublishTripContent(
         // The Material date picker works in UTC-midnight millis, independent of the device zone.
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = (state.departureDate ?: today).toUtcMillis(),
+            initialDisplayMode = adaptiveDatePickerDisplayMode(layout),
             selectableDates = object : SelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean =
                     utcTimeMillis.toUtcDate() in today..lastBookableDay
@@ -246,7 +248,7 @@ fun PublishTripContent(
             onCancel = { onAction(PublishTripAction.OnDismissTimePicker) },
             onConfirm = { onAction(PublishTripAction.OnTimeSelected(LocalTime(timePickerState.hour, timePickerState.minute))) },
         ) {
-            TimePicker(state = timePickerState)
+            AdaptiveTimePicker(state = timePickerState)
         }
     }
 
