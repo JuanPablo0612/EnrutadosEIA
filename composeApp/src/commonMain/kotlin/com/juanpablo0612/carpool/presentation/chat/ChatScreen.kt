@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -100,10 +101,13 @@ fun ChatContent(
             )
         }
     ) { padding ->
+        // consumeWindowInsets before imePadding: the keyboard inset already covers the navigation
+        // bar that `padding` includes, so without it the gap above the keyboard counts that bar twice.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
                 .imePadding()
         ) {
             if (state.isReadOnly) {

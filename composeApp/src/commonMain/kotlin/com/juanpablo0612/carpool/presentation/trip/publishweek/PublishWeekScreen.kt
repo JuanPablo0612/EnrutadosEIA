@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -157,7 +158,7 @@ fun PublishWeekContent(
             }
         },
     ) { padding ->
-        val contentModifier = Modifier.fillMaxSize().padding(padding)
+        val contentModifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)
         val route = state.route
         when {
             state.isLoading -> DetailSkeleton(modifier = contentModifier)

@@ -117,6 +117,7 @@ fun CreateRouteContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
                 .imePadding(),
             contentPadding = PaddingValues(bottom = Spacing.lg)
         ) {
