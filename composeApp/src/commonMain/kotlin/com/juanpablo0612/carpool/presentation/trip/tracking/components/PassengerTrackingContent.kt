@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -16,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Coordinates
@@ -37,9 +40,12 @@ internal fun PassengerTrackingContent(
     onAction: (TripTrackingAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Scrolls: the card, the map and the chat button overflow a phone in landscape or at a large
+    // font scale, and the chat button is the one thing the passenger must be able to reach.
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg)
     ) {
@@ -47,12 +53,16 @@ internal fun PassengerTrackingContent(
             Column(modifier = Modifier.padding(Spacing.lg)) {
                 Text(
                     text = state.trip?.origin?.name ?: "",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = "→ ${state.trip?.destination?.name ?: ""}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 val myStatus = state.passengers.find { it.bookingId == state.currentPassengerBookingId }?.status
@@ -60,13 +70,15 @@ internal fun PassengerTrackingContent(
                     Spacer(Modifier.height(Spacing.sm))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Weighted so a long label wraps instead of squeezing the status chip.
                         Text(
                             text = stringResource(Res.string.trip_tracking_your_status),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f),
                         )
                         PickupStatusChip(status = myStatus)
                     }
