@@ -24,6 +24,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_passenger_profile_not_found
 import enrutadoseia.composeapp.generated.resources.profile_title
@@ -45,6 +46,7 @@ fun PassengerProfileContent(
     onBackClick: () -> Unit
 ) {
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = state.profile?.name ?: stringResource(Res.string.profile_title),

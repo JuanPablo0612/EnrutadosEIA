@@ -38,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleBrandSection
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleColorSection
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleModelSection
@@ -210,6 +211,7 @@ fun RegisterVehicleContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = if (state.mode == RegisterVehicleUiState.Mode.Edit)

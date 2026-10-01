@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
@@ -55,7 +55,9 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import enrutadoseia.composeapp.generated.resources.Res
@@ -133,6 +135,7 @@ fun PublishWeekContent(
     val canPublish = !state.isLoading && state.route != null && !state.scheduleMissing && !state.nothingToPublish
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             CarpoolBackTopBar(
@@ -150,7 +153,7 @@ fun PublishWeekContent(
                             onClick = { onAction(PublishWeekAction.OnPublishClick) },
                             isLoading = state.isPublishing,
                             modifier = Modifier
-                                .navigationBarsPadding()
+                                .windowInsetsPadding(BottomBarInsets)
                                 .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
                         )
                     }

@@ -29,6 +29,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
@@ -106,6 +107,7 @@ fun CreateRouteContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.create_route_title),

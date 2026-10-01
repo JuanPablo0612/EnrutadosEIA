@@ -34,6 +34,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
@@ -117,6 +118,7 @@ internal fun RouteDetailReadContent(
     onAction: (RouteDetailAction) -> Unit
 ) {
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = state.route?.name?.takeIf { it.isNotBlank() }
@@ -319,6 +321,7 @@ internal fun RouteDetailEditContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.route_edit_title),

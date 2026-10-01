@@ -39,6 +39,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.search_results_count
 import org.jetbrains.compose.resources.pluralStringResource
@@ -114,7 +115,7 @@ fun SearchRoutesContent(
 ) {
     val dateTimeSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(contentWindowInsets = ScreenInsets, containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

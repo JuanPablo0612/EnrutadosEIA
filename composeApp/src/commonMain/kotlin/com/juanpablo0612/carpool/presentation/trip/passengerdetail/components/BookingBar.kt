@@ -3,8 +3,8 @@ package com.juanpablo0612.carpool.presentation.trip.passengerdetail.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,6 +17,7 @@ import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPa
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.contributionLabel
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.book_request_button
@@ -43,7 +44,7 @@ internal fun BookingBar(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Column(
                 modifier = Modifier
-                    .navigationBarsPadding()
+                    .windowInsetsPadding(BottomBarInsets)
                     .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {

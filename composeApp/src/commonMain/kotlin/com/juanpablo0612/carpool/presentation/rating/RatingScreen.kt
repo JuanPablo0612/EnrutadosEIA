@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -49,7 +49,9 @@ import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
 import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
@@ -117,6 +119,7 @@ fun RatingContent(
     onAction: (RatingAction) -> Unit,
 ) {
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             Row(
                 modifier = Modifier
@@ -140,7 +143,7 @@ fun RatingContent(
                     isLoading = state.isSubmitting,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .navigationBarsPadding()
+                        .windowInsetsPadding(BottomBarInsets)
                         .imePadding()
                         .padding(horizontal = Spacing.xl, vertical = Spacing.lg),
                 )

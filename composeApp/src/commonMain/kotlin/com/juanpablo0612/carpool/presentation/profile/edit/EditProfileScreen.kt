@@ -52,6 +52,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.full_name_placeholder
 import enrutadoseia.composeapp.generated.resources.discard_changes_body
@@ -128,6 +129,7 @@ fun EditProfileContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.edit_profile_title),

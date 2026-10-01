@@ -38,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.chat_date_today
@@ -94,6 +95,7 @@ fun ChatContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = state.otherPartyName.ifBlank { stringResource(Res.string.chat_default_title) },

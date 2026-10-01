@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.TopBarInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.cd_back
@@ -43,6 +44,7 @@ fun CarpoolTopBar(
 ) {
     TopAppBar(
         title = { Text(title) },
+        windowInsets = TopBarInsets,
         navigationIcon = {
             val avatarLabel = stringResource(Res.string.cd_open_profile)
             // 40.dp is the visual avatar size, but the touch target is padded out to 48.dp
@@ -87,6 +89,7 @@ fun CarpoolBackTopBar(
 ) {
     TopAppBar(
         modifier = modifier,
+        windowInsets = TopBarInsets,
         title = {
             Column {
                 Text(

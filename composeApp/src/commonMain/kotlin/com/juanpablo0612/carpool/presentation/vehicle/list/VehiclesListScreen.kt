@@ -32,6 +32,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.vehicle.list.components.VehicleCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
@@ -108,6 +109,7 @@ fun VehiclesListContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.vehicles_list_title),

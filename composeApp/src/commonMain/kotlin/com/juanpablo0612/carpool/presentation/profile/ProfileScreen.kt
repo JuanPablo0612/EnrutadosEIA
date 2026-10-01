@@ -34,6 +34,8 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.TopBarInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_road_24px
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
@@ -115,8 +117,10 @@ fun ProfileContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             TopAppBar(
+                windowInsets = TopBarInsets,
                 title = {
                     Text(
                         text = stringResource(Res.string.profile_title),

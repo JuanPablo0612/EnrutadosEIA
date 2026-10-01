@@ -38,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
@@ -111,7 +112,7 @@ internal fun MyTripsContent(
 ) {
     state.confirmation?.let { ConfirmationDialog(it, onAction) }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(contentWindowInsets = ScreenInsets, containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             MyTripsHeader(segment = state.segment, filter = state.filter, onAction = onAction)
             when {

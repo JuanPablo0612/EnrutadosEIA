@@ -38,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
@@ -101,6 +102,7 @@ fun RoutesListContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.routes_list_title),

@@ -37,6 +37,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
@@ -86,6 +87,7 @@ fun RouteDetailPassengerContent(
     val trip = state.trip
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             CarpoolBackTopBar(

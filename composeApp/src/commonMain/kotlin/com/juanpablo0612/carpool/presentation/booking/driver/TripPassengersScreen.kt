@@ -38,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.TripStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
 import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
@@ -88,6 +89,7 @@ fun TripPassengersContent(
     BookingDecisionDialogs(state = state.decisions, onDecision = onDecision)
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = { CarpoolBackTopBar(title = stringResource(Res.string.trip_passengers_title), onBack = onBackClick) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->

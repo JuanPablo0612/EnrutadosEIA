@@ -22,6 +22,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_body
 import enrutadoseia.composeapp.generated.resources.trip_tracking_complete_confirm_button
@@ -57,6 +58,7 @@ fun TripTrackingContent(
     onAction: (TripTrackingAction) -> Unit
 ) {
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.trip_tracking_title),

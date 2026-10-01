@@ -49,6 +49,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.onboarding_next
@@ -106,7 +107,7 @@ fun OnboardingContent(
 
     val isLastPage = state.currentPage == state.totalPages - 1
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(contentWindowInsets = ScreenInsets, containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

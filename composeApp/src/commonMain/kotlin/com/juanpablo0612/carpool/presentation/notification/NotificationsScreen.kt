@@ -31,6 +31,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.notification.components.NotificationPermissionBanner
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_body
@@ -101,6 +102,7 @@ fun NotificationsContent(
     }
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
                 title = stringResource(Res.string.notifications_title),

@@ -40,6 +40,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
@@ -86,6 +87,7 @@ internal fun HomeContent(
     now: Long = rememberNowMs(),
 ) {
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             if (state.canPublishTrip) {

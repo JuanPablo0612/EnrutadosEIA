@@ -34,6 +34,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.action_dismiss
@@ -85,6 +86,7 @@ fun BookingRequestsContent(
     BookingDecisionDialogs(state = state.decisions, onDecision = onDecision)
 
     Scaffold(
+        contentWindowInsets = ScreenInsets,
         topBar = { CarpoolBackTopBar(title = stringResource(Res.string.booking_requests_title), onBack = onBackClick) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->

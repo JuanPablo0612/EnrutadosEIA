@@ -3,8 +3,10 @@ package com.juanpablo0612.carpool.presentation.ui.util
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.widthIn
@@ -68,6 +70,17 @@ fun rememberWindowLayout(): WindowLayout {
  */
 val ScreenInsets: WindowInsets
     @Composable get() = WindowInsets.systemBars.union(WindowInsets.displayCutout)
+
+/** The part of [ScreenInsets] a top app bar pads itself by. */
+val TopBarInsets: WindowInsets
+    @Composable get() = ScreenInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+
+/**
+ * The part of [ScreenInsets] a bar pinned to the bottom pads itself by — Scaffold's `bottomBar`
+ * slot and sheet footers get no insets of their own.
+ */
+val BottomBarInsets: WindowInsets
+    @Composable get() = ScreenInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
 
 /**
  * The horizontal padding that keeps content [maxWidth] wide and centred in [available] space,
