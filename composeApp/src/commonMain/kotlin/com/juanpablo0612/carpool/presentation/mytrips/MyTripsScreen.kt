@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +41,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.util.FullLineSpan
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
@@ -193,23 +195,25 @@ private fun MyTripsList(state: MyTripsUiState, now: Long, onAction: (MyTripsActi
         return
     }
     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(ContentWidth.gridCell),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             if (state.error == MyTripsError.ActionFailed) {
-                item(key = "error") {
+                item(key = "error", span = FullLineSpan) {
                     ErrorMessage(message = stringResource(state.error.asStringResource()))
                 }
             }
             if (showBanner) {
-                item(key = "requests") {
+                item(key = "requests", span = FullLineSpan) {
                     PendingRequestsBanner(count = state.pendingRequestCount, onClick = { onAction(MyTripsAction.OnOpenRequests) })
                 }
             }
             groups.forEach { (_, itemsOfDay) ->
-                item(key = "day_${itemsOfDay.first().key}") {
+                item(key = "day_${itemsOfDay.first().key}", span = FullLineSpan) {
                     Text(
                         text = departureDayLabel(itemsOfDay.first().departureTime, now).replaceFirstChar { it.uppercaseChar() },
                         style = MaterialTheme.typography.titleSmall,

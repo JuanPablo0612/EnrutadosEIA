@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +42,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.util.FullLineSpan
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
@@ -167,12 +169,14 @@ fun SearchRoutesContent(
 @Composable
 private fun SearchResults(results: List<TripResult>, onAction: (SearchRoutesAction) -> Unit) {
     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(ContentWidth.gridCell),
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
             contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            item(key = "summary") {
+            item(key = "summary", span = FullLineSpan) {
                 // Announced politely so screen-reader users hear the count change as they adjust
                 // the search, without having to look for it.
                 Text(

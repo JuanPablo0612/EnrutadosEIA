@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -38,6 +39,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.util.FullLineSpan
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -154,12 +156,14 @@ fun RoutesListContent(
                 )
                 else -> {
                     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
-                        LazyColumn(
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(ContentWidth.gridCell),
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(Spacing.lg).plusHorizontal(margin),
-                            verticalArrangement = Arrangement.spacedBy(Spacing.md)
+                            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
                         ) {
-                            item(key = "search") {
+                            item(key = "search", span = FullLineSpan) {
                                 OutlinedTextField(
                                     value = state.searchQuery,
                                     onValueChange = { onAction(RoutesListAction.OnSearchQueryChanged(it)) },
@@ -172,7 +176,7 @@ fun RoutesListContent(
                                 )
                             }
                             state.actionError?.let { actionError ->
-                                item(key = "action_error") {
+                                item(key = "action_error", span = FullLineSpan) {
                                     ErrorMessage(
                                         message = stringResource(actionError.asStringResource()),
                                         modifier = Modifier
@@ -182,7 +186,7 @@ fun RoutesListContent(
                                 }
                             }
                             if (state.showDuplicateSuccess) {
-                                item(key = "duplicate_success") {
+                                item(key = "duplicate_success", span = FullLineSpan) {
                                     SuccessMessage(
                                         message = stringResource(Res.string.notice_route_duplicated),
                                         modifier = Modifier
@@ -192,7 +196,7 @@ fun RoutesListContent(
                                 }
                             }
                             if (state.filteredRoutes.isEmpty()) {
-                                item(key = "no_search_results") {
+                                item(key = "no_search_results", span = FullLineSpan) {
                                     Text(
                                         text = stringResource(Res.string.routes_search_no_results, state.searchQuery),
                                         style = MaterialTheme.typography.bodyMedium,

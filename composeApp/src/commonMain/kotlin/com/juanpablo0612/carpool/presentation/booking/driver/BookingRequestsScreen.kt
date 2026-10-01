@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -36,6 +37,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.util.FullLineSpan
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
@@ -163,13 +165,15 @@ private fun RequestGroups(
 ) {
     val onDecision: (BookingDecisionAction) -> Unit = { onAction(BookingRequestsAction.OnDecision(it)) }
     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(ContentWidth.gridCell),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.md).plusHorizontal(margin),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             groups.forEach { group ->
-                item(key = "trip_${group.tripId}") {
+                item(key = "trip_${group.tripId}", span = FullLineSpan) {
                     TripBookingsHeader(
                         group = group,
                         nowMs = nowMs,

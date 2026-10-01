@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -149,7 +151,10 @@ internal fun HomeContent(
 @Composable
 private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit, bottomClearance: Dp) {
     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
-        LazyColumn(
+        // One lane on phones; two on wide windows, where the dashboard's cards sit side by side
+        // instead of leaving a long single column. Staggered because the cards differ in height.
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Adaptive(ContentWidth.gridCell),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 start = Spacing.screenHorizontal,
@@ -157,9 +162,10 @@ private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) 
                 top = Spacing.lg,
                 bottom = bottomClearance,
             ).plusHorizontal(margin),
-            verticalArrangement = Arrangement.spacedBy(Spacing.xl),
+            verticalItemSpacing = Spacing.xl,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
         ) {
-            item(key = "header") {
+            item(key = "header", span = StaggeredGridItemSpan.FullLine) {
                 HomeHeader(
                     firstName = state.user?.firstName().orEmpty(),
                     now = now,

@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.util.FullLineSpan
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -166,10 +168,12 @@ fun VehiclesListContent(
                 )
                 else -> {
                     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
-                        LazyColumn(
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(ContentWidth.gridCell),
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(Spacing.lg).plusHorizontal(margin),
-                            verticalArrangement = Arrangement.spacedBy(Spacing.md)
+                            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
                         ) {
                             items(state.vehicles, key = { it.id }) { vehicle ->
                                 VehicleCard(

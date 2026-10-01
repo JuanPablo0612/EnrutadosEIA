@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -170,3 +172,6 @@ fun Modifier.mediaPreviewSize(
 /** Whether the software keyboard currently takes up part of the window. */
 @Composable
 fun isImeVisible(): Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+
+/** Grid span for headers, banners and messages that sit above or between a grid's cards. */
+val FullLineSpan: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
