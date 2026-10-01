@@ -40,12 +40,15 @@ import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
+import com.juanpablo0612.carpool.presentation.ui.util.WindowLayout
 import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
+import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -122,7 +125,8 @@ fun RouteDetailScreen(
 @Composable
 internal fun RouteDetailReadContent(
     state: RouteDetailUiState,
-    onAction: (RouteDetailAction) -> Unit
+    onAction: (RouteDetailAction) -> Unit,
+    layout: WindowLayout = rememberWindowLayout(),
 ) {
     Scaffold(
         contentWindowInsets = ScreenInsets,
@@ -205,80 +209,97 @@ internal fun RouteDetailReadContent(
         }
 
         val route = state.route
+        // Route map: origin -> waypoints -> destination, in order.
+        val stops = remember(route.id) {
+            (listOf(route.origin) + route.waypoints + route.destination)
+                .map { Coordinates(it.latitude, it.longitude) }
+        }
+        // Wide or short windows show the map beside the details, at the full height, rather than
+        // as a preview the details scroll away.
+        val mapBeside = layout.prefersTwoPanes
 
-        CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize().padding(padding), gutter = 0.dp) { margin ->
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
-            ) {
-                // Route map: origin -> waypoints -> destination, in order.
-                item {
-                    val stops = remember(route.id) {
-                        (listOf(route.origin) + route.waypoints + route.destination)
-                            .map { Coordinates(it.latitude, it.longitude) }
-                    }
-                    MapRoutePreview(
-                        markers = stops,
-                        modifier = Modifier
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                            .mediaPreviewSize()
-                            .clip(MaterialTheme.shapes.medium),
-                    )
-                }
-
-                // Recurrence row
-                if (route.recurringDays.isNotEmpty()) {
-                    item {
-                        RecurrenceRow(
-                            recurringDays = route.recurringDays,
-                            typicalDepartureTime = route.typicalDepartureTime
-                        )
-                    }
-                }
-
-                // Trajectory section
-                item { SectionHeader(stringResource(Res.string.route_detail_trajectory_section)) }
-
-                stopsReadOnlyItems(StopsDraft.of(route))
-
-                item { SectionHeader(stringResource(Res.string.route_detail_stats_section)) }
-
-                item {
-                    Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
-                        if (state.tripsPublished > 0) {
-                            Text(
-                                text = stringResource(Res.string.route_detail_trips_published, state.tripsPublished),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            state.lastUsedAt?.let { instant ->
-                                val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                                Text(
-                                    text = stringResource(
-                                        Res.string.route_detail_last_used,
-                                        formatNumericDate(local.date)
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        } else {
-                            Text(
-                                text = stringResource(Res.string.route_detail_never_used),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+        Row(modifier = Modifier.fillMaxSize().padding(padding)) {
+            if (mapBeside) {
+                MapRoutePreview(
+                    markers = stops,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(start = Spacing.screenHorizontal, top = Spacing.sm, bottom = Spacing.lg)
+                        .clip(MaterialTheme.shapes.medium),
+                )
+            }
+            CenteredContent(ContentWidth.list, modifier = Modifier.weight(1f).fillMaxHeight(), gutter = 0.dp) { margin ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
+                ) {
+                    if (!mapBeside) {
+                        item {
+                            MapRoutePreview(
+                                markers = stops,
+                                modifier = Modifier
+                                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                                    .mediaPreviewSize()
+                                    .clip(MaterialTheme.shapes.medium),
                             )
                         }
                     }
-                }
 
-                state.error?.let { error ->
+                    // Recurrence row
+                    if (route.recurringDays.isNotEmpty()) {
+                        item {
+                            RecurrenceRow(
+                                recurringDays = route.recurringDays,
+                                typicalDepartureTime = route.typicalDepartureTime
+                            )
+                        }
+                    }
+
+                    // Trajectory section
+                    item { SectionHeader(stringResource(Res.string.route_detail_trajectory_section)) }
+
+                    stopsReadOnlyItems(StopsDraft.of(route))
+
+                    item { SectionHeader(stringResource(Res.string.route_detail_stats_section)) }
+
                     item {
-                        ErrorMessage(
-                            message = stringResource(error.asStringResource()),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                        )
+                        Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
+                            if (state.tripsPublished > 0) {
+                                Text(
+                                    text = stringResource(Res.string.route_detail_trips_published, state.tripsPublished),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                state.lastUsedAt?.let { instant ->
+                                    val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                                    Text(
+                                        text = stringResource(
+                                            Res.string.route_detail_last_used,
+                                            formatNumericDate(local.date)
+                                        ),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = stringResource(Res.string.route_detail_never_used),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    state.error?.let { error ->
+                        item {
+                            ErrorMessage(
+                                message = stringResource(error.asStringResource()),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                            )
+                        }
                     }
                 }
             }
@@ -427,7 +448,7 @@ internal fun RouteDetailEditContent(
     }
 }
 
-@Preview
+@ScreenPreviews
 @Composable
 private fun RouteDetailReadPreview() {
     CarpoolTheme {
