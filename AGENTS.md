@@ -56,7 +56,7 @@ Versions are tracked in `gradle/libs.versions.toml` — treat that file as the s
 
 - **Language:** Kotlin 2.3.21
 - **Architecture:** Clean Architecture + MVVM
-- **UI Framework:** Compose Multiplatform 1.10.3, Material3
+- **UI Framework:** Compose Multiplatform 1.10.3, Material3, Material3 Adaptive 1.2.0 + navigation suite
 - **Platform:** Kotlin Multiplatform (Android active, iOS scaffold exists but inactive)
 - **Backend:** Firebase Auth, Firestore, Storage, Functions, Messaging, Analytics (`dev.gitlive:firebase-*` 2.4.0) + Cloud Functions in `functions/` (TypeScript, Node 22, firebase-functions 7, firebase-admin 13)
 - **DI:** Koin 4.2.1 (hand-written DSL modules — no `koin-annotations`/compiler plugin)
@@ -222,17 +222,18 @@ No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/
 
 ------------------------------------------------------------------------
 
-# 20. Input Usability & IME
+# 20. Input Usability, IME & Responsive Layout
 
 - **KeyboardOptions:** Disable `autoCorrect` for credentials (email, password). Use `KeyboardCapitalization.Words` for names.
 - **IME Actions:** Use `ImeAction.Next` to move between fields and `ImeAction.Done` to trigger the primary action (Login/Register) from the last field.
+- **Responsive layout:** screens must work on a 360dp phone, in landscape, at 2× font scale, with the keyboard open, and on tablets. Read breakpoints only through `rememberWindowLayout()` (`presentation/ui/util/WindowLayout.kt`); the `XxxContent` takes `layout: WindowLayout = rememberWindowLayout()` so previews can force a size. Screen `Scaffold`s pass `contentWindowInsets = ScreenInsets` (system bars + display cutout), top bars `TopBarInsets`, and bars pinned to the bottom pad by `BottomBarInsets`. Before `imePadding()`, call `consumeWindowInsets(padding)`. Cap content with `ContentWidth.form`/`.list`: wrap a lazy list in `CenteredContent(..., gutter = 0.dp)` and add the margin with `contentPadding.plusHorizontal(margin)`, so the list still scrolls edge to edge; centre a scrolling column with `.centeredContent(...)` after `verticalScroll`. Lists of cards are `LazyVerticalGrid(GridCells.Adaptive(ContentWidth.gridCell))` with `FullLineSpan` headers. Use `Modifier.mediaPreviewSize()` for maps and photos, never a fixed height. Use `heightIn` rather than `height` on anything containing text. Give long text in rows `maxLines` + `TextOverflow.Ellipsis` or a `weight`. Anything that can outgrow the window scrolls. Preview layout-sensitive screens with `@ScreenPreviews`.
 
 ------------------------------------------------------------------------
 
 # 21. Navigation & Side-Effects
 
 - Type-safe routes via one flat `@Serializable sealed interface Route` (29 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose.
-- One bottom bar for everyone: **Inicio · Buscar · Mis viajes · Perfil**. Switch tabs only with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination.
+- One set of tabs for everyone: **Inicio · Buscar · Mis viajes · Perfil**, shown by `NavigationSuiteScaffoldLayout` as the bottom bar on phones and `NavigationRailBar` on medium/expanded windows. Switch tabs only with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination.
 - `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph`, `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive, reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, session reload after process death, and push-tap handling (`PendingDeepLinks`).
 - Notification deep links are plain strings built/parsed in `NotificationDeepLink.kt` (`forNotification`, `toRouteOrNull`) and opened with `navigateToNotificationDeepLink`.
 - **ObserveAsEvents:** lives in `presentation/ui/util/` (it's a utility, not a component). Use it to handle one-time side-effects like navigation or showing success messages, triggered by a `SharedFlow` in the ViewModel.
