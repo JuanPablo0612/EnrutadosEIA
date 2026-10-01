@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.ui.util
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isFinite
 import androidx.compose.ui.unit.max
@@ -108,6 +110,35 @@ fun CenteredContent(
     BoxWithConstraints(modifier = modifier) {
         content(centeredGutter(maxWidth, contentMaxWidth, gutter))
     }
+}
+
+/**
+ * These padding values plus [margin] on the start and end, for a lazy list inside
+ * [CenteredContent] whose items keep their own gutter: the margin centres them, the base
+ * padding stays as it was on a phone.
+ */
+fun PaddingValues.plusHorizontal(margin: Dp): PaddingValues =
+    if (margin == 0.dp) this else HorizontalMarginPadding(this, margin)
+
+@Immutable
+private class HorizontalMarginPadding(
+    private val base: PaddingValues,
+    private val margin: Dp,
+) : PaddingValues {
+    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp =
+        base.calculateLeftPadding(layoutDirection) + margin
+
+    override fun calculateTopPadding(): Dp = base.calculateTopPadding()
+
+    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp =
+        base.calculateRightPadding(layoutDirection) + margin
+
+    override fun calculateBottomPadding(): Dp = base.calculateBottomPadding()
+
+    override fun equals(other: Any?): Boolean =
+        other is HorizontalMarginPadding && other.base == base && other.margin == margin
+
+    override fun hashCode(): Int = 31 * base.hashCode() + margin.hashCode()
 }
 
 /**

@@ -7,7 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.chat_quick_reply_en_camino
 import enrutadoseia.composeapp.generated.resources.chat_quick_reply_esperando
@@ -20,6 +23,7 @@ internal fun QuickRepliesRow(onQuickReply: (String) -> Unit, enabled: Boolean = 
     val llegue = stringResource(Res.string.chat_quick_reply_llegue)
     val esperando = stringResource(Res.string.chat_quick_reply_esperando)
     LazyRow(
+        modifier = Modifier.centeredContent(ContentWidth.list),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

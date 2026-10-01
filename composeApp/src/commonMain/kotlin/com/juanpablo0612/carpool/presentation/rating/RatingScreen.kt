@@ -47,11 +47,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.LocalExtendedColors
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
 import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
@@ -145,6 +147,7 @@ fun RatingContent(
                         .fillMaxWidth()
                         .windowInsetsPadding(BottomBarInsets)
                         .imePadding()
+                        .centeredContent(ContentWidth.form)
                         .padding(horizontal = Spacing.xl, vertical = Spacing.lg),
                 )
             }
@@ -173,6 +176,7 @@ private fun RatingForm(state: RatingUiState, onAction: (RatingAction) -> Unit, m
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
+            .centeredContent(ContentWidth.form)
             .padding(horizontal = Spacing.xl, vertical = Spacing.sm),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Spacing.xl),

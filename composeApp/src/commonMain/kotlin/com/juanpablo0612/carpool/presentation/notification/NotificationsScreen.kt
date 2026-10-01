@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.notification.components.SwipeToDeleteNotification
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
@@ -28,10 +29,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.notification.components.NotificationPermissionBanner
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notification_delete_confirm_body
@@ -166,19 +170,21 @@ fun NotificationsContent(
                         )
                     }
                     else -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(vertical = Spacing.sm),
-                            verticalArrangement = Arrangement.spacedBy(Spacing.xs)
-                        ) {
-                            items(state.notifications, key = { it.id }) { notification ->
-                                SwipeToDeleteNotification(
-                                    notification = notification,
-                                    actionError = state.actionError is NotificationActionError.DeleteFailed,
-                                    isPendingDelete = state.pendingDeleteId == notification.id,
-                                    onSwipeToDelete = { onAction(NotificationsAction.OnSwipeToDelete(notification.id)) },
-                                    onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
-                                )
+                        CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(vertical = Spacing.sm).plusHorizontal(margin),
+                                verticalArrangement = Arrangement.spacedBy(Spacing.xs)
+                            ) {
+                                items(state.notifications, key = { it.id }) { notification ->
+                                    SwipeToDeleteNotification(
+                                        notification = notification,
+                                        actionError = state.actionError is NotificationActionError.DeleteFailed,
+                                        isPendingDelete = state.pendingDeleteId == notification.id,
+                                        onSwipeToDelete = { onAction(NotificationsAction.OnSwipeToDelete(notification.id)) },
+                                        onClick = { onAction(NotificationsAction.OnNotificationClick(notification)) }
+                                    )
+                                }
                             }
                         }
                     }

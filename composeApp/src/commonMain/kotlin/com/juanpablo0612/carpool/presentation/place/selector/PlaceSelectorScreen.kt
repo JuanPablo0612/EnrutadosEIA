@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.presentation.place.selector
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.presentation.place.selector.components.PlaceRow
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -29,10 +31,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.cd_add_place
@@ -126,7 +131,7 @@ fun PlaceSelectorContent(
                     value = state.searchQuery,
                     onValueChange = { onAction(PlaceSelectorAction.OnQueryChange(it)) },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .centeredContent(ContentWidth.list)
                         .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
                     placeholder = { Text(stringResource(Res.string.place_selector_search_hint)) },
                     leadingIcon = {
@@ -155,168 +160,173 @@ fun PlaceSelectorContent(
                 )
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                // Current location row — only relevant when picking a place, not when
-                // browsing/managing saved places.
-                if (!isBrowseOnly) {
-                    item {
-                        when {
-                            state.isResolvingLocation -> {
-                                ListItem(
-                                    headlineContent = { Text(stringResource(Res.string.place_selector_resolving_location)) },
-                                    leadingContent = { CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs)) },
-                                )
-                            }
-                            !state.locationPermissionGranted -> {
-                                PlaceRow(
-                                    icon = vectorResource(Res.drawable.location_on_24px),
-                                    name = stringResource(Res.string.place_selector_current_location),
-                                    address = null,
-                                    trailing = {
-                                        TextButton(onClick = { onAction(PlaceSelectorAction.RequestLocationPermission) }) {
-                                            Text(stringResource(Res.string.place_selector_allow_location))
-                                        }
-                                    },
-                                    onClick = {},
-                                )
-                            }
-                            else -> {
-                                PlaceRow(
-                                    icon = vectorResource(Res.drawable.location_on_24px),
-                                    name = stringResource(Res.string.place_selector_current_location),
-                                    address = state.currentLocation?.address,
-                                    onClick = { onAction(PlaceSelectorAction.UseCurrentLocation) },
-                                )
-                            }
-                        }
-                        HorizontalDivider()
-                    }
-                }
-
-                // My places and EIA sections — hidden while searching
-                if (state.searchQuery.isBlank()) {
-                    item {
-                        SectionHeader(
-                            title = stringResource(Res.string.place_selector_section_my_places),
-                            action = {
-                                IconButton(onClick = { onAction(PlaceSelectorAction.OnAddPlace) }) {
-                                    Icon(
-                                        vectorResource(Res.drawable.add_24px),
-                                        contentDescription = stringResource(Res.string.cd_add_place),
+            CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = margin),
+                ) {
+                    // Current location row — only relevant when picking a place, not when
+                    // browsing/managing saved places.
+                    if (!isBrowseOnly) {
+                        item {
+                            when {
+                                state.isResolvingLocation -> {
+                                    ListItem(
+                                        headlineContent = { Text(stringResource(Res.string.place_selector_resolving_location)) },
+                                        leadingContent = { CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs)) },
+                                    )
+                                }
+                                !state.locationPermissionGranted -> {
+                                    PlaceRow(
+                                        icon = vectorResource(Res.drawable.location_on_24px),
+                                        name = stringResource(Res.string.place_selector_current_location),
+                                        address = null,
+                                        trailing = {
+                                            TextButton(onClick = { onAction(PlaceSelectorAction.RequestLocationPermission) }) {
+                                                Text(stringResource(Res.string.place_selector_allow_location))
+                                            }
+                                        },
+                                        onClick = {},
+                                    )
+                                }
+                                else -> {
+                                    PlaceRow(
+                                        icon = vectorResource(Res.drawable.location_on_24px),
+                                        name = stringResource(Res.string.place_selector_current_location),
+                                        address = state.currentLocation?.address,
+                                        onClick = { onAction(PlaceSelectorAction.UseCurrentLocation) },
                                     )
                                 }
                             }
-                        )
-                    }
-                    if (state.savedPlaces.isEmpty()) {
-                        item {
-                            EmptyState(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                title = stringResource(Res.string.place_selector_empty_my_places_title),
-                                description = stringResource(Res.string.place_selector_empty_my_places_description),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
-                            )
+                            HorizontalDivider()
                         }
-                    } else {
-                        items(state.savedPlaces, key = { it.id }) { place ->
-                            PlaceRow(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                name = place.name,
-                                address = place.address,
-                                trailing = {
-                                    IconButton(onClick = { onAction(PlaceSelectorAction.OnDeletePlace(place)) }) {
+                    }
+
+                    // My places and EIA sections — hidden while searching
+                    if (state.searchQuery.isBlank()) {
+                        item {
+                            SectionHeader(
+                                title = stringResource(Res.string.place_selector_section_my_places),
+                                action = {
+                                    IconButton(onClick = { onAction(PlaceSelectorAction.OnAddPlace) }) {
                                         Icon(
-                                            vectorResource(Res.drawable.delete_24px),
-                                            contentDescription = stringResource(Res.string.cd_delete_place),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            vectorResource(Res.drawable.add_24px),
+                                            contentDescription = stringResource(Res.string.cd_add_place),
                                         )
                                     }
-                                },
-                                onClick = { onPlaceSelected(place) },
+                                }
                             )
-                            HorizontalDivider()
                         }
-                    }
-
-                    // Community places — shared by other users, shown both while picking a
-                    // place and while browsing/managing saved places. Hidden entirely when
-                    // empty since it's a discovery bonus, not a primary flow.
-                    if (state.communityPlaces.isNotEmpty()) {
-                        item {
-                            SectionHeader(title = stringResource(Res.string.place_selector_section_community))
-                        }
-                        items(state.communityPlaces, key = { it.id }) { place ->
-                            PlaceRow(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                name = place.name,
-                                address = place.address,
-                                badgeText = stringResource(Res.string.place_selector_community_badge),
-                                trailing = if (isBrowseOnly) {
-                                    {
-                                        IconButton(onClick = { onAction(PlaceSelectorAction.OnAddToMyPlaces(place)) }) {
-                                            Icon(
-                                                vectorResource(Res.drawable.add_24px),
-                                                contentDescription = stringResource(Res.string.cd_add_to_my_places),
-                                                tint = MaterialTheme.colorScheme.primary,
-                                            )
-                                        }
-                                    }
-                                } else null,
-                                onClick = { onPlaceSelected(place) },
-                            )
-                            HorizontalDivider()
-                        }
-                    }
-
-                    // EIA campus presets — only relevant when picking a place.
-                    if (!isBrowseOnly) {
-                        item {
-                            SectionHeader(title = stringResource(Res.string.place_selector_section_eia))
-                        }
-                        items(state.campusPlaces, key = { it.id }) { place ->
-                            PlaceRow(
-                                icon = vectorResource(Res.drawable.location_on_24px),
-                                name = place.name,
-                                address = place.address,
-                                onClick = { onPlaceSelected(place) },
-                            )
-                            HorizontalDivider()
-                        }
-                    }
-                }
-
-                // Search results section
-                if (state.searchQuery.isNotBlank()) {
-                    item {
-                        SectionHeader(title = stringResource(Res.string.place_selector_section_results))
-                    }
-                    when {
-                        state.isSearching || state.isResolvingSuggestion -> {
+                        if (state.savedPlaces.isEmpty()) {
                             item {
-                                CircularProgressIndicator(modifier = Modifier.padding(Spacing.lg))
-                            }
-                        }
-                        state.searchResults.isEmpty() -> {
-                            item {
-                                Text(
-                                    text = stringResource(Res.string.place_selector_no_results),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
+                                EmptyState(
+                                    icon = vectorResource(Res.drawable.location_on_24px),
+                                    title = stringResource(Res.string.place_selector_empty_my_places_title),
+                                    description = stringResource(Res.string.place_selector_empty_my_places_description),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
                                 )
                             }
-                        }
-                        else -> {
-                            items(state.searchResults, key = { it.placeId }) { suggestion ->
+                        } else {
+                            items(state.savedPlaces, key = { it.id }) { place ->
                                 PlaceRow(
                                     icon = vectorResource(Res.drawable.location_on_24px),
-                                    name = suggestion.primaryText,
-                                    address = suggestion.fullAddress,
-                                    onClick = { onAction(PlaceSelectorAction.OnSuggestionSelected(suggestion)) },
+                                    name = place.name,
+                                    address = place.address,
+                                    trailing = {
+                                        IconButton(onClick = { onAction(PlaceSelectorAction.OnDeletePlace(place)) }) {
+                                            Icon(
+                                                vectorResource(Res.drawable.delete_24px),
+                                                contentDescription = stringResource(Res.string.cd_delete_place),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
+                                    },
+                                    onClick = { onPlaceSelected(place) },
                                 )
                                 HorizontalDivider()
+                            }
+                        }
+
+                        // Community places — shared by other users, shown both while picking a
+                        // place and while browsing/managing saved places. Hidden entirely when
+                        // empty since it's a discovery bonus, not a primary flow.
+                        if (state.communityPlaces.isNotEmpty()) {
+                            item {
+                                SectionHeader(title = stringResource(Res.string.place_selector_section_community))
+                            }
+                            items(state.communityPlaces, key = { it.id }) { place ->
+                                PlaceRow(
+                                    icon = vectorResource(Res.drawable.location_on_24px),
+                                    name = place.name,
+                                    address = place.address,
+                                    badgeText = stringResource(Res.string.place_selector_community_badge),
+                                    trailing = if (isBrowseOnly) {
+                                        {
+                                            IconButton(onClick = { onAction(PlaceSelectorAction.OnAddToMyPlaces(place)) }) {
+                                                Icon(
+                                                    vectorResource(Res.drawable.add_24px),
+                                                    contentDescription = stringResource(Res.string.cd_add_to_my_places),
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                )
+                                            }
+                                        }
+                                    } else null,
+                                    onClick = { onPlaceSelected(place) },
+                                )
+                                HorizontalDivider()
+                            }
+                        }
+
+                        // EIA campus presets — only relevant when picking a place.
+                        if (!isBrowseOnly) {
+                            item {
+                                SectionHeader(title = stringResource(Res.string.place_selector_section_eia))
+                            }
+                            items(state.campusPlaces, key = { it.id }) { place ->
+                                PlaceRow(
+                                    icon = vectorResource(Res.drawable.location_on_24px),
+                                    name = place.name,
+                                    address = place.address,
+                                    onClick = { onPlaceSelected(place) },
+                                )
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+
+                    // Search results section
+                    if (state.searchQuery.isNotBlank()) {
+                        item {
+                            SectionHeader(title = stringResource(Res.string.place_selector_section_results))
+                        }
+                        when {
+                            state.isSearching || state.isResolvingSuggestion -> {
+                                item {
+                                    CircularProgressIndicator(modifier = Modifier.padding(Spacing.lg))
+                                }
+                            }
+                            state.searchResults.isEmpty() -> {
+                                item {
+                                    Text(
+                                        text = stringResource(Res.string.place_selector_no_results),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
+                                    )
+                                }
+                            }
+                            else -> {
+                                items(state.searchResults, key = { it.placeId }) { suggestion ->
+                                    PlaceRow(
+                                        icon = vectorResource(Res.drawable.location_on_24px),
+                                        name = suggestion.primaryText,
+                                        address = suggestion.fullAddress,
+                                        onClick = { onAction(PlaceSelectorAction.OnSuggestionSelected(suggestion)) },
+                                    )
+                                    HorizontalDivider()
+                                }
                             }
                         }
                     }

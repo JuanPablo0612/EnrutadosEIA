@@ -34,7 +34,9 @@ import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.presentation.place.campusShortName
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesAction
 import com.juanpablo0612.carpool.presentation.route.search.SearchRoutesUiState
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
 import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
@@ -69,7 +71,8 @@ internal fun SearchHeader(
     modifier: Modifier = Modifier,
 ) {
     Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest, modifier = modifier) {
-        Column {
+        // The surface spans the window; its content lines up with the results below it.
+        Column(modifier = Modifier.centeredContent(ContentWidth.list)) {
             Column(
                 modifier = Modifier.padding(
                     start = Spacing.screenHorizontal,

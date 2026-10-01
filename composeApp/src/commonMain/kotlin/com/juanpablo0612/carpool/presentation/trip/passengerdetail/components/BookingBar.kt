@@ -16,8 +16,10 @@ import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPa
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.RouteDetailPassengerUiState
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.contributionLabel
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.book_request_button
@@ -45,6 +47,8 @@ internal fun BookingBar(
             Column(
                 modifier = Modifier
                     .windowInsetsPadding(BottomBarInsets)
+                    // The bar spans the window; its content lines up with the details above it.
+                    .centeredContent(ContentWidth.list)
                     .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {

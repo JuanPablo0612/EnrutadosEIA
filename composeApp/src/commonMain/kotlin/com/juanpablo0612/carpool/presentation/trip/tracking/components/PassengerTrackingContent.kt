@@ -26,7 +26,9 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingAction
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingUiState
 import com.juanpablo0612.carpool.presentation.trip.tracking.previewTrip
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.trip_tracking_message_driver
@@ -46,6 +48,7 @@ internal fun PassengerTrackingContent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .centeredContent(ContentWidth.list)
             .padding(Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg)
     ) {

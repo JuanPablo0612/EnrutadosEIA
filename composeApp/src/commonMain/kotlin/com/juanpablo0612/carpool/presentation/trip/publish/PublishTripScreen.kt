@@ -51,6 +51,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.trip.validation.TripDraftValidator
@@ -85,15 +86,19 @@ import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.components.adaptiveDatePickerDisplayMode
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.WindowLayout
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
 import com.juanpablo0612.carpool.presentation.ui.util.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import com.juanpablo0612.carpool.presentation.ui.util.isImeVisible
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.Res
@@ -293,6 +298,7 @@ fun PublishTripContent(
                         Column(
                             modifier = Modifier
                                 .windowInsetsPadding(BottomBarInsets)
+                                .centeredContent(ContentWidth.form)
                                 .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
                             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
                         ) {
@@ -320,116 +326,118 @@ fun PublishTripContent(
             return@Scaffold
         }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding(),
-            contentPadding = PaddingValues(bottom = Spacing.lg),
-        ) {
-            if (state.savedRoutes.isNotEmpty()) {
-                item(key = "saved_routes") {
-                    SavedRouteChips(
-                        routes = state.savedRoutes,
-                        selectedRouteId = state.linkedRoute?.id,
-                        onRouteClick = { onAction(PublishTripAction.OnSavedRouteClick(it)) },
+        CenteredContent(ContentWidth.form, modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding(), gutter = 0.dp) { margin ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin),
+            ) {
+                if (state.savedRoutes.isNotEmpty()) {
+                    item(key = "saved_routes") {
+                        SavedRouteChips(
+                            routes = state.savedRoutes,
+                            selectedRouteId = state.linkedRoute?.id,
+                            onRouteClick = { onAction(PublishTripAction.OnSavedRouteClick(it)) },
+                        )
+                    }
+                }
+
+                item(key = "route_header") {
+                    SectionHeader(
+                        title = stringResource(Res.string.publish_trip_route_section),
+                        modifier = Modifier.padding(top = Spacing.md),
+                        action = {
+                            IconButton(onClick = { onAction(PublishTripAction.OnReverseStops) }, enabled = state.stops.isComplete) {
+                                Icon(
+                                    imageVector = vectorResource(Res.drawable.swap_horiz_24px),
+                                    contentDescription = stringResource(Res.string.cd_reverse_stops),
+                                    modifier = Modifier.rotate(90f),
+                                )
+                            }
+                        },
                     )
                 }
-            }
-
-            item(key = "route_header") {
-                SectionHeader(
-                    title = stringResource(Res.string.publish_trip_route_section),
-                    modifier = Modifier.padding(top = Spacing.md),
-                    action = {
-                        IconButton(onClick = { onAction(PublishTripAction.OnReverseStops) }, enabled = state.stops.isComplete) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.swap_horiz_24px),
-                                contentDescription = stringResource(Res.string.cd_reverse_stops),
-                                modifier = Modifier.rotate(90f),
-                            )
-                        }
-                    },
+                stopsEditorItems(
+                    stops = state.stops,
+                    onOriginClick = { onAction(PublishTripAction.OnOriginClick) },
+                    onDestinationClick = { onAction(PublishTripAction.OnDestinationClick) },
+                    onEditWaypoint = { onAction(PublishTripAction.OnEditWaypointClick(it)) },
+                    onRemoveWaypoint = { onAction(PublishTripAction.OnRemoveWaypoint(it)) },
+                    onAddWaypoint = { onAction(PublishTripAction.OnAddWaypointClick) },
                 )
-            }
-            stopsEditorItems(
-                stops = state.stops,
-                onOriginClick = { onAction(PublishTripAction.OnOriginClick) },
-                onDestinationClick = { onAction(PublishTripAction.OnDestinationClick) },
-                onEditWaypoint = { onAction(PublishTripAction.OnEditWaypointClick(it)) },
-                onRemoveWaypoint = { onAction(PublishTripAction.OnRemoveWaypoint(it)) },
-                onAddWaypoint = { onAction(PublishTripAction.OnAddWaypointClick) },
-            )
-            if (state.linkedRoute != null) {
-                item(key = "linked_hint") {
-                    Text(
-                        text = stringResource(Res.string.publish_trip_linked_route_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal),
-                    )
+                if (state.linkedRoute != null) {
+                    item(key = "linked_hint") {
+                        Text(
+                            text = stringResource(Res.string.publish_trip_linked_route_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = Spacing.screenHorizontal),
+                        )
+                    }
                 }
-            }
-            fieldErrorItem("stops_error", state.fieldErrors, TripError.OriginDestinationRequired, TripError.SameOriginDestination)
+                fieldErrorItem("stops_error", state.fieldErrors, TripError.OriginDestinationRequired, TripError.SameOriginDestination)
 
-            item(key = "when") {
-                TripWhenSection(
-                    dateChipState = when (state.departureDate) {
-                        today -> DateChip.Today
-                        tomorrow -> DateChip.Tomorrow
-                        else -> DateChip.Other
-                    },
-                    formattedDate = formattedDate,
-                    formattedTime = formattedTime,
-                    onSelectToday = { onAction(PublishTripAction.OnSelectToday) },
-                    onSelectTomorrow = { onAction(PublishTripAction.OnSelectTomorrow) },
-                    onShowDatePicker = { onAction(PublishTripAction.OnShowDatePicker) },
-                    onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) },
-                    modifier = Modifier.sectionPadding(),
-                )
-            }
-            fieldErrorItem("when_error", state.fieldErrors, TripError.DepartureTooSoon, TripError.DepartureTooFar)
-
-            vehicleItems(state, onAction)
-
-            if (state.vehicles.isNotEmpty()) {
-                item(key = "seats") {
-                    TripSeatsSection(
-                        seatCount = state.seatCount,
-                        selectedVehicle = state.selectedVehicle,
-                        onChange = { onAction(PublishTripAction.OnSetSeats(it)) },
+                item(key = "when") {
+                    TripWhenSection(
+                        dateChipState = when (state.departureDate) {
+                            today -> DateChip.Today
+                            tomorrow -> DateChip.Tomorrow
+                            else -> DateChip.Other
+                        },
+                        formattedDate = formattedDate,
+                        formattedTime = formattedTime,
+                        onSelectToday = { onAction(PublishTripAction.OnSelectToday) },
+                        onSelectTomorrow = { onAction(PublishTripAction.OnSelectTomorrow) },
+                        onShowDatePicker = { onAction(PublishTripAction.OnShowDatePicker) },
+                        onShowTimePicker = { onAction(PublishTripAction.OnShowTimePicker) },
                         modifier = Modifier.sectionPadding(),
                     )
                 }
-                fieldErrorItem("seats_error", state.fieldErrors, TripError.SeatsOutOfRange)
-                item(key = "contribution") {
-                    TripContributionSection(
-                        contributionPerPassenger = state.contributionPerPassenger,
-                        onContributionChange = { onAction(PublishTripAction.OnSetContribution(it)) },
-                        modifier = Modifier.sectionPadding(),
-                    )
-                }
-                fieldErrorItem("contribution_error", state.fieldErrors, TripError.ContributionOutOfRange)
-                item(key = "message") {
-                    TripMessageSection(
-                        message = state.message,
-                        onMessageChange = { onAction(PublishTripAction.OnSetMessage(it)) },
-                        modifier = Modifier.sectionPadding(),
-                    )
-                }
-                fieldErrorItem("message_error", state.fieldErrors, TripError.MessageTooLong)
-            }
+                fieldErrorItem("when_error", state.fieldErrors, TripError.DepartureTooSoon, TripError.DepartureTooFar)
 
-            if (state.isFromScratch) {
-                item(key = "save_as_route") { SaveAsRouteSection(state, onAction) }
-            }
+                vehicleItems(state, onAction)
 
-            state.error?.let { error ->
-                item(key = "error") {
-                    ErrorMessage(
-                        message = stringResource(error.asStringResource()),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                            .semantics { liveRegion = LiveRegionMode.Polite },
-                    )
+                if (state.vehicles.isNotEmpty()) {
+                    item(key = "seats") {
+                        TripSeatsSection(
+                            seatCount = state.seatCount,
+                            selectedVehicle = state.selectedVehicle,
+                            onChange = { onAction(PublishTripAction.OnSetSeats(it)) },
+                            modifier = Modifier.sectionPadding(),
+                        )
+                    }
+                    fieldErrorItem("seats_error", state.fieldErrors, TripError.SeatsOutOfRange)
+                    item(key = "contribution") {
+                        TripContributionSection(
+                            contributionPerPassenger = state.contributionPerPassenger,
+                            onContributionChange = { onAction(PublishTripAction.OnSetContribution(it)) },
+                            modifier = Modifier.sectionPadding(),
+                        )
+                    }
+                    fieldErrorItem("contribution_error", state.fieldErrors, TripError.ContributionOutOfRange)
+                    item(key = "message") {
+                        TripMessageSection(
+                            message = state.message,
+                            onMessageChange = { onAction(PublishTripAction.OnSetMessage(it)) },
+                            modifier = Modifier.sectionPadding(),
+                        )
+                    }
+                    fieldErrorItem("message_error", state.fieldErrors, TripError.MessageTooLong)
+                }
+
+                if (state.isFromScratch) {
+                    item(key = "save_as_route") { SaveAsRouteSection(state, onAction) }
+                }
+
+                state.error?.let { error ->
+                    item(key = "error") {
+                        ErrorMessage(
+                            message = stringResource(error.asStringResource()),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                                .semantics { liveRegion = LiveRegionMode.Polite },
+                        )
+                    }
                 }
             }
         }

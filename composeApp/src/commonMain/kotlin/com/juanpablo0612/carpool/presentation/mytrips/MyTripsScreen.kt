@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.booking.components.PendingRequestsBanner
 import com.juanpablo0612.carpool.presentation.mytrips.components.MyTripCard
 import com.juanpablo0612.carpool.presentation.rating.RatingTarget
@@ -36,10 +37,14 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.calendar_month_24px
@@ -131,7 +136,9 @@ internal fun MyTripsContent(
 @Composable
 private fun MyTripsHeader(segment: MyTripsSegment, filter: MyTripsFilter, onAction: (MyTripsAction) -> Unit) {
     Column(
-        modifier = Modifier.padding(start = Spacing.screenHorizontal, end = Spacing.screenHorizontal, top = Spacing.lg),
+        modifier = Modifier
+            .centeredContent(ContentWidth.list)
+            .padding(start = Spacing.screenHorizontal, end = Spacing.screenHorizontal, top = Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         Text(
@@ -185,38 +192,41 @@ private fun MyTripsList(state: MyTripsUiState, now: Long, onAction: (MyTripsActi
         MyTripsEmptyState(isUpcoming = isUpcoming, onAction = onAction)
         return
     }
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
-    ) {
-        if (state.error == MyTripsError.ActionFailed) {
-            item(key = "error") {
-                ErrorMessage(message = stringResource(state.error.asStringResource()))
+    CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            if (state.error == MyTripsError.ActionFailed) {
+                item(key = "error") {
+                    ErrorMessage(message = stringResource(state.error.asStringResource()))
+                }
             }
-        }
-        if (showBanner) {
-            item(key = "requests") {
-                PendingRequestsBanner(count = state.pendingRequestCount, onClick = { onAction(MyTripsAction.OnOpenRequests) })
+            if (showBanner) {
+                item(key = "requests") {
+                    PendingRequestsBanner(count = state.pendingRequestCount, onClick = { onAction(MyTripsAction.OnOpenRequests) })
+                }
             }
-        }
-        groups.forEach { (_, itemsOfDay) ->
-            item(key = "day_${itemsOfDay.first().key}") {
-                Text(
-                    text = departureDayLabel(itemsOfDay.first().departureTime, now).replaceFirstChar { it.uppercaseChar() },
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .padding(top = Spacing.sm)
-                        .semantics { heading() },
-                )
-            }
-            items(itemsOfDay, key = { it.key }) { item ->
-                MyTripCard(
-                    item = item,
-                    isUpcoming = isUpcoming,
-                    isBusy = state.busyKey == item.key,
-                    onAction = onAction,
-                )
+            groups.forEach { (_, itemsOfDay) ->
+                item(key = "day_${itemsOfDay.first().key}") {
+                    Text(
+                        text = departureDayLabel(itemsOfDay.first().departureTime, now).replaceFirstChar { it.uppercaseChar() },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(top = Spacing.sm)
+                            .semantics { heading() },
+                    )
+                }
+                items(itemsOfDay, key = { it.key }) { item ->
+                    MyTripCard(
+                        item = item,
+                        isUpcoming = isUpcoming,
+                        isBusy = state.busyKey == item.key,
+                        onAction = onAction,
+                    )
+                }
             }
         }
     }

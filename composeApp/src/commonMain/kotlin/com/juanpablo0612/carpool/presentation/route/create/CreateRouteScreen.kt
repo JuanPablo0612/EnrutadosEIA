@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.route.create
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import com.juanpablo0612.carpool.presentation.place.stops.StopSelectionHost
 import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
 import com.juanpablo0612.carpool.presentation.place.stops.stopsEditorItems
@@ -26,11 +28,14 @@ import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.FormProgressIndicator
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
@@ -116,129 +121,131 @@ fun CreateRouteContent(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .consumeWindowInsets(padding)
-                .imePadding(),
-            contentPadding = PaddingValues(bottom = Spacing.lg)
-        ) {
-            item {
-                val completed = listOf(
-                    state.name.isNotBlank(),
-                    state.stops.origin != null,
-                    state.stops.destination != null
-                ).count { it }
-                FormProgressIndicator(
-                    completedSections = completed,
-                    totalSections = 3,
-                    label = stringResource(Res.string.form_progress_label, completed, 3),
-                    modifier = Modifier.padding(vertical = Spacing.sm)
-                )
-            }
-
-            // Route name field
-            item {
-                OutlinedTextField(
-                    value = state.name,
-                    onValueChange = { onAction(CreateRouteAction.OnNameChange(it)) },
-                    label = { Text(stringResource(Res.string.route_name_label)) },
-                    placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
-                    singleLine = true,
-                    isError = state.error is CreateRouteError.NameRequired,
-                    supportingText = if (state.error is CreateRouteError.NameRequired) {
-                        { Text(stringResource(state.error.asStringResource())) }
-                    } else null
-                )
-            }
-
-            // Trajectory section
-            item {
-                SectionHeader(stringResource(Res.string.waypoints_section_title))
-            }
-
-            stopsEditorItems(
-                stops = state.stops,
-                onOriginClick = { onAction(CreateRouteAction.OnOriginClick) },
-                onDestinationClick = { onAction(CreateRouteAction.OnDestinationClick) },
-                onEditWaypoint = { onAction(CreateRouteAction.OnEditWaypointClick(it)) },
-                onRemoveWaypoint = { onAction(CreateRouteAction.OnRemoveWaypoint(it)) },
-                onAddWaypoint = { onAction(CreateRouteAction.OnAddWaypointClick) },
-            )
-
-            // Recurrence section
-            item {
-                SectionHeader(stringResource(Res.string.recurrence_section_title))
-            }
-
-            item {
-                DaySelector(
-                    selectedDays = state.recurringDays,
-                    onToggleDay = { onAction(CreateRouteAction.OnToggleRecurringDay(it)) },
-                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
-                )
-            }
-
-            item {
-                val timeLabel = state.typicalDepartureTime?.let { t ->
-                    stringResource(
-                        Res.string.departure_time_label,
-                        "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
-                    )
-                } ?: stringResource(Res.string.departure_time_not_set)
-                TextButton(
-                    onClick = { showTimePicker = true },
-                    modifier = Modifier.padding(horizontal = Spacing.sm)
-                ) {
-                    Text(timeLabel)
-                }
-            }
-
-            // General error — field-specific errors (e.g. NameRequired) are shown inline on
-            // their own field instead, via supportingText.
-            item {
-                if (state.error != null && state.error !is CreateRouteError.NameRequired) {
-                    ErrorMessage(
-                        message = stringResource(state.error.asStringResource()),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                    )
-                }
-            }
-
-            if (state.isSaved) {
+        CenteredContent(ContentWidth.form, modifier = Modifier, gutter = 0.dp) { margin ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .imePadding(),
+                contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
+            ) {
                 item {
-                    SuccessMessage(
-                        message = stringResource(Res.string.notice_route_created),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                    val completed = listOf(
+                        state.name.isNotBlank(),
+                        state.stops.origin != null,
+                        state.stops.destination != null
+                    ).count { it }
+                    FormProgressIndicator(
+                        completedSections = completed,
+                        totalSections = 3,
+                        label = stringResource(Res.string.form_progress_label, completed, 3),
+                        modifier = Modifier.padding(vertical = Spacing.sm)
                     )
                 }
-            }
 
-            // Save button
-            item {
-                Button(
-                    onClick = { onAction(CreateRouteAction.OnSaveClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Spacing.lg),
-                    enabled = state.isValid && !state.isLoading && !state.isSaved
-                ) {
-                    if (state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
+                // Route name field
+                item {
+                    OutlinedTextField(
+                        value = state.name,
+                        onValueChange = { onAction(CreateRouteAction.OnNameChange(it)) },
+                        label = { Text(stringResource(Res.string.route_name_label)) },
+                        placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                        singleLine = true,
+                        isError = state.error is CreateRouteError.NameRequired,
+                        supportingText = if (state.error is CreateRouteError.NameRequired) {
+                            { Text(stringResource(state.error.asStringResource())) }
+                        } else null
+                    )
+                }
+
+                // Trajectory section
+                item {
+                    SectionHeader(stringResource(Res.string.waypoints_section_title))
+                }
+
+                stopsEditorItems(
+                    stops = state.stops,
+                    onOriginClick = { onAction(CreateRouteAction.OnOriginClick) },
+                    onDestinationClick = { onAction(CreateRouteAction.OnDestinationClick) },
+                    onEditWaypoint = { onAction(CreateRouteAction.OnEditWaypointClick(it)) },
+                    onRemoveWaypoint = { onAction(CreateRouteAction.OnRemoveWaypoint(it)) },
+                    onAddWaypoint = { onAction(CreateRouteAction.OnAddWaypointClick) },
+                )
+
+                // Recurrence section
+                item {
+                    SectionHeader(stringResource(Res.string.recurrence_section_title))
+                }
+
+                item {
+                    DaySelector(
+                        selectedDays = state.recurringDays,
+                        onToggleDay = { onAction(CreateRouteAction.OnToggleRecurringDay(it)) },
+                        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
+                    )
+                }
+
+                item {
+                    val timeLabel = state.typicalDepartureTime?.let { t ->
+                        stringResource(
+                            Res.string.departure_time_label,
+                            "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
                         )
-                    } else {
-                        Text(stringResource(Res.string.save_route_button))
+                    } ?: stringResource(Res.string.departure_time_not_set)
+                    TextButton(
+                        onClick = { showTimePicker = true },
+                        modifier = Modifier.padding(horizontal = Spacing.sm)
+                    ) {
+                        Text(timeLabel)
+                    }
+                }
+
+                // General error — field-specific errors (e.g. NameRequired) are shown inline on
+                // their own field instead, via supportingText.
+                item {
+                    if (state.error != null && state.error !is CreateRouteError.NameRequired) {
+                        ErrorMessage(
+                            message = stringResource(state.error.asStringResource()),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        )
+                    }
+                }
+
+                if (state.isSaved) {
+                    item {
+                        SuccessMessage(
+                            message = stringResource(Res.string.notice_route_created),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        )
+                    }
+                }
+
+                // Save button
+                item {
+                    Button(
+                        onClick = { onAction(CreateRouteAction.OnSaveClick) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Spacing.lg),
+                        enabled = state.isValid && !state.isLoading && !state.isSaved
+                    ) {
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(stringResource(Res.string.save_route_button))
+                        }
                     }
                 }
             }

@@ -44,9 +44,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
@@ -145,84 +148,87 @@ internal fun HomeContent(
 
 @Composable
 private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit, bottomClearance: Dp) {
-    LazyColumn(
-        contentPadding = PaddingValues(
-            start = Spacing.screenHorizontal,
-            end = Spacing.screenHorizontal,
-            top = Spacing.lg,
-            bottom = bottomClearance,
-        ),
-        verticalArrangement = Arrangement.spacedBy(Spacing.xl),
-    ) {
-        item(key = "header") {
-            HomeHeader(
-                firstName = state.user?.firstName().orEmpty(),
-                now = now,
-                onOpenNotifications = { onAction(HomeAction.OpenNotifications) },
-            )
-        }
-        item(key = "search") {
-            SearchEntryCard(
-                onSearch = { onAction(HomeAction.SearchTrips) },
-                onShortcut = { onAction(HomeAction.SearchShortcutSelected(it)) },
-            )
-        }
-        state.nextUp?.let { next ->
-            item(key = "next_up") {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    SectionHeader(
-                        title = stringResource(Res.string.home_next_up_title),
-                        contentPadding = PaddingValues(0.dp),
-                    )
-                    UpcomingTripCard(
-                        upcoming = next,
-                        now = now,
-                        onOpen = { onAction(HomeAction.OpenTrip(next.tripId)) },
-                        onOpenPassengers = { onAction(HomeAction.OpenPassengers(next.tripId)) },
-                    )
-                }
-            }
-        }
-        if (state.pendingRequestCount > 0) {
-            item(key = "requests") {
-                PendingRequestsBanner(
-                    count = state.pendingRequestCount,
-                    onClick = { onAction(HomeAction.OpenRequests) },
+    CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = Spacing.screenHorizontal,
+                end = Spacing.screenHorizontal,
+                top = Spacing.lg,
+                bottom = bottomClearance,
+            ).plusHorizontal(margin),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xl),
+        ) {
+            item(key = "header") {
+                HomeHeader(
+                    firstName = state.user?.firstName().orEmpty(),
+                    now = now,
+                    onOpenNotifications = { onAction(HomeAction.OpenNotifications) },
                 )
             }
-        }
-        state.later?.let { later ->
-            item(key = "later") {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    SectionHeader(
-                        title = stringResource(Res.string.home_later_title),
-                        contentPadding = PaddingValues(0.dp),
-                    )
-                    LaterTripRow(
-                        upcoming = later,
-                        now = now,
-                        onOpen = { onAction(HomeAction.OpenTrip(later.tripId)) },
+            item(key = "search") {
+                SearchEntryCard(
+                    onSearch = { onAction(HomeAction.SearchTrips) },
+                    onShortcut = { onAction(HomeAction.SearchShortcutSelected(it)) },
+                )
+            }
+            state.nextUp?.let { next ->
+                item(key = "next_up") {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                        SectionHeader(
+                            title = stringResource(Res.string.home_next_up_title),
+                            contentPadding = PaddingValues(0.dp),
+                        )
+                        UpcomingTripCard(
+                            upcoming = next,
+                            now = now,
+                            onOpen = { onAction(HomeAction.OpenTrip(next.tripId)) },
+                            onOpenPassengers = { onAction(HomeAction.OpenPassengers(next.tripId)) },
+                        )
+                    }
+                }
+            }
+            if (state.pendingRequestCount > 0) {
+                item(key = "requests") {
+                    PendingRequestsBanner(
+                        count = state.pendingRequestCount,
+                        onClick = { onAction(HomeAction.OpenRequests) },
                     )
                 }
             }
-        }
-        when (state.welcome) {
-            HomeWelcome.ChooseHowToStart -> {
-                item(key = "how_to_start") {
-                    HowToStartSection(
-                        onFindSeat = { onAction(HomeAction.SearchTrips) },
+            state.later?.let { later ->
+                item(key = "later") {
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                        SectionHeader(
+                            title = stringResource(Res.string.home_later_title),
+                            contentPadding = PaddingValues(0.dp),
+                        )
+                        LaterTripRow(
+                            upcoming = later,
+                            now = now,
+                            onOpen = { onAction(HomeAction.OpenTrip(later.tripId)) },
+                        )
+                    }
+                }
+            }
+            when (state.welcome) {
+                HomeWelcome.ChooseHowToStart -> {
+                    item(key = "how_to_start") {
+                        HowToStartSection(
+                            onFindSeat = { onAction(HomeAction.SearchTrips) },
+                            onRegisterVehicle = { onAction(HomeAction.RegisterVehicle) },
+                        )
+                    }
+                    item(key = "how_it_works") { HowItWorksSection() }
+                }
+                HomeWelcome.SuggestVehicle -> item(key = "vehicle_suggestion") {
+                    VehicleSuggestionCard(
                         onRegisterVehicle = { onAction(HomeAction.RegisterVehicle) },
+                        onDismiss = { onAction(HomeAction.DismissVehicleSuggestion) },
                     )
                 }
-                item(key = "how_it_works") { HowItWorksSection() }
+                HomeWelcome.None -> Unit
             }
-            HomeWelcome.SuggestVehicle -> item(key = "vehicle_suggestion") {
-                VehicleSuggestionCard(
-                    onRegisterVehicle = { onAction(HomeAction.RegisterVehicle) },
-                    onDismiss = { onAction(HomeAction.DismissVehicleSuggestion) },
-                )
-            }
-            HomeWelcome.None -> Unit
         }
     }
 }

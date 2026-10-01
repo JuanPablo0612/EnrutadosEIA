@@ -30,7 +30,10 @@ import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingUiState
 import com.juanpablo0612.carpool.presentation.trip.tracking.previewTrip
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.my_location_24px
 import enrutadoseia.composeapp.generated.resources.passenger_dropped_off_confirm_body
@@ -58,65 +61,67 @@ internal fun DriverTrackingContent(
         )
     }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Spacing.lg),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md)
-    ) {
-        if (state.isSharingLocation) {
-            item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.my_location_24px),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp) // icon-intrinsic size
-                    )
-                    Spacer(Modifier.width(Spacing.xs))
-                    Text(
-                        text = stringResource(Res.string.trip_tracking_sharing_location),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+    CenteredContent(ContentWidth.list, modifier = modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(Spacing.lg).plusHorizontal(margin),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md)
+        ) {
+            if (state.isSharingLocation) {
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.my_location_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp) // icon-intrinsic size
+                        )
+                        Spacer(Modifier.width(Spacing.xs))
+                        Text(
+                            text = stringResource(Res.string.trip_tracking_sharing_location),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
-        }
 
-        item {
-            Text(
-                text = stringResource(Res.string.trip_tracking_passengers_title),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-            )
-        }
+            item {
+                Text(
+                    text = stringResource(Res.string.trip_tracking_passengers_title),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
+            }
 
-        items(state.passengers, key = { it.passengerId }) { passenger ->
-            PassengerStatusCard(
-                passenger = passenger,
-                isProcessing = passenger.passengerId in state.processingPassengerIds,
-                onMarkPickedUp = { onAction(TripTrackingAction.OnMarkPickedUp(passenger.passengerId)) },
-                onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOffClick(passenger.passengerId)) },
-                onMessage = {
-                    onAction(
-                        TripTrackingAction.OnChatClick(
-                            bookingId = passenger.bookingId,
-                            otherPartyName = passenger.passengerName,
+            items(state.passengers, key = { it.passengerId }) { passenger ->
+                PassengerStatusCard(
+                    passenger = passenger,
+                    isProcessing = passenger.passengerId in state.processingPassengerIds,
+                    onMarkPickedUp = { onAction(TripTrackingAction.OnMarkPickedUp(passenger.passengerId)) },
+                    onMarkDroppedOff = { onAction(TripTrackingAction.OnMarkDroppedOffClick(passenger.passengerId)) },
+                    onMessage = {
+                        onAction(
+                            TripTrackingAction.OnChatClick(
+                                bookingId = passenger.bookingId,
+                                otherPartyName = passenger.passengerName,
+                            )
                         )
-                    )
-                }
-            )
-        }
+                    }
+                )
+            }
 
-        item {
-            Spacer(Modifier.height(Spacing.sm))
-            Button(
-                onClick = { onAction(TripTrackingAction.OnCompleteTripClick) },
-                enabled = !state.isCompletingTrip && state.canCompleteTrip,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (state.isCompletingTrip) {
-                    CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs))
-                } else {
-                    Text(stringResource(Res.string.trip_tracking_complete_trip))
+            item {
+                Spacer(Modifier.height(Spacing.sm))
+                Button(
+                    onClick = { onAction(TripTrackingAction.OnCompleteTripClick) },
+                    enabled = !state.isCompletingTrip && state.canCompleteTrip,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (state.isCompletingTrip) {
+                        CircularProgressIndicator(modifier = Modifier.padding(Spacing.xs))
+                    } else {
+                        Text(stringResource(Res.string.trip_tracking_complete_trip))
+                    }
                 }
             }
         }

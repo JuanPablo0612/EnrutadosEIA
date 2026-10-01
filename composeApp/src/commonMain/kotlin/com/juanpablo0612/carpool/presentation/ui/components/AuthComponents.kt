@@ -42,9 +42,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.TopBarInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.arrow_back_24px
 import enrutadoseia.composeapp.generated.resources.cd_back
@@ -118,7 +120,7 @@ fun AuthFormLayout(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .heightIn(min = maxHeight)
-                    .fillMaxWidth()
+                    .centeredContent(ContentWidth.form)
                     .padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {

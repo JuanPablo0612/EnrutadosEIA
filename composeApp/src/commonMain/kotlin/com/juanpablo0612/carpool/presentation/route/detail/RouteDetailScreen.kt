@@ -1,5 +1,7 @@
 package com.juanpablo0612.carpool.presentation.route.detail
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import com.juanpablo0612.carpool.presentation.place.stops.StopSelectionHost
 import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
 import com.juanpablo0612.carpool.presentation.place.stops.stopsEditorItems
@@ -34,6 +36,8 @@ import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
@@ -41,6 +45,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import enrutadoseia.composeapp.generated.resources.*
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -201,78 +206,80 @@ internal fun RouteDetailReadContent(
 
         val route = state.route
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(bottom = Spacing.lg)
-        ) {
-            // Route map: origin -> waypoints -> destination, in order.
-            item {
-                val stops = remember(route.id) {
-                    (listOf(route.origin) + route.waypoints + route.destination)
-                        .map { Coordinates(it.latitude, it.longitude) }
-                }
-                MapRoutePreview(
-                    markers = stops,
-                    modifier = Modifier
-                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                        .mediaPreviewSize()
-                        .clip(MaterialTheme.shapes.medium),
-                )
-            }
-
-            // Recurrence row
-            if (route.recurringDays.isNotEmpty()) {
+        CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize().padding(padding), gutter = 0.dp) { margin ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
+            ) {
+                // Route map: origin -> waypoints -> destination, in order.
                 item {
-                    RecurrenceRow(
-                        recurringDays = route.recurringDays,
-                        typicalDepartureTime = route.typicalDepartureTime
+                    val stops = remember(route.id) {
+                        (listOf(route.origin) + route.waypoints + route.destination)
+                            .map { Coordinates(it.latitude, it.longitude) }
+                    }
+                    MapRoutePreview(
+                        markers = stops,
+                        modifier = Modifier
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                            .mediaPreviewSize()
+                            .clip(MaterialTheme.shapes.medium),
                     )
                 }
-            }
 
-            // Trajectory section
-            item { SectionHeader(stringResource(Res.string.route_detail_trajectory_section)) }
-
-            stopsReadOnlyItems(StopsDraft.of(route))
-
-            item { SectionHeader(stringResource(Res.string.route_detail_stats_section)) }
-
-            item {
-                Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
-                    if (state.tripsPublished > 0) {
-                        Text(
-                            text = stringResource(Res.string.route_detail_trips_published, state.tripsPublished),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        state.lastUsedAt?.let { instant ->
-                            val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                            Text(
-                                text = stringResource(
-                                    Res.string.route_detail_last_used,
-                                    formatNumericDate(local.date)
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    } else {
-                        Text(
-                            text = stringResource(Res.string.route_detail_never_used),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                // Recurrence row
+                if (route.recurringDays.isNotEmpty()) {
+                    item {
+                        RecurrenceRow(
+                            recurringDays = route.recurringDays,
+                            typicalDepartureTime = route.typicalDepartureTime
                         )
                     }
                 }
-            }
 
-            state.error?.let { error ->
+                // Trajectory section
+                item { SectionHeader(stringResource(Res.string.route_detail_trajectory_section)) }
+
+                stopsReadOnlyItems(StopsDraft.of(route))
+
+                item { SectionHeader(stringResource(Res.string.route_detail_stats_section)) }
+
                 item {
-                    ErrorMessage(
-                        message = stringResource(error.asStringResource()),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                    )
+                    Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
+                        if (state.tripsPublished > 0) {
+                            Text(
+                                text = stringResource(Res.string.route_detail_trips_published, state.tripsPublished),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            state.lastUsedAt?.let { instant ->
+                                val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                                Text(
+                                    text = stringResource(
+                                        Res.string.route_detail_last_used,
+                                        formatNumericDate(local.date)
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        } else {
+                            Text(
+                                text = stringResource(Res.string.route_detail_never_used),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                state.error?.let { error ->
+                    item {
+                        ErrorMessage(
+                            message = stringResource(error.asStringResource()),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        )
+                    }
                 }
             }
         }
@@ -330,87 +337,89 @@ internal fun RouteDetailEditContent(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(bottom = Spacing.lg)
-        ) {
-            // Name field
-            item {
-                OutlinedTextField(
-                    value = draft.name,
-                    onValueChange = { onAction(RouteDetailAction.OnNameChange(it)) },
-                    label = { Text(stringResource(Res.string.route_name_label)) },
-                    placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
-                    singleLine = true
-                )
-            }
-
-            item { SectionHeader(stringResource(Res.string.waypoints_section_title)) }
-
-            stopsEditorItems(
-                stops = draft.stops,
-                onOriginClick = { onAction(RouteDetailAction.OnOriginClick) },
-                onDestinationClick = { onAction(RouteDetailAction.OnDestinationClick) },
-                onEditWaypoint = { onAction(RouteDetailAction.OnEditWaypointClick(it)) },
-                onRemoveWaypoint = { onAction(RouteDetailAction.OnRemoveWaypoint(it)) },
-                onAddWaypoint = { onAction(RouteDetailAction.OnAddWaypointClick) },
-            )
-
-            item { SectionHeader(stringResource(Res.string.recurrence_section_title)) }
-
-            item {
-                DaySelector(
-                    selectedDays = draft.recurringDays,
-                    onToggleDay = { onAction(RouteDetailAction.OnToggleRecurringDay(it)) },
-                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
-                )
-            }
-
-            item {
-                val timeLabel = draft.typicalDepartureTime?.let { t ->
-                    stringResource(
-                        Res.string.departure_time_label,
-                        "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
-                    )
-                } ?: stringResource(Res.string.departure_time_not_set)
-                TextButton(
-                    onClick = { showTimePicker = true },
-                    modifier = Modifier.padding(horizontal = Spacing.sm)
-                ) {
-                    Text(timeLabel)
-                }
-            }
-
-            if (isSaved) {
+        CenteredContent(ContentWidth.form, modifier = Modifier.fillMaxSize().padding(padding), gutter = 0.dp) { margin ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
+            ) {
+                // Name field
                 item {
-                    SuccessMessage(
-                        message = stringResource(Res.string.notice_route_updated),
+                    OutlinedTextField(
+                        value = draft.name,
+                        onValueChange = { onAction(RouteDetailAction.OnNameChange(it)) },
+                        label = { Text(stringResource(Res.string.route_name_label)) },
+                        placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                        singleLine = true
                     )
                 }
-            }
 
-            item {
-                Button(
-                    onClick = { onAction(RouteDetailAction.OnSaveChangesClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Spacing.lg),
-                    enabled = draft.isValid && !isSaving && !isSaved
-                ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
+                item { SectionHeader(stringResource(Res.string.waypoints_section_title)) }
+
+                stopsEditorItems(
+                    stops = draft.stops,
+                    onOriginClick = { onAction(RouteDetailAction.OnOriginClick) },
+                    onDestinationClick = { onAction(RouteDetailAction.OnDestinationClick) },
+                    onEditWaypoint = { onAction(RouteDetailAction.OnEditWaypointClick(it)) },
+                    onRemoveWaypoint = { onAction(RouteDetailAction.OnRemoveWaypoint(it)) },
+                    onAddWaypoint = { onAction(RouteDetailAction.OnAddWaypointClick) },
+                )
+
+                item { SectionHeader(stringResource(Res.string.recurrence_section_title)) }
+
+                item {
+                    DaySelector(
+                        selectedDays = draft.recurringDays,
+                        onToggleDay = { onAction(RouteDetailAction.OnToggleRecurringDay(it)) },
+                        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
+                    )
+                }
+
+                item {
+                    val timeLabel = draft.typicalDepartureTime?.let { t ->
+                        stringResource(
+                            Res.string.departure_time_label,
+                            "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
                         )
-                    } else {
-                        Text(stringResource(Res.string.route_save_changes_button))
+                    } ?: stringResource(Res.string.departure_time_not_set)
+                    TextButton(
+                        onClick = { showTimePicker = true },
+                        modifier = Modifier.padding(horizontal = Spacing.sm)
+                    ) {
+                        Text(timeLabel)
+                    }
+                }
+
+                if (isSaved) {
+                    item {
+                        SuccessMessage(
+                            message = stringResource(Res.string.notice_route_updated),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
+                        )
+                    }
+                }
+
+                item {
+                    Button(
+                        onClick = { onAction(RouteDetailAction.OnSaveChangesClick) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Spacing.lg),
+                        enabled = draft.isValid && !isSaving && !isSaved
+                    ) {
+                        if (isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(stringResource(Res.string.route_save_changes_button))
+                        }
                     }
                 }
             }

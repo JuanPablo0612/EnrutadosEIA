@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
@@ -36,11 +37,14 @@ import com.juanpablo0612.carpool.presentation.ui.components.RouteLineRow
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
 import com.juanpablo0612.carpool.presentation.ui.components.TripStatusBadge
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
 import com.juanpablo0612.carpool.presentation.ui.util.formatTime
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.action_dismiss
@@ -121,76 +125,78 @@ private fun PassengerList(
     val freeSeats = state.freeSeats
     val sectionPadding = PaddingValues(top = Spacing.sm)
 
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
-    ) {
-        item(key = "trip") { TripSummaryCard(trip = trip, nowMs = nowMs) }
+    CenteredContent(ContentWidth.list, modifier = modifier, gutter = 0.dp) { margin ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.md).plusHorizontal(margin),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            item(key = "trip") { TripSummaryCard(trip = trip, nowMs = nowMs) }
 
-        state.decisions.error?.let { error ->
-            item(key = "error") {
-                val dismissLabel = stringResource(Res.string.action_dismiss)
-                ErrorMessage(
-                    message = stringResource(error.asStringResource()),
-                    modifier = Modifier.clickable(onClickLabel = dismissLabel) {
-                        onDecision(BookingDecisionAction.DismissError)
-                    },
-                )
+            state.decisions.error?.let { error ->
+                item(key = "error") {
+                    val dismissLabel = stringResource(Res.string.action_dismiss)
+                    ErrorMessage(
+                        message = stringResource(error.asStringResource()),
+                        modifier = Modifier.clickable(onClickLabel = dismissLabel) {
+                            onDecision(BookingDecisionAction.DismissError)
+                        },
+                    )
+                }
             }
-        }
 
-        if (pending.isEmpty() && state.confirmed.isEmpty()) {
-            item(key = "empty") {
-                EmptyState(
-                    icon = vectorResource(Res.drawable.person_24px),
-                    title = stringResource(Res.string.trip_passengers_empty_title),
-                    description = stringResource(Res.string.trip_passengers_empty_subtitle),
-                )
+            if (pending.isEmpty() && state.confirmed.isEmpty()) {
+                item(key = "empty") {
+                    EmptyState(
+                        icon = vectorResource(Res.drawable.person_24px),
+                        title = stringResource(Res.string.trip_passengers_empty_title),
+                        description = stringResource(Res.string.trip_passengers_empty_subtitle),
+                    )
+                }
             }
-        }
 
-        if (pending.isNotEmpty()) {
-            item(key = "pending_header") {
-                SectionHeader(
-                    title = sectionTitle(stringResource(Res.string.trip_passengers_section_pending), pending.size),
-                    contentPadding = sectionPadding,
-                )
+            if (pending.isNotEmpty()) {
+                item(key = "pending_header") {
+                    SectionHeader(
+                        title = sectionTitle(stringResource(Res.string.trip_passengers_section_pending), pending.size),
+                        contentPadding = sectionPadding,
+                    )
+                }
+                items(pending, key = { it.id }) { booking ->
+                    BookingRequestCard(
+                        booking = booking,
+                        isTripFull = freeSeats == 0,
+                        isLastSeatContested = freeSeats == 1 && pending.size > 1,
+                        isBusy = booking.id in state.decisions.busyIds,
+                        nowMs = nowMs,
+                        onDecision = onDecision,
+                        onViewProfile = { onAction(TripPassengersAction.OnViewProfile(booking.passengerId)) },
+                    )
+                }
             }
-            items(pending, key = { it.id }) { booking ->
-                BookingRequestCard(
-                    booking = booking,
-                    isTripFull = freeSeats == 0,
-                    isLastSeatContested = freeSeats == 1 && pending.size > 1,
-                    isBusy = booking.id in state.decisions.busyIds,
-                    nowMs = nowMs,
-                    onDecision = onDecision,
-                    onViewProfile = { onAction(TripPassengersAction.OnViewProfile(booking.passengerId)) },
-                )
-            }
-        }
 
-        if (state.confirmed.isNotEmpty()) {
-            item(key = "confirmed_header") {
-                SectionHeader(
-                    title = sectionTitle(stringResource(Res.string.trip_passengers_section_confirmed), state.confirmed.size),
-                    contentPadding = sectionPadding,
-                )
-            }
-            items(state.confirmed, key = { it.id }) { booking ->
-                PassengerCard(
-                    booking = booking,
-                    isBusy = booking.id in state.decisions.busyIds,
-                    canCancel = state.isOpen,
-                    onMessage = { onAction(TripPassengersAction.OnMessagePassenger(booking)) },
-                    onRate = if (trip.status == TripStatus.Completed) {
-                        { onAction(TripPassengersAction.OnRatePassenger(booking)) }
-                    } else {
-                        null
-                    },
-                    onDecision = onDecision,
-                    onViewProfile = { onAction(TripPassengersAction.OnViewProfile(booking.passengerId)) },
-                )
+            if (state.confirmed.isNotEmpty()) {
+                item(key = "confirmed_header") {
+                    SectionHeader(
+                        title = sectionTitle(stringResource(Res.string.trip_passengers_section_confirmed), state.confirmed.size),
+                        contentPadding = sectionPadding,
+                    )
+                }
+                items(state.confirmed, key = { it.id }) { booking ->
+                    PassengerCard(
+                        booking = booking,
+                        isBusy = booking.id in state.decisions.busyIds,
+                        canCancel = state.isOpen,
+                        onMessage = { onAction(TripPassengersAction.OnMessagePassenger(booking)) },
+                        onRate = if (trip.status == TripStatus.Completed) {
+                            { onAction(TripPassengersAction.OnRatePassenger(booking)) }
+                        } else {
+                            null
+                        },
+                        onDecision = onDecision,
+                        onViewProfile = { onAction(TripPassengersAction.OnViewProfile(booking.passengerId)) },
+                    )
+                }
             }
         }
     }

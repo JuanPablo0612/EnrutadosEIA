@@ -29,6 +29,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
@@ -36,9 +37,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.FormProgressIndicato
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleBrandSection
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleColorSection
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleModelSection
@@ -222,130 +226,132 @@ fun RegisterVehicleContent(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding(),
-            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg),
-        ) {
+        CenteredContent(ContentWidth.form, modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding(), gutter = 0.dp) { margin ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg).plusHorizontal(margin),
+            ) {
 
-            item {
-                val completed = listOf(
-                    state.brand.isNotBlank(),
-                    state.model.isNotBlank(),
-                    RegisterVehicleUiState.PLATE_REGEX.matches(state.plate),
-                    state.effectiveColor.isNotBlank()
-                ).count { it }
-                FormProgressIndicator(
-                    completedSections = completed,
-                    totalSections = 4,
-                    label = stringResource(Res.string.form_progress_label, completed, 4)
-                )
-            }
-
-            // 1. Photo
-            item {
-                VehiclePhotoSection(
-                    photoFile = state.photoFile,
-                    existingPhotoUrl = state.existingPhotoUrl,
-                    onShowPhotoSheet = { onAction(RegisterVehicleAction.OnShowPhotoSheet) }
-                )
-            }
-
-            // 2. Brand dropdown
-            item {
-                VehicleBrandSection(
-                    showBrandDropdown = state.showBrandDropdown,
-                    isCustomBrand = state.isCustomBrand,
-                    brand = state.brand,
-                    brandError = state.brandError,
-                    onToggleBrandDropdown = { onAction(RegisterVehicleAction.OnToggleBrandDropdown) },
-                    onBrandSelected = { onAction(RegisterVehicleAction.OnBrandSelected(it)) }
-                )
-            }
-
-            // 3. Model
-            item {
-                VehicleModelSection(
-                    model = state.model,
-                    modelError = state.modelError,
-                    onModelChanged = { onAction(RegisterVehicleAction.OnModelChanged(it)) }
-                )
-            }
-
-            // 4. Year dropdown
-            item {
-                VehicleYearSection(
-                    showYearDropdown = state.showYearDropdown,
-                    year = state.year,
-                    onToggleYearDropdown = { onAction(RegisterVehicleAction.OnToggleYearDropdown) },
-                    onYearSelected = { onAction(RegisterVehicleAction.OnYearSelected(it)) }
-                )
-            }
-
-            // 5. Color chips
-            item {
-                VehicleColorSection(
-                    color = state.color,
-                    isCustomColor = state.isCustomColor,
-                    customColor = state.customColor,
-                    colorError = state.colorError,
-                    onColorSelected = { onAction(RegisterVehicleAction.OnColorSelected(it)) },
-                    onCustomColorChanged = { onAction(RegisterVehicleAction.OnCustomColorChanged(it)) }
-                )
-            }
-
-            // 6. Plate
-            item {
-                VehiclePlateSection(
-                    plate = state.plate,
-                    plateError = state.plateError,
-                    onPlateChanged = { onAction(RegisterVehicleAction.OnPlateChanged(it)) }
-                )
-            }
-
-            // 7. Seat count stepper
-            item {
-                VehicleSeatsSection(
-                    seatCount = state.seatCount,
-                    onSeatCountChanged = { onAction(RegisterVehicleAction.OnSeatCountChanged(it)) }
-                )
-            }
-
-            // 8. Vehicle type (optional)
-            item {
-                VehicleTypeSection(
-                    type = state.type,
-                    onTypeSelected = { onAction(RegisterVehicleAction.OnTypeSelected(it)) }
-                )
-            }
-
-            // General error
-            item {
-                if (state.generalError != null) {
-                    ErrorMessage(message = stringResource(state.generalError.asStringResource()))
-                    Spacer(Modifier.height(Spacing.lg))
-                }
-            }
-
-            if (state.isSaved) {
                 item {
-                    SuccessMessage(message = stringResource(Res.string.notice_vehicle_saved))
-                    Spacer(Modifier.height(Spacing.lg))
+                    val completed = listOf(
+                        state.brand.isNotBlank(),
+                        state.model.isNotBlank(),
+                        RegisterVehicleUiState.PLATE_REGEX.matches(state.plate),
+                        state.effectiveColor.isNotBlank()
+                    ).count { it }
+                    FormProgressIndicator(
+                        completedSections = completed,
+                        totalSections = 4,
+                        label = stringResource(Res.string.form_progress_label, completed, 4)
+                    )
                 }
-            }
 
-            // Save button
-            item {
-                Spacer(Modifier.height(Spacing.sm))
-                PrimaryButton(
-                    text = if (state.mode == RegisterVehicleUiState.Mode.Edit)
-                        stringResource(Res.string.vehicle_update_button)
-                    else
-                        stringResource(Res.string.vehicle_save_button),
-                    onClick = { onAction(RegisterVehicleAction.OnSaveClick) },
-                    enabled = state.isValid && !state.isSaved,
-                    isLoading = state.isSaving
-                )
-                Spacer(Modifier.height(Spacing.xl))
+                // 1. Photo
+                item {
+                    VehiclePhotoSection(
+                        photoFile = state.photoFile,
+                        existingPhotoUrl = state.existingPhotoUrl,
+                        onShowPhotoSheet = { onAction(RegisterVehicleAction.OnShowPhotoSheet) }
+                    )
+                }
+
+                // 2. Brand dropdown
+                item {
+                    VehicleBrandSection(
+                        showBrandDropdown = state.showBrandDropdown,
+                        isCustomBrand = state.isCustomBrand,
+                        brand = state.brand,
+                        brandError = state.brandError,
+                        onToggleBrandDropdown = { onAction(RegisterVehicleAction.OnToggleBrandDropdown) },
+                        onBrandSelected = { onAction(RegisterVehicleAction.OnBrandSelected(it)) }
+                    )
+                }
+
+                // 3. Model
+                item {
+                    VehicleModelSection(
+                        model = state.model,
+                        modelError = state.modelError,
+                        onModelChanged = { onAction(RegisterVehicleAction.OnModelChanged(it)) }
+                    )
+                }
+
+                // 4. Year dropdown
+                item {
+                    VehicleYearSection(
+                        showYearDropdown = state.showYearDropdown,
+                        year = state.year,
+                        onToggleYearDropdown = { onAction(RegisterVehicleAction.OnToggleYearDropdown) },
+                        onYearSelected = { onAction(RegisterVehicleAction.OnYearSelected(it)) }
+                    )
+                }
+
+                // 5. Color chips
+                item {
+                    VehicleColorSection(
+                        color = state.color,
+                        isCustomColor = state.isCustomColor,
+                        customColor = state.customColor,
+                        colorError = state.colorError,
+                        onColorSelected = { onAction(RegisterVehicleAction.OnColorSelected(it)) },
+                        onCustomColorChanged = { onAction(RegisterVehicleAction.OnCustomColorChanged(it)) }
+                    )
+                }
+
+                // 6. Plate
+                item {
+                    VehiclePlateSection(
+                        plate = state.plate,
+                        plateError = state.plateError,
+                        onPlateChanged = { onAction(RegisterVehicleAction.OnPlateChanged(it)) }
+                    )
+                }
+
+                // 7. Seat count stepper
+                item {
+                    VehicleSeatsSection(
+                        seatCount = state.seatCount,
+                        onSeatCountChanged = { onAction(RegisterVehicleAction.OnSeatCountChanged(it)) }
+                    )
+                }
+
+                // 8. Vehicle type (optional)
+                item {
+                    VehicleTypeSection(
+                        type = state.type,
+                        onTypeSelected = { onAction(RegisterVehicleAction.OnTypeSelected(it)) }
+                    )
+                }
+
+                // General error
+                item {
+                    if (state.generalError != null) {
+                        ErrorMessage(message = stringResource(state.generalError.asStringResource()))
+                        Spacer(Modifier.height(Spacing.lg))
+                    }
+                }
+
+                if (state.isSaved) {
+                    item {
+                        SuccessMessage(message = stringResource(Res.string.notice_vehicle_saved))
+                        Spacer(Modifier.height(Spacing.lg))
+                    }
+                }
+
+                // Save button
+                item {
+                    Spacer(Modifier.height(Spacing.sm))
+                    PrimaryButton(
+                        text = if (state.mode == RegisterVehicleUiState.Mode.Edit)
+                            stringResource(Res.string.vehicle_update_button)
+                        else
+                            stringResource(Res.string.vehicle_save_button),
+                        onClick = { onAction(RegisterVehicleAction.OnSaveClick) },
+                        enabled = state.isValid && !state.isSaved,
+                        isLoading = state.isSaving
+                    )
+                    Spacer(Modifier.height(Spacing.xl))
+                }
             }
         }
     }

@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.trip.model.RecurringTripSlot
@@ -54,13 +55,17 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
 import com.juanpablo0612.carpool.presentation.ui.util.isImeVisible
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.calendar_month_24px
 import enrutadoseia.composeapp.generated.resources.check_24px
@@ -156,6 +161,7 @@ fun PublishWeekContent(
                             isLoading = state.isPublishing,
                             modifier = Modifier
                                 .windowInsetsPadding(BottomBarInsets)
+                                .centeredContent(ContentWidth.form)
                                 .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
                         )
                     }
@@ -185,63 +191,65 @@ fun PublishWeekContent(
                 description = stringResource(Res.string.publish_week_all_published_body),
                 modifier = contentModifier,
             )
-            else -> LazyColumn(
-                modifier = contentModifier.imePadding(),
-                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xl),
-            ) {
-                item(key = "header") {
-                    val days = orderedDays.filter { it.first in route.recurringDays }.map { stringResource(it.second) }
-                    RouteScheduleHeader(
-                        name = route.name.ifBlank { stringResource(Res.string.route_from_to, route.origin.name, route.destination.name) },
-                        endpoints = stringResource(Res.string.route_from_to, route.origin.name, route.destination.name),
-                        schedule = (days + listOfNotNull(route.typicalDepartureTime?.let(timeLabel))).joinToString(" · "),
-                        onEditRoute = { onAction(PublishWeekAction.OnEditRouteClick) },
-                    )
-                }
-                item(key = "slots") {
-                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                        SectionLabel(text = stringResource(Res.string.publish_week_window_label))
-                        CarpoolListCard(contentPadding = PaddingValues(vertical = Spacing.xs)) {
-                            state.slots.forEachIndexed { index, slot ->
-                                if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                                WeekSlotRow(
-                                    slot = slot,
-                                    dayLabel = dayLabel(slot.date),
-                                    timeLabel = instantTime(slot.departure),
-                                    conflictTimeLabel = (slot.status as? SlotStatus.Conflict)?.departure?.let(instantTime),
-                                    isSelected = slot.date in state.selectedDates,
-                                    onToggle = { onAction(PublishWeekAction.OnToggleDay(slot.date)) },
-                                )
+            else -> CenteredContent(ContentWidth.form, modifier = contentModifier.imePadding(), gutter = 0.dp) { margin ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xl),
+                ) {
+                    item(key = "header") {
+                        val days = orderedDays.filter { it.first in route.recurringDays }.map { stringResource(it.second) }
+                        RouteScheduleHeader(
+                            name = route.name.ifBlank { stringResource(Res.string.route_from_to, route.origin.name, route.destination.name) },
+                            endpoints = stringResource(Res.string.route_from_to, route.origin.name, route.destination.name),
+                            schedule = (days + listOfNotNull(route.typicalDepartureTime?.let(timeLabel))).joinToString(" · "),
+                            onEditRoute = { onAction(PublishWeekAction.OnEditRouteClick) },
+                        )
+                    }
+                    item(key = "slots") {
+                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                            SectionLabel(text = stringResource(Res.string.publish_week_window_label))
+                            CarpoolListCard(contentPadding = PaddingValues(vertical = Spacing.xs)) {
+                                state.slots.forEachIndexed { index, slot ->
+                                    if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                                    WeekSlotRow(
+                                        slot = slot,
+                                        dayLabel = dayLabel(slot.date),
+                                        timeLabel = instantTime(slot.departure),
+                                        conflictTimeLabel = (slot.status as? SlotStatus.Conflict)?.departure?.let(instantTime),
+                                        isSelected = slot.date in state.selectedDates,
+                                        onToggle = { onAction(PublishWeekAction.OnToggleDay(slot.date)) },
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                item(key = "settings") {
-                    SectionLabel(text = stringResource(Res.string.publish_week_settings_title))
-                }
-                item(key = "vehicle") {
-                    WeekVehiclePicker(state, onAction)
-                }
-                if (state.vehicles.isNotEmpty()) {
-                    item(key = "seats") {
-                        TripSeatsSection(state.seatCount, state.selectedVehicle, { onAction(PublishWeekAction.OnSetSeats(it)) })
+                    item(key = "settings") {
+                        SectionLabel(text = stringResource(Res.string.publish_week_settings_title))
                     }
-                    item(key = "contribution") {
-                        TripContributionSection(state.contributionPerPassenger, { onAction(PublishWeekAction.OnSetContribution(it)) })
+                    item(key = "vehicle") {
+                        WeekVehiclePicker(state, onAction)
                     }
-                    item(key = "message") {
-                        TripMessageSection(state.message, { onAction(PublishWeekAction.OnSetMessage(it)) })
+                    if (state.vehicles.isNotEmpty()) {
+                        item(key = "seats") {
+                            TripSeatsSection(state.seatCount, state.selectedVehicle, { onAction(PublishWeekAction.OnSetSeats(it)) })
+                        }
+                        item(key = "contribution") {
+                            TripContributionSection(state.contributionPerPassenger, { onAction(PublishWeekAction.OnSetContribution(it)) })
+                        }
+                        item(key = "message") {
+                            TripMessageSection(state.message, { onAction(PublishWeekAction.OnSetMessage(it)) })
+                        }
                     }
-                }
-                state.error?.let { error ->
-                    item(key = "error") {
-                        ErrorMessage(
-                            message = stringResource(error.asStringResource()),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .semantics { liveRegion = LiveRegionMode.Polite },
-                        )
+                    state.error?.let { error ->
+                        item(key = "error") {
+                            ErrorMessage(
+                                message = stringResource(error.asStringResource()),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .semantics { liveRegion = LiveRegionMode.Polite },
+                            )
+                        }
                     }
                 }
             }

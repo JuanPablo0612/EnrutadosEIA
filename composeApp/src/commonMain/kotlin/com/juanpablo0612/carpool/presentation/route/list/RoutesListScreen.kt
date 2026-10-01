@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.presentation.route.list.components.RouteCard
@@ -35,10 +36,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
@@ -149,65 +153,67 @@ fun RoutesListContent(
                     }
                 )
                 else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(Spacing.lg),
-                        verticalArrangement = Arrangement.spacedBy(Spacing.md)
-                    ) {
-                        item(key = "search") {
-                            OutlinedTextField(
-                                value = state.searchQuery,
-                                onValueChange = { onAction(RoutesListAction.OnSearchQueryChanged(it)) },
-                                placeholder = { Text(stringResource(Res.string.routes_search_placeholder)) },
-                                leadingIcon = {
-                                    Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
-                                },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                        state.actionError?.let { actionError ->
-                            item(key = "action_error") {
-                                ErrorMessage(
-                                    message = stringResource(actionError.asStringResource()),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { onAction(RoutesListAction.OnDismissActionError) }
+                    CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(Spacing.lg).plusHorizontal(margin),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.md)
+                        ) {
+                            item(key = "search") {
+                                OutlinedTextField(
+                                    value = state.searchQuery,
+                                    onValueChange = { onAction(RoutesListAction.OnSearchQueryChanged(it)) },
+                                    placeholder = { Text(stringResource(Res.string.routes_search_placeholder)) },
+                                    leadingIcon = {
+                                        Icon(vectorResource(Res.drawable.search_24px), contentDescription = null)
+                                    },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
-                        }
-                        if (state.showDuplicateSuccess) {
-                            item(key = "duplicate_success") {
-                                SuccessMessage(
-                                    message = stringResource(Res.string.notice_route_duplicated),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { onAction(RoutesListAction.OnDismissDuplicateSuccess) }
+                            state.actionError?.let { actionError ->
+                                item(key = "action_error") {
+                                    ErrorMessage(
+                                        message = stringResource(actionError.asStringResource()),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { onAction(RoutesListAction.OnDismissActionError) }
+                                    )
+                                }
+                            }
+                            if (state.showDuplicateSuccess) {
+                                item(key = "duplicate_success") {
+                                    SuccessMessage(
+                                        message = stringResource(Res.string.notice_route_duplicated),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { onAction(RoutesListAction.OnDismissDuplicateSuccess) }
+                                    )
+                                }
+                            }
+                            if (state.filteredRoutes.isEmpty()) {
+                                item(key = "no_search_results") {
+                                    Text(
+                                        text = stringResource(Res.string.routes_search_no_results, state.searchQuery),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(Spacing.lg)
+                                    )
+                                }
+                            }
+                            items(state.filteredRoutes, key = { it.route.id }) { routeWithStats ->
+                                RouteCard(
+                                    routeWithStats = routeWithStats,
+                                    onClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
+                                    onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
+                                    onPublishWeekClick = routeWithStats.route
+                                        .takeIf { it.recurringDays.isNotEmpty() && it.typicalDepartureTime != null }
+                                        ?.let { { onAction(RoutesListAction.OnPublishWeekClick(it.id)) } },
+                                    onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
+                                    onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) },
+                                    isDuplicating = state.duplicatingRouteId == routeWithStats.route.id
                                 )
                             }
-                        }
-                        if (state.filteredRoutes.isEmpty()) {
-                            item(key = "no_search_results") {
-                                Text(
-                                    text = stringResource(Res.string.routes_search_no_results, state.searchQuery),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(Spacing.lg)
-                                )
-                            }
-                        }
-                        items(state.filteredRoutes, key = { it.route.id }) { routeWithStats ->
-                            RouteCard(
-                                routeWithStats = routeWithStats,
-                                onClick = { onAction(RoutesListAction.OnRouteClick(routeWithStats.route.id)) },
-                                onPublishTripClick = { onAction(RoutesListAction.OnPublishTripClick(routeWithStats.route.id)) },
-                                onPublishWeekClick = routeWithStats.route
-                                    .takeIf { it.recurringDays.isNotEmpty() && it.typicalDepartureTime != null }
-                                    ?.let { { onAction(RoutesListAction.OnPublishWeekClick(it.id)) } },
-                                onDuplicateClick = { onAction(RoutesListAction.OnDuplicateRouteClick(routeWithStats.route.id)) },
-                                onDeleteClick = { onAction(RoutesListAction.OnDeleteRouteClick(routeWithStats.route.id)) },
-                                isDuplicating = state.duplicatingRouteId == routeWithStats.route.id
-                            )
                         }
                     }
                 }

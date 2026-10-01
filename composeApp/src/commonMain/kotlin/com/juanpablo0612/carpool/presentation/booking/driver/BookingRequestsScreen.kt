@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.booking.asStringResource
 import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingDecisionDialogs
 import com.juanpablo0612.carpool.presentation.booking.driver.components.BookingRequestCard
@@ -32,9 +33,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.action_dismiss
@@ -158,41 +162,44 @@ private fun RequestGroups(
     onAction: (BookingRequestsAction) -> Unit,
 ) {
     val onDecision: (BookingDecisionAction) -> Unit = { onAction(BookingRequestsAction.OnDecision(it)) }
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
-    ) {
-        groups.forEach { group ->
-            item(key = "trip_${group.tripId}") {
-                TripBookingsHeader(
-                    group = group,
-                    nowMs = nowMs,
-                    onClick = { onAction(BookingRequestsAction.OnTripClick(group.tripId)) },
-                    modifier = Modifier.padding(top = Spacing.sm),
-                )
-            }
-            items(group.bookings, key = { it.id }) { booking ->
-                val isBusy = booking.id in state.decisions.busyIds
-                val onViewProfile = { onAction(BookingRequestsAction.OnViewProfile(booking.passengerId)) }
-                when (state.tab) {
-                    BookingRequestsTab.Pending -> BookingRequestCard(
-                        booking = booking,
-                        isTripFull = group.isFull,
-                        isLastSeatContested = group.isLastSeatContested,
-                        isBusy = isBusy,
+    CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.md).plusHorizontal(margin),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            groups.forEach { group ->
+                item(key = "trip_${group.tripId}") {
+                    TripBookingsHeader(
+                        group = group,
                         nowMs = nowMs,
-                        onDecision = onDecision,
-                        onViewProfile = onViewProfile,
+                        onClick = { onAction(BookingRequestsAction.OnTripClick(group.tripId)) },
+                        modifier = Modifier.padding(top = Spacing.sm),
                     )
-                    BookingRequestsTab.Accepted -> PassengerCard(
-                        booking = booking,
-                        isBusy = isBusy,
-                        canCancel = true,
-                        onMessage = { onAction(BookingRequestsAction.OnMessagePassenger(booking)) },
-                        onRate = null,
-                        onDecision = onDecision,
-                        onViewProfile = onViewProfile,
-                    )
+                }
+                items(group.bookings, key = { it.id }) { booking ->
+                    val isBusy = booking.id in state.decisions.busyIds
+                    val onViewProfile = { onAction(BookingRequestsAction.OnViewProfile(booking.passengerId)) }
+                    when (state.tab) {
+                        BookingRequestsTab.Pending -> BookingRequestCard(
+                            booking = booking,
+                            isTripFull = group.isFull,
+                            isLastSeatContested = group.isLastSeatContested,
+                            isBusy = isBusy,
+                            nowMs = nowMs,
+                            onDecision = onDecision,
+                            onViewProfile = onViewProfile,
+                        )
+                        BookingRequestsTab.Accepted -> PassengerCard(
+                            booking = booking,
+                            isBusy = isBusy,
+                            canCancel = true,
+                            onMessage = { onAction(BookingRequestsAction.OnMessagePassenger(booking)) },
+                            onRate = null,
+                            onDecision = onDecision,
+                            onViewProfile = onViewProfile,
+                        )
+                    }
                 }
             }
         }

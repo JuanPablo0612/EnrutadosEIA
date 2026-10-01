@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.CampusDirection
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
@@ -37,9 +38,12 @@ import com.juanpablo0612.carpool.presentation.trip.asStringResource
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.search_results_count
 import org.jetbrains.compose.resources.pluralStringResource
@@ -162,25 +166,28 @@ fun SearchRoutesContent(
 
 @Composable
 private fun SearchResults(results: List<TripResult>, onAction: (SearchRoutesAction) -> Unit) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
-        contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
-    ) {
-        item(key = "summary") {
-            // Announced politely so screen-reader users hear the count change as they adjust
-            // the search, without having to look for it.
-            Text(
-                text = pluralStringResource(Res.plurals.search_results_count, results.size, results.size),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            )
-        }
-        items(results, key = { it.trip.id }) { result ->
-            TripResultCard(
-                result = result,
-                onClick = { onAction(SearchRoutesAction.OnTripClick(result.trip.id)) },
-            )
+    CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+            contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
+        ) {
+            item(key = "summary") {
+                // Announced politely so screen-reader users hear the count change as they adjust
+                // the search, without having to look for it.
+                Text(
+                    text = pluralStringResource(Res.plurals.search_results_count, results.size, results.size),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+            items(results, key = { it.trip.id }) { result ->
+                TripResultCard(
+                    result = result,
+                    onClick = { onAction(SearchRoutesAction.OnTripClick(result.trip.id)) },
+                )
+            }
         }
     }
 }

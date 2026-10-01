@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -29,10 +30,13 @@ import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.vehicle.list.components.VehicleCard
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
@@ -161,21 +165,23 @@ fun VehiclesListContent(
                     }
                 )
                 else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(Spacing.lg),
-                        verticalArrangement = Arrangement.spacedBy(Spacing.md)
-                    ) {
-                        items(state.vehicles, key = { it.id }) { vehicle ->
-                            VehicleCard(
-                                vehicle = vehicle,
-                                totalVehicleCount = state.vehicles.size,
-                                onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
-                                onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
-                                onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
-                                // Same destination as the "Edit" menu item.
-                                onClick = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) }
-                            )
+                    CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(Spacing.lg).plusHorizontal(margin),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.md)
+                        ) {
+                            items(state.vehicles, key = { it.id }) { vehicle ->
+                                VehicleCard(
+                                    vehicle = vehicle,
+                                    totalVehicleCount = state.vehicles.size,
+                                    onEdit = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) },
+                                    onSetPrimary = { onAction(VehiclesListAction.OnSetPrimary(vehicle.id)) },
+                                    onDelete = { onAction(VehiclesListAction.OnDeleteRequest(vehicle)) },
+                                    // Same destination as the "Edit" menu item.
+                                    onClick = { onAction(VehiclesListAction.OnEditVehicle(vehicle.id)) }
+                                )
+                            }
                         }
                     }
                 }

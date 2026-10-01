@@ -47,10 +47,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_new_place_title
@@ -125,9 +127,11 @@ fun AddPlaceContent(
                 .fillMaxSize()
                 .padding(padding)
                 .consumeWindowInsets(padding)
-                .padding(horizontal = Spacing.screenHorizontalForm)
                 .verticalScroll(rememberScrollState())
-                .imePadding(),
+                .imePadding()
+                // Inside the scroll, so the whole width scrolls while the form stays centred.
+                .centeredContent(ContentWidth.form)
+                .padding(horizontal = Spacing.screenHorizontalForm),
             verticalArrangement = Arrangement.spacedBy(Spacing.lg)
         ) {
             Spacer(Modifier.height(Spacing.sm))

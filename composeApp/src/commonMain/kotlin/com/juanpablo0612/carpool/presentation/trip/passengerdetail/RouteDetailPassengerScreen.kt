@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.rating.model.RatingSummary
@@ -35,9 +36,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
@@ -114,24 +118,26 @@ fun RouteDetailPassengerContent(
                 ),
                 modifier = Modifier.fillMaxSize().padding(padding),
             )
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg),
-                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
-            ) {
-                item(key = "header") { TripDetailHeader(trip = trip, now = now) }
-                item(key = "stats") { TripStats(trip = trip, availableSeats = state.availableSeats) }
-                item(key = "route") { TripRouteCard(trip = trip, meetingStop = state.meetingStop) }
-                item(key = "driver") {
-                    DriverCard(
-                        trip = trip,
-                        rating = state.driver?.rating,
-                        onClick = { onAction(RouteDetailPassengerAction.OnOpenDriverProfile) },
-                    )
-                }
-                if (trip.messageToPassengers.isNotBlank()) {
-                    item(key = "message") {
-                        DriverMessageCard(driverName = trip.driver.name, message = trip.messageToPassengers)
+            else -> CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize().padding(padding), gutter = 0.dp) { margin ->
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+                ) {
+                    item(key = "header") { TripDetailHeader(trip = trip, now = now) }
+                    item(key = "stats") { TripStats(trip = trip, availableSeats = state.availableSeats) }
+                    item(key = "route") { TripRouteCard(trip = trip, meetingStop = state.meetingStop) }
+                    item(key = "driver") {
+                        DriverCard(
+                            trip = trip,
+                            rating = state.driver?.rating,
+                            onClick = { onAction(RouteDetailPassengerAction.OnOpenDriverProfile) },
+                        )
+                    }
+                    if (trip.messageToPassengers.isNotBlank()) {
+                        item(key = "message") {
+                            DriverMessageCard(driverName = trip.driver.name, message = trip.messageToPassengers)
+                        }
                     }
                 }
             }
