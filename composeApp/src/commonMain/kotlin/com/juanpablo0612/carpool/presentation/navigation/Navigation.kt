@@ -4,9 +4,18 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldLayout
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldValue
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.adaptive.navigationsuite.rememberNavigationSuiteScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,6 +38,8 @@ import com.juanpablo0612.carpool.presentation.navigation.graph.rootNavGraph
 import com.juanpablo0612.carpool.presentation.navigation.graph.sharedNavGraph
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -131,188 +142,215 @@ fun AppNavigation(
     }
 
     CarpoolTheme {
-        Scaffold(
-            bottomBar = {
-                if (showBottomBar) {
-                    BottomNavigationBar(
-                        currentDestination = currentDestination,
-                        items = topLevelItems,
-                        onNavigate = { route -> navController.navigateToTopLevel(route as Route) }
+        // Material's recommendation for the window: a bottom bar on phones (in landscape too), a
+        // rail on unfolded foldables and tablets.
+        val suiteType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+        val isRail = suiteType == NavigationSuiteType.NavigationRail
+        val suiteState = rememberNavigationSuiteScaffoldState(
+            if (showBottomBar) NavigationSuiteScaffoldValue.Visible else NavigationSuiteScaffoldValue.Hidden
+        )
+        // Slides the bar or rail in and out instead of popping it when entering or leaving a tab.
+        LaunchedEffect(showBottomBar) {
+            if (showBottomBar) suiteState.show() else suiteState.hide()
+        }
+        val onNavigateToTab: (Any) -> Unit = { route -> navController.navigateToTopLevel(route as Route) }
+        // The insets the bar or rail already pads itself by, consumed so each screen's own
+        // Scaffold doesn't apply them a second time. Nothing as soon as it starts sliding away, so
+        // a destination without it lays out its final insets from the first frame.
+        val suiteInsets = when {
+            suiteState.targetValue == NavigationSuiteScaffoldValue.Hidden -> WindowInsets(0, 0, 0, 0)
+            isRail -> ScreenInsets.only(WindowInsetsSides.Start)
+            else -> BottomBarInsets.only(WindowInsetsSides.Bottom)
+        }
+
+        Surface(color = MaterialTheme.colorScheme.background) {
+            NavigationSuiteScaffoldLayout(
+                navigationSuite = {
+                    if (isRail) {
+                        NavigationRailBar(
+                            currentDestination = currentDestination,
+                            items = topLevelItems,
+                            onNavigate = onNavigateToTab,
+                        )
+                    } else {
+                        BottomNavigationBar(
+                            currentDestination = currentDestination,
+                            items = topLevelItems,
+                            onNavigate = onNavigateToTab,
+                        )
+                    }
+                },
+                navigationSuiteType = suiteType,
+                state = suiteState,
+            ) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Route.Splash,
+                    // Directional slides (rather than NavHost's default fade) so forward and back
+                    // navigation give a cue about depth. Declared once here rather than
+                    // per-destination.
+                    enterTransition = {
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeIn()
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeOut()
+                    },
+                    popEnterTransition = {
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeIn()
+                    },
+                    popExitTransition = {
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeOut()
+                    },
+                    modifier = modifier
+                        .fillMaxSize()
+                        .consumeWindowInsets(suiteInsets)
+                ) {
+                    rootNavGraph(
+                        onSplashNavigateToAuth = {
+                            navController.navigate(Route.Login) {
+                                popUpTo<Route.Splash> { inclusive = true }
+                            }
+                        },
+                        onSplashNavigateToOnboarding = {
+                            navController.navigate(Route.Onboarding) {
+                                popUpTo<Route.Splash> { inclusive = true }
+                            }
+                        },
+                        onSplashNavigateToEmailVerification = {
+                            navController.navigate(Route.EmailVerification) {
+                                popUpTo<Route.Splash> { inclusive = true }
+                            }
+                        },
+                        onSplashNavigateToHome = ::enterApp,
+                        onOnboardingNavigateToApp = {
+                            navController.navigate(Route.Splash) {
+                                popUpTo<Route.Onboarding> { inclusive = true }
+                            }
+                        },
+                    )
+
+                    authNavGraph(
+                        onAuthSuccess = ::enterApp,
+                        onNavigateToRegister = { navController.navigate(Route.Register) },
+                        onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
+                        onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
+                        onSignUpAgain = {
+                            // The verification screen can be the only entry (reached from Splash),
+                            // so rebuild the auth stack rather than popping: Login below Register.
+                            navController.navigate(Route.Login) { popUpTo(0) { inclusive = true } }
+                            navController.navigate(Route.Register)
+                        },
+                        onNavigateBack = { navController.popBackStack() },
+                        canNavigateBack = { navController.previousBackStackEntry != null }
+                    )
+
+                    mainNavGraph(
+                        onNavigateToProfile = { navController.navigateToTopLevel(Route.Profile) },
+                        onPublishTrip = onPublishTrip,
+                        onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
+                        onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
+                        onNavigateToSearchTrips = { shortcut ->
+                            if (shortcut == null) {
+                                navController.navigateToTopLevel(Route.SearchTrips())
+                            } else {
+                                // A fresh entry, not the saved one, so the search opens on the shortcut.
+                                navController.navigateToTopLevel(
+                                    Route.SearchTrips(
+                                        campusId = shortcut.campus.id,
+                                        fromCampus = shortcut.direction == CampusDirection.FromCampus,
+                                    ),
+                                    restoreState = false,
+                                )
+                            }
+                        },
+                        onNavigateToNotifications = { navController.navigate(Route.Notifications) },
+                        onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
+                        onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
+                        onNavigateToSearchResult = { tripId, meetingStop ->
+                            navController.navigate(
+                                Route.TripDetailPassenger(
+                                    tripId = tripId,
+                                    meetingStopIndex = meetingStop?.pathIndex,
+                                    meetingIsDropoff = meetingStop?.isDropoff ?: false,
+                                )
+                            )
+                        },
+                        onNavigateToUserProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
+                        onBookingCreated = {
+                            // Leave the booked trip out of the Search tab's saved stack.
+                            navController.popBackStack<Route.TripDetailPassenger>(inclusive = true)
+                            navController.navigateToTopLevel(Route.MyTrips, restoreState = false)
+                        },
+                        onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
+                        onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
+                        onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
+                        onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                        onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                            navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
+                        },
+                        onNavigateBack = { navController.popBackStack() },
+                    )
+
+                    driverNavGraph(
+                        onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
+                        onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
+                        onNavigateToEditVehicle = { id -> navController.navigate(Route.RegisterVehicle(id)) },
+                        onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
+                        onNavigateToPublishTrip = { routeId -> navController.navigate(Route.PublishTrip(routeId)) },
+                        onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                        onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
+                        onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
+                        onTripPublished = {
+                            // Drop the finished form first so it isn't saved into the Inicio tab's
+                            // stack, then land on the trips you drive.
+                            navController.popBackStack<Route.PublishTrip>(inclusive = true)
+                            navController.popBackStack<Route.PublishWeek>(inclusive = true)
+                            navController.navigateToTopLevel(Route.MyTrips, restoreState = false)
+                        },
+                        onNavigateToPublishWeek = { routeId -> navController.navigate(Route.PublishWeek(routeId)) },
+                        onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
+                        onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
+                        onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
+                        onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
+                        onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
+                        onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                            navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
+                        },
+                        onNavigateBack = { navController.popBackStack() },
+                    )
+
+                    sharedNavGraph(
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToMapPicker = { lat, lon ->
+                            val mapPicker = if (lat != null && lon != null) {
+                                Route.MapPicker(lat, lon)
+                            } else {
+                                Route.MapPicker()
+                            }
+                            navController.navigate(mapPicker)
+                        },
+                        onCoordinatesPicked = { lat, lon, placeName ->
+                            navController.popWithMapPickResult(MapPickResult(lat, lon, placeName))
+                        },
+                        onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
+                        onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
+                        onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
+                        onLogout = onLogout,
+                        onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
+                        // The list, not the creation form — the row is labelled "saved places".
+                        onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
+                        onNavigateToNotifications = { navController.navigate(Route.Notifications) },
+                        onDeleteAccountSuccess = {
+                            navController.navigate(Route.Login) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
+                        onNavigateToDeepLink = navController::navigateToNotificationDeepLink,
+                        onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
+                            navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
+                        }
                     )
                 }
-            },
-            contentWindowInsets = WindowInsets(0, 0, 0, 0)
-        ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Route.Splash,
-                // Directional slides (rather than NavHost's default fade) so forward and back
-                // navigation give a cue about depth. Declared once here rather than
-                // per-destination.
-                enterTransition = {
-                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeIn()
-                },
-                exitTransition = {
-                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start) + fadeOut()
-                },
-                popEnterTransition = {
-                    slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeIn()
-                },
-                popExitTransition = {
-                    slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End) + fadeOut()
-                },
-                // consumeWindowInsets, not just padding: Modifier.padding does not mark the
-                // insets as consumed, so each screen's own Scaffold would apply the navigation
-                // bar inset a second time on top of the space the bottom bar already took.
-                modifier = modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-            ) {
-                rootNavGraph(
-                    onSplashNavigateToAuth = {
-                        navController.navigate(Route.Login) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onSplashNavigateToOnboarding = {
-                        navController.navigate(Route.Onboarding) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onSplashNavigateToEmailVerification = {
-                        navController.navigate(Route.EmailVerification) {
-                            popUpTo<Route.Splash> { inclusive = true }
-                        }
-                    },
-                    onSplashNavigateToHome = ::enterApp,
-                    onOnboardingNavigateToApp = {
-                        navController.navigate(Route.Splash) {
-                            popUpTo<Route.Onboarding> { inclusive = true }
-                        }
-                    },
-                )
-
-                authNavGraph(
-                    onAuthSuccess = ::enterApp,
-                    onNavigateToRegister = { navController.navigate(Route.Register) },
-                    onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
-                    onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
-                    onSignUpAgain = {
-                        // The verification screen can be the only entry (reached from Splash),
-                        // so rebuild the auth stack rather than popping: Login below Register.
-                        navController.navigate(Route.Login) { popUpTo(0) { inclusive = true } }
-                        navController.navigate(Route.Register)
-                    },
-                    onNavigateBack = { navController.popBackStack() },
-                    canNavigateBack = { navController.previousBackStackEntry != null }
-                )
-
-                mainNavGraph(
-                    onNavigateToProfile = { navController.navigateToTopLevel(Route.Profile) },
-                    onPublishTrip = onPublishTrip,
-                    onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
-                    onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
-                    onNavigateToSearchTrips = { shortcut ->
-                        if (shortcut == null) {
-                            navController.navigateToTopLevel(Route.SearchTrips())
-                        } else {
-                            // A fresh entry, not the saved one, so the search opens on the shortcut.
-                            navController.navigateToTopLevel(
-                                Route.SearchTrips(
-                                    campusId = shortcut.campus.id,
-                                    fromCampus = shortcut.direction == CampusDirection.FromCampus,
-                                ),
-                                restoreState = false,
-                            )
-                        }
-                    },
-                    onNavigateToNotifications = { navController.navigate(Route.Notifications) },
-                    onNavigateToDriverBookingRequests = { navController.navigate(Route.DriverBookingRequests) },
-                    onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
-                    onNavigateToSearchResult = { tripId, meetingStop ->
-                        navController.navigate(
-                            Route.TripDetailPassenger(
-                                tripId = tripId,
-                                meetingStopIndex = meetingStop?.pathIndex,
-                                meetingIsDropoff = meetingStop?.isDropoff ?: false,
-                            )
-                        )
-                    },
-                    onNavigateToUserProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
-                    onBookingCreated = {
-                        // Leave the booked trip out of the Search tab's saved stack.
-                        navController.popBackStack<Route.TripDetailPassenger>(inclusive = true)
-                        navController.navigateToTopLevel(Route.MyTrips, restoreState = false)
-                    },
-                    onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
-                    onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
-                    onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
-                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
-                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
-                    },
-                    onNavigateBack = { navController.popBackStack() },
-                )
-
-                driverNavGraph(
-                    onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
-                    onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
-                    onNavigateToEditVehicle = { id -> navController.navigate(Route.RegisterVehicle(id)) },
-                    onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
-                    onNavigateToPublishTrip = { routeId -> navController.navigate(Route.PublishTrip(routeId)) },
-                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    onNavigateToRoutesList = { navController.navigate(Route.RoutesList) },
-                    onNavigateToVehiclesList = { navController.navigate(Route.VehiclesList) },
-                    onTripPublished = {
-                        // Drop the finished form first so it isn't saved into the Inicio tab's
-                        // stack, then land on the trips you drive.
-                        navController.popBackStack<Route.PublishTrip>(inclusive = true)
-                        navController.popBackStack<Route.PublishWeek>(inclusive = true)
-                        navController.navigateToTopLevel(Route.MyTrips, restoreState = false)
-                    },
-                    onNavigateToPublishWeek = { routeId -> navController.navigate(Route.PublishWeek(routeId)) },
-                    onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
-                    onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
-                    onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
-                    onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
-                    onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
-                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
-                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
-                    },
-                    onNavigateBack = { navController.popBackStack() },
-                )
-
-                sharedNavGraph(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToMapPicker = { lat, lon ->
-                        val mapPicker = if (lat != null && lon != null) {
-                            Route.MapPicker(lat, lon)
-                        } else {
-                            Route.MapPicker()
-                        }
-                        navController.navigate(mapPicker)
-                    },
-                    onCoordinatesPicked = { lat, lon, placeName ->
-                        navController.popWithMapPickResult(MapPickResult(lat, lon, placeName))
-                    },
-                    onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
-                    onNavigateToRoutes = { navController.navigate(Route.RoutesList) },
-                    onNavigateToVehicles = { navController.navigate(Route.VehiclesList) },
-                    onLogout = onLogout,
-                    onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
-                    // The list, not the creation form — the row is labelled "saved places".
-                    onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
-                    onNavigateToNotifications = { navController.navigate(Route.Notifications) },
-                    onDeleteAccountSuccess = {
-                        navController.navigate(Route.Login) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    onNavigateToDeepLink = navController::navigateToNotificationDeepLink,
-                    onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
-                        navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
-                    }
-                )
             }
         }
     }

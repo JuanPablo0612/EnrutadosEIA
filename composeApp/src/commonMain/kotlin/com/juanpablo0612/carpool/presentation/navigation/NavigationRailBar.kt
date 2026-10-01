@@ -1,46 +1,45 @@
 package com.juanpablo0612.carpool.presentation.navigation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
-import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 /**
- * The app's single bottom bar. It carries no badges: each would need a live Firestore listener
- * for the whole session, and the screens themselves surface what needs attention.
+ * The [BottomNavigationBar]'s counterpart on medium and expanded windows (unfolded foldables,
+ * tablets): the same destinations and colours down the start edge, where a bar would stretch
+ * four items across a wide screen.
  */
 @Composable
-fun BottomNavigationBar(
+fun NavigationRailBar(
     currentDestination: NavDestination?,
     items: List<BottomNavItem<out Any>>,
     onNavigate: (route: Any) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
-    // The bar sits on white like the cards, separated from content by a hairline instead of the
-    // tonal elevation NavigationBar applies by default.
-    Column {
-        HorizontalDivider(color = colors.outlineVariant)
-        NavigationBar(
+    // White like the bottom bar, separated from content by a hairline rather than elevation.
+    Row {
+        NavigationRail(
             containerColor = colors.surfaceContainerLowest,
-            tonalElevation = Elevation.none,
-            windowInsets = BottomBarInsets,
+            windowInsets = ScreenInsets.only(WindowInsetsSides.Vertical + WindowInsetsSides.Start),
         ) {
             items.forEach { item ->
                 val selected = currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
-                NavigationBarItem(
+                NavigationRailItem(
                     icon = {
                         // The label below already names the item; describing the icon too would
                         // make TalkBack read it twice.
@@ -57,7 +56,7 @@ fun BottomNavigationBar(
                     selected = selected,
                     alwaysShowLabel = true,
                     onClick = { onNavigate(item.route) },
-                    colors = NavigationBarItemDefaults.colors(
+                    colors = NavigationRailItemDefaults.colors(
                         selectedIconColor = colors.onSecondaryContainer,
                         selectedTextColor = colors.primary,
                         indicatorColor = colors.secondaryContainer,
@@ -67,5 +66,6 @@ fun BottomNavigationBar(
                 )
             }
         }
+        VerticalDivider(color = colors.outlineVariant)
     }
 }
