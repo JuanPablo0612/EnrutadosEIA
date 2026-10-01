@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isFinite
@@ -133,3 +135,7 @@ fun Modifier.mediaPreviewSize(
     val placeable = measurable.measure(constraints.copy(minWidth = width, minHeight = height, maxHeight = height))
     layout(placeable.width, placeable.height) { placeable.place(0, 0) }
 }
+
+/** Whether the software keyboard currently takes up part of the window. */
+@Composable
+fun isImeVisible(): Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0

@@ -60,6 +60,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.isImeVisible
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.calendar_month_24px
 import enrutadoseia.composeapp.generated.resources.check_24px
@@ -144,7 +145,8 @@ fun PublishWeekContent(
             )
         },
         bottomBar = {
-            if (canPublish) {
+            // Hidden while typing so the keyboard and the bar don't leave the list no room.
+            if (canPublish && !isImeVisible()) {
                 Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest, modifier = Modifier.fillMaxWidth()) {
                     Column {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

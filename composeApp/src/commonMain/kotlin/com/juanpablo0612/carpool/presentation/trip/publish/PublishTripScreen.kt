@@ -50,6 +50,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
@@ -87,10 +88,13 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.WindowLayout
 import com.juanpablo0612.carpool.presentation.ui.util.formatLongDate
 import com.juanpablo0612.carpool.presentation.ui.util.formatPesos
 import com.juanpablo0612.carpool.presentation.ui.util.formatShortTime
+import com.juanpablo0612.carpool.presentation.ui.util.isImeVisible
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNotificationPermissionState
+import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cancel
 import enrutadoseia.composeapp.generated.resources.cd_reverse_stops
@@ -181,6 +185,7 @@ fun PublishTripScreen(
 fun PublishTripContent(
     state: PublishTripUiState,
     onAction: (PublishTripAction) -> Unit,
+    layout: WindowLayout = rememberWindowLayout(),
 ) {
     val timeZone = TimeZone.currentSystemDefault()
     val today = Clock.System.now().toLocalDateTime(timeZone).date
@@ -277,7 +282,9 @@ fun PublishTripContent(
             )
         },
         bottomBar = {
-            if (!state.isLoading) {
+            // Hidden while typing: with the keyboard up, a phone in landscape would have almost no
+            // room left for the field being edited. The keyboard's Done action brings it back.
+            if (!state.isLoading && !isImeVisible()) {
                 Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest, modifier = Modifier.fillMaxWidth()) {
                     Column {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -291,6 +298,8 @@ fun PublishTripContent(
                                 text = bottomSummary(state, formattedDate, formattedTime),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = if (layout.isHeightCompact) 1 else Int.MAX_VALUE,
+                                overflow = TextOverflow.Ellipsis,
                             )
                             // Stays enabled: tapping it with problems shows them next to each field.
                             PrimaryButton(
