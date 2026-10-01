@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -46,10 +48,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
+import com.juanpablo0612.carpool.presentation.ui.util.WindowLayout
+import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
+import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.onboarding_next
@@ -85,7 +92,8 @@ fun OnboardingScreen(
 @Composable
 fun OnboardingContent(
     state: OnboardingUiState,
-    onAction: (OnboardingAction) -> Unit
+    onAction: (OnboardingAction) -> Unit,
+    layout: WindowLayout = rememberWindowLayout(),
 ) {
     val pagerState = rememberPagerState(initialPage = state.currentPage) { state.totalPages }
 
@@ -134,13 +142,19 @@ fun OnboardingContent(
                 state = pagerState,
                 modifier = Modifier.weight(1f),
             ) { page ->
-                OnboardingSlide(page = page)
+                OnboardingSlide(page = page, sideBySide = layout.prefersTwoPanes)
             }
 
             Column(
-                modifier = Modifier.padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.xl),
+                modifier = Modifier
+                    .centeredContent(ContentWidth.form)
+                    .padding(
+                        horizontal = Spacing.screenHorizontalForm,
+                        // Short windows trim the space around the button to leave the slide room.
+                        vertical = if (layout.isHeightCompact) Spacing.md else Spacing.xl,
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(Spacing.xl),
+                verticalArrangement = Arrangement.spacedBy(if (layout.isHeightCompact) Spacing.md else Spacing.xl),
             ) {
                 PageIndicator(current = state.currentPage, total = state.totalPages)
                 PrimaryButton(
@@ -180,8 +194,12 @@ private fun PageIndicator(current: Int, total: Int) {
     }
 }
 
+/**
+ * One slide: the illustration above the copy, or beside it when [sideBySide] (a phone in
+ * landscape, a tablet), where stacking them would push the copy below the fold.
+ */
 @Composable
-private fun OnboardingSlide(page: Int) {
+private fun OnboardingSlide(page: Int, sideBySide: Boolean) {
     val (title, body) = when (page) {
         0 -> stringResource(Res.string.onboarding_slide1_title) to stringResource(Res.string.onboarding_slide1_body)
         1 -> stringResource(Res.string.onboarding_slide2_title) to stringResource(Res.string.onboarding_slide2_body)
@@ -193,36 +211,76 @@ private fun OnboardingSlide(page: Int) {
         else -> vectorResource(Res.drawable.search_24px)
     }
 
-    // Scrolls within the page so long copy at large font scales is never clipped.
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = Spacing.screenHorizontalForm),
-    ) {
-        RouteIllustration(
-            badge = badge,
+    if (sideBySide) {
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-        )
+                .fillMaxSize()
+                .centeredContent(ContentWidth.list)
+                .padding(horizontal = Spacing.screenHorizontalForm),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xxl),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(modifier = Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.Center) {
+                RouteIllustration(
+                    badge = badge,
+                    modifier = Modifier
+                        .widthIn(max = IllustrationMaxSize)
+                        // Height first: the square takes the slide's height and no more.
+                        .aspectRatio(1f, matchHeightConstraintsFirst = true),
+                )
+            }
+            // Scrolls within the page so long copy at large font scales is never clipped.
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                SlideCopy(title = title, body = body)
+            }
+        }
+    } else {
+        // Scrolls within the page so long copy at large font scales is never clipped.
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .centeredContent(ContentWidth.form)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Spacing.screenHorizontalForm),
+        ) {
+            RouteIllustration(
+                badge = badge,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .widthIn(max = IllustrationMaxSize)
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+            )
 
-        Spacer(modifier = Modifier.height(Spacing.xl))
+            Spacer(modifier = Modifier.height(Spacing.xl))
 
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.semantics { heading() },
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        Text(
-            text = body,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+            SlideCopy(title = title, body = body)
+        }
     }
+}
+
+/** Past this the illustration stops reading as a picture and starts crowding out the copy. */
+private val IllustrationMaxSize = 360.dp
+
+@Composable
+private fun SlideCopy(title: String, body: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.headlineLarge,
+        modifier = Modifier.semantics { heading() },
+    )
+
+    Spacer(modifier = Modifier.height(Spacing.md))
+
+    Text(
+        text = body,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 /**
@@ -282,7 +340,7 @@ private fun RouteIllustration(badge: ImageVector, modifier: Modifier = Modifier)
     }
 }
 
-@Preview
+@ScreenPreviews
 @Composable
 private fun OnboardingFirstPagePreview() {
     CarpoolTheme {
