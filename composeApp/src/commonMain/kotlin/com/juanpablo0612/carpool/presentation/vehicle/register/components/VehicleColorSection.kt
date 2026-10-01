@@ -58,6 +58,7 @@ internal fun VehicleColorSection(
     val colorErrorText = stringResource(Res.string.error_vehicle_color_required)
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         // The chip group has no text field to attach supportingText to, so the error is
         // announced via the semantics error() property instead of a detached, unassociated
         // Text below it — otherwise a screen reader never connects the two.

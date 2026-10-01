@@ -41,7 +41,10 @@ internal fun VehicleTypeSection(
         VehicleType.Pickup to stringResource(Res.string.vehicle_type_pickup),
         VehicleType.Other to stringResource(Res.string.vehicle_type_other),
     )
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
         typeEntries.forEach { (entryType, label) ->
             FilterChip(
                 selected = type == entryType,

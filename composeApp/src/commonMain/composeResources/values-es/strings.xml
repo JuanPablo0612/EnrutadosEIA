@@ -636,6 +636,7 @@
     <string name="search_date_field_placeholder">Fecha</string>
     <string name="search_time_field_placeholder">Hora</string>
     <string name="search_tolerance_label">Tolerancia</string>
+    <string name="search_tolerance_minutes">%1$d min</string>
     <string name="search_direction_to_campus">Voy a la EIA</string>
     <string name="search_direction_from_campus">Salgo de la EIA</string>
     <string name="search_place_label_from">Desde</string>

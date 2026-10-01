@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.route.search.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,7 @@ import enrutadoseia.composeapp.generated.resources.search_date_field_placeholder
 import enrutadoseia.composeapp.generated.resources.search_date_placeholder
 import enrutadoseia.composeapp.generated.resources.search_time_field_placeholder
 import enrutadoseia.composeapp.generated.resources.search_tolerance_label
+import enrutadoseia.composeapp.generated.resources.search_tolerance_minutes
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
@@ -122,11 +124,14 @@ internal fun DateTimeBottomSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                ) {
                     listOf(15, 30, 60).forEach { tol ->
                         AssistChip(
                             onClick = { selectedTolerance = tol },
-                            label = { Text("$tol min") },
+                            label = { Text(stringResource(Res.string.search_tolerance_minutes, tol)) },
                             colors = if (selectedTolerance == tol) {
                                 AssistChipDefaults.assistChipColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer,

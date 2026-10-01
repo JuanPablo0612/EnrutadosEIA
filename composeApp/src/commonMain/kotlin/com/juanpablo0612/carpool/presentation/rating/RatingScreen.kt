@@ -310,7 +310,10 @@ private fun Highlights(chips: List<RatingChip>, selected: Set<RatingChip>, onAct
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
             chips.forEach { chip ->
                 FilterChip(
                     selected = chip in selected,

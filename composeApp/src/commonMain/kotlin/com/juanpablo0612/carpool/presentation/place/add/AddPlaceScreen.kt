@@ -136,7 +136,10 @@ fun AddPlaceContent(
                 style = MaterialTheme.typography.labelLarge,
             )
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
                 placeTypes.forEach { (type, label) ->
                     FilterChip(
                         selected = state.type == type,

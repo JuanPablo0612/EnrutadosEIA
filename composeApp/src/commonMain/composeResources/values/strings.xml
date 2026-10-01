@@ -415,6 +415,7 @@
     <string name="search_date_field_placeholder">Date</string>
     <string name="search_time_field_placeholder">Time</string>
     <string name="search_tolerance_label">Tolerance</string>
+    <string name="search_tolerance_minutes">%1$d min</string>
     <string name="search_direction_to_campus">To the EIA</string>
     <string name="search_direction_from_campus">From the EIA</string>
     <string name="search_place_label_from">From</string>
