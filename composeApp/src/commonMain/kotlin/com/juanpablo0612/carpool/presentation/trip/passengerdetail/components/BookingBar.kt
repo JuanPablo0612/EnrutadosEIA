@@ -51,7 +51,9 @@ internal fun BookingBar(
                     SuccessMessage(message = stringResource(Res.string.booking_request_sent_notice))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
-                    Column {
+                    // Weighted like the button: an unweighted column is measured first and its
+                    // one-line subtext would take the whole row, squeezing the button's label.
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(text = contributionLabel(trip.contributionPerPassenger), style = MaterialTheme.typography.titleLarge)
                         Text(
                             text = stringResource(Res.string.book_request_subtext),
