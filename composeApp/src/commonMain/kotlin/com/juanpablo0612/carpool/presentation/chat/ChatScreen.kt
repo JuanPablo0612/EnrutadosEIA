@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.chat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -138,41 +141,47 @@ fun ChatContent(
                 }
             }
 
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
-                verticalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
-                when {
-                    state.isLoading -> item {
-                        Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+            // Bubbles take up to 80% of the conversation's width, so they read as a chat on a
+            // narrow phone and don't stretch into long lines on a tablet.
+            BoxWithConstraints(modifier = Modifier.weight(1f)) {
+                val bubbleMaxWidth = min(maxWidth * 0.8f, BubbleMaxWidth)
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+                ) {
+                    when {
+                        state.isLoading -> item {
+                            Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
                         }
-                    }
-                    state.error != null -> item {
-                        ErrorState(
-                            description = stringResource(state.error.asStringResource()),
-                            onRetry = { onAction(ChatAction.OnRetryLoad) },
-                            modifier = Modifier.fillParentMaxSize(),
-                        )
-                    }
-                    state.messages.isEmpty() -> item {
-                        EmptyState(
-                            icon = vectorResource(Res.drawable.mail_24px),
-                            title = stringResource(Res.string.chat_empty_title),
-                            description = stringResource(Res.string.chat_empty_description),
-                            modifier = Modifier.fillParentMaxSize(),
-                        )
-                    }
-                    else -> items(messagesWithDateFlag, key = { it.first.id }) { (message, isNewDay) ->
-                        if (isNewDay) {
-                            DateSeparator(epochMs = message.timestamp)
+                        state.error != null -> item {
+                            ErrorState(
+                                description = stringResource(state.error.asStringResource()),
+                                onRetry = { onAction(ChatAction.OnRetryLoad) },
+                                modifier = Modifier.fillParentMaxSize(),
+                            )
                         }
-                        MessageBubble(
-                            message = message,
-                            isOwn = message.senderId == state.currentUserId
-                        )
+                        state.messages.isEmpty() -> item {
+                            EmptyState(
+                                icon = vectorResource(Res.drawable.mail_24px),
+                                title = stringResource(Res.string.chat_empty_title),
+                                description = stringResource(Res.string.chat_empty_description),
+                                modifier = Modifier.fillParentMaxSize(),
+                            )
+                        }
+                        else -> items(messagesWithDateFlag, key = { it.first.id }) { (message, isNewDay) ->
+                            if (isNewDay) {
+                                DateSeparator(epochMs = message.timestamp)
+                            }
+                            MessageBubble(
+                                message = message,
+                                isOwn = message.senderId == state.currentUserId,
+                                maxWidth = bubbleMaxWidth,
+                            )
+                        }
                     }
                 }
             }
@@ -222,3 +231,5 @@ private fun DateSeparator(epochMs: Long, modifier: Modifier = Modifier) {
         HorizontalDivider(modifier = Modifier.weight(1f))
     }
 }
+
+private val BubbleMaxWidth = 520.dp

@@ -16,8 +16,14 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.booking.model.Booking
@@ -86,6 +92,10 @@ internal fun HomeContent(
     onAction: (HomeAction) -> Unit,
     now: Long = rememberNowMs(),
 ) {
+    // Measured rather than assumed: the extended FAB grows with the font scale, and the list's
+    // last card must still scroll clear of it.
+    var fabHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
     Scaffold(
         contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
@@ -93,6 +103,7 @@ internal fun HomeContent(
             if (state.canPublishTrip) {
                 ExtendedFloatingActionButton(
                     onClick = { onAction(HomeAction.PublishTrip) },
+                    modifier = Modifier.onSizeChanged { fabHeight = with(density) { it.height.toDp() } },
                     icon = { Icon(vectorResource(Res.drawable.add_24px), contentDescription = null) },
                     text = { Text(stringResource(Res.string.home_action_publish_trip), style = MaterialTheme.typography.titleMedium) },
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -120,21 +131,26 @@ internal fun HomeContent(
                     onRetry = { onAction(HomeAction.Refresh) },
                     modifier = Modifier.fillMaxSize(),
                 )
-                else -> HomeDashboard(state = state, now = now, onAction = onAction)
+                else -> HomeDashboard(
+                    state = state,
+                    now = now,
+                    onAction = onAction,
+                    // The FAB sits Spacing.lg above the bottom; Spacing.xl more keeps a gap.
+                    bottomClearance = if (state.canPublishTrip) fabHeight + Spacing.lg + Spacing.xl else Spacing.xl,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit) {
+private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit, bottomClearance: Dp) {
     LazyColumn(
-        // With the publish button, bottom room so the last card can scroll clear of it.
         contentPadding = PaddingValues(
             start = Spacing.screenHorizontal,
             end = Spacing.screenHorizontal,
             top = Spacing.lg,
-            bottom = if (state.canPublishTrip) 96.dp else Spacing.xl,
+            bottom = bottomClearance,
         ),
         verticalArrangement = Arrangement.spacedBy(Spacing.xl),
     ) {

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.chat.model.Message
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
@@ -21,7 +22,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-internal fun MessageBubble(message: Message, isOwn: Boolean) {
+internal fun MessageBubble(message: Message, isOwn: Boolean, maxWidth: Dp) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isOwn) Arrangement.End else Arrangement.Start
@@ -35,7 +36,7 @@ internal fun MessageBubble(message: Message, isOwn: Boolean) {
             ),
             color = if (isOwn) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.widthIn(max = 280.dp)
+            modifier = Modifier.widthIn(max = maxWidth)
         ) {
             Column(modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm)) {
                 Text(
