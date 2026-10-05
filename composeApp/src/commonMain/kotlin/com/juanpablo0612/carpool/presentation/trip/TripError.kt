@@ -15,5 +15,8 @@ sealed class TripError {
     data object RouteNameRequired : TripError()
     data object RouteSavedButTripFailed : TripError()
     data object NothingSelected : TripError()
+    data object NotEditable : TripError()
+    data object SeatsBelowConfirmed : TripError()
+    data object StopInUse : TripError()
     data object Unknown : TripError()
 }

@@ -20,7 +20,11 @@ import enrutadoseia.composeapp.generated.resources.stop_number
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-/** Editable origin → waypoints → destination timeline, with add/remove stop. */
+/**
+ * Editable origin → waypoints → destination timeline, with add/remove stop. With
+ * [endpointsLocked], origin and destination are shown read-only and only the stops between them
+ * can change.
+ */
 fun LazyListScope.stopsEditorItems(
     stops: StopsDraft,
     onOriginClick: () -> Unit,
@@ -28,12 +32,13 @@ fun LazyListScope.stopsEditorItems(
     onEditWaypoint: (Int) -> Unit,
     onRemoveWaypoint: (Int) -> Unit,
     onAddWaypoint: () -> Unit,
+    endpointsLocked: Boolean = false,
 ) {
     item(key = "stop_origin") {
         RouteStopItem(
             label = stringResource(Res.string.origin_label),
             place = stops.origin,
-            isLocked = false,
+            isLocked = endpointsLocked,
             onClick = onOriginClick,
         )
     }
@@ -65,7 +70,7 @@ fun LazyListScope.stopsEditorItems(
         RouteStopItem(
             label = stringResource(Res.string.destination_label),
             place = stops.destination,
-            isLocked = false,
+            isLocked = endpointsLocked,
             showConnector = false,
             onClick = onDestinationClick,
         )

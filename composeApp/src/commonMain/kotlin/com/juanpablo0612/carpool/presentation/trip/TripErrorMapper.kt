@@ -13,9 +13,12 @@ import enrutadoseia.composeapp.generated.resources.error_trip_departure_in_past
 import enrutadoseia.composeapp.generated.resources.error_trip_departure_too_far
 import enrutadoseia.composeapp.generated.resources.error_trip_departure_too_soon
 import enrutadoseia.composeapp.generated.resources.error_trip_message_too_long
+import enrutadoseia.composeapp.generated.resources.error_trip_not_editable
 import enrutadoseia.composeapp.generated.resources.error_trip_not_found
 import enrutadoseia.composeapp.generated.resources.error_trip_same_origin_destination
+import enrutadoseia.composeapp.generated.resources.error_trip_seats_below_confirmed
 import enrutadoseia.composeapp.generated.resources.error_trip_seats_out_of_range
+import enrutadoseia.composeapp.generated.resources.error_trip_stop_in_use
 import enrutadoseia.composeapp.generated.resources.error_unknown
 import enrutadoseia.composeapp.generated.resources.error_user_not_authenticated
 import org.jetbrains.compose.resources.StringResource
@@ -35,6 +38,9 @@ fun TripError.asStringResource(): StringResource = when (this) {
     TripError.RouteNameRequired -> Res.string.error_route_name_required
     TripError.RouteSavedButTripFailed -> Res.string.error_route_saved_trip_failed
     TripError.NothingSelected -> Res.string.error_publish_week_nothing_selected
+    TripError.NotEditable -> Res.string.error_trip_not_editable
+    TripError.SeatsBelowConfirmed -> Res.string.error_trip_seats_below_confirmed
+    TripError.StopInUse -> Res.string.error_trip_stop_in_use
     TripError.Unknown -> Res.string.error_unknown
 }
 
@@ -55,5 +61,8 @@ fun Throwable.toTripError(): TripError = when (this) {
     is AppException.TripException.NotAuthenticated -> TripError.UserNotAuthenticated
     is AppException.TripException.VehicleNotFound -> TripError.NoVehicleSelected
     is AppException.TripException.RouteSavedTripFailed -> TripError.RouteSavedButTripFailed
+    is AppException.TripException.NotEditable -> TripError.NotEditable
+    is AppException.TripException.SeatsBelowConfirmed -> TripError.SeatsBelowConfirmed
+    is AppException.TripException.StopInUse -> TripError.StopInUse
     else -> TripError.Unknown
 }

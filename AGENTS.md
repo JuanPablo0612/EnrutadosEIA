@@ -232,7 +232,7 @@ No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/
 
 # 21. Navigation & Side-Effects
 
-- Type-safe routes via one flat `@Serializable sealed interface Route` (29 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose.
+- Type-safe routes via one flat `@Serializable sealed interface Route` (30 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose.
 - One set of tabs for everyone: **Inicio · Buscar · Mis viajes · Perfil**, shown by `NavigationSuiteScaffoldLayout` as the bottom bar on phones and `NavigationRailBar` on medium/expanded windows. Switch tabs only with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination.
 - `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph`, `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive, reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, session reload after process death, and push-tap handling (`PendingDeepLinks`).
 - Notification deep links are plain strings built/parsed in `NotificationDeepLink.kt` (`forNotification`, `toRouteOrNull`) and opened with `navigateToNotificationDeepLink`.

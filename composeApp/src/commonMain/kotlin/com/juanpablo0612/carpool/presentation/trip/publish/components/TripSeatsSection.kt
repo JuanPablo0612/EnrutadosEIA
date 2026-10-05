@@ -16,13 +16,18 @@ import enrutadoseia.composeapp.generated.resources.trip_seats_helper
 import enrutadoseia.composeapp.generated.resources.trip_seats_section
 import org.jetbrains.compose.resources.stringResource
 
-/** Seats offered, capped at what the selected car holds; the cap is spelled out beside it. */
+/**
+ * Seats offered, from [minSeats] up to what the selected car holds; the cap, and any
+ * [supportingText], are spelled out beside it.
+ */
 @Composable
 internal fun TripSeatsSection(
     seatCount: Int,
     selectedVehicle: Vehicle?,
     onChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    minSeats: Int = 1,
+    supportingText: String? = null,
 ) {
     Row(
         modifier = modifier,
@@ -38,11 +43,18 @@ internal fun TripSeatsSection(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            supportingText?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         NumberStepper(
             value = seatCount,
             onChange = onChange,
-            min = 1,
+            min = minSeats,
             max = selectedVehicle?.seatsAvailable ?: seatCount,
         )
     }

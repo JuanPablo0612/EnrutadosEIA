@@ -17,6 +17,8 @@ import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailScreen
 import com.juanpablo0612.carpool.presentation.route.detail.RouteDetailViewModel
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
+import com.juanpablo0612.carpool.presentation.trip.edit.EditTripScreen
+import com.juanpablo0612.carpool.presentation.trip.edit.EditTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripScreen
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
 import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekScreen
@@ -105,6 +107,17 @@ fun NavGraphBuilder.driverNavGraph(
             onBackClick = onNavigateBack,
             onTripPublished = onTripPublished,
             onNavigateToRegisterVehicle = onNavigateToRegisterVehicle,
+            onNavigateToAddPlace = onNavigateToAddPlace,
+        )
+    }
+
+    composable<Route.EditTrip> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.EditTrip>()
+        val viewModel: EditTripViewModel = koinViewModel { parametersOf(args.tripId) }
+        EditTripScreen(
+            viewModel = viewModel,
+            onBackClick = onNavigateBack,
+            onTripUpdated = onNavigateBack,
             onNavigateToAddPlace = onNavigateToAddPlace,
         )
     }

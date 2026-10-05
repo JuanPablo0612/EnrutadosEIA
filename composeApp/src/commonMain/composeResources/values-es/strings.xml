@@ -213,6 +213,18 @@
     <string name="error_trip_message_too_long">El mensaje puede tener máximo 140 caracteres</string>
     <string name="error_route_saved_trip_failed">Tu ruta se guardó, pero el viaje no se pudo publicar. Intenta de nuevo.</string>
     <string name="error_publish_week_nothing_selected">Selecciona al menos un día para publicar</string>
+    <string name="error_trip_not_editable">Este viaje ya no se puede editar: ya salió o no está activo</string>
+    <string name="error_trip_seats_below_confirmed">Ya confirmaste más pasajeros. Ofrece al menos tantos cupos como los que confirmaste.</string>
+    <string name="error_trip_stop_in_use">Un pasajero te espera en una parada que quitaste. Mantenla o resuelve primero su solicitud.</string>
+
+    <!-- Editar viaje -->
+    <string name="edit_trip_title">Editar viaje</string>
+    <string name="edit_trip_fixed_hint">El origen, el destino, la hora y el carro se mantienen: los pasajeros reservaron con ellos.</string>
+    <string name="edit_trip_save_button">Guardar cambios</string>
+    <plurals name="edit_trip_confirmed_seats">
+        <item quantity="one">%1$d cupo ya confirmado</item>
+        <item quantity="other">%1$d cupos ya confirmados</item>
+    </plurals>
 
     <!-- Acciones de diálogo -->
     <string name="confirm">Confirmar</string>
