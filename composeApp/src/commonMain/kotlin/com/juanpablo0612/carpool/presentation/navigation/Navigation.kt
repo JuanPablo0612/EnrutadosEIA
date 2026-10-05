@@ -283,6 +283,7 @@ fun AppNavigation(
                         },
                         onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                         onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
+                        onNavigateToEditTrip = { tripId -> navController.navigate(Route.EditTrip(tripId)) },
                         onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
                         onNavigateToAddPlace = { navController.navigate(Route.AddPlace) },
                         onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
@@ -311,6 +312,7 @@ fun AppNavigation(
                         onNavigateToTripDetail = { tripId -> navController.navigate(Route.TripDetailPassenger(tripId)) },
                         onNavigateToTripTracking = { tripId -> navController.navigate(Route.TripTracking(tripId)) },
                         onNavigateToPassengers = { tripId -> navController.navigate(Route.TripPassengers(tripId)) },
+                        onNavigateToEditTrip = { tripId -> navController.navigate(Route.EditTrip(tripId)) },
                         onNavigateToPassengerProfile = { userId -> navController.navigate(Route.PassengerProfile(userId)) },
                         onNavigateToRating = { target -> navController.navigate(target.toRatingRoute()) },
                         onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->

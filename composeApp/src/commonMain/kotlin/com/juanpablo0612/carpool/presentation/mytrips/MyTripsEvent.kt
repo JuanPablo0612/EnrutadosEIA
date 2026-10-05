@@ -6,6 +6,7 @@ sealed class MyTripsEvent {
     data class NavigateToTripDetail(val tripId: String) : MyTripsEvent()
     data class NavigateToPassengers(val tripId: String) : MyTripsEvent()
     data class NavigateToTracking(val tripId: String) : MyTripsEvent()
+    data class NavigateToEditTrip(val tripId: String) : MyTripsEvent()
     data object NavigateToRequests : MyTripsEvent()
     data object NavigateToSearch : MyTripsEvent()
     data object NavigateToPublish : MyTripsEvent()

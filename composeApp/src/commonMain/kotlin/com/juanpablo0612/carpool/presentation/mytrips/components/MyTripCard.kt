@@ -49,6 +49,7 @@ import enrutadoseia.composeapp.generated.resources.my_trips_gets_off_at
 import enrutadoseia.composeapp.generated.resources.my_trips_gets_on_at
 import enrutadoseia.composeapp.generated.resources.my_trips_more_actions
 import enrutadoseia.composeapp.generated.resources.my_trips_with_driver
+import enrutadoseia.composeapp.generated.resources.trip_action_edit
 import enrutadoseia.composeapp.generated.resources.trip_action_start
 import enrutadoseia.composeapp.generated.resources.trip_action_track
 import enrutadoseia.composeapp.generated.resources.trip_action_view_passengers
@@ -215,11 +216,16 @@ private fun Actions(item: MyTripItem, isUpcoming: Boolean, isBusy: Boolean, onAc
 }
 
 /**
- * Cancelling lives here rather than as a button: it is rare, it notifies other people, and the
- * menu keeps it one deliberate step away. Hidden when there is nothing to cancel.
+ * Editing and cancelling live here rather than as buttons: they are rare, they notify other
+ * people, and the menu keeps them one deliberate step away. Hidden when there is nothing to do.
  */
 @Composable
 private fun OverflowMenu(item: MyTripItem, isUpcoming: Boolean, enabled: Boolean, onAction: (MyTripsAction) -> Unit) {
+    // Only the seats and stops of a trip that hasn't left can change.
+    val edit: Pair<String, MyTripsAction>? =
+        if (isUpcoming && item is MyTripItem.Driving && item.trip.status == TripStatus.Active) {
+            stringResource(Res.string.trip_action_edit) to MyTripsAction.OnEditTrip(item.tripId)
+        } else null
     val cancel: Pair<String, MyTripsAction>? = when {
         !isUpcoming -> null
         item is MyTripItem.Driving && item.trip.status == TripStatus.Active ->
@@ -228,7 +234,7 @@ private fun OverflowMenu(item: MyTripItem, isUpcoming: Boolean, enabled: Boolean
             stringResource(Res.string.cancel_confirm_button) to MyTripsAction.OnCancelBooking(item)
         else -> null
     }
-    if (cancel == null) return
+    if (edit == null && cancel == null) return
     var expanded by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { expanded = true }, enabled = enabled) {
@@ -238,13 +244,24 @@ private fun OverflowMenu(item: MyTripItem, isUpcoming: Boolean, enabled: Boolean
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(cancel.first, color = MaterialTheme.colorScheme.error) },
-                onClick = {
-                    expanded = false
-                    onAction(cancel.second)
-                },
-            )
+            edit?.let { (label, action) ->
+                DropdownMenuItem(
+                    text = { Text(label) },
+                    onClick = {
+                        expanded = false
+                        onAction(action)
+                    },
+                )
+            }
+            cancel?.let { (label, action) ->
+                DropdownMenuItem(
+                    text = { Text(label, color = MaterialTheme.colorScheme.error) },
+                    onClick = {
+                        expanded = false
+                        onAction(action)
+                    },
+                )
+            }
         }
     }
 }

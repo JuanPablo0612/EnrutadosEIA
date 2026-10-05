@@ -48,6 +48,7 @@ fun NavGraphBuilder.driverNavGraph(
     onNavigateToTripDetail: (String) -> Unit,
     onNavigateToTripTracking: (String) -> Unit,
     onNavigateToPassengers: (String) -> Unit,
+    onNavigateToEditTrip: (String) -> Unit,
     onNavigateToPassengerProfile: (String) -> Unit,
     onNavigateToRating: (RatingTarget) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
@@ -131,6 +132,7 @@ fun NavGraphBuilder.driverNavGraph(
             onNavigateToPassengerProfile = onNavigateToPassengerProfile,
             onNavigateToRating = onNavigateToRating,
             onNavigateToChat = onNavigateToChat,
+            onNavigateToEditTrip = onNavigateToEditTrip,
         )
     }
 

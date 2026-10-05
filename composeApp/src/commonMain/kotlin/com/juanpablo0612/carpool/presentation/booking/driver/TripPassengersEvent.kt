@@ -11,4 +11,5 @@ sealed class TripPassengersEvent {
         val isReadOnly: Boolean,
     ) : TripPassengersEvent()
     data class NavigateToRating(val target: RatingTarget) : TripPassengersEvent()
+    data class NavigateToEditTrip(val tripId: String) : TripPassengersEvent()
 }

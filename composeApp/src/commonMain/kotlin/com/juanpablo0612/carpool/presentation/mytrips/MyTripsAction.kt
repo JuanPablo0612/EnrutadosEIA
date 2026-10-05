@@ -13,6 +13,7 @@ sealed class MyTripsAction {
     data class OnStartTrip(val tripId: String) : MyTripsAction()
     data class OnContinueTrip(val tripId: String) : MyTripsAction()
     data class OnCancelTrip(val tripId: String) : MyTripsAction()
+    data class OnEditTrip(val tripId: String) : MyTripsAction()
 
     // Seats the user asked for.
     data class OnMessageDriver(val item: MyTripItem.Riding, val isReadOnly: Boolean) : MyTripsAction()

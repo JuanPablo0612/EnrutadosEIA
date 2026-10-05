@@ -87,6 +87,7 @@ fun MyTripsScreen(
     onOpenTripDetail: (String) -> Unit,
     onOpenPassengers: (String) -> Unit,
     onOpenTracking: (String) -> Unit,
+    onEditTrip: (String) -> Unit,
     onOpenRequests: () -> Unit,
     onSearchTrips: () -> Unit,
     onPublishTrip: () -> Unit,
@@ -100,6 +101,7 @@ fun MyTripsScreen(
             is MyTripsEvent.NavigateToTripDetail -> onOpenTripDetail(event.tripId)
             is MyTripsEvent.NavigateToPassengers -> onOpenPassengers(event.tripId)
             is MyTripsEvent.NavigateToTracking -> onOpenTracking(event.tripId)
+            is MyTripsEvent.NavigateToEditTrip -> onEditTrip(event.tripId)
             MyTripsEvent.NavigateToRequests -> onOpenRequests()
             MyTripsEvent.NavigateToSearch -> onSearchTrips()
             MyTripsEvent.NavigateToPublish -> onPublishTrip()

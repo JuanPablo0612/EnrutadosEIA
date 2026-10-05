@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,6 +50,8 @@ import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.action_dismiss
+import enrutadoseia.composeapp.generated.resources.cd_edit_trip
+import enrutadoseia.composeapp.generated.resources.edit_24px
 import enrutadoseia.composeapp.generated.resources.label_pair
 import enrutadoseia.composeapp.generated.resources.person_24px
 import enrutadoseia.composeapp.generated.resources.relative_day_at_time
@@ -67,6 +71,7 @@ fun TripPassengersScreen(
     onNavigateToPassengerProfile: (String) -> Unit,
     onNavigateToRating: (RatingTarget) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToEditTrip: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -76,6 +81,7 @@ fun TripPassengersScreen(
             is TripPassengersEvent.NavigateToChat ->
                 onNavigateToChat(event.bookingId, event.tripId, event.passengerName, event.isReadOnly)
             is TripPassengersEvent.NavigateToRating -> onNavigateToRating(event.target)
+            is TripPassengersEvent.NavigateToEditTrip -> onNavigateToEditTrip(event.tripId)
         }
     }
 
@@ -94,7 +100,24 @@ fun TripPassengersContent(
 
     Scaffold(
         contentWindowInsets = ScreenInsets,
-        topBar = { CarpoolBackTopBar(title = stringResource(Res.string.trip_passengers_title), onBack = onBackClick) },
+        topBar = {
+            CarpoolBackTopBar(
+                title = stringResource(Res.string.trip_passengers_title),
+                onBack = onBackClick,
+                actions = {
+                    // Seats and stops can change only until the trip leaves.
+                    val trip = state.trip
+                    if (state.isOpen && trip != null && trip.departureTime > nowMs) {
+                        IconButton(onClick = { onAction(TripPassengersAction.OnEditTripClick) }) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.edit_24px),
+                                contentDescription = stringResource(Res.string.cd_edit_trip),
+                            )
+                        }
+                    }
+                },
+            )
+        },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         val modifier = Modifier.fillMaxSize().padding(padding)

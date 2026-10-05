@@ -413,6 +413,8 @@
     <string name="trip_action_start">Start trip</string>
     <string name="trip_action_track">Continue trip</string>
     <string name="trip_action_view_passengers">View passengers</string>
+    <string name="trip_action_edit">Edit</string>
+    <string name="cd_edit_trip">Edit trip</string>
     <string name="booking_action_rate">Rate</string>
 
     <!-- TripPassengers screen -->

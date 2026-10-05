@@ -413,6 +413,8 @@
     <string name="trip_action_start">Iniciar viaje</string>
     <string name="trip_action_track">Continuar viaje</string>
     <string name="trip_action_view_passengers">Ver pasajeros</string>
+    <string name="trip_action_edit">Editar</string>
+    <string name="cd_edit_trip">Editar viaje</string>
     <string name="booking_action_rate">Calificar</string>
 
     <!-- TripPassengers screen -->

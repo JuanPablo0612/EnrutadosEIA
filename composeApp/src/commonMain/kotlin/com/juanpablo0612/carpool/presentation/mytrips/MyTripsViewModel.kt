@@ -90,6 +90,7 @@ class MyTripsViewModel(
             MyTripsAction.OnPublishTrip -> emit(MyTripsEvent.NavigateToPublish)
             is MyTripsAction.OnViewPassengers -> emit(MyTripsEvent.NavigateToPassengers(action.tripId))
             is MyTripsAction.OnContinueTrip -> emit(MyTripsEvent.NavigateToTracking(action.tripId))
+            is MyTripsAction.OnEditTrip -> emit(MyTripsEvent.NavigateToEditTrip(action.tripId))
             is MyTripsAction.OnStartTrip ->
                 _state.update { it.copy(confirmation = MyTripsConfirmation.StartTrip(action.tripId)) }
             is MyTripsAction.OnCancelTrip ->

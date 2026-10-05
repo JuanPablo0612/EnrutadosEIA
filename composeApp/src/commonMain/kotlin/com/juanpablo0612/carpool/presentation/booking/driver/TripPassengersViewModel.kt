@@ -87,6 +87,7 @@ class TripPassengersViewModel(
                 )
             }
             is TripPassengersAction.OnDecision -> decisions.onAction(action.action)
+            TripPassengersAction.OnEditTripClick -> emit(TripPassengersEvent.NavigateToEditTrip(tripId))
             TripPassengersAction.OnRetry -> load()
         }
     }
