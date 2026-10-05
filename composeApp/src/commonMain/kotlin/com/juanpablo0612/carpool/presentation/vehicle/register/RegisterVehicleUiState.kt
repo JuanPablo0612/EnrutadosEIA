@@ -12,7 +12,6 @@ data class RegisterVehicleUiState(
     val existingPhotoUrl: String? = null,
     val photoFile: PlatformFile? = null,
     val brand: String = "",
-    val isCustomBrand: Boolean = false,
     val model: String = "",
     val plate: String = "",
     val color: String = "",
@@ -22,7 +21,6 @@ data class RegisterVehicleUiState(
     val seatCount: Int = 3,
     val type: VehicleType? = null,
     val isPrimary: Boolean = false,
-    val showBrandDropdown: Boolean = false,
     val showYearDropdown: Boolean = false,
     val showPhotoSheet: Boolean = false,
     val isSaving: Boolean = false,
@@ -39,17 +37,9 @@ data class RegisterVehicleUiState(
 
     val effectiveColor: String get() = if (isCustomColor) customColor else color
 
-    val isValid: Boolean
-        get() = brand.isNotBlank()
-            && model.isNotBlank()
-            && PLATE_REGEX.matches(plate)
-            && effectiveColor.isNotBlank()
-            && seatCount in 1..7
-
     val snapshot: VehicleFormSnapshot
         get() = VehicleFormSnapshot(
             brand = brand,
-            isCustomBrand = isCustomBrand,
             model = model,
             plate = plate,
             color = color,
@@ -68,12 +58,6 @@ data class RegisterVehicleUiState(
     companion object {
         val PLATE_REGEX = Regex("^[A-Z]{3}[0-9]{3}$")
 
-        val COMMON_BRANDS = listOf(
-            "Renault", "Chevrolet", "Mazda", "Toyota", "Kia",
-            "Nissan", "Volkswagen", "Hyundai", "Ford", "Honda",
-            "Mitsubishi", "Suzuki"
-        )
-
         val PRESET_COLORS = listOf(
             "Blanco", "Negro", "Gris", "Plateado", "Rojo", "Azul"
         )
@@ -82,7 +66,6 @@ data class RegisterVehicleUiState(
 
 data class VehicleFormSnapshot(
     val brand: String,
-    val isCustomBrand: Boolean,
     val model: String,
     val plate: String,
     val color: String,

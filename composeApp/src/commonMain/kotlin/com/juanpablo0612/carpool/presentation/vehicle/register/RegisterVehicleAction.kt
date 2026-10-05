@@ -5,9 +5,7 @@ import io.github.vinceglb.filekit.PlatformFile
 
 sealed class RegisterVehicleAction {
     data class OnPhotoSelected(val photo: PlatformFile) : RegisterVehicleAction()
-    data class OnBrandSelected(val brand: String) : RegisterVehicleAction()
-    data object OnToggleBrandDropdown : RegisterVehicleAction()
-    data object OnToggleCustomBrand : RegisterVehicleAction()
+    data class OnBrandChanged(val brand: String) : RegisterVehicleAction()
     data class OnModelChanged(val model: String) : RegisterVehicleAction()
     data class OnPlateChanged(val plate: String) : RegisterVehicleAction()
     data class OnColorSelected(val color: String) : RegisterVehicleAction()

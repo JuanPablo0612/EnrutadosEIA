@@ -255,15 +255,12 @@ fun RegisterVehicleContent(
                     )
                 }
 
-                // 2. Brand dropdown
+                // 2. Brand
                 item {
                     VehicleBrandSection(
-                        showBrandDropdown = state.showBrandDropdown,
-                        isCustomBrand = state.isCustomBrand,
                         brand = state.brand,
                         brandError = state.brandError,
-                        onToggleBrandDropdown = { onAction(RegisterVehicleAction.OnToggleBrandDropdown) },
-                        onBrandSelected = { onAction(RegisterVehicleAction.OnBrandSelected(it)) }
+                        onBrandChanged = { onAction(RegisterVehicleAction.OnBrandChanged(it)) }
                     )
                 }
 
@@ -347,7 +344,8 @@ fun RegisterVehicleContent(
                         else
                             stringResource(Res.string.vehicle_save_button),
                         onClick = { onAction(RegisterVehicleAction.OnSaveClick) },
-                        enabled = state.isValid && !state.isSaved,
+                        // Always tappable: tapping runs validation, which flags each missing field.
+                        enabled = !state.isSaved,
                         isLoading = state.isSaving
                     )
                     Spacer(Modifier.height(Spacing.xl))

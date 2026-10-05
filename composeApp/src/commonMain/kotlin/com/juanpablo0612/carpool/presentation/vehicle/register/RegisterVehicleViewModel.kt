@@ -43,14 +43,12 @@ class RegisterVehicleViewModel(
         viewModelScope.launch {
             vehicleRepository.getVehicleById(id).onSuccess { vehicle ->
                 val isCustomColor = vehicle.color !in RegisterVehicleUiState.PRESET_COLORS
-                val isCustomBrand = vehicle.brand !in RegisterVehicleUiState.COMMON_BRANDS
                 _state.update { s ->
                     s.copy(
                         mode = RegisterVehicleUiState.Mode.Edit,
                         vehicleId = vehicle.id,
                         existingPhotoUrl = vehicle.photoUrl.ifBlank { null },
                         brand = vehicle.brand,
-                        isCustomBrand = isCustomBrand,
                         model = vehicle.model,
                         plate = vehicle.licensePlate.filter { it.isLetterOrDigit() }.uppercase(),
                         color = if (isCustomColor) "Otro" else vehicle.color,
@@ -72,21 +70,8 @@ class RegisterVehicleViewModel(
             is RegisterVehicleAction.OnPhotoSelected ->
                 _state.update { it.copy(photoFile = action.photo, showPhotoSheet = false) }
 
-            is RegisterVehicleAction.OnBrandSelected ->
-                _state.update {
-                    it.copy(
-                        brand = action.brand,
-                        isCustomBrand = action.brand == "Otro",
-                        showBrandDropdown = false,
-                        brandError = false,
-                    )
-                }
-
-            RegisterVehicleAction.OnToggleBrandDropdown ->
-                _state.update { it.copy(showBrandDropdown = !it.showBrandDropdown) }
-
-            RegisterVehicleAction.OnToggleCustomBrand ->
-                _state.update { it.copy(isCustomBrand = !it.isCustomBrand, brand = "", brandError = false) }
+            is RegisterVehicleAction.OnBrandChanged ->
+                _state.update { it.copy(brand = action.brand, brandError = false) }
 
             is RegisterVehicleAction.OnModelChanged ->
                 _state.update { it.copy(model = action.model, modelError = false) }
