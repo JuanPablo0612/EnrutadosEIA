@@ -3,6 +3,8 @@ package com.juanpablo0612.carpool.presentation.profile.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
+import com.juanpablo0612.carpool.domain.auth.validation.Validator
 import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import io.github.vinceglb.filekit.readBytes
@@ -81,8 +83,9 @@ class EditProfileViewModel(
             _state.update { it.copy(nameError = EditProfileFieldError.NameEmpty) }
             return
         }
-        val phoneDigits = state.phone.filter { it.isDigit() }
-        if (phoneDigits.isNotEmpty() && (phoneDigits.length != 10 || !phoneDigits.startsWith("3"))) {
+        // The phone is optional here: blank clears it, anything else must be a valid number.
+        val phone = Validator.normalizePhone(state.phone).ifBlank { null }
+        if (phone != null && Validator.validatePhone(phone) is ValidationResult.Error) {
             _state.update { it.copy(phoneError = EditProfileFieldError.PhoneInvalid) }
             return
         }
@@ -98,7 +101,7 @@ class EditProfileViewModel(
             }
             authRepository.updateProfile(
                 name = state.name.trim(),
-                phone = phoneDigits.ifBlank { null },
+                phone = phone,
                 bio = state.bio.trim().ifBlank { null },
                 photoBytes = photoBytes
             ).fold(
