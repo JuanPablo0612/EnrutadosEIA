@@ -8,12 +8,13 @@ import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
+import com.juanpablo0612.carpool.domain.trip.model.acceptsBookings
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
 /**
- * Asks for a seat on [trip]. Checks the passenger has no open request for it and that a seat is
- * still free, then records the request with everything both parties' lists show: the driver as
+ * Asks for a seat on [trip]. Checks the trip still takes bookings at [now], that the passenger has
+ * no open request for it and that a seat is still free, then records the request with everything both parties' lists show: the driver as
  * the trip shows them, the passenger's name and photo, and the stop where they meet.
  */
 class CreateBookingUseCase(
@@ -27,6 +28,10 @@ class CreateBookingUseCase(
         passengerMessage: String? = null,
         now: Long = Clock.System.now().toEpochMilliseconds(),
     ): Result<Unit> {
+        if (!trip.acceptsBookings(now)) {
+            return Result.failure(AppException.BookingException.TripClosed)
+        }
+
         val user = authRepository.getCurrentUser().getOrElse {
             return Result.failure(AppException.BookingException.NotAuthenticated)
         }

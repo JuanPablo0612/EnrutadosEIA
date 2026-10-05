@@ -19,6 +19,9 @@ sealed class AppException : Exception() {
         data object NotAuthenticated : BookingException()
         data object NoSeatsAvailable : BookingException()
         data object AlreadyBooked : BookingException()
+
+        /** The trip has left, finished or been cancelled, so its seats can no longer change. */
+        data object TripClosed : BookingException()
         data object Unknown : BookingException()
     }
 

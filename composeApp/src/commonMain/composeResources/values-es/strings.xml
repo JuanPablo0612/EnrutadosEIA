@@ -180,6 +180,7 @@
     <string name="no_seats_available">Sin asientos disponibles</string>
     <string name="error_no_seats_available">No hay asientos disponibles en este vehículo</string>
     <string name="error_already_booked">Ya tienes una reserva en esta ruta</string>
+    <string name="error_trip_closed">Este viaje ya salió o ya no está disponible</string>
 
     <!-- Detalle de ruta (pasajero) -->
     <string name="route_detail_passenger_title">Detalle del viaje</string>

@@ -20,7 +20,10 @@ class CreateBookingUseCaseTest {
 
     private val park = Place(name = "Parque de Envigado", address = "", latitude = 6.17, longitude = -75.58)
 
-    private fun trip(confirmed: Int = 0) = Trip(
+    /** Before [trip]'s departure. */
+    private val now = 5L
+
+    private fun trip(confirmed: Int = 0, status: TripStatus = TripStatus.Active) = Trip(
         id = "t1",
         routeId = "",
         driverId = "d1",
@@ -32,7 +35,7 @@ class CreateBookingUseCaseTest {
         departureTime = 1_000L,
         seatCount = 3,
         confirmedSeats = confirmed,
-        status = TripStatus.Active,
+        status = status,
     )
 
     private fun useCase(bookings: FakeBookingRepository, trip: Trip = trip()) = CreateBookingUseCase(
@@ -44,7 +47,7 @@ class CreateBookingUseCaseTest {
     @Test
     fun recordsWhatBothListsShow() = runTest {
         val bookings = FakeBookingRepository()
-        useCase(bookings)(trip(), TripMeetingStop(pathIndex = 1, isDropoff = false), "  Llevo maleta  ", now = 5L)
+        useCase(bookings)(trip(), TripMeetingStop(pathIndex = 1, isDropoff = false), "  Llevo maleta  ", now = now)
             .getOrThrow()
         val booking = bookings.created.single()
         assertEquals("p1", booking.passengerId)
@@ -54,20 +57,20 @@ class CreateBookingUseCaseTest {
         assertEquals(BookingMeetingStop(name = "Parque de Envigado", isDropoff = false), booking.meetingStop)
         assertEquals("Llevo maleta", booking.passengerMessage)
         assertEquals(BookingStatus.Pending, booking.status)
-        assertEquals(5L, booking.createdAt)
+        assertEquals(now, booking.createdAt)
     }
 
     @Test
     fun anOutOfRangeMeetingStopIsDropped() = runTest {
         val bookings = FakeBookingRepository()
-        useCase(bookings)(trip(), TripMeetingStop(pathIndex = 9, isDropoff = true)).getOrThrow()
+        useCase(bookings)(trip(), TripMeetingStop(pathIndex = 9, isDropoff = true), now = now).getOrThrow()
         assertNull(bookings.created.single().meetingStop)
     }
 
     @Test
     fun aBlankMessageIsStoredAsNone() = runTest {
         val bookings = FakeBookingRepository()
-        useCase(bookings)(trip(), passengerMessage = "   ").getOrThrow()
+        useCase(bookings)(trip(), passengerMessage = "   ", now = now).getOrThrow()
         assertNull(bookings.created.single().passengerMessage)
     }
 
@@ -75,7 +78,7 @@ class CreateBookingUseCaseTest {
     fun aFullTripIsRefused() = runTest {
         val bookings = FakeBookingRepository()
         val full = trip(confirmed = 3)
-        val result = useCase(bookings, trip = full)(full)
+        val result = useCase(bookings, trip = full)(full, now = now)
         assertEquals(AppException.BookingException.NoSeatsAvailable, result.exceptionOrNull())
         assertTrue(bookings.created.isEmpty())
     }
@@ -83,6 +86,25 @@ class CreateBookingUseCaseTest {
     @Test
     fun aSecondRequestIsRefused() = runTest {
         val bookings = FakeBookingRepository(hasActive = true)
-        assertEquals(AppException.BookingException.AlreadyBooked, useCase(bookings)(trip()).exceptionOrNull())
+        assertEquals(AppException.BookingException.AlreadyBooked, useCase(bookings)(trip(), now = now).exceptionOrNull())
+    }
+
+    @Test
+    fun aDepartedTripIsRefused() = runTest {
+        val bookings = FakeBookingRepository()
+        val result = useCase(bookings)(trip(), now = 1_000L)
+        assertEquals(AppException.BookingException.TripClosed, result.exceptionOrNull())
+        assertTrue(bookings.created.isEmpty())
+    }
+
+    @Test
+    fun aTripThatIsNoLongerActiveIsRefused() = runTest {
+        listOf(TripStatus.InProgress, TripStatus.Completed, TripStatus.Cancelled).forEach { status ->
+            val bookings = FakeBookingRepository()
+            val closed = trip(status = status)
+            val result = useCase(bookings, trip = closed)(closed, now = now)
+            assertEquals(AppException.BookingException.TripClosed, result.exceptionOrNull(), "$status")
+            assertTrue(bookings.created.isEmpty())
+        }
     }
 }
