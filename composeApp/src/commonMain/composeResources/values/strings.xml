@@ -474,8 +474,12 @@
     <string name="trip_driver_placeholder">Route driver</string>
     <string name="book_request_button">Request seat</string>
     <string name="book_request_subtext">The driver confirms your seat</string>
-    <string name="book_closed_button">Bookings closed</string>
-    <string name="book_closed_subtext">This trip no longer accepts bookings</string>
+    <string name="book_closed_caption">Bookings closed</string>
+    <string name="book_search_another_trip">Find another trip</string>
+    <string name="trip_closed_cancelled">This trip was cancelled</string>
+    <string name="trip_closed_departed">This trip already left</string>
+    <string name="trip_closed_finished">This trip is over</string>
+    <string name="trip_closed_no_bookings">It no longer accepts bookings.</string>
     <string name="book_request_sent">Request sent</string>
     <string name="confirm_request_title">Confirm your request</string>
     <string name="passenger_message_label">Message for the driver (optional)</string>

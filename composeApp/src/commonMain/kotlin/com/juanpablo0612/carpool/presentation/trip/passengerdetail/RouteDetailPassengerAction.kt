@@ -10,4 +10,7 @@ sealed class RouteDetailPassengerAction {
     data class OnQuickMessage(val text: String) : RouteDetailPassengerAction()
     data object OnConfirmBookingRequest : RouteDetailPassengerAction()
     data object OnOpenDriverProfile : RouteDetailPassengerAction()
+
+    /** From a trip that no longer takes bookings, back to Buscar for another one. */
+    data object OnSearchAnotherTrip : RouteDetailPassengerAction()
 }

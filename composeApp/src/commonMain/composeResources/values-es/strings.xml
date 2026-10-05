@@ -695,8 +695,12 @@
     <string name="trip_driver_placeholder">Conductor de la ruta</string>
     <string name="book_request_button">Solicitar cupo</string>
     <string name="book_request_subtext">El conductor confirma tu cupo</string>
-    <string name="book_closed_button">Reservas cerradas</string>
-    <string name="book_closed_subtext">Este viaje ya no admite reservas</string>
+    <string name="book_closed_caption">Reservas cerradas</string>
+    <string name="book_search_another_trip">Buscar otro viaje</string>
+    <string name="trip_closed_cancelled">Este viaje se canceló</string>
+    <string name="trip_closed_departed">Este viaje ya salió</string>
+    <string name="trip_closed_finished">Este viaje ya terminó</string>
+    <string name="trip_closed_no_bookings">Ya no admite reservas.</string>
     <string name="book_request_sent">Solicitud enviada</string>
     <string name="confirm_request_title">Confirma tu solicitud</string>
     <string name="passenger_message_label">Mensaje para el conductor (opcional)</string>

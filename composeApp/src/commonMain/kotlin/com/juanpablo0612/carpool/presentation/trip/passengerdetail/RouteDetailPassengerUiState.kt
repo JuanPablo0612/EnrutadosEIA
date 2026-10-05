@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripClosedReason
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.presentation.booking.BookingError
 
@@ -15,10 +16,10 @@ data class RouteDetailPassengerUiState(
     val meetingStop: TripMeetingStop? = null,
     val alreadyRequested: Boolean = false,
     /**
-     * Whether the trip still takes seat requests (see `Trip.acceptsBookings`): false once it has
-     * left, started, finished or been cancelled, which closes the booking bar whatever else holds.
+     * Why the trip no longer takes seat requests (see `Trip.closedReason`), or null while it does.
+     * A closed trip trades the booking bar for a way to search again, whatever else holds.
      */
-    val isBookable: Boolean = false,
+    val closedReason: TripClosedReason? = null,
     /** True when the signed-in user is this trip's driver — hides the booking bar entirely. */
     val isOwner: Boolean = false,
     val isBooking: Boolean = false,
@@ -28,6 +29,9 @@ data class RouteDetailPassengerUiState(
     val bookingRequestSent: Boolean = false,
     val error: BookingError? = null
 ) {
+    val isBookable: Boolean
+        get() = trip != null && closedReason == null
+
     /** Seats come straight from the trip document, so no booking needs to be read. */
     val availableSeats: Int
         get() = trip?.let { (it.seatCount - it.confirmedSeats).coerceAtLeast(0) } ?: 0

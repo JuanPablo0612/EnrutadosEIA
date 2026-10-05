@@ -33,4 +33,23 @@ data class Trip(
  * Whether a passenger may still ask for a seat on this trip at [now] (epoch millis): it has not
  * started, finished or been cancelled, and its departure is still ahead.
  */
-fun Trip.acceptsBookings(now: Long): Boolean = status == TripStatus.Active && departureTime > now
+fun Trip.acceptsBookings(now: Long): Boolean = closedReason(now) == null
+
+/**
+ * Why this trip no longer takes seat requests at [now] (epoch millis), or null while it still does.
+ * An active trip whose departure time has passed counts as departed even before the driver starts
+ * it, since no passenger could still make it to the stop.
+ */
+fun Trip.closedReason(now: Long): TripClosedReason? = when {
+    status == TripStatus.Cancelled -> TripClosedReason.Cancelled
+    status == TripStatus.Completed -> TripClosedReason.Finished
+    status == TripStatus.InProgress || departureTime <= now -> TripClosedReason.Departed
+    else -> null
+}
+
+/** Why a trip stopped taking seat requests; see [closedReason]. */
+sealed class TripClosedReason {
+    data object Cancelled : TripClosedReason()
+    data object Departed : TripClosedReason()
+    data object Finished : TripClosedReason()
+}

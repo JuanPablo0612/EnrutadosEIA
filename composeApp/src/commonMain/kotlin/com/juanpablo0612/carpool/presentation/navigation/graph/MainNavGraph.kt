@@ -95,6 +95,7 @@ fun NavGraphBuilder.mainNavGraph(
             onBackClick = onNavigateBack,
             onBookingCreated = onBookingCreated,
             onOpenDriverProfile = onNavigateToUserProfile,
+            onSearchAnotherTrip = { onNavigateToSearchTrips(null) },
         )
     }
 }

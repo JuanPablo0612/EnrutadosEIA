@@ -3,5 +3,6 @@ package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 sealed class RouteDetailPassengerEvent {
     data object NavigateBack : RouteDetailPassengerEvent()
     data object NavigateToPassengerBookings : RouteDetailPassengerEvent()
+    data object NavigateToSearch : RouteDetailPassengerEvent()
     data class NavigateToDriverProfile(val userId: String) : RouteDetailPassengerEvent()
 }

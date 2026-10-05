@@ -20,6 +20,7 @@ import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.rating.model.RatingSummary
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripClosedReason
 import com.juanpablo0612.carpool.domain.trip.model.TripDriver
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -28,6 +29,7 @@ import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.Bo
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.ConfirmRequestSheet
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverCard
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.DriverMessageCard
+import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripClosedBanner
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripDetailHeader
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripRouteCard
 import com.juanpablo0612.carpool.presentation.trip.passengerdetail.components.TripStats
@@ -60,6 +62,7 @@ fun RouteDetailPassengerScreen(
     onBackClick: () -> Unit,
     onBookingCreated: () -> Unit,
     onOpenDriverProfile: (String) -> Unit,
+    onSearchAnotherTrip: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val notificationPermission = rememberNotificationPermissionState()
@@ -73,6 +76,7 @@ fun RouteDetailPassengerScreen(
         when (event) {
             RouteDetailPassengerEvent.NavigateBack -> onBackClick()
             RouteDetailPassengerEvent.NavigateToPassengerBookings -> onBookingCreated()
+            RouteDetailPassengerEvent.NavigateToSearch -> onSearchAnotherTrip()
             is RouteDetailPassengerEvent.NavigateToDriverProfile -> onOpenDriverProfile(event.userId)
         }
     }
@@ -125,6 +129,11 @@ fun RouteDetailPassengerContent(
                     verticalArrangement = Arrangement.spacedBy(Spacing.lg),
                 ) {
                     item(key = "header") { TripDetailHeader(trip = trip, now = now) }
+                    // The driver keeps the plain view of their own trip; a passenger is told why
+                    // the seat can no longer be asked for, before the details.
+                    if (state.closedReason != null && !state.isOwner) {
+                        item(key = "closed") { TripClosedBanner(reason = state.closedReason) }
+                    }
                     item(key = "stats") { TripStats(trip = trip, availableSeats = state.availableSeats) }
                     item(key = "route") { TripRouteCard(trip = trip, meetingStop = state.meetingStop) }
                     item(key = "driver") {
@@ -179,7 +188,6 @@ private fun RouteDetailPassengerContentPreview() {
                 trip = previewTrip,
                 driver = PublicProfile(id = "d1", name = "Carolina Restrepo", rating = RatingSummary(4.8, 27)),
                 meetingStop = TripMeetingStop(pathIndex = 1, isDropoff = false),
-                isBookable = true,
             ),
             onAction = {},
             now = previewNow,
@@ -196,7 +204,7 @@ private fun RouteDetailPassengerClosedPreview() {
                 isLoading = false,
                 trip = previewTrip.copy(departureTime = previewNow - 3_600_000L, status = TripStatus.Completed),
                 driver = PublicProfile(id = "d1", name = "Carolina Restrepo", rating = RatingSummary(4.8, 27)),
-                isBookable = false,
+                closedReason = TripClosedReason.Finished,
             ),
             onAction = {},
             now = previewNow,

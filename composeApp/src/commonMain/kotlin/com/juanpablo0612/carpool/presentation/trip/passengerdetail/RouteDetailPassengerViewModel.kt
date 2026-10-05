@@ -8,6 +8,7 @@ import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.model.acceptsBookings
+import com.juanpablo0612.carpool.domain.trip.model.closedReason
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
 import kotlinx.coroutines.Job
@@ -70,7 +71,7 @@ class RouteDetailPassengerViewModel(
                         loadFailed = false,
                         trip = trip,
                         isOwner = isOwner,
-                        isBookable = trip.acceptsBookings(now),
+                        closedReason = trip.closedReason(now),
                     )
                 }
                 closeAtDeparture(trip, now)
@@ -92,7 +93,7 @@ class RouteDetailPassengerViewModel(
         if (!trip.acceptsBookings(now)) return
         closeJob = viewModelScope.launch {
             delay(trip.departureTime - now)
-            _state.update { it.copy(isBookable = it.trip?.acceptsBookings(nowMs()) == true) }
+            _state.update { it.copy(closedReason = it.trip?.closedReason(nowMs())) }
         }
     }
 
@@ -127,6 +128,7 @@ class RouteDetailPassengerViewModel(
                 it.copy(passengerMessage = combined.take(MAX_PASSENGER_MESSAGE_LENGTH))
             }
             RouteDetailPassengerAction.OnConfirmBookingRequest -> book()
+            RouteDetailPassengerAction.OnSearchAnotherTrip -> emit(RouteDetailPassengerEvent.NavigateToSearch)
             RouteDetailPassengerAction.OnOpenDriverProfile -> _state.value.trip?.let {
                 emit(RouteDetailPassengerEvent.NavigateToDriverProfile(it.driverId))
             }
@@ -135,7 +137,7 @@ class RouteDetailPassengerViewModel(
 
     private fun book() {
         val trip = _state.value.trip ?: return
-        if (_state.value.isOwner || _state.value.isBooking) return
+        if (_state.value.isOwner || _state.value.isBooking || !_state.value.isBookable) return
         _state.update { it.copy(isBooking = true, error = null) }
         viewModelScope.launch {
             createBookingUseCase(
