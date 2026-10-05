@@ -278,6 +278,7 @@ fun RegisterVehicleContent(
                     VehicleYearSection(
                         showYearDropdown = state.showYearDropdown,
                         year = state.year,
+                        yearError = state.yearError,
                         onToggleYearDropdown = { onAction(RegisterVehicleAction.OnToggleYearDropdown) },
                         onYearSelected = { onAction(RegisterVehicleAction.OnYearSelected(it)) }
                     )

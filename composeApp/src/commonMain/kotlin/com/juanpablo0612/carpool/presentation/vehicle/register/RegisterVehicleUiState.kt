@@ -2,9 +2,6 @@ package com.juanpablo0612.carpool.presentation.vehicle.register
 
 import com.juanpablo0612.carpool.domain.vehicle.model.VehicleType
 import io.github.vinceglb.filekit.PlatformFile
-import kotlin.time.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 data class RegisterVehicleUiState(
     val mode: Mode = Mode.Create,
@@ -17,7 +14,7 @@ data class RegisterVehicleUiState(
     val color: String = "",
     val isCustomColor: Boolean = false,
     val customColor: String = "",
-    val year: Int = currentYear(),
+    val year: Int? = null,
     val seatCount: Int = 3,
     val type: VehicleType? = null,
     val isPrimary: Boolean = false,
@@ -31,6 +28,7 @@ data class RegisterVehicleUiState(
     val modelError: Boolean = false,
     val plateError: Boolean = false,
     val colorError: Boolean = false,
+    val yearError: Boolean = false,
     val generalError: RegisterVehicleError? = null,
 ) {
     enum class Mode { Create, Edit }
@@ -71,12 +69,9 @@ data class VehicleFormSnapshot(
     val color: String,
     val isCustomColor: Boolean,
     val customColor: String,
-    val year: Int,
+    val year: Int?,
     val seatCount: Int,
     val type: VehicleType?,
     val hasNewPhoto: Boolean,
     val existingPhotoUrl: String?,
 )
-
-private fun currentYear(): Int =
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.year

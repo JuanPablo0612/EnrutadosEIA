@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.error_vehicle_year_required
 import enrutadoseia.composeapp.generated.resources.vehicle_year_label
+import enrutadoseia.composeapp.generated.resources.vehicle_year_placeholder
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -27,7 +29,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun VehicleYearSection(
     showYearDropdown: Boolean,
-    year: Int,
+    year: Int?,
+    yearError: Boolean,
     onToggleYearDropdown: () -> Unit,
     onYearSelected: (Int) -> Unit
 ) {
@@ -45,9 +48,14 @@ internal fun VehicleYearSection(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = year.toString(),
+            value = year?.toString().orEmpty(),
             onValueChange = {},
             readOnly = true,
+            placeholder = { Text(stringResource(Res.string.vehicle_year_placeholder)) },
+            isError = yearError,
+            supportingText = if (yearError) {
+                { Text(stringResource(Res.string.error_vehicle_year_required)) }
+            } else null,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showYearDropdown) },
             modifier = Modifier
                 .fillMaxWidth()

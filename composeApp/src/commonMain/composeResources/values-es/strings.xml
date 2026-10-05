@@ -120,11 +120,13 @@
     <string name="vehicle_model_placeholder">Corolla, CX-5…</string>
     <string name="vehicle_color_label">Color</string>
     <string name="vehicle_year_label">Año</string>
+    <string name="vehicle_year_placeholder">Selecciona el año</string>
     <string name="vehicle_seats_label">Asientos disponibles</string>
     <string name="error_vehicle_brand_required">La marca es obligatoria</string>
     <string name="error_vehicle_model_required">El modelo es obligatorio</string>
     <string name="error_vehicle_license_plate_required">La placa es obligatoria</string>
     <string name="error_vehicle_color_required">El color es obligatorio</string>
+    <string name="error_vehicle_year_required">El año es obligatorio</string>
     <!-- Route Detail -->
     <string name="route_detail_title">Detalles de la Ruta</string>
     <string name="error_route_not_found">Ruta no encontrada</string>

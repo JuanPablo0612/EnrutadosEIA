@@ -75,11 +75,13 @@
     <string name="vehicle_model_placeholder">Corolla, CX-5…</string>
     <string name="vehicle_color_label">Color</string>
     <string name="vehicle_year_label">Year</string>
+    <string name="vehicle_year_placeholder">Select the year</string>
     <string name="vehicle_seats_label">Available Seats</string>
     <string name="error_vehicle_brand_required">Brand is required</string>
     <string name="error_vehicle_model_required">Model is required</string>
     <string name="error_vehicle_license_plate_required">License plate is required</string>
     <string name="error_vehicle_color_required">Color is required</string>
+    <string name="error_vehicle_year_required">Year is required</string>
     <!-- Route Detail -->
     <string name="route_detail_title">Route Details</string>
     <string name="error_route_not_found">Route not found</string>

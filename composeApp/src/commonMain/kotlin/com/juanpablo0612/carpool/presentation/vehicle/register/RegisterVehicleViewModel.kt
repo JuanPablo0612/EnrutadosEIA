@@ -98,7 +98,7 @@ class RegisterVehicleViewModel(
                 _state.update { it.copy(customColor = action.color, colorError = false) }
 
             is RegisterVehicleAction.OnYearSelected ->
-                _state.update { it.copy(year = action.year, showYearDropdown = false) }
+                _state.update { it.copy(year = action.year, showYearDropdown = false, yearError = false) }
 
             RegisterVehicleAction.OnToggleYearDropdown ->
                 _state.update { it.copy(showYearDropdown = !it.showYearDropdown) }
@@ -154,11 +154,16 @@ class RegisterVehicleViewModel(
             _state.update { it.copy(plateError = true) }
             hasError = true
         }
+        if (s.year == null) {
+            _state.update { it.copy(yearError = true) }
+            hasError = true
+        }
         if (s.effectiveColor.isBlank()) {
             _state.update { it.copy(colorError = true) }
             hasError = true
         }
         if (hasError) return
+        val year = s.year ?: return
 
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
@@ -176,7 +181,7 @@ class RegisterVehicleViewModel(
                 model = s.model.trim(),
                 licensePlate = s.plate,
                 color = s.effectiveColor.trim(),
-                year = s.year,
+                year = year,
                 seatsAvailable = s.seatCount,
                 photoUrl = s.existingPhotoUrl ?: "",
                 isPrimary = s.isPrimary,
