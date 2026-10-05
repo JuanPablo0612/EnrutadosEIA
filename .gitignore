@@ -24,3 +24,12 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 .firebase/
+
+# Android Studio's "Generate Signed App Bundle / APK" writes to <module>/release and <module>/debug
+/*/release/
+/*/debug/
+# Built packages and signing keys, wherever they end up
+*.apk
+*.aab
+*.jks
+*.keystore
