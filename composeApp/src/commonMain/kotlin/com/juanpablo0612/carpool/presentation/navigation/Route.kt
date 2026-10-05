@@ -8,6 +8,10 @@ sealed interface Route {
     @Serializable
     data object Splash : Route
 
+    /** Where signed-out users start: asks whether they have an account before any form. */
+    @Serializable
+    data object Entry : Route
+
     @Serializable
     data object Login : Route
 

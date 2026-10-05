@@ -1,4 +1,11 @@
 <resources>
+    <string name="entry_title">Is this your first time on EnrutadosEIA?</string>
+    <string name="entry_subtitle">To sign in you first need an account. Creating one takes a minute.</string>
+    <string name="entry_new_title">Yes, I'm new</string>
+    <string name="entry_new_subtitle">Create my account with my EIA email</string>
+    <string name="entry_existing_title">No, I already have an account</string>
+    <string name="entry_existing_subtitle">Sign in</string>
+
     <string name="login_welcome_back">Welcome back</string>
     <string name="login_subtitle">Sign in with your EIA email.</string>
     <string name="login_new_user_hint">No account yet? Create one first with the button below.</string>

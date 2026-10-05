@@ -231,6 +231,7 @@ fun AppNavigation(
 
                     authNavGraph(
                         onAuthSuccess = ::enterApp,
+                        onNavigateToLogin = { navController.navigate(Route.Login) },
                         onNavigateToRegister = { navController.navigate(Route.Register) },
                         onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                         onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },

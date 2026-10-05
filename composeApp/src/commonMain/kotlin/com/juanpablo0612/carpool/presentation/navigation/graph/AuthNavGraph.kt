@@ -5,6 +5,7 @@ import androidx.navigation.compose.composable
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationScreen
 import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationViewModel
+import com.juanpablo0612.carpool.presentation.auth.entry.EntryScreen
 import com.juanpablo0612.carpool.presentation.auth.forgotpassword.ForgotPasswordScreen
 import com.juanpablo0612.carpool.presentation.auth.forgotpassword.ForgotPasswordViewModel
 import com.juanpablo0612.carpool.presentation.auth.login.LoginScreen
@@ -16,6 +17,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.authNavGraph(
     onAuthSuccess: (User) -> Unit,
+    onNavigateToLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
@@ -23,6 +25,13 @@ fun NavGraphBuilder.authNavGraph(
     onNavigateBack: () -> Unit,
     canNavigateBack: () -> Boolean = { true }
 ) {
+    composable<Route.Entry> {
+        EntryScreen(
+            onCreateAccountClick = onNavigateToRegister,
+            onSignInClick = onNavigateToLogin,
+        )
+    }
+
     composable<Route.Login> {
         val viewModel: LoginViewModel = koinViewModel()
         LoginScreen(
