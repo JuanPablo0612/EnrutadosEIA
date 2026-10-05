@@ -94,6 +94,51 @@ async function notifyConfirmedPassengers(
 }
 
 /**
+ * Tells every passenger with an open (pending or confirmed) booking that
+ * the driver changed the trip's stops.
+ * @param {string} tripId the trip
+ * @param {TripDoc} trip the trip data after the change
+ * @param {string} changeId identifies this change, so a retried event
+ *     doesn't notify twice while a later change still does
+ */
+async function notifyOpenPassengersOfUpdate(
+  tripId: string,
+  trip: TripDoc,
+  changeId: string,
+): Promise<void> {
+  const snap = await getFirestore()
+    .collection(Collections.bookings)
+    .where("tripId", "==", tripId)
+    .where("status", "in", ["PENDING", "CONFIRMED"])
+    .get();
+  if (snap.empty) return;
+  const driverId = str(trip.driverId, 200);
+  const driverName = await userName(driverId);
+  await Promise.all(snap.docs.map((doc) => notify({
+    recipientId: str((doc.data() as BookingDoc).passengerId, 200),
+    type: "trip_updated",
+    params: {
+      ...tripParams(tripId, trip),
+      bookingId: doc.id,
+      driverId,
+      driverName,
+    },
+    inAppId: `trip_updated_${tripId}_${changeId}`,
+  })));
+}
+
+/**
+ * A comparable form of a trip's intermediate stops.
+ * @param {TripDoc} trip the trip data
+ * @return {string} the stops' names and addresses, in order
+ */
+function stopsKey(trip: TripDoc): string {
+  return JSON.stringify(
+    (trip.waypoints ?? []).map((stop) => [stop.name ?? "", stop.address ?? ""]),
+  );
+}
+
+/**
  * The params every trip-related notification carries.
  * @param {string} tripId the trip id
  * @param {TripDoc} trip the trip data
@@ -109,17 +154,28 @@ function tripParams(tripId: string, trip: TripDoc): NotificationParams {
 }
 
 /**
- * Reacts to a driver starting, finishing or cancelling a trip. Most trip
- * writes are location updates while driving, so unchanged status exits
- * immediately.
+ * Reacts to a driver starting, finishing or cancelling a trip, or changing
+ * the stops of an active one. Most trip writes are location updates while
+ * driving, which change neither and exit immediately.
  */
 export const onTripUpdated = onDocumentUpdated(
   `${Collections.trips}/{tripId}`,
   async (event) => {
     const before = event.data?.before.data() as TripDoc | undefined;
     const after = event.data?.after.data() as TripDoc | undefined;
-    if (!before || !after || before.status === after.status) return;
+    if (!before || !after) return;
     const tripId = event.params.tripId;
+
+    if (before.status === after.status) {
+      // Passengers only need to hear about stops; a seat change affects
+      // nobody already booked.
+      if (after.status === "ACTIVE" && stopsKey(before) !== stopsKey(after)) {
+        // The write time identifies the change and is the same on retries.
+        const changedAt = event.data?.after.updateTime.toMillis() ?? 0;
+        await notifyOpenPassengersOfUpdate(tripId, after, String(changedAt));
+      }
+      return;
+    }
 
     switch (after.status) {
     case "CANCELLED":

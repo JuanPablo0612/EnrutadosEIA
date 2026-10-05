@@ -53,6 +53,7 @@ object NotificationDeepLink {
             NotificationType.TripCancelled -> passengerBookings()
             NotificationType.BookingCancelledByPassenger -> tripId?.let(::tripPassengers)
             NotificationType.TripStarted -> tripId?.let(::tracking)
+            NotificationType.TripUpdated -> tripId?.let(::trip) ?: passengerBookings()
             NotificationType.TripCompleted -> {
                 val driverId = param(NotificationParams.DRIVER_ID)
                 if (bookingId != null && tripId != null && driverId != null) {

@@ -632,6 +632,8 @@
     <string name="notification_trip_started_body_fmt">%1$s inició el viaje %2$s → %3$s. Síguelo en vivo.</string>
     <string name="notification_trip_completed_title">¿Cómo estuvo tu viaje?</string>
     <string name="notification_trip_completed_body_fmt">Califica a %1$s por el viaje %2$s → %3$s</string>
+    <string name="notification_trip_updated_title">Cambiaron las paradas del viaje</string>
+    <string name="notification_trip_updated_body_fmt">%1$s cambió las paradas del viaje %2$s → %3$s, %4$s. Revisa el recorrido.</string>
     <string name="notification_new_message_title_fmt">Mensaje de %1$s</string>
     <string name="notification_someone">Alguien</string>
     <string name="notification_generic_title">Nueva notificación</string>

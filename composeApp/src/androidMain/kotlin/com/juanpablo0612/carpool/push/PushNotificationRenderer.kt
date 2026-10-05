@@ -106,7 +106,8 @@ internal object PushNotificationRenderer {
 
     private fun channelFor(type: NotificationType): Channel = when (type) {
         NotificationType.NewMessage -> Channel.Chat
-        NotificationType.TripStarted, NotificationType.TripCompleted, NotificationType.TripCancelled -> Channel.Trips
+        NotificationType.TripStarted, NotificationType.TripCompleted, NotificationType.TripCancelled,
+        NotificationType.TripUpdated -> Channel.Trips
         else -> Channel.Bookings
     }
 

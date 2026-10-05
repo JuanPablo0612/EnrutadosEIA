@@ -13,6 +13,8 @@ sealed class NotificationType(val key: String) {
     data object TripCancelled : NotificationType("trip_cancelled")
     data object TripStarted : NotificationType("trip_started")
     data object TripCompleted : NotificationType("trip_completed")
+    /** The driver changed the stops of a trip the passenger asked a seat on. */
+    data object TripUpdated : NotificationType("trip_updated")
     data object NewMessage : NotificationType("new_message")
 
     /** A kind this build doesn't know (written by a newer backend); shown generically. */
@@ -23,7 +25,8 @@ sealed class NotificationType(val key: String) {
         private val known by lazy {
             listOf(
                 NewBookingRequest, BookingAccepted, BookingRejected, BookingCancelledByPassenger,
-                BookingCancelledByDriver, TripCancelled, TripStarted, TripCompleted, NewMessage,
+                BookingCancelledByDriver, TripCancelled, TripStarted, TripCompleted, TripUpdated,
+                NewMessage,
             )
         }
 

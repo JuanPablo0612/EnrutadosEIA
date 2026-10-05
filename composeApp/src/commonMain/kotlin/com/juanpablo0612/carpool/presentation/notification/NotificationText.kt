@@ -26,6 +26,8 @@ import enrutadoseia.composeapp.generated.resources.notification_trip_completed_b
 import enrutadoseia.composeapp.generated.resources.notification_trip_completed_title
 import enrutadoseia.composeapp.generated.resources.notification_trip_started_body_fmt
 import enrutadoseia.composeapp.generated.resources.notification_trip_started_title
+import enrutadoseia.composeapp.generated.resources.notification_trip_updated_body_fmt
+import enrutadoseia.composeapp.generated.resources.notification_trip_updated_title
 import enrutadoseia.composeapp.generated.resources.reject_reason_other
 import enrutadoseia.composeapp.generated.resources.reject_reason_pickup_not_possible
 import enrutadoseia.composeapp.generated.resources.reject_reason_trip_cancelled
@@ -102,6 +104,11 @@ suspend fun resolveNotificationText(type: NotificationType, params: Map<String, 
         NotificationType.TripCompleted -> text(
             Res.string.notification_trip_completed_title,
             Res.string.notification_trip_completed_body_fmt,
+            NotificationParams.DRIVER_NAME,
+        )
+        NotificationType.TripUpdated -> text(
+            Res.string.notification_trip_updated_title,
+            Res.string.notification_trip_updated_body_fmt,
             NotificationParams.DRIVER_NAME,
         )
         NotificationType.NewMessage -> NotificationText(

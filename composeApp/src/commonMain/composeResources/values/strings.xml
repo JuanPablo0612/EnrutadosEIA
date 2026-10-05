@@ -759,6 +759,8 @@
     <string name="notification_trip_started_body_fmt">%1$s started the trip %2$s → %3$s. Follow it live.</string>
     <string name="notification_trip_completed_title">How was your trip?</string>
     <string name="notification_trip_completed_body_fmt">Rate %1$s for the trip %2$s → %3$s</string>
+    <string name="notification_trip_updated_title">Trip stops changed</string>
+    <string name="notification_trip_updated_body_fmt">%1$s changed the stops of the trip %2$s → %3$s, %4$s. Check the route.</string>
     <string name="notification_new_message_title_fmt">Message from %1$s</string>
     <string name="notification_someone">Someone</string>
     <string name="notification_generic_title">New notification</string>

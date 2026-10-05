@@ -34,6 +34,7 @@ export interface TripDoc {
   status?: TripStatus;
   seatCount?: number;
   confirmedSeats?: number;
+  waypoints?: PlaceDoc[];
 }
 
 export interface UserDoc {
@@ -72,6 +73,7 @@ export type NotificationType =
   | "trip_cancelled"
   | "trip_started"
   | "trip_completed"
+  | "trip_updated"
   | "new_message";
 
 /**

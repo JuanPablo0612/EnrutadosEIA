@@ -67,6 +67,19 @@ class NotificationDeepLinkTest {
     }
 
     @Test
+    fun tripUpdateOpensTheTripAsThePassengerSeesIt() {
+        val params = mapOf(NotificationParams.TRIP_ID to "t1", NotificationParams.BOOKING_ID to "b1")
+        val route = NotificationDeepLink.forNotification(NotificationType.TripUpdated, params)?.toRouteOrNull()
+        assertEquals(Route.TripDetailPassenger("t1"), route)
+    }
+
+    @Test
+    fun tripUpdateWithoutTheTripOpensMyTrips() {
+        val route = NotificationDeepLink.forNotification(NotificationType.TripUpdated, emptyMap())?.toRouteOrNull()
+        assertEquals(Route.MyTrips, route)
+    }
+
+    @Test
     fun unknownKindsAndMalformedLinksGoNowhere() {
         assertNull(NotificationDeepLink.forNotification(NotificationType.Unknown("future"), emptyMap()))
         assertNull("carpool://chat/b1".toRouteOrNull())
@@ -78,5 +91,6 @@ class NotificationDeepLinkTest {
     fun unknownTypeKeysDecodeAsUnknown() {
         assertEquals(NotificationType.Unknown("x"), NotificationType.fromKey("x"))
         assertEquals(NotificationType.TripStarted, NotificationType.fromKey("trip_started"))
+        assertEquals(NotificationType.TripUpdated, NotificationType.fromKey("trip_updated"))
     }
 }
