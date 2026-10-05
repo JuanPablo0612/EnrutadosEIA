@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.data.trip.datasource
 
+import com.juanpablo0612.carpool.data.trip.model.TripDetailsUpdateDto
 import com.juanpablo0612.carpool.data.trip.model.TripDto
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -63,6 +64,12 @@ class FirebaseTripRemoteDataSource(
             .map { snapshot ->
                 runCatching { snapshot.data(TripDto.serializer()) }.getOrNull()
             }
+    }
+
+    override suspend fun updateTripDetails(tripId: String, details: TripDetailsUpdateDto) {
+        // Updates only the fields of the partial DTO; the serializer encodes the nested places.
+        firestore.collection(COLLECTION_NAME).document(tripId)
+            .update(TripDetailsUpdateDto.serializer(), details)
     }
 
     override suspend fun updateTripStatus(tripId: String, status: String) {

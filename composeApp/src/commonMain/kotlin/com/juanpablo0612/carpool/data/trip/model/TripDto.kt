@@ -83,6 +83,13 @@ data class TripDto(
     }
 }
 
+/** The fields a driver may change on a published trip, written as a partial update. */
+@Serializable
+data class TripDetailsUpdateDto(
+    val seatCount: Int = 1,
+    val waypoints: List<PlaceDto> = emptyList(),
+)
+
 @Serializable
 data class TripDriverDto(
     val name: String = "",

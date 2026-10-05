@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.domain.trip.usecase
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
 import com.juanpablo0612.carpool.domain.route.repository.RouteRepository
 import com.juanpablo0612.carpool.domain.trip.model.Trip
@@ -73,6 +74,7 @@ class FakeTripRepository(
     override fun getAvailableTrips(): Flow<List<Trip>> = unused()
     override suspend fun getTripById(id: String): Result<Trip> = unused()
     override fun getTripByIdFlow(id: String): Flow<Trip?> = flowOf(existing.firstOrNull { it.id == id })
+    override suspend fun updateTripDetails(tripId: String, seatCount: Int, waypoints: List<Place>): Result<Unit> = unused()
     override suspend fun updateTripStatus(tripId: String, status: TripStatus): Result<Unit> = unused()
     override suspend fun updateDriverLocation(tripId: String, latitude: Double, longitude: Double): Result<Unit> = unused()
     override suspend fun updatePassengerStatus(tripId: String, passengerId: String, status: String): Result<Unit> = unused()

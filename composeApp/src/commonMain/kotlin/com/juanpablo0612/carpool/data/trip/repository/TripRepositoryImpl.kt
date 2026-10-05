@@ -2,7 +2,10 @@ package com.juanpablo0612.carpool.data.trip.repository
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.trip.datasource.TripRemoteDataSource
+import com.juanpablo0612.carpool.data.place.model.PlaceDto
+import com.juanpablo0612.carpool.data.trip.model.TripDetailsUpdateDto
 import com.juanpablo0612.carpool.data.trip.model.TripDto
+import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
@@ -44,6 +47,16 @@ class TripRepositoryImpl(
         return try {
             val trip = remoteDataSource.getTripById(id).toDomain()
             Result.success(trip)
+        } catch (_: Exception) {
+            Result.failure(AppException.TripException.Unknown)
+        }
+    }
+
+    override suspend fun updateTripDetails(tripId: String, seatCount: Int, waypoints: List<Place>): Result<Unit> {
+        return try {
+            val details = TripDetailsUpdateDto(seatCount = seatCount, waypoints = waypoints.map(PlaceDto::fromDomain))
+            remoteDataSource.updateTripDetails(tripId, details)
+            Result.success(Unit)
         } catch (_: Exception) {
             Result.failure(AppException.TripException.Unknown)
         }
