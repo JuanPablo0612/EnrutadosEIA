@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.profile.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.auth.model.PhoneNumber
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationResult
 import com.juanpablo0612.carpool.domain.auth.validation.Validator
@@ -39,7 +40,8 @@ class EditProfileViewModel(
             _state.update {
                 it.copy(
                     name = user?.name ?: "",
-                    phone = user?.phone ?: "",
+                    phoneCountryCode = user?.phone?.countryCode ?: PhoneNumber.DEFAULT_COUNTRY_CODE,
+                    phoneNumber = user?.phone?.number.orEmpty(),
                     bio = user?.bio ?: "",
                     existingPhotoUrl = user?.photoUrl?.ifBlank { null },
                     isLoading = false
@@ -54,7 +56,17 @@ class EditProfileViewModel(
             is EditProfileAction.OnNameChange -> _state.update {
                 it.copy(name = action.name, nameError = null)
             }
-            is EditProfileAction.OnPhoneChange -> _state.update { it.copy(phone = action.phone, phoneError = null) }
+            is EditProfileAction.OnPhoneCountryCodeChange -> _state.update {
+                it.copy(phoneCountryCode = action.countryCode, phoneCountryCodeError = null)
+            }
+            is EditProfileAction.OnPhoneNumberChange -> _state.update {
+                // Emptying the number makes the phone optional again, so a country code error goes too.
+                it.copy(
+                    phoneNumber = action.number,
+                    phoneNumberError = null,
+                    phoneCountryCodeError = if (action.number.isEmpty()) null else it.phoneCountryCodeError,
+                )
+            }
             is EditProfileAction.OnBioChange -> {
                 val bio = action.bio
                 val error = if (bio.length > 200) EditProfileFieldError.BioTooLong else null
@@ -83,11 +95,20 @@ class EditProfileViewModel(
             _state.update { it.copy(nameError = EditProfileFieldError.NameEmpty) }
             return
         }
-        // The phone is optional here: blank clears it, anything else must be a valid number.
-        val phone = Validator.normalizePhone(state.phone).ifBlank { null }
-        if (phone != null && Validator.validatePhone(phone) is ValidationResult.Error) {
-            _state.update { it.copy(phoneError = EditProfileFieldError.PhoneInvalid) }
-            return
+        // The phone is optional here: an empty number clears it, whatever the country code says;
+        // a filled-in number needs a valid country code too.
+        val phone = if (state.phoneNumber.isBlank()) {
+            null
+        } else {
+            val countryCodeError =
+                (Validator.validatePhoneCountryCode(state.phoneCountryCode) as? ValidationResult.Error)?.error
+            val numberError =
+                (Validator.validatePhoneNumber(state.phoneCountryCode, state.phoneNumber) as? ValidationResult.Error)?.error
+            if (countryCodeError != null || numberError != null) {
+                _state.update { it.copy(phoneCountryCodeError = countryCodeError, phoneNumberError = numberError) }
+                return
+            }
+            PhoneNumber(countryCode = state.phoneCountryCode, number = state.phoneNumber)
         }
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true, error = null, photoError = false) }

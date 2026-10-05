@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.domain.trip.usecase
 
+import com.juanpablo0612.carpool.domain.auth.model.PhoneNumber
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
@@ -20,7 +21,7 @@ class FakeAuthRepository(private val uid: String?) : AuthRepository {
     override fun getCurrentUserId(): String? = uid
     override fun getCurrentUserEmail(): String? = unused()
     override suspend fun login(email: String, password: String) = unused()
-    override suspend fun register(email: String, password: String, name: String, phone: String, photoBytes: ByteArray?) = unused()
+    override suspend fun register(email: String, password: String, name: String, phone: PhoneNumber?, photoBytes: ByteArray?) = unused()
     override suspend fun sendEmailVerification() = unused()
     override suspend fun refreshEmailVerification() = unused()
     override suspend fun logout() = unused()
@@ -29,7 +30,7 @@ class FakeAuthRepository(private val uid: String?) : AuthRepository {
         uid?.let { Result.success(User(id = it, email = "$it@eia.edu.co", name = "Carolina Restrepo", isEmailVerified = true, photoUrl = "https://photo")) }
             ?: Result.failure(Exception())
     override suspend fun getPublicProfile(userId: String): Result<PublicProfile> = unused()
-    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User> = unused()
+    override suspend fun updateProfile(name: String, phone: PhoneNumber?, bio: String?, photoBytes: ByteArray?): Result<User> = unused()
     override suspend fun deleteAccount() = unused()
 }
 

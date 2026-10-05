@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
 import com.juanpablo0612.carpool.presentation.auth.register.components.NameTextField
-import com.juanpablo0612.carpool.presentation.auth.register.components.PhoneTextField
+import com.juanpablo0612.carpool.presentation.auth.register.components.PhoneNumberFields
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
@@ -65,7 +65,6 @@ import enrutadoseia.composeapp.generated.resources.edit_profile_bio_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_bio_placeholder
 import enrutadoseia.composeapp.generated.resources.edit_profile_name_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_phone_label
-import enrutadoseia.composeapp.generated.resources.edit_profile_phone_placeholder
 import enrutadoseia.composeapp.generated.resources.edit_profile_photo_error
 import enrutadoseia.composeapp.generated.resources.edit_profile_save_button
 import enrutadoseia.composeapp.generated.resources.edit_profile_title
@@ -209,12 +208,14 @@ fun EditProfileContent(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                PhoneTextField(
-                    value = state.phone,
-                    onValueChange = { onAction(EditProfileAction.OnPhoneChange(it)) },
+                PhoneNumberFields(
+                    countryCode = state.phoneCountryCode,
+                    number = state.phoneNumber,
+                    onCountryCodeChange = { onAction(EditProfileAction.OnPhoneCountryCodeChange(it)) },
+                    onNumberChange = { onAction(EditProfileAction.OnPhoneNumberChange(it)) },
                     label = stringResource(Res.string.edit_profile_phone_label),
-                    placeholder = stringResource(Res.string.edit_profile_phone_placeholder),
-                    errorMessage = state.phoneError?.asStringResource()?.let { stringResource(it) },
+                    countryCodeError = state.phoneCountryCodeError?.let { stringResource(it.asStringResource()) },
+                    numberError = state.phoneNumberError?.let { stringResource(it.asStringResource()) },
                     modifier = Modifier.fillMaxWidth()
                 )
 

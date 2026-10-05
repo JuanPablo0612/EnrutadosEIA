@@ -51,9 +51,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_terms_not_accepted
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
-import enrutadoseia.composeapp.generated.resources.register_phone_hint
 import enrutadoseia.composeapp.generated.resources.register_phone_label
-import enrutadoseia.composeapp.generated.resources.register_phone_placeholder
 import enrutadoseia.composeapp.generated.resources.register_photo_action_camera
 import enrutadoseia.composeapp.generated.resources.register_photo_action_gallery
 import enrutadoseia.composeapp.generated.resources.register_photo_add
@@ -128,13 +126,14 @@ internal fun RegisterStep2(
 
         Spacer(modifier = Modifier.height(Spacing.xl))
 
-        PhoneTextField(
-            value = state.phone,
-            onValueChange = { onAction(RegisterAction.OnPhoneChanged(it)) },
+        PhoneNumberFields(
+            countryCode = state.phoneCountryCode,
+            number = state.phoneNumber,
+            onCountryCodeChange = { onAction(RegisterAction.OnPhoneCountryCodeChanged(it)) },
+            onNumberChange = { onAction(RegisterAction.OnPhoneNumberChanged(it)) },
             label = stringResource(Res.string.register_phone_label),
-            placeholder = stringResource(Res.string.register_phone_placeholder),
-            errorMessage = state.phoneError?.asStringResource()?.let { stringResource(it) },
-            supportingText = { Text(stringResource(Res.string.register_phone_hint)) },
+            countryCodeError = state.phoneCountryCodeError?.let { stringResource(it.asStringResource()) },
+            numberError = state.phoneNumberError?.let { stringResource(it.asStringResource()) },
             imeAction = ImeAction.Done,
             // Done only closes the keyboard: the terms still need to be accepted.
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })

@@ -7,7 +7,7 @@ data class User(
     val email: String,
     val name: String?,
     val isEmailVerified: Boolean,
-    val phone: String? = null,
+    val phone: PhoneNumber? = null,
     val photoUrl: String? = null,
     val bio: String? = null,
     /** Null until someone rates the user. */

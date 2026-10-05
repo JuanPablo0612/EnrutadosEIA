@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.auth.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.core.config.FeatureFlags
+import com.juanpablo0612.carpool.domain.auth.model.PhoneNumber
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
 import com.juanpablo0612.carpool.domain.auth.validation.PasswordStrength
@@ -44,7 +45,10 @@ class RegisterViewModel(
             RegisterAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             RegisterAction.OnToggleConfirmPasswordVisibility -> _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
             is RegisterAction.OnPhotoSelected -> _uiState.update { it.copy(photoFile = action.file, photoError = false) }
-            is RegisterAction.OnPhoneChanged -> _uiState.update { it.copy(phone = action.phone, phoneError = null) }
+            is RegisterAction.OnPhoneCountryCodeChanged -> _uiState.update {
+                it.copy(phoneCountryCode = action.countryCode, phoneCountryCodeError = null)
+            }
+            is RegisterAction.OnPhoneNumberChanged -> _uiState.update { it.copy(phoneNumber = action.number, phoneNumberError = null) }
             is RegisterAction.OnTermsChanged -> _uiState.update { it.copy(hasAcceptedTerms = action.accepted, termsError = false) }
             RegisterAction.OnNextStep -> advanceStep()
             RegisterAction.OnPreviousStep -> _uiState.update { if (it.currentStep > 1) it.copy(currentStep = it.currentStep - 1) else it }
@@ -79,11 +83,15 @@ class RegisterViewModel(
 
     private fun register() {
         val state = _uiState.value
-        val phoneError = (Validator.validatePhone(state.phone) as? ValidationResult.Error)?.error
+        val countryCodeError = (Validator.validatePhoneCountryCode(state.phoneCountryCode) as? ValidationResult.Error)?.error
+        val numberError =
+            (Validator.validatePhoneNumber(state.phoneCountryCode, state.phoneNumber) as? ValidationResult.Error)?.error
         val termsError = !state.hasAcceptedTerms
 
-        if (phoneError != null || termsError) {
-            _uiState.update { it.copy(phoneError = phoneError, termsError = termsError) }
+        if (countryCodeError != null || numberError != null || termsError) {
+            _uiState.update {
+                it.copy(phoneCountryCodeError = countryCodeError, phoneNumberError = numberError, termsError = termsError)
+            }
             return
         }
 
@@ -101,7 +109,7 @@ class RegisterViewModel(
                 email = EiaEmail.fromInput(state.email),
                 password = state.password,
                 name = state.fullName,
-                phone = Validator.normalizePhone(state.phone),
+                phone = PhoneNumber(countryCode = state.phoneCountryCode, number = state.phoneNumber),
                 photoBytes = photoBytes
             )
                 .onSuccess {

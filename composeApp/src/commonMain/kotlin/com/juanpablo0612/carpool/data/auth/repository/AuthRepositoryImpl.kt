@@ -2,6 +2,8 @@ package com.juanpablo0612.carpool.data.auth.repository
 
 import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.data.auth.datasource.AuthRemoteDataSource
+import com.juanpablo0612.carpool.data.auth.model.toDto
+import com.juanpablo0612.carpool.domain.auth.model.PhoneNumber
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
@@ -26,11 +28,11 @@ class AuthRepositoryImpl(
         email: String,
         password: String,
         name: String,
-        phone: String,
+        phone: PhoneNumber?,
         photoBytes: ByteArray?
     ): Result<Unit> {
         return try {
-            remoteDataSource.signUp(email, password, name, phone, photoBytes)
+            remoteDataSource.signUp(email, password, name, phone?.toDto(), photoBytes)
             Result.success(Unit)
         } catch (e: FirebaseAuthException) {
             Result.failure(e.toAppException())
@@ -102,9 +104,9 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): Result<User> {
+    override suspend fun updateProfile(name: String, phone: PhoneNumber?, bio: String?, photoBytes: ByteArray?): Result<User> {
         return try {
-            Result.success(remoteDataSource.updateProfile(name, phone, bio, photoBytes).toDomain())
+            Result.success(remoteDataSource.updateProfile(name, phone?.toDto(), bio, photoBytes).toDomain())
         } catch (_: Exception) {
             Result.failure(AppException.AuthException.Unknown)
         }

@@ -4,7 +4,8 @@ import io.github.vinceglb.filekit.PlatformFile
 
 sealed class EditProfileAction {
     data class OnNameChange(val name: String) : EditProfileAction()
-    data class OnPhoneChange(val phone: String) : EditProfileAction()
+    data class OnPhoneCountryCodeChange(val countryCode: String) : EditProfileAction()
+    data class OnPhoneNumberChange(val number: String) : EditProfileAction()
     data class OnBioChange(val bio: String) : EditProfileAction()
     data class OnPhotoSelected(val file: PlatformFile?) : EditProfileAction()
     data object OnSaveClick : EditProfileAction()

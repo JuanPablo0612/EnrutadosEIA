@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.data.auth.datasource
 
 import com.juanpablo0612.carpool.core.config.FeatureFlags
+import com.juanpablo0612.carpool.data.auth.model.PhoneDto
 import com.juanpablo0612.carpool.data.auth.model.UserDocument
 import com.juanpablo0612.carpool.data.auth.model.UserDto
 import com.juanpablo0612.carpool.data.auth.model.UserRatingDto
@@ -33,7 +34,7 @@ class FirebaseAuthRemoteDataSource(
         email: String,
         password: String,
         name: String,
-        phone: String,
+        phone: PhoneDto?,
         photoBytes: ByteArray?
     ) {
         val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -56,7 +57,8 @@ class FirebaseAuthRemoteDataSource(
             email = email,
             name = name,
             isEmailVerified = user.isEmailVerified,
-            phone = phone.ifBlank { null },
+            phoneCountryCode = phone?.countryCode,
+            phoneNumber = phone?.number,
             photoUrl = photoUrl
         )
         firestore.collection("users").document(user.uid).set(UserDto.serializer(), userDto)
@@ -119,11 +121,12 @@ class FirebaseAuthRemoteDataSource(
     override suspend fun getPublicProfile(userId: String): UserDocument =
         firestore.collection("users").document(userId).get().toUserDocument()
 
-    override suspend fun updateProfile(name: String, phone: String?, bio: String?, photoBytes: ByteArray?): UserDocument {
+    override suspend fun updateProfile(name: String, phone: PhoneDto?, bio: String?, photoBytes: ByteArray?): UserDocument {
         val userId = checkNotNull(firebaseAuth.currentUser?.uid) { "User not authenticated" }
         val updates = mutableMapOf<String, Any?>(
             "name" to name,
-            "phone" to phone,
+            "phoneCountryCode" to phone?.countryCode,
+            "phoneNumber" to phone?.number,
             "bio" to bio
         )
         if (photoBytes != null) {

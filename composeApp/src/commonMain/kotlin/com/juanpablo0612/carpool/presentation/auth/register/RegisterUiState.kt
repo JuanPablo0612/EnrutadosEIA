@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.auth.register
 
+import com.juanpablo0612.carpool.domain.auth.model.PhoneNumber
 import com.juanpablo0612.carpool.domain.auth.validation.EiaEmail
 import com.juanpablo0612.carpool.domain.auth.validation.PasswordStrength
 import com.juanpablo0612.carpool.domain.auth.validation.ValidationError
@@ -23,8 +24,10 @@ data class RegisterUiState(
     val isConfirmPasswordVisible: Boolean = false,
     val photoFile: PlatformFile? = null,
     val photoError: Boolean = false,
-    val phone: String = "",
-    val phoneError: ValidationError? = null,
+    val phoneCountryCode: String = PhoneNumber.DEFAULT_COUNTRY_CODE,
+    val phoneCountryCodeError: ValidationError? = null,
+    val phoneNumber: String = "",
+    val phoneNumberError: ValidationError? = null,
     val hasAcceptedTerms: Boolean = false,
     val termsError: Boolean = false,
     val isLoading: Boolean = false,

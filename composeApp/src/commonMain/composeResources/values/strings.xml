@@ -278,13 +278,17 @@
     <string name="register_photo_add">Add photo</string>
     <string name="register_photo_change">Change photo</string>
     <string name="register_photo_hint">Optional · camera or gallery</string>
-    <string name="register_phone_hint">Include your country code. We never show it to other users.</string>
+    <string name="register_phone_hint">We never show it to other users.</string>
     <string name="register_photo_placeholder">Add profile photo (optional)</string>
     <string name="register_photo_error">Couldn\'t read that photo. Please pick another one.</string>
     <string name="register_photo_action_camera">Camera</string>
     <string name="register_photo_action_gallery">Gallery</string>
     <string name="register_phone_label">Mobile number</string>
-    <string name="register_phone_placeholder">+57 300 123 4567</string>
+    <string name="register_phone_placeholder">300 123 4567</string>
+    <string name="register_phone_country_code_label">Country code</string>
+    <string name="register_phone_country_code_placeholder">57</string>
+    <string name="register_phone_number_label">Number</string>
+    <string name="register_phone_format_hint">Digits only. If your mobile isn\'t from Colombia, change 57 to your country\'s code.</string>
     <string name="register_terms_checkbox">I accept the Terms of Service and the Privacy Policy</string>
     <string name="register_continue_button">Continue</string>
 
@@ -311,8 +315,6 @@
 
     <!-- New validation errors -->
     <string name="error_email_not_eia">Use your @eia.edu.co email</string>
-    <string name="error_phone_empty">Phone number cannot be empty</string>
-    <string name="error_phone_invalid">Enter your number with the country code, e.g. +57 300 123 4567</string>
     <string name="error_phone_country_code_empty">Enter your country code</string>
     <string name="error_phone_country_code_invalid">Enter a valid country code, e.g. 57</string>
     <string name="error_phone_number_empty">Enter your mobile number</string>
@@ -672,7 +674,6 @@
     <string name="edit_profile_title">Edit profile</string>
     <string name="edit_profile_name_label">Full name</string>
     <string name="edit_profile_phone_label">Phone</string>
-    <string name="edit_profile_phone_placeholder">+57 300 123 4567</string>
     <string name="edit_profile_bio_label">About me (optional)</string>
     <string name="edit_profile_bio_placeholder">Tell your travel companions something…</string>
     <string name="edit_profile_bio_counter">%1$d / 200</string>

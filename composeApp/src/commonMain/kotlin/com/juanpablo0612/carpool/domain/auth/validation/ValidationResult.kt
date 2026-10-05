@@ -15,8 +15,6 @@ sealed class ValidationError {
     data object NameTooShort : ValidationError()
     data object ConfirmPasswordEmpty : ValidationError()
     data object PasswordsDoNotMatch : ValidationError()
-    data object PhoneEmpty : ValidationError()
-    data object PhoneInvalid : ValidationError()
     data object PhoneCountryCodeEmpty : ValidationError()
     data object PhoneCountryCodeInvalid : ValidationError()
     data object PhoneNumberEmpty : ValidationError()

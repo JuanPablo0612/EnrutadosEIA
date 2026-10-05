@@ -38,8 +38,6 @@ fun ValidationError.asStringResource(): StringResource {
         ValidationError.NameTooShort -> Res.string.error_name_too_short
         ValidationError.ConfirmPasswordEmpty -> Res.string.error_confirm_password_empty
         ValidationError.PasswordsDoNotMatch -> Res.string.error_passwords_do_not_match
-        ValidationError.PhoneEmpty -> Res.string.error_phone_empty
-        ValidationError.PhoneInvalid -> Res.string.error_phone_invalid
         ValidationError.PhoneCountryCodeEmpty -> Res.string.error_phone_country_code_empty
         ValidationError.PhoneCountryCodeInvalid -> Res.string.error_phone_country_code_invalid
         ValidationError.PhoneNumberEmpty -> Res.string.error_phone_number_empty

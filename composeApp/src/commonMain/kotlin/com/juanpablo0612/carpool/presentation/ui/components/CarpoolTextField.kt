@@ -44,6 +44,9 @@ import org.jetbrains.compose.resources.vectorResource
  * (a password toggle must stay reachable while the field is in error).
  *
  * [prefix] and [suffix] render fixed text around the value, e.g. "$" or "@eia.edu.co".
+ *
+ * [isError] marks the field without a message of its own, for fields whose error is shown
+ * elsewhere (e.g. under a group of fields too narrow to hold it).
  */
 @Composable
 fun CarpoolTextField(
@@ -60,6 +63,7 @@ fun CarpoolTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     errorMessage: String? = null,
+    isError: Boolean = errorMessage != null,
     supportingText: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
     minLines: Int = 1,
@@ -71,7 +75,7 @@ fun CarpoolTextField(
         Text(
             text = label,
             style = MaterialTheme.typography.titleSmall,
-            color = if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             // Not a Spacing step (4/8dp both read as an even bigger jump from the label than the
             // original 6dp): this is a tight label-to-field coupling, not layout rhythm.
             modifier = Modifier.padding(bottom = 6.dp)
@@ -103,7 +107,7 @@ fun CarpoolTextField(
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            isError = errorMessage != null,
+            isError = isError,
             enabled = enabled,
             shape = shape,
             colors = colors,
