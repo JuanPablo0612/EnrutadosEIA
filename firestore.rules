@@ -157,7 +157,8 @@ service cloud.firestore {
     // trip cannot read any booking on it, confirmed or otherwise.
     //
     // Write: only the driver may set CONFIRMED/REJECTED; either party may set CANCELLED; a
-    // passenger may only create a booking under their own passengerId in PENDING status. No field
+    // passenger may only create a booking under their own passengerId in PENDING status, on a trip
+    // that is still ACTIVE and has not departed, and may only cancel it before departure. No field
     // other than status/rejectReason/rejectComment/cancelledBy may change on an update, and
     // cancelledBy (who cancelled, read by the notification functions) can only name the caller.
     // The confirmedSeats
@@ -170,9 +171,21 @@ service cloud.firestore {
         resource.data.driverId == request.auth.uid
       );
 
+      // The trip must still take bookings (Trip.acceptsBookings): active and departing in the
+      // future. The booking's driverId and departureTime must copy the trip's, so the passenger
+      // cancel branch below can trust departureTime without reading the trip again.
+      function bookedTrip() {
+        return get(/databases/$(database)/documents/trips/$(request.resource.data.tripId)).data;
+      }
+
       allow create: if isSignedIn()
         && request.resource.data.passengerId == request.auth.uid
-        && request.resource.data.status == 'PENDING';
+        && request.resource.data.status == 'PENDING'
+        && exists(/databases/$(database)/documents/trips/$(request.resource.data.tripId))
+        && bookedTrip().status == 'ACTIVE'
+        && bookedTrip().departureTime > request.time.toMillis()
+        && request.resource.data.driverId == bookedTrip().driverId
+        && request.resource.data.departureTime == bookedTrip().departureTime;
 
       allow update: if isSignedIn() && (
         (
@@ -184,6 +197,8 @@ service cloud.firestore {
         (
           resource.data.passengerId == request.auth.uid &&
           request.resource.data.status == 'CANCELLED' &&
+          // A seat is history once the trip leaves (CancelBookingUseCase).
+          resource.data.departureTime > request.time.toMillis() &&
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['status', 'cancelledBy'])
         )
