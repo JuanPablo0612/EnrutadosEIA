@@ -85,8 +85,28 @@ service cloud.firestore {
     // driver-initiated update touches confirmedSeats (accepting a booking), the new value may
     // never exceed seatCount — this is the server-side backstop against overbooking a trip past
     // its seat capacity, matching the ConfirmBookingUseCase seat check on the client.
+    //
+    // Editing (UpdateTripUseCase): the driver may change seatCount and waypoints only while the
+    // trip is ACTIVE and has not left. seatCount stays an int in 1-8 and never drops below the
+    // seats already confirmed; status transitions, location and passengerStatuses updates don't
+    // touch those fields and are unaffected.
     // ---------------------------------------------------------------------------------------
     match /trips/{tripId} {
+      function changes(fields) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+      }
+
+      function validDriverUpdate() {
+        let seats = request.resource.data.get("seatCount", 1);
+        let confirmed = request.resource.data.get("confirmedSeats", 0);
+        return (!changes(['confirmedSeats']) || confirmed <= seats) &&
+          (!changes(['seatCount']) ||
+            (seats is int && seats >= 1 && seats <= 8 && seats >= confirmed)) &&
+          (!changes(['seatCount', 'waypoints']) ||
+            (resource.data.status == 'ACTIVE' &&
+              resource.data.departureTime > request.time.toMillis()));
+      }
+
       allow read: if isSignedIn();
       // Server-side backstop for TripDraftValidator: a new trip is active, has no confirmed
       // seats yet, offers 1-8 seats, departs in the future and asks at most $50.000 (carpooling
@@ -105,10 +125,7 @@ service cloud.firestore {
       allow update: if isSignedIn() && (
         (
           resource.data.driverId == request.auth.uid &&
-          (
-            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['confirmedSeats']) ||
-            request.resource.data.confirmedSeats <= resource.data.seatCount
-          )
+          validDriverUpdate()
         ) ||
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['confirmedSeats']) &&
