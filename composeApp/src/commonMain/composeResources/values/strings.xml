@@ -219,12 +219,17 @@
 
     <!-- Edit trip -->
     <string name="edit_trip_title">Edit trip</string>
-    <string name="edit_trip_fixed_hint">Origin, destination, time and car stay as published: passengers booked on them.</string>
+    <string name="edit_trip_fixed_hint">You can change the stops and the seats. The time, origin and destination stay fixed; if you need to change them, cancel and publish again.</string>
     <string name="edit_trip_save_button">Save changes</string>
     <plurals name="edit_trip_confirmed_seats">
         <item quantity="one">%1$d seat already confirmed</item>
         <item quantity="other">%1$d seats already confirmed</item>
     </plurals>
+    <plurals name="edit_trip_seats_confirmed_max">
+        <item quantity="one">%1$d already confirmed · up to %2$d</item>
+        <item quantity="other">%1$d already confirmed · up to %2$d</item>
+    </plurals>
+    <string name="edit_trip_notify_note">If you change the stops, we let your passengers know.</string>
     <string name="edit_trip_stop_gets_on">%1$s gets on here</string>
     <string name="edit_trip_stop_gets_off">%1$s gets off here</string>
     <plurals name="edit_trip_stop_passengers">
@@ -428,7 +433,7 @@
     <string name="trip_action_start">Start trip</string>
     <string name="trip_action_track">Continue trip</string>
     <string name="trip_action_view_passengers">View passengers</string>
-    <string name="trip_action_edit">Edit</string>
+    <string name="trip_action_edit">Edit trip</string>
     <string name="cd_edit_trip">Edit trip</string>
     <string name="booking_action_rate">Rate</string>
 

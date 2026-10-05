@@ -1,6 +1,9 @@
 package com.juanpablo0612.carpool.presentation.trip.edit
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -17,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -50,7 +56,10 @@ import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
 import com.juanpablo0612.carpool.presentation.ui.util.WindowLayout
 import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
+import com.juanpablo0612.carpool.presentation.ui.util.departureDayLabel
+import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
+import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.discard_changes_body
@@ -59,15 +68,21 @@ import enrutadoseia.composeapp.generated.resources.discard_changes_title
 import enrutadoseia.composeapp.generated.resources.edit_trip_confirmed_seats
 import enrutadoseia.composeapp.generated.resources.edit_trip_fixed_hint
 import enrutadoseia.composeapp.generated.resources.edit_trip_locked_stops_hint
+import enrutadoseia.composeapp.generated.resources.edit_trip_notify_note
 import enrutadoseia.composeapp.generated.resources.edit_trip_save_button
+import enrutadoseia.composeapp.generated.resources.edit_trip_seats_confirmed_max
 import enrutadoseia.composeapp.generated.resources.edit_trip_stop_gets_off
 import enrutadoseia.composeapp.generated.resources.edit_trip_stop_gets_on
 import enrutadoseia.composeapp.generated.resources.edit_trip_stop_passengers
 import enrutadoseia.composeapp.generated.resources.edit_trip_title
+import enrutadoseia.composeapp.generated.resources.info_24px
 import enrutadoseia.composeapp.generated.resources.publish_trip_route_section
+import enrutadoseia.composeapp.generated.resources.relative_day_at_time
 import enrutadoseia.composeapp.generated.resources.route_from_to
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Clock
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -106,6 +121,7 @@ fun EditTripContent(
     state: EditTripUiState,
     onAction: (EditTripAction) -> Unit,
     layout: WindowLayout = rememberWindowLayout(),
+    now: Long = rememberNowMs(),
 ) {
     if (state.showDiscardConfirm) {
         ConfirmDialog(
@@ -167,16 +183,29 @@ fun EditTripContent(
                     contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin),
                 ) {
                     item(key = "fixed_hint") {
-                        Text(
-                            text = stringResource(Res.string.edit_trip_fixed_hint),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
                             modifier = Modifier.padding(
                                 start = Spacing.screenHorizontal,
                                 end = Spacing.screenHorizontal,
                                 top = Spacing.md,
                             ),
-                        )
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    Res.string.relative_day_at_time,
+                                    departureDayLabel(trip.departureTime, now),
+                                    formatTime(trip.departureTime),
+                                ),
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.semantics { heading() },
+                            )
+                            Text(
+                                text = stringResource(Res.string.edit_trip_fixed_hint),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                     item(key = "route_header") {
                         SectionHeader(
@@ -212,9 +241,9 @@ fun EditTripContent(
                             selectedVehicle = state.vehicle,
                             onChange = { onAction(EditTripAction.OnSetSeats(it)) },
                             minSeats = state.minSeats,
-                            supportingText = trip.confirmedSeats.takeIf { it > 0 }?.let {
-                                pluralStringResource(Res.plurals.edit_trip_confirmed_seats, it, it)
-                            },
+                            supportingText = seatsSupportingText(trip.confirmedSeats, state.vehicle?.seatsAvailable),
+                            // With seats confirmed, the supporting text already carries the cap.
+                            showCapacityHelper = trip.confirmedSeats == 0,
                             modifier = Modifier.padding(
                                 start = Spacing.screenHorizontal,
                                 end = Spacing.screenHorizontal,
@@ -223,6 +252,16 @@ fun EditTripContent(
                         )
                     }
                     fieldErrorItem("seats_error", state.error, TripError.SeatsOutOfRange, TripError.SeatsBelowConfirmed)
+
+                    item(key = "notify_note") {
+                        NotifyPassengersNote(
+                            modifier = Modifier.padding(
+                                start = Spacing.screenHorizontal,
+                                end = Spacing.screenHorizontal,
+                                top = Spacing.xl,
+                            ),
+                        )
+                    }
 
                     val generalError = state.error?.takeUnless { it in FIELD_ERRORS }
                     if (generalError != null) {
@@ -238,6 +277,42 @@ fun EditTripContent(
                     }
                 }
             }
+        }
+    }
+}
+
+/** "N already confirmed · up to M", or just the confirmed count if the car couldn't be read. */
+@Composable
+private fun seatsSupportingText(confirmedSeats: Int, capacity: Int?): String? = when {
+    confirmedSeats <= 0 -> null
+    capacity == null -> pluralStringResource(Res.plurals.edit_trip_confirmed_seats, confirmedSeats, confirmedSeats)
+    else -> pluralStringResource(Res.plurals.edit_trip_seats_confirmed_max, confirmedSeats, confirmedSeats, capacity)
+}
+
+/** Stop changes reach passengers as a notification, so the driver knows before saving. */
+@Composable
+private fun NotifyPassengersNote(modifier: Modifier = Modifier) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.info_24px),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp),
+            )
+            Text(
+                text = stringResource(Res.string.edit_trip_notify_note),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
@@ -270,6 +345,8 @@ private fun LazyListScope.fieldErrorItem(key: String, error: TripError?, vararg 
     }
 }
 
+private val previewNow = Clock.System.now().toEpochMilliseconds()
+
 private val previewTrip = Trip(
     id = "t1",
     routeId = "",
@@ -278,7 +355,7 @@ private val previewTrip = Trip(
     origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
     destination = Place.EIA_LAS_PALMAS,
     waypoints = listOf(Place(name = "Viva Envigado", address = "Carrera 48", latitude = 6.18, longitude = -75.59)),
-    departureTime = 0,
+    departureTime = previewNow + 3 * 3_600_000L,
     seatCount = 3,
     status = TripStatus.Active,
     confirmedSeats = 2,
@@ -307,6 +384,7 @@ private fun EditTripPreview() {
                 stopUsers = mapOf("Viva Envigado" to StopUsers.One(firstName = "Laura", isDropoff = false)),
             ),
             onAction = {},
+            now = previewNow,
         )
     }
 }

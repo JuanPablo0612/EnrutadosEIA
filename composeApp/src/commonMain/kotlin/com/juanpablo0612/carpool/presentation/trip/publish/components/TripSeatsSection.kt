@@ -18,7 +18,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Seats offered, from [minSeats] up to what the selected car holds; the cap, and any
- * [supportingText], are spelled out beside it.
+ * [supportingText], are spelled out beside it. Pass [showCapacityHelper] false when the
+ * supporting text already states the cap.
  */
 @Composable
 internal fun TripSeatsSection(
@@ -28,6 +29,7 @@ internal fun TripSeatsSection(
     modifier: Modifier = Modifier,
     minSeats: Int = 1,
     supportingText: String? = null,
+    showCapacityHelper: Boolean = true,
 ) {
     Row(
         modifier = modifier,
@@ -36,7 +38,7 @@ internal fun TripSeatsSection(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             SectionLabel(text = stringResource(Res.string.trip_seats_section))
-            selectedVehicle?.let { vehicle ->
+            selectedVehicle?.takeIf { showCapacityHelper }?.let { vehicle ->
                 Text(
                     text = stringResource(Res.string.trip_seats_helper, "${vehicle.brand} ${vehicle.model}".trim(), vehicle.seatsAvailable),
                     style = MaterialTheme.typography.bodySmall,

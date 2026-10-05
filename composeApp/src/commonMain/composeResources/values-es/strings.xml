@@ -219,12 +219,17 @@
 
     <!-- Editar viaje -->
     <string name="edit_trip_title">Editar viaje</string>
-    <string name="edit_trip_fixed_hint">El origen, el destino, la hora y el carro se mantienen: los pasajeros reservaron con ellos.</string>
+    <string name="edit_trip_fixed_hint">Puedes cambiar las paradas y los cupos. La hora, el origen y el destino quedan fijos; si necesitas cambiarlos, cancela y publica de nuevo.</string>
     <string name="edit_trip_save_button">Guardar cambios</string>
     <plurals name="edit_trip_confirmed_seats">
         <item quantity="one">%1$d cupo ya confirmado</item>
         <item quantity="other">%1$d cupos ya confirmados</item>
     </plurals>
+    <plurals name="edit_trip_seats_confirmed_max">
+        <item quantity="one">%1$d ya confirmado · máximo %2$d</item>
+        <item quantity="other">%1$d ya confirmados · máximo %2$d</item>
+    </plurals>
+    <string name="edit_trip_notify_note">Si cambias las paradas, avisamos a tus pasajeros.</string>
     <string name="edit_trip_stop_gets_on">%1$s sube aquí</string>
     <string name="edit_trip_stop_gets_off">%1$s baja aquí</string>
     <plurals name="edit_trip_stop_passengers">
@@ -428,7 +433,7 @@
     <string name="trip_action_start">Iniciar viaje</string>
     <string name="trip_action_track">Continuar viaje</string>
     <string name="trip_action_view_passengers">Ver pasajeros</string>
-    <string name="trip_action_edit">Editar</string>
+    <string name="trip_action_edit">Editar viaje</string>
     <string name="cd_edit_trip">Editar viaje</string>
     <string name="booking_action_rate">Calificar</string>
 
