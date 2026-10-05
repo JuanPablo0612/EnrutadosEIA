@@ -225,6 +225,15 @@
         <item quantity="one">%1$d seat already confirmed</item>
         <item quantity="other">%1$d seats already confirmed</item>
     </plurals>
+    <string name="edit_trip_stop_gets_on">%1$s gets on here</string>
+    <string name="edit_trip_stop_gets_off">%1$s gets off here</string>
+    <plurals name="edit_trip_stop_passengers">
+        <item quantity="one">%1$d passenger</item>
+        <item quantity="other">%1$d passengers</item>
+    </plurals>
+    <string name="edit_trip_locked_stops_hint">A passenger chose the stops with a lock; they can\'t be removed.</string>
+    <string name="cd_stop_fixed">Can\'t be changed</string>
+    <string name="cd_stop_chosen_by_passenger">Can\'t be removed: a passenger chose it</string>
 
     <!-- Common dialog actions -->
     <string name="confirm">Confirm</string>

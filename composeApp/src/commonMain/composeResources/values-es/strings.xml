@@ -225,6 +225,15 @@
         <item quantity="one">%1$d cupo ya confirmado</item>
         <item quantity="other">%1$d cupos ya confirmados</item>
     </plurals>
+    <string name="edit_trip_stop_gets_on">%1$s sube aquí</string>
+    <string name="edit_trip_stop_gets_off">%1$s baja aquí</string>
+    <plurals name="edit_trip_stop_passengers">
+        <item quantity="one">%1$d pasajero</item>
+        <item quantity="other">%1$d pasajeros</item>
+    </plurals>
+    <string name="edit_trip_locked_stops_hint">Las paradas con candado las eligió un pasajero; no se pueden quitar.</string>
+    <string name="cd_stop_fixed">No se puede cambiar</string>
+    <string name="cd_stop_chosen_by_passenger">No se puede quitar: un pasajero la eligió</string>
 
     <!-- Acciones de diálogo -->
     <string name="confirm">Confirmar</string>

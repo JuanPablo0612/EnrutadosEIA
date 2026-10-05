@@ -14,6 +14,8 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.add_waypoint_button
+import enrutadoseia.composeapp.generated.resources.cd_stop_chosen_by_passenger
+import enrutadoseia.composeapp.generated.resources.cd_stop_fixed
 import enrutadoseia.composeapp.generated.resources.destination_label
 import enrutadoseia.composeapp.generated.resources.origin_label
 import enrutadoseia.composeapp.generated.resources.stop_number
@@ -22,8 +24,9 @@ import org.jetbrains.compose.resources.vectorResource
 
 /**
  * Editable origin → waypoints → destination timeline, with add/remove stop. With
- * [endpointsLocked], origin and destination are shown read-only and only the stops between them
- * can change.
+ * [endpointsLocked], origin and destination are shown locked and only the stops between them
+ * can change. A waypoint whose name is in [lockedWaypointTags] is locked too, with its tag (who
+ * chose it) underneath.
  */
 fun LazyListScope.stopsEditorItems(
     stops: StopsDraft,
@@ -33,6 +36,7 @@ fun LazyListScope.stopsEditorItems(
     onRemoveWaypoint: (Int) -> Unit,
     onAddWaypoint: () -> Unit,
     endpointsLocked: Boolean = false,
+    lockedWaypointTags: Map<String, String> = emptyMap(),
 ) {
     item(key = "stop_origin") {
         RouteStopItem(
@@ -40,18 +44,22 @@ fun LazyListScope.stopsEditorItems(
             place = stops.origin,
             isLocked = endpointsLocked,
             onClick = onOriginClick,
+            lockDescription = stringResource(Res.string.cd_stop_fixed),
         )
     }
     itemsIndexed(
         stops.waypoints,
         key = { index, waypoint -> "stop_waypoint_${waypoint.id.ifBlank { index.toString() }}_$index" },
     ) { index, waypoint ->
+        val tag = lockedWaypointTags[waypoint.name]
         RouteStopItem(
             label = stringResource(Res.string.stop_number, index + 1),
             place = waypoint,
-            isLocked = false,
+            isLocked = tag != null,
             onRemove = { onRemoveWaypoint(index) },
             onClick = { onEditWaypoint(index) },
+            lockDescription = stringResource(Res.string.cd_stop_chosen_by_passenger),
+            tag = tag,
         )
     }
     item(key = "stop_add") {
@@ -73,6 +81,7 @@ fun LazyListScope.stopsEditorItems(
             isLocked = endpointsLocked,
             showConnector = false,
             onClick = onDestinationClick,
+            lockDescription = stringResource(Res.string.cd_stop_fixed),
         )
     }
 }

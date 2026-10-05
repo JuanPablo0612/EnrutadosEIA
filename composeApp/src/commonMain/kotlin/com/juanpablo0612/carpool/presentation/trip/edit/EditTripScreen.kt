@@ -58,7 +58,11 @@ import enrutadoseia.composeapp.generated.resources.discard_changes_confirm
 import enrutadoseia.composeapp.generated.resources.discard_changes_title
 import enrutadoseia.composeapp.generated.resources.edit_trip_confirmed_seats
 import enrutadoseia.composeapp.generated.resources.edit_trip_fixed_hint
+import enrutadoseia.composeapp.generated.resources.edit_trip_locked_stops_hint
 import enrutadoseia.composeapp.generated.resources.edit_trip_save_button
+import enrutadoseia.composeapp.generated.resources.edit_trip_stop_gets_off
+import enrutadoseia.composeapp.generated.resources.edit_trip_stop_gets_on
+import enrutadoseia.composeapp.generated.resources.edit_trip_stop_passengers
 import enrutadoseia.composeapp.generated.resources.edit_trip_title
 import enrutadoseia.composeapp.generated.resources.publish_trip_route_section
 import enrutadoseia.composeapp.generated.resources.route_from_to
@@ -115,6 +119,7 @@ fun EditTripContent(
     }
 
     val trip = state.trip
+    val lockedWaypointTags = state.stopUsers.mapValues { (_, users) -> users.tag() }
     Scaffold(
         contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
@@ -187,7 +192,18 @@ fun EditTripContent(
                         onRemoveWaypoint = { onAction(EditTripAction.OnRemoveWaypoint(it)) },
                         onAddWaypoint = { onAction(EditTripAction.OnAddWaypointClick) },
                         endpointsLocked = true,
+                        lockedWaypointTags = lockedWaypointTags,
                     )
+                    if (state.stops.waypoints.any { it.name in lockedWaypointTags }) {
+                        item(key = "locked_stops_hint") {
+                            Text(
+                                text = stringResource(Res.string.edit_trip_locked_stops_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs),
+                            )
+                        }
+                    }
                     fieldErrorItem("stops_error", state.error, TripError.StopInUse)
 
                     item(key = "seats") {
@@ -224,6 +240,16 @@ fun EditTripContent(
             }
         }
     }
+}
+
+/** The note under a locked stop saying who chose it. */
+@Composable
+private fun StopUsers.tag(): String = when (this) {
+    is StopUsers.One -> stringResource(
+        if (isDropoff) Res.string.edit_trip_stop_gets_off else Res.string.edit_trip_stop_gets_on,
+        firstName,
+    )
+    is StopUsers.Several -> pluralStringResource(Res.plurals.edit_trip_stop_passengers, count, count)
 }
 
 /** Errors shown next to the field they concern rather than at the end of the form. */
@@ -278,7 +304,7 @@ private fun EditTripPreview() {
                 ),
                 seatCount = 3,
                 stops = StopsDraft.of(previewTrip),
-                error = TripError.StopInUse,
+                stopUsers = mapOf("Viva Envigado" to StopUsers.One(firstName = "Laura", isDropoff = false)),
             ),
             onAction = {},
         )

@@ -12,14 +12,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.place.model.Place
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.juanpablo0612.carpool.presentation.ui.components.Pill
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.lock_24px
 import enrutadoseia.composeapp.generated.resources.route_stop_remove
 import enrutadoseia.composeapp.generated.resources.select_location_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
+/**
+ * One stop on a route timeline. A locked stop with a [lockDescription] shows a lock where the
+ * remove button would be, so it reads as fixed rather than silently unresponsive; [tag] is a
+ * short note under the place, such as who gets on there.
+ */
 @Composable
 fun RouteStopItem(
     label: String,
@@ -28,6 +37,8 @@ fun RouteStopItem(
     onClick: () -> Unit,
     onRemove: (() -> Unit)? = null,
     showConnector: Boolean = true,
+    lockDescription: String? = null,
+    tag: String? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -98,6 +109,33 @@ fun RouteStopItem(
                     text = place.address,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            if (tag != null) {
+                Pill(
+                    text = tag,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.padding(top = Spacing.xs)
+                )
+            }
+        }
+
+        if (isLocked && lockDescription != null) {
+            // Same 48dp slot as the remove button, so locked and removable stops line up.
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(48.dp)
+                    .semantics { contentDescription = lockDescription },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = vectorResource(Res.drawable.lock_24px),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.trip.usecase.UpdateTripUseCase
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -24,6 +27,7 @@ class EditTripViewModel(
     private val tripId: String,
     private val tripRepository: TripRepository,
     private val vehicleRepository: VehicleRepository,
+    private val bookingRepository: BookingRepository,
     private val updateTripUseCase: UpdateTripUseCase,
 ) : ViewModel() {
 
@@ -43,6 +47,11 @@ class EditTripViewModel(
             tripRepository.getTripById(tripId)
                 .onSuccess { trip ->
                     val vehicle = vehicleRepository.getVehicleById(trip.vehicleId).getOrNull()
+                    // Without the bookings no stop shows as locked; UpdateTripUseCase still
+                    // refuses to drop one in use, so a failed read only loses the early warning.
+                    val bookings = bookingRepository.getOpenBookingsForTrip(tripId, trip.driverId)
+                        .catch { emit(emptyList()) }
+                        .first()
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -50,6 +59,7 @@ class EditTripViewModel(
                             vehicle = vehicle,
                             seatCount = trip.seatCount,
                             stops = StopsDraft.of(trip),
+                            stopUsers = stopUsersByName(bookings),
                         )
                     }
                 }
@@ -74,11 +84,13 @@ class EditTripViewModel(
             EditTripAction.OnRetry -> load()
             is EditTripAction.OnSetSeats -> _state.update { it.copy(seatCount = action.seats, error = null) }
             is EditTripAction.OnEditWaypointClick -> _state.update {
-                it.copy(selectionTarget = SelectionTarget.EditWaypoint(action.index))
+                if (it.isWaypointLocked(action.index)) it
+                else it.copy(selectionTarget = SelectionTarget.EditWaypoint(action.index))
             }
             EditTripAction.OnAddWaypointClick -> _state.update { it.copy(selectionTarget = SelectionTarget.NewWaypoint) }
             is EditTripAction.OnRemoveWaypoint -> _state.update {
-                it.copy(stops = it.stops.removeWaypoint(action.index), error = null)
+                if (it.isWaypointLocked(action.index)) it
+                else it.copy(stops = it.stops.removeWaypoint(action.index), error = null)
             }
             is EditTripAction.OnPlaceSelected -> onPlaceSelected(action.place)
             EditTripAction.OnCancelSelection -> _state.update { it.copy(selectionTarget = null) }
