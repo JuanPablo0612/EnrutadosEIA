@@ -297,7 +297,7 @@
     <!-- Nuevos errores de validación -->
     <string name="error_email_not_eia">Usa tu correo @eia.edu.co</string>
     <string name="error_phone_empty">El número de teléfono no puede estar vacío</string>
-    <string name="error_phone_invalid">Ingresa un número de celular colombiano válido</string>
+    <string name="error_phone_invalid">Ingresa tu número con el indicativo del país, p. ej. +57 300 123 4567</string>
     <string name="error_terms_not_accepted">Debes aceptar los términos para continuar</string>
 
     <!-- Fuerza de contraseña -->

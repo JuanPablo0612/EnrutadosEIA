@@ -38,12 +38,22 @@ object Validator {
         }
     }
 
+    /**
+     * Strips the separators people type or paste in a phone number (spaces, dashes, parentheses,
+     * dots), so "+57 (300) 123-4567" becomes "+573001234567". Anything else is kept for
+     * [validatePhone] to reject.
+     */
+    fun normalizePhone(phone: String): String = phone.filterNot { it.isWhitespace() || it in PHONE_SEPARATORS }
+
+    /** Accepts an international number in E.164 form once normalized: "+", country code, 8–15 digits. */
     fun validatePhone(phone: String): ValidationResult {
-        val digits = phone.filter { it.isDigit() }
         return when {
             phone.isBlank() -> ValidationResult.Error(ValidationError.PhoneEmpty)
-            digits.length != 10 || !digits.startsWith("3") -> ValidationResult.Error(ValidationError.PhoneInvalid)
+            !E164_REGEX.matches(normalizePhone(phone)) -> ValidationResult.Error(ValidationError.PhoneInvalid)
             else -> ValidationResult.Success
         }
     }
+
+    private const val PHONE_SEPARATORS = "-()."
+    private val E164_REGEX = Regex("^\\+[1-9][0-9]{7,14}$")
 }
