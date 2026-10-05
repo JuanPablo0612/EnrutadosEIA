@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.place.stops
 
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
+import com.juanpablo0612.carpool.domain.trip.model.Trip
 
 /** The stops of a route or trip being edited: origin, optional waypoints, destination. */
 data class StopsDraft(
@@ -30,6 +31,8 @@ data class StopsDraft(
 
     companion object {
         fun of(route: Route) = StopsDraft(route.origin, route.destination, route.waypoints)
+
+        fun of(trip: Trip) = StopsDraft(trip.origin, trip.destination, trip.waypoints)
     }
 }
 
