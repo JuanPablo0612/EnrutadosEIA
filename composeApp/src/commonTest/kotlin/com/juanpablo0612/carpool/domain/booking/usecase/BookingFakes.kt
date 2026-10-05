@@ -6,13 +6,15 @@ import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.model.RejectReason
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 private fun unused(): Nothing = error("not used by these tests")
 
-/** Records every write; reads other than [hasActiveBooking] are not used by the tests. */
+/** Records every write; reads other than [hasActiveBooking] and [openBookings] are not used. */
 class FakeBookingRepository(
     private val hasActive: Boolean = false,
     private val failWrites: Boolean = false,
+    private val openBookings: List<Booking> = emptyList(),
 ) : BookingRepository {
     val created = mutableListOf<Booking>()
     val statusChanges = mutableListOf<Pair<String, BookingStatus>>()
@@ -40,7 +42,8 @@ class FakeBookingRepository(
     override fun getPassengerBookings(passengerId: String): Flow<List<Booking>> = unused()
     override fun getDriverBookingRequests(driverId: String): Flow<List<Booking>> = unused()
     override fun getOpenDriverBookings(driverId: String, departingAfter: Long): Flow<List<Booking>> = unused()
-    override fun getOpenBookingsForTrip(tripId: String, driverId: String): Flow<List<Booking>> = unused()
+    override fun getOpenBookingsForTrip(tripId: String, driverId: String): Flow<List<Booking>> =
+        flowOf(openBookings.filter { it.tripId == tripId && it.driverId == driverId })
     override fun getBookingsForTripAsDriver(tripId: String, driverId: String): Flow<List<Booking>> = unused()
     override fun getBookingsForTripAsPassenger(tripId: String, passengerId: String): Flow<List<Booking>> = unused()
 }

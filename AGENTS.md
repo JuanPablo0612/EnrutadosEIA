@@ -126,11 +126,11 @@ Convert external errors into domain-safe errors. Every DTO field has a default s
 Responsibilities: Domain models, business rules, use cases, and repository interfaces.
 Pure Kotlin only. No dependency on frameworks or other layers.
 
-**Use cases exist only where there is real logic** — orchestration across repositories, derivation, ownership checks, validation, or entity construction. A plain single-call read or write does not get a use case; the ViewModel injects the repository directly instead. There are 18 use cases today, in `domain/{feature}/usecase/`:
+**Use cases exist only where there is real logic** — orchestration across repositories, derivation, ownership checks, validation, or entity construction. A plain single-call read or write does not get a use case; the ViewModel injects the repository directly instead. There are 19 use cases today, in `domain/{feature}/usecase/`:
 - `booking`: CreateBooking, CheckExistingBooking, GetTripAvailableSeats, GetBookingsForTrip, RejectBooking, ConfirmBooking, CancelBooking
 - `place`: CreatePlace, DeletePlace, GetSavedPlaces
 - `route`: DuplicateRoute
-- `trip`: GetAvailableTrips, MatchTrips, GenerateRecurringTripSlots, PublishTrip, PublishRecurringTrips
+- `trip`: GetAvailableTrips, MatchTrips, GenerateRecurringTripSlots, PublishTrip, PublishRecurringTrips, UpdateTrip
 - `chat`: SendMessage
 - `rating`: CreateRating
 

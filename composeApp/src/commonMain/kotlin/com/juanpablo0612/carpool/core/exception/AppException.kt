@@ -32,6 +32,12 @@ sealed class AppException : Exception() {
         data class Invalid(val errors: List<TripValidationError>) : TripException()
         /** The frequent route was saved as [routeId], but publishing the trip then failed. */
         data class RouteSavedTripFailed(val routeId: String) : TripException()
+        /** The trip is not the caller's, has left or is no longer active, so it can't be edited. */
+        data object NotEditable : TripException()
+        /** Fewer seats than the [confirmedSeats] already given to passengers. */
+        data class SeatsBelowConfirmed(val confirmedSeats: Int) : TripException()
+        /** Removing these stops would strand passengers whose open bookings meet the trip there. */
+        data class StopInUse(val stopNames: List<String>) : TripException()
         data object Unknown : TripException()
     }
 

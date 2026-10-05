@@ -60,6 +60,7 @@ class FakeTripRepository(
     private val failCreate: Boolean = false,
 ) : TripRepository {
     val created = mutableListOf<Trip>()
+    val detailUpdates = mutableListOf<Triple<String, Int, List<Place>>>()
     override suspend fun createTrip(trip: Trip): Result<String> {
         if (failCreate) return Result.failure(Exception())
         created += trip
@@ -72,9 +73,13 @@ class FakeTripRepository(
     }
     override fun getDriverTrips(driverId: String): Flow<List<Trip>> = flowOf(existing)
     override fun getAvailableTrips(): Flow<List<Trip>> = unused()
-    override suspend fun getTripById(id: String): Result<Trip> = unused()
+    override suspend fun getTripById(id: String): Result<Trip> =
+        existing.firstOrNull { it.id == id }?.let { Result.success(it) } ?: Result.failure(Exception())
     override fun getTripByIdFlow(id: String): Flow<Trip?> = flowOf(existing.firstOrNull { it.id == id })
-    override suspend fun updateTripDetails(tripId: String, seatCount: Int, waypoints: List<Place>): Result<Unit> = unused()
+    override suspend fun updateTripDetails(tripId: String, seatCount: Int, waypoints: List<Place>): Result<Unit> {
+        detailUpdates += Triple(tripId, seatCount, waypoints)
+        return Result.success(Unit)
+    }
     override suspend fun updateTripStatus(tripId: String, status: TripStatus): Result<Unit> = unused()
     override suspend fun updateDriverLocation(tripId: String, latitude: Double, longitude: Double): Result<Unit> = unused()
     override suspend fun updatePassengerStatus(tripId: String, passengerId: String, status: String): Result<Unit> = unused()
