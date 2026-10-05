@@ -1,0 +1,2 @@
+# ESLint (linebreak-style) requires LF, even on Windows checkouts.
+functions/** text eol=lf
