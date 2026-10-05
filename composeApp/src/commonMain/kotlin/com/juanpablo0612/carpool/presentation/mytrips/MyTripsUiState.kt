@@ -1,7 +1,10 @@
 package com.juanpablo0612.carpool.presentation.mytrips
 
+import com.juanpablo0612.carpool.domain.booking.model.Booking
+import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_action_failed
+import enrutadoseia.composeapp.generated.resources.error_trip_closed
 import enrutadoseia.composeapp.generated.resources.error_unknown
 import org.jetbrains.compose.resources.StringResource
 
@@ -9,16 +12,22 @@ import org.jetbrains.compose.resources.StringResource
 sealed class MyTripsConfirmation {
     data class StartTrip(val tripId: String) : MyTripsConfirmation()
     data class CancelTrip(val tripId: String) : MyTripsConfirmation()
-    data class CancelBooking(val bookingId: String, val isPending: Boolean) : MyTripsConfirmation()
+    data class CancelBooking(val booking: Booking) : MyTripsConfirmation() {
+        val isPending: Boolean get() = booking.status == BookingStatus.Pending
+    }
 }
 
 sealed class MyTripsError {
     data object LoadFailed : MyTripsError()
     data object ActionFailed : MyTripsError()
 
+    /** The seat could not be withdrawn because the trip has already left. */
+    data object TripClosed : MyTripsError()
+
     fun asStringResource(): StringResource = when (this) {
         LoadFailed -> Res.string.error_unknown
         ActionFailed -> Res.string.error_action_failed
+        TripClosed -> Res.string.error_trip_closed
     }
 }
 

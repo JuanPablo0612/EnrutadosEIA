@@ -32,7 +32,8 @@ class BookingDecisionsTest {
         passengerEmail = "",
         originName = "",
         destinationName = "",
-        departureTime = 1_000L,
+        // Still ahead whenever the test runs, so it can be cancelled.
+        departureTime = Long.MAX_VALUE,
         status = BookingStatus.Pending,
         createdAt = 0L,
     )

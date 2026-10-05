@@ -50,9 +50,9 @@ class BookingDecisions(
             BookingDecisionAction.DismissReject -> _state.update { it.copy(rejection = null) }
             is BookingDecisionAction.Cancel -> _state.update { it.copy(cancelling = action.booking) }
             BookingDecisionAction.ConfirmCancel -> {
-                val bookingId = _state.value.cancelling?.id ?: return
+                val booking = _state.value.cancelling ?: return
                 _state.update { it.copy(cancelling = null) }
-                run(bookingId) { cancelBooking(bookingId) }
+                run(booking.id) { cancelBooking(booking) }
             }
             BookingDecisionAction.DismissCancel -> _state.update { it.copy(cancelling = null) }
             BookingDecisionAction.DismissError -> _state.update { it.copy(error = null) }

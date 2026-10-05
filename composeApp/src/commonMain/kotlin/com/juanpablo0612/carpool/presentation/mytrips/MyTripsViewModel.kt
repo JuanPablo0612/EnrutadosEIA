@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.mytrips
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juanpablo0612.carpool.core.exception.AppException
 import com.juanpablo0612.carpool.domain.booking.model.BookingStatus
 import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
@@ -94,12 +95,7 @@ class MyTripsViewModel(
             is MyTripsAction.OnCancelTrip ->
                 _state.update { it.copy(confirmation = MyTripsConfirmation.CancelTrip(action.tripId)) }
             is MyTripsAction.OnCancelBooking -> _state.update {
-                it.copy(
-                    confirmation = MyTripsConfirmation.CancelBooking(
-                        bookingId = action.item.booking.id,
-                        isPending = action.item.booking.status == BookingStatus.Pending,
-                    )
-                )
+                it.copy(confirmation = MyTripsConfirmation.CancelBooking(action.item.booking))
             }
             is MyTripsAction.OnMessageDriver -> emit(
                 MyTripsEvent.NavigateToChat(
@@ -152,20 +148,23 @@ class MyTripsViewModel(
                     // The cancellation cascade to its bookings runs in Cloud Functions.
                     tripRepository.updateTripStatus(confirmation.tripId, TripStatus.Cancelled)
                 }
-                is MyTripsConfirmation.CancelBooking -> runBusy("booking_${confirmation.bookingId}") {
-                    cancelBookingUseCase(confirmation.bookingId)
+                is MyTripsConfirmation.CancelBooking -> runBusy("booking_${confirmation.booking.id}") {
+                    cancelBookingUseCase(confirmation.booking)
                 }
             }
         }
     }
 
-    /** Marks [key] busy while [block] runs; a failure surfaces as [MyTripsError.ActionFailed]. */
+    /**
+     * Marks [key] busy while [block] runs; a failure surfaces as [MyTripsError.TripClosed] when the
+     * trip has already left and as [MyTripsError.ActionFailed] otherwise.
+     */
     private suspend fun runBusy(key: String, block: suspend () -> Result<Unit>) {
         _state.update { it.copy(busyKey = key) }
-        val result = block()
-        _state.update {
-            it.copy(busyKey = null, error = if (result.isFailure) MyTripsError.ActionFailed else it.error)
+        val error = block().exceptionOrNull()?.let { failure ->
+            if (failure is AppException.BookingException.TripClosed) MyTripsError.TripClosed else MyTripsError.ActionFailed
         }
+        _state.update { it.copy(busyKey = null, error = error ?: it.error) }
     }
 
     private fun emit(event: MyTripsEvent) {

@@ -202,7 +202,7 @@ private fun MyTripsList(state: MyTripsUiState, now: Long, onAction: (MyTripsActi
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
             horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            if (state.error == MyTripsError.ActionFailed) {
+            if (state.error != null && state.error != MyTripsError.LoadFailed) {
                 item(key = "error", span = FullLineSpan) {
                     ErrorMessage(message = stringResource(state.error.asStringResource()))
                 }
