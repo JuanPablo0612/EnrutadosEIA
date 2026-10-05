@@ -313,6 +313,10 @@
     <string name="error_email_not_eia">Usa tu correo @eia.edu.co</string>
     <string name="error_phone_empty">El número de teléfono no puede estar vacío</string>
     <string name="error_phone_invalid">Ingresa tu número con el indicativo del país, p. ej. +57 300 123 4567</string>
+    <string name="error_phone_country_code_empty">Escribe el indicativo de tu país</string>
+    <string name="error_phone_country_code_invalid">Escribe un indicativo válido, p. ej. 57</string>
+    <string name="error_phone_number_empty">Escribe tu número de celular</string>
+    <string name="error_phone_number_invalid">Revisa tu número: solo dígitos, sin el indicativo</string>
     <string name="error_terms_not_accepted">Debes aceptar los términos para continuar</string>
 
     <!-- Fuerza de contraseña -->

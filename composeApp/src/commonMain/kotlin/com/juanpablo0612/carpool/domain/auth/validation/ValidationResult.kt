@@ -17,5 +17,9 @@ sealed class ValidationError {
     data object PasswordsDoNotMatch : ValidationError()
     data object PhoneEmpty : ValidationError()
     data object PhoneInvalid : ValidationError()
+    data object PhoneCountryCodeEmpty : ValidationError()
+    data object PhoneCountryCodeInvalid : ValidationError()
+    data object PhoneNumberEmpty : ValidationError()
+    data object PhoneNumberInvalid : ValidationError()
     data object TermsNotAccepted : ValidationError()
 }

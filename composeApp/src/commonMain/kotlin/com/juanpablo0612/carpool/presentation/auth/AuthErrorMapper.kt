@@ -40,6 +40,10 @@ fun ValidationError.asStringResource(): StringResource {
         ValidationError.PasswordsDoNotMatch -> Res.string.error_passwords_do_not_match
         ValidationError.PhoneEmpty -> Res.string.error_phone_empty
         ValidationError.PhoneInvalid -> Res.string.error_phone_invalid
+        ValidationError.PhoneCountryCodeEmpty -> Res.string.error_phone_country_code_empty
+        ValidationError.PhoneCountryCodeInvalid -> Res.string.error_phone_country_code_invalid
+        ValidationError.PhoneNumberEmpty -> Res.string.error_phone_number_empty
+        ValidationError.PhoneNumberInvalid -> Res.string.error_phone_number_invalid
         ValidationError.TermsNotAccepted -> Res.string.error_terms_not_accepted
     }
 }

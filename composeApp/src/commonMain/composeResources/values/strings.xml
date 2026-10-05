@@ -313,6 +313,10 @@
     <string name="error_email_not_eia">Use your @eia.edu.co email</string>
     <string name="error_phone_empty">Phone number cannot be empty</string>
     <string name="error_phone_invalid">Enter your number with the country code, e.g. +57 300 123 4567</string>
+    <string name="error_phone_country_code_empty">Enter your country code</string>
+    <string name="error_phone_country_code_invalid">Enter a valid country code, e.g. 57</string>
+    <string name="error_phone_number_empty">Enter your mobile number</string>
+    <string name="error_phone_number_invalid">Check your number: digits only, without the country code</string>
     <string name="error_terms_not_accepted">You must accept the terms to continue</string>
 
     <!-- Password strength -->
