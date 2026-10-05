@@ -135,7 +135,7 @@ fun AppNavigation(
         scope.launch {
             authRepository.logout()
             userSession.clearSession()
-            navController.navigate(Route.Login) {
+            navController.navigate(Route.Entry) {
                 popUpTo(0) { inclusive = true }
             }
         }
@@ -207,7 +207,7 @@ fun AppNavigation(
                 ) {
                     rootNavGraph(
                         onSplashNavigateToAuth = {
-                            navController.navigate(Route.Login) {
+                            navController.navigate(Route.Entry) {
                                 popUpTo<Route.Splash> { inclusive = true }
                             }
                         },
@@ -232,13 +232,21 @@ fun AppNavigation(
                     authNavGraph(
                         onAuthSuccess = ::enterApp,
                         onNavigateToLogin = { navController.navigate(Route.Login) },
+                        onSwitchToLogin = {
+                            // Register can be reached from Entry or from Login: replace it, so
+                            // back from Login still returns to Entry either way.
+                            navController.navigate(Route.Login) {
+                                popUpTo<Route.Register> { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToRegister = { navController.navigate(Route.Register) },
                         onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                         onNavigateToEmailVerification = { navController.navigate(Route.EmailVerification) },
                         onSignUpAgain = {
                             // The verification screen can be the only entry (reached from Splash),
-                            // so rebuild the auth stack rather than popping: Login below Register.
-                            navController.navigate(Route.Login) { popUpTo(0) { inclusive = true } }
+                            // so rebuild the auth stack rather than popping: Entry below Register.
+                            navController.navigate(Route.Entry) { popUpTo(0) { inclusive = true } }
                             navController.navigate(Route.Register)
                         },
                         onNavigateBack = { navController.popBackStack() },
@@ -344,7 +352,7 @@ fun AppNavigation(
                         onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                         onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                         onDeleteAccountSuccess = {
-                            navController.navigate(Route.Login) {
+                            navController.navigate(Route.Entry) {
                                 popUpTo(0) { inclusive = true }
                             }
                         },

@@ -36,10 +36,8 @@ import enrutadoseia.composeapp.generated.resources.email_label
 import enrutadoseia.composeapp.generated.resources.email_placeholder
 import enrutadoseia.composeapp.generated.resources.forgot_password
 import enrutadoseia.composeapp.generated.resources.login_button
-import enrutadoseia.composeapp.generated.resources.login_new_user_hint
 import enrutadoseia.composeapp.generated.resources.login_subtitle
-import enrutadoseia.composeapp.generated.resources.login_terms_footer
-import enrutadoseia.composeapp.generated.resources.login_welcome_back
+import enrutadoseia.composeapp.generated.resources.login_title
 import enrutadoseia.composeapp.generated.resources.password_label
 import enrutadoseia.composeapp.generated.resources.password_placeholder
 import enrutadoseia.composeapp.generated.resources.signup_button
@@ -99,26 +97,12 @@ fun LoginContent(
                 text = stringResource(Res.string.signup_button),
                 onClick = onNavigateToRegister,
             )
-            Spacer(modifier = Modifier.height(Spacing.lg))
-            Text(
-                text = stringResource(Res.string.login_terms_footer),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
         },
     ) {
         AuthHeader(
-            title = stringResource(Res.string.login_welcome_back),
+            title = stringResource(Res.string.login_title),
+            icon = null,
             subtitle = stringResource(Res.string.login_subtitle),
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.sm))
-
-        Text(
-            text = stringResource(Res.string.login_new_user_hint),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.height(Spacing.xxl))

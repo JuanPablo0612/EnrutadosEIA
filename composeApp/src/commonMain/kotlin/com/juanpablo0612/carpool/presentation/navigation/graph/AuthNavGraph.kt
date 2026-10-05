@@ -18,6 +18,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NavGraphBuilder.authNavGraph(
     onAuthSuccess: (User) -> Unit,
     onNavigateToLogin: () -> Unit,
+    onSwitchToLogin: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToEmailVerification: () -> Unit,
@@ -51,7 +52,7 @@ fun NavGraphBuilder.authNavGraph(
             viewModel = viewModel,
             onRegisterSuccess = onAuthSuccess,
             onNavigateToEmailVerification = onNavigateToEmailVerification,
-            onNavigateToLogin = onNavigateBack,
+            onNavigateToLogin = onSwitchToLogin,
             onBackClick = onNavigateBack
         )
     }

@@ -6,17 +6,16 @@
     <string name="entry_existing_title">No, ya tengo cuenta</string>
     <string name="entry_existing_subtitle">Iniciar sesión</string>
 
-    <string name="login_welcome_back">Hola de nuevo</string>
-    <string name="login_subtitle">Entra con tu correo de la EIA.</string>
-    <string name="login_new_user_hint">¿Aún no tienes cuenta? Créala primero con el botón de abajo.</string>
+    <string name="login_title">Iniciar sesión</string>
+    <string name="login_subtitle">Con el correo y la contraseña con que creaste tu cuenta.</string>
     <string name="email_label">Correo universitario</string>
     <string name="email_placeholder">nombre.apellido</string>
     <string name="password_label">Contraseña</string>
     <string name="password_placeholder">Tu contraseña</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_button">Iniciar sesión</string>
-    <string name="dont_have_account_question">¿Primera vez aquí?</string>
-    <string name="signup_button">Crea tu cuenta</string>
+    <string name="dont_have_account_question">¿Todavía no tienes cuenta?</string>
+    <string name="signup_button">Crear cuenta</string>
 
     <string name="full_name_label">Nombre completo</string>
     <string name="full_name_placeholder">Juan Pérez</string>
