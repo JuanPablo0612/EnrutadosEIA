@@ -1,7 +1,6 @@
 package com.juanpablo0612.carpool.presentation.auth.login
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.auth.AuthEvent
 import com.juanpablo0612.carpool.presentation.auth.asStringResource
@@ -27,15 +25,18 @@ import com.juanpablo0612.carpool.presentation.ui.components.EiaEmailTextField
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PasswordTextField
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
+import com.juanpablo0612.carpool.presentation.ui.components.SecondaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
+import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.dont_have_account_question
 import enrutadoseia.composeapp.generated.resources.email_label
 import enrutadoseia.composeapp.generated.resources.email_placeholder
 import enrutadoseia.composeapp.generated.resources.forgot_password
 import enrutadoseia.composeapp.generated.resources.login_button
+import enrutadoseia.composeapp.generated.resources.login_new_user_hint
 import enrutadoseia.composeapp.generated.resources.login_subtitle
 import enrutadoseia.composeapp.generated.resources.login_terms_footer
 import enrutadoseia.composeapp.generated.resources.login_welcome_back
@@ -85,17 +86,20 @@ fun LoginContent(
     AuthFormLayout(
         topBar = { AuthTopBar(onBackClick = onBackClick, showBackButton = canNavigateBack) },
         footer = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(Res.string.dont_have_account_question),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                TextButton(onClick = onNavigateToRegister) {
-                    Text(text = stringResource(Res.string.signup_button), style = MaterialTheme.typography.titleMedium)
-                }
-            }
+            // A full-width button rather than a text link: first-time users kept typing their
+            // email here without having an account.
+            Text(
+                text = stringResource(Res.string.dont_have_account_question),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
             Spacer(modifier = Modifier.height(Spacing.sm))
+            SecondaryButton(
+                text = stringResource(Res.string.signup_button),
+                onClick = onNavigateToRegister,
+            )
+            Spacer(modifier = Modifier.height(Spacing.lg))
             Text(
                 text = stringResource(Res.string.login_terms_footer),
                 style = MaterialTheme.typography.bodySmall,
@@ -107,6 +111,14 @@ fun LoginContent(
         AuthHeader(
             title = stringResource(Res.string.login_welcome_back),
             subtitle = stringResource(Res.string.login_subtitle),
+        )
+
+        Spacer(modifier = Modifier.height(Spacing.sm))
+
+        Text(
+            text = stringResource(Res.string.login_new_user_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.height(Spacing.xxl))
@@ -174,7 +186,7 @@ private fun LoginForm(
     }
 }
 
-@Preview
+@ScreenPreviews
 @Composable
 private fun LoginScreenPreview() {
     CarpoolTheme {

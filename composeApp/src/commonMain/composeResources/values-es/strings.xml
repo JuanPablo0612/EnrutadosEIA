@@ -1,6 +1,7 @@
 <resources>
     <string name="login_welcome_back">Hola de nuevo</string>
     <string name="login_subtitle">Entra con tu correo de la EIA.</string>
+    <string name="login_new_user_hint">¿Aún no tienes cuenta? Créala primero con el botón de abajo.</string>
     <string name="email_label">Correo universitario</string>
     <string name="email_placeholder">nombre.apellido</string>
     <string name="password_label">Contraseña</string>

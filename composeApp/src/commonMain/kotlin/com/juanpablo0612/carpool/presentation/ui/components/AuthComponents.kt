@@ -126,7 +126,9 @@ fun AuthFormLayout(
             ) {
                 Column(content = content)
                 Column(
-                    modifier = Modifier.padding(top = Spacing.xl),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Spacing.xl),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     content = footer,
                 )
