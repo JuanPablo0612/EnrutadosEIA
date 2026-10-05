@@ -28,3 +28,9 @@ data class Trip(
     // documents they are not a party to. See GetTripAvailableSeatsUseCase.
     val confirmedSeats: Int = 0,
 )
+
+/**
+ * Whether a passenger may still ask for a seat on this trip at [now] (epoch millis): it has not
+ * started, finished or been cancelled, and its departure is still ahead.
+ */
+fun Trip.acceptsBookings(now: Long): Boolean = status == TripStatus.Active && departureTime > now
