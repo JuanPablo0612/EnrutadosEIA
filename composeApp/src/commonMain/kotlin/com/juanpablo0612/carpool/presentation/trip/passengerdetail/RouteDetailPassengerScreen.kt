@@ -179,6 +179,24 @@ private fun RouteDetailPassengerContentPreview() {
                 trip = previewTrip,
                 driver = PublicProfile(id = "d1", name = "Carolina Restrepo", rating = RatingSummary(4.8, 27)),
                 meetingStop = TripMeetingStop(pathIndex = 1, isDropoff = false),
+                isBookable = true,
+            ),
+            onAction = {},
+            now = previewNow,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RouteDetailPassengerClosedPreview() {
+    CarpoolTheme {
+        RouteDetailPassengerContent(
+            state = RouteDetailPassengerUiState(
+                isLoading = false,
+                trip = previewTrip.copy(departureTime = previewNow - 3_600_000L, status = TripStatus.Completed),
+                driver = PublicProfile(id = "d1", name = "Carolina Restrepo", rating = RatingSummary(4.8, 27)),
+                isBookable = false,
             ),
             onAction = {},
             now = previewNow,

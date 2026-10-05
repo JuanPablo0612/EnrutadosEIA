@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
+import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
+import com.juanpablo0612.carpool.domain.trip.model.acceptsBookings
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.booking.toBookingError
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 private const val BOOKING_SENT_BANNER_DURATION_MS = 900L
 private const val MAX_PASSENGER_MESSAGE_LENGTH = 140
@@ -45,6 +49,7 @@ class RouteDetailPassengerViewModel(
     val events: SharedFlow<RouteDetailPassengerEvent> = _events.asSharedFlow()
 
     private var extrasLoaded = false
+    private var closeJob: Job? = null
 
     init {
         observeTrip()
@@ -58,7 +63,17 @@ class RouteDetailPassengerViewModel(
                     return@onEach
                 }
                 val isOwner = authRepository.getCurrentUserId() == trip.driverId
-                _state.update { it.copy(isLoading = false, loadFailed = false, trip = trip, isOwner = isOwner) }
+                val now = nowMs()
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        loadFailed = false,
+                        trip = trip,
+                        isOwner = isOwner,
+                        isBookable = trip.acceptsBookings(now),
+                    )
+                }
+                closeAtDeparture(trip, now)
                 if (!extrasLoaded) {
                     extrasLoaded = true
                     loadExtras(driverId = trip.driverId, isOwner = isOwner)
@@ -67,6 +82,21 @@ class RouteDetailPassengerViewModel(
             .catch { _state.update { it.copy(isLoading = false, loadFailed = true) } }
             .launchIn(viewModelScope)
     }
+
+    /**
+     * The trip document doesn't change when its departure time passes, so a screen left open
+     * re-checks then and stops offering the seat.
+     */
+    private fun closeAtDeparture(trip: Trip, now: Long) {
+        closeJob?.cancel()
+        if (!trip.acceptsBookings(now)) return
+        closeJob = viewModelScope.launch {
+            delay(trip.departureTime - now)
+            _state.update { it.copy(isBookable = it.trip?.acceptsBookings(nowMs()) == true) }
+        }
+    }
+
+    private fun nowMs(): Long = Clock.System.now().toEpochMilliseconds()
 
     /** One-off reads that don't need to follow the trip: the driver's rating and our own request. */
     private fun loadExtras(driverId: String, isOwner: Boolean) {

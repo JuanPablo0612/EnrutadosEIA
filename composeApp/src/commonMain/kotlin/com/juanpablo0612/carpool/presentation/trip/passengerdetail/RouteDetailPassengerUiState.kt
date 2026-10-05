@@ -14,6 +14,11 @@ data class RouteDetailPassengerUiState(
     val driver: PublicProfile? = null,
     val meetingStop: TripMeetingStop? = null,
     val alreadyRequested: Boolean = false,
+    /**
+     * Whether the trip still takes seat requests (see `Trip.acceptsBookings`): false once it has
+     * left, started, finished or been cancelled, which closes the booking bar whatever else holds.
+     */
+    val isBookable: Boolean = false,
     /** True when the signed-in user is this trip's driver — hides the booking bar entirely. */
     val isOwner: Boolean = false,
     val isBooking: Boolean = false,

@@ -22,6 +22,8 @@ import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.contributionLabel
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.book_closed_button
+import enrutadoseia.composeapp.generated.resources.book_closed_subtext
 import enrutadoseia.composeapp.generated.resources.book_request_button
 import enrutadoseia.composeapp.generated.resources.book_request_sent
 import enrutadoseia.composeapp.generated.resources.book_request_subtext
@@ -31,8 +33,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The bar pinned under the trip: the price and the one action a passenger takes. It stays put
- * while the details scroll, so asking for a seat is always one tap away. Once a request is sent
- * or the trip is full the button disables and says why.
+ * while the details scroll, so asking for a seat is always one tap away. Once the trip has left
+ * or closed, a request is sent, or the trip is full, the button disables and says why.
  */
 @Composable
 internal fun BookingBar(
@@ -61,7 +63,9 @@ internal fun BookingBar(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(text = contributionLabel(trip.contributionPerPassenger), style = MaterialTheme.typography.titleLarge)
                         Text(
-                            text = stringResource(Res.string.book_request_subtext),
+                            text = stringResource(
+                                if (state.isBookable) Res.string.book_request_subtext else Res.string.book_closed_subtext
+                            ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -69,13 +73,15 @@ internal fun BookingBar(
                     PrimaryButton(
                         text = stringResource(
                             when {
+                                // A departed or closed trip trumps everything: no request can succeed.
+                                !state.isBookable -> Res.string.book_closed_button
                                 state.alreadyRequested -> Res.string.book_request_sent
                                 state.availableSeats <= 0 -> Res.string.no_seats_available
                                 else -> Res.string.book_request_button
                             }
                         ),
                         onClick = { onAction(RouteDetailPassengerAction.OnOpenConfirmSheet) },
-                        enabled = !state.alreadyRequested && state.availableSeats > 0,
+                        enabled = state.isBookable && !state.alreadyRequested && state.availableSeats > 0,
                         modifier = Modifier.weight(1f),
                     )
                 }
