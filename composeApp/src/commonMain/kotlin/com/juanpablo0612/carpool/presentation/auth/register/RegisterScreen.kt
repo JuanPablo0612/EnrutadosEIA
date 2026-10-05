@@ -162,7 +162,7 @@ private fun RegisterStep1Preview() {
 private fun RegisterStep2Preview() {
     CarpoolTheme {
         RegisterContent(
-            state = RegisterUiState(currentStep = 2, phone = "3001234567", hasAcceptedTerms = true),
+            state = RegisterUiState(currentStep = 2, phone = "+573001234567", hasAcceptedTerms = true),
             onAction = {},
             onNavigateToLogin = {},
             onBackClick = {}

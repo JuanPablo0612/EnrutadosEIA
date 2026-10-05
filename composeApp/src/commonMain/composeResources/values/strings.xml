@@ -263,13 +263,13 @@
     <string name="register_photo_add">Add photo</string>
     <string name="register_photo_change">Change photo</string>
     <string name="register_photo_hint">Optional · camera or gallery</string>
-    <string name="register_phone_hint">We never show it to other users.</string>
+    <string name="register_phone_hint">Include your country code. We never show it to other users.</string>
     <string name="register_photo_placeholder">Add profile photo (optional)</string>
     <string name="register_photo_error">Couldn\'t read that photo. Please pick another one.</string>
     <string name="register_photo_action_camera">Camera</string>
     <string name="register_photo_action_gallery">Gallery</string>
     <string name="register_phone_label">Mobile number</string>
-    <string name="register_phone_placeholder">300 123 4567</string>
+    <string name="register_phone_placeholder">+57 300 123 4567</string>
     <string name="register_terms_checkbox">I accept the Terms of Service and the Privacy Policy</string>
     <string name="register_continue_button">Continue</string>
 
@@ -650,7 +650,7 @@
     <string name="edit_profile_title">Edit profile</string>
     <string name="edit_profile_name_label">Full name</string>
     <string name="edit_profile_phone_label">Teléfono</string>
-    <string name="edit_profile_phone_placeholder">300 123 4567</string>
+    <string name="edit_profile_phone_placeholder">+57 300 123 4567</string>
     <string name="edit_profile_bio_label">About me (optional)</string>
     <string name="edit_profile_bio_placeholder">Tell your travel companions something…</string>
     <string name="edit_profile_bio_counter">%1$d / 200</string>

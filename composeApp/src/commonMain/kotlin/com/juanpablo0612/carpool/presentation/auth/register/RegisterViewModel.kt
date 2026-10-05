@@ -101,7 +101,7 @@ class RegisterViewModel(
                 email = EiaEmail.fromInput(state.email),
                 password = state.password,
                 name = state.fullName,
-                phone = state.phone,
+                phone = Validator.normalizePhone(state.phone),
                 photoBytes = photoBytes
             )
                 .onSuccess {

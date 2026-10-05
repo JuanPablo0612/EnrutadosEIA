@@ -43,7 +43,7 @@ import org.jetbrains.compose.resources.vectorResource
  * An error adds a trailing error icon only when the caller has no trailing control of its own
  * (a password toggle must stay reachable while the field is in error).
  *
- * [prefix] and [suffix] render fixed text around the value, e.g. "+57" or "@eia.edu.co".
+ * [prefix] and [suffix] render fixed text around the value, e.g. "$" or "@eia.edu.co".
  */
 @Composable
 fun CarpoolTextField(

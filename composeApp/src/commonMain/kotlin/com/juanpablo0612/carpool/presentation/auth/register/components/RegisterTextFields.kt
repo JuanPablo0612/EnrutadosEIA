@@ -8,7 +8,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolTextField
-import com.juanpablo0612.carpool.presentation.ui.input.PhoneDigitsVisualTransformation
 
 @Composable
 fun NameTextField(
@@ -54,19 +53,29 @@ fun PhoneTextField(
 ) {
     CarpoolTextField(
         value = value,
-        onValueChange = { onValueChange(it.filter { c -> c.isDigit() }.take(10)) },
+        onValueChange = { onValueChange(phoneInput(it)) },
         label = label,
         placeholder = placeholder,
         modifier = modifier,
         errorMessage = errorMessage,
         supportingText = supportingText,
-        // Only Colombian mobile numbers are accepted, so the country code is fixed.
-        prefix = "+57 ",
-        visualTransformation = PhoneDigitsVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Phone,
             imeAction = imeAction
         ),
         keyboardActions = keyboardActions
     )
+}
+
+/** Longest E.164 number: "+" and 15 digits. */
+private const val PHONE_MAX_LENGTH = 16
+
+/**
+ * Keeps what an international number is typed with: a "+" as the first character, then digits.
+ * Separators in a pasted number are dropped rather than rejecting the paste.
+ */
+internal fun phoneInput(raw: String): String {
+    val trimmed = raw.trimStart()
+    val plus = if (trimmed.startsWith('+')) "+" else ""
+    return (plus + trimmed.filter { it.isDigit() }).take(PHONE_MAX_LENGTH)
 }

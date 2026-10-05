@@ -263,13 +263,13 @@
     <string name="register_photo_add">Agregar foto</string>
     <string name="register_photo_change">Cambiar foto</string>
     <string name="register_photo_hint">Opcional · cámara o galería</string>
-    <string name="register_phone_hint">No se lo mostramos a otros usuarios.</string>
+    <string name="register_phone_hint">Incluye el indicativo del país. No se lo mostramos a otros usuarios.</string>
     <string name="register_photo_placeholder">Agregar foto de perfil (opcional)</string>
     <string name="register_photo_error">No pudimos leer esa foto. Elige otra.</string>
     <string name="register_photo_action_camera">Cámara</string>
     <string name="register_photo_action_gallery">Galería</string>
     <string name="register_phone_label">Celular</string>
-    <string name="register_phone_placeholder">300 123 4567</string>
+    <string name="register_phone_placeholder">+57 300 123 4567</string>
     <string name="register_terms_checkbox">Acepto los Términos de servicio y la Política de privacidad</string>
     <string name="register_continue_button">Continuar</string>
 
@@ -524,7 +524,7 @@
     <string name="edit_profile_title">Editar perfil</string>
     <string name="edit_profile_name_label">Nombre completo</string>
     <string name="edit_profile_phone_label">Teléfono</string>
-    <string name="edit_profile_phone_placeholder">300 123 4567</string>
+    <string name="edit_profile_phone_placeholder">+57 300 123 4567</string>
     <string name="edit_profile_bio_label">Acerca de mí (opcional)</string>
     <string name="edit_profile_bio_placeholder">Cuéntales algo a tus compañeros de viaje…</string>
     <string name="edit_profile_bio_counter">%1$d / 200</string>
