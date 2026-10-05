@@ -14,6 +14,13 @@
     <string name="password_placeholder">Tu contraseña</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_button">Iniciar sesión</string>
+    <string name="login_retry_button">Intentar de nuevo</string>
+    <string name="login_credentials_rejected">No pudimos iniciar sesión con ese correo y contraseña</string>
+    <string name="login_help_title">¿Qué pasó?</string>
+    <string name="login_help_forgot_title">Ya tengo cuenta, olvidé la contraseña</string>
+    <string name="login_help_forgot_subtitle">Te enviamos un enlace para cambiarla</string>
+    <string name="login_help_register_title">Todavía no me he registrado</string>
+    <string name="login_help_register_subtitle">Crear cuenta con este correo</string>
     <string name="dont_have_account_question">¿Todavía no tienes cuenta?</string>
     <string name="signup_button">Crear cuenta</string>
 

@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.navigation.graph
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.juanpablo0612.carpool.domain.auth.model.User
 import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationScreen
 import com.juanpablo0612.carpool.presentation.auth.emailverification.EmailVerificationViewModel
@@ -14,13 +15,14 @@ import com.juanpablo0612.carpool.presentation.auth.register.RegisterScreen
 import com.juanpablo0612.carpool.presentation.auth.register.RegisterViewModel
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.authNavGraph(
     onAuthSuccess: (User) -> Unit,
     onNavigateToLogin: () -> Unit,
     onSwitchToLogin: () -> Unit,
-    onNavigateToRegister: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToRegister: (email: String?) -> Unit,
+    onNavigateToForgotPassword: (email: String?) -> Unit,
     onNavigateToEmailVerification: () -> Unit,
     onSignUpAgain: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -28,7 +30,7 @@ fun NavGraphBuilder.authNavGraph(
 ) {
     composable<Route.Entry> {
         EntryScreen(
-            onCreateAccountClick = onNavigateToRegister,
+            onCreateAccountClick = { onNavigateToRegister(null) },
             onSignInClick = onNavigateToLogin,
         )
     }
@@ -46,8 +48,9 @@ fun NavGraphBuilder.authNavGraph(
         )
     }
 
-    composable<Route.Register> {
-        val viewModel: RegisterViewModel = koinViewModel()
+    composable<Route.Register> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.Register>()
+        val viewModel: RegisterViewModel = koinViewModel { parametersOf(args.email) }
         RegisterScreen(
             viewModel = viewModel,
             onRegisterSuccess = onAuthSuccess,
@@ -57,8 +60,9 @@ fun NavGraphBuilder.authNavGraph(
         )
     }
 
-    composable<Route.ForgotPassword> {
-        val viewModel: ForgotPasswordViewModel = koinViewModel()
+    composable<Route.ForgotPassword> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.ForgotPassword>()
+        val viewModel: ForgotPasswordViewModel = koinViewModel { parametersOf(args.email) }
         ForgotPasswordScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack

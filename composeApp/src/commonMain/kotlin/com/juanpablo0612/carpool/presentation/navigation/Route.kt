@@ -15,11 +15,13 @@ sealed interface Route {
     @Serializable
     data object Login : Route
 
+    /** [email] prefills the form, e.g. with the address a failed sign-in was attempted with. */
     @Serializable
-    data object Register : Route
+    data class Register(val email: String? = null) : Route
 
+    /** [email] prefills the form with the address typed on the sign-in screen. */
     @Serializable
-    data object ForgotPassword : Route
+    data class ForgotPassword(val email: String? = null) : Route
 
     @Serializable
     data object Home : Route

@@ -28,8 +28,13 @@ class LoginViewModel(
 
     fun onAction(action: LoginAction) {
         when (action) {
-            is LoginAction.OnEmailChanged -> _uiState.update { it.copy(email = action.email, emailError = null) }
-            is LoginAction.OnPasswordChanged -> _uiState.update { it.copy(password = action.password, passwordError = null) }
+            // Editing either field clears a rejected sign-in: it was about the pair, not one field.
+            is LoginAction.OnEmailChanged -> _uiState.update {
+                it.copy(email = action.email, emailError = null, error = if (it.isCredentialsRejected) null else it.error)
+            }
+            is LoginAction.OnPasswordChanged -> _uiState.update {
+                it.copy(password = action.password, passwordError = null, error = if (it.isCredentialsRejected) null else it.error)
+            }
             LoginAction.OnTogglePasswordVisibility -> _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             LoginAction.OnLoginClicked -> login()
         }

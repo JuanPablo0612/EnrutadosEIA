@@ -32,4 +32,21 @@ class EiaEmailTest {
         assertEquals("", EiaEmail.fromInput("   "))
         assertEquals(ValidationResult.Error(ValidationError.EmailEmpty), Validator.validateEmail(""))
     }
+
+    @Test
+    fun anEiaAddressGoesBackToItsUsername() {
+        assertEquals("juan.perez", EiaEmail.toInput("juan.perez@eia.edu.co"))
+        assertEquals("Juan.Perez", EiaEmail.toInput(" Juan.Perez@EIA.EDU.CO "))
+    }
+
+    @Test
+    fun anotherAddressIsPrefilledWhole() {
+        assertEquals("juan@gmail.com", EiaEmail.toInput("juan@gmail.com"))
+    }
+
+    @Test
+    fun prefillingAndSubmittingAgainKeepsTheAddress() {
+        val address = "juan.perez@eia.edu.co"
+        assertEquals(address, EiaEmail.fromInput(EiaEmail.toInput(address)))
+    }
 }

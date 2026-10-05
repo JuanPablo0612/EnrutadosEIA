@@ -16,4 +16,15 @@ object EiaEmail {
         val trimmed = input.trim()
         return if (trimmed.isEmpty() || '@' in trimmed) trimmed else "$trimmed@$DOMAIN"
     }
+
+    /**
+     * The reverse of [fromInput], for prefilling a form with an address the user already typed
+     * elsewhere: an EIA address goes back to its bare username (the field shows the domain as a
+     * suffix); any other address is kept whole.
+     */
+    fun toInput(address: String): String {
+        val trimmed = address.trim()
+        val suffix = "@$DOMAIN"
+        return if (trimmed.endsWith(suffix, ignoreCase = true)) trimmed.dropLast(suffix.length) else trimmed
+    }
 }

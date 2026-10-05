@@ -18,7 +18,7 @@ val authModule = module {
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
 
     viewModel { LoginViewModel(get()) }
-    viewModel { RegisterViewModel(get()) }
-    viewModel { ForgotPasswordViewModel(get()) }
+    viewModel { (prefilledEmail: String?) -> RegisterViewModel(prefilledEmail, get()) }
+    viewModel { (prefilledEmail: String?) -> ForgotPasswordViewModel(prefilledEmail, get()) }
     viewModel { EmailVerificationViewModel(get()) }
 }

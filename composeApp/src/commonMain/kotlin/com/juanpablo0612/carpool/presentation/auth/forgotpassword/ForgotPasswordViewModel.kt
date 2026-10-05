@@ -16,10 +16,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
+    prefilledEmail: String?,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ForgotPasswordUiState())
+    private val _uiState = MutableStateFlow(
+        ForgotPasswordUiState(email = prefilledEmail?.let(EiaEmail::toInput).orEmpty())
+    )
     val uiState = _uiState.asStateFlow()
 
     private var countdownJob: Job? = null

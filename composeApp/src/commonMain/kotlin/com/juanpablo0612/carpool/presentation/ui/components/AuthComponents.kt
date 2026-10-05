@@ -213,6 +213,7 @@ fun EiaEmailTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     errorMessage: String? = null,
+    isError: Boolean = errorMessage != null,
     supportingText: @Composable (() -> Unit)? = null,
     imeAction: ImeAction = ImeAction.Next,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -227,6 +228,7 @@ fun EiaEmailTextField(
         // "name@eia.edu.co@eia.edu.co".
         suffix = if ('@' in value) null else "@${EiaEmail.DOMAIN}",
         errorMessage = errorMessage,
+        isError = isError,
         supportingText = supportingText,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,

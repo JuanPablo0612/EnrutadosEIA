@@ -1,7 +1,7 @@
 <resources>
     <string name="entry_title">Is this your first time on EnrutadosEIA?</string>
     <string name="entry_subtitle">To sign in you first need an account. Creating one takes a minute.</string>
-    <string name="entry_new_title">Yes, I'm new</string>
+    <string name="entry_new_title">Yes, I\'m new</string>
     <string name="entry_new_subtitle">Create my account with my EIA email</string>
     <string name="entry_existing_title">No, I already have an account</string>
     <string name="entry_existing_subtitle">Sign in</string>
@@ -14,7 +14,14 @@
     <string name="password_placeholder">Your password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="login_button">Login</string>
-    <string name="dont_have_account_question">Don't have an account yet?</string>
+    <string name="login_retry_button">Try again</string>
+    <string name="login_credentials_rejected">We couldn\'t sign you in with that email and password</string>
+    <string name="login_help_title">What happened?</string>
+    <string name="login_help_forgot_title">I have an account, I forgot my password</string>
+    <string name="login_help_forgot_subtitle">We\'ll send you a link to change it</string>
+    <string name="login_help_register_title">I haven\'t signed up yet</string>
+    <string name="login_help_register_subtitle">Create an account with this email</string>
+    <string name="dont_have_account_question">Don\'t have an account yet?</string>
     <string name="signup_button">Create account</string>
 
     <string name="full_name_label">Full Name</string>

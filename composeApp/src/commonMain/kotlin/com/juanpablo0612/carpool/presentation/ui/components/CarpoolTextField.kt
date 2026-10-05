@@ -45,8 +45,8 @@ import org.jetbrains.compose.resources.vectorResource
  *
  * [prefix] and [suffix] render fixed text around the value, e.g. "$" or "@eia.edu.co".
  *
- * [isError] marks the field without a message of its own, for fields whose error is shown
- * elsewhere (e.g. under a group of fields too narrow to hold it).
+ * [isError] marks the field without a message of its own, for an error shown once elsewhere:
+ * under a group of fields too narrow to hold it, or below the last of several fields it concerns.
  */
 @Composable
 fun CarpoolTextField(
@@ -95,7 +95,7 @@ fun CarpoolTextField(
             leadingIcon = leadingIcon,
             trailingIcon = when {
                 trailingIcon != null -> trailingIcon
-                errorMessage != null -> {
+                isError -> {
                     { Icon(vectorResource(Res.drawable.error_24px), contentDescription = null, tint = MaterialTheme.colorScheme.error) }
                 }
                 else -> null
@@ -153,6 +153,7 @@ fun PasswordTextField(
     onTogglePasswordVisibility: () -> Unit,
     modifier: Modifier = Modifier,
     errorMessage: String? = null,
+    isError: Boolean = errorMessage != null,
     supportingText: @Composable (() -> Unit)? = null,
     imeAction: ImeAction = ImeAction.Done,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -165,6 +166,7 @@ fun PasswordTextField(
         placeholder = placeholder,
         modifier = modifier,
         errorMessage = errorMessage,
+        isError = isError,
         supportingText = supportingText,
         leadingIcon = leadingIcon?.let { { Icon(imageVector = it, contentDescription = null) } },
         trailingIcon = {

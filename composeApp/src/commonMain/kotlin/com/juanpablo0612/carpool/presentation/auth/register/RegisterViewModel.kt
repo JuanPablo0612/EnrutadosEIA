@@ -21,10 +21,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
+    prefilledEmail: String?,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(RegisterUiState())
+    private val _uiState = MutableStateFlow(
+        RegisterUiState(email = prefilledEmail?.let(EiaEmail::toInput).orEmpty())
+    )
     val uiState = _uiState.asStateFlow()
 
     private val _events = MutableSharedFlow<AuthEvent>()
