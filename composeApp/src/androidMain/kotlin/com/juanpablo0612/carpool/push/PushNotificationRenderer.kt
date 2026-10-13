@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.juanpablo0612.carpool.R
+import com.juanpablo0612.carpool.data.notification.model.PushPayload
 import com.juanpablo0612.carpool.domain.notification.model.NotificationParams
 import com.juanpablo0612.carpool.domain.notification.model.NotificationType
 import com.juanpablo0612.carpool.presentation.navigation.NotificationDeepLink
@@ -25,30 +26,6 @@ import enrutadoseia.composeapp.generated.resources.notification_channel_trips_de
 import enrutadoseia.composeapp.generated.resources.notification_channel_trips_name
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
-
-/** A push as the backend sends it (functions/src/notifications/notify.ts). */
-internal data class PushPayload(
-    val type: NotificationType,
-    val recipientId: String,
-    val notificationId: String,
-    val params: Map<String, String>,
-) {
-    companion object {
-        private val ENVELOPE_KEYS = setOf("v", "type", "recipientId", "notificationId", "sentAt")
-
-        fun from(data: Map<String, String>): PushPayload? {
-            if (data["v"] == null) return null
-            val type = data["type"]?.takeIf { it.isNotBlank() } ?: return null
-            val recipientId = data["recipientId"]?.takeIf { it.isNotBlank() } ?: return null
-            return PushPayload(
-                type = NotificationType.fromKey(type),
-                recipientId = recipientId,
-                notificationId = data["notificationId"].orEmpty(),
-                params = data - ENVELOPE_KEYS,
-            )
-        }
-    }
-}
 
 /** Shows a push as a system notification, rendered in the device's language. */
 internal object PushNotificationRenderer {
