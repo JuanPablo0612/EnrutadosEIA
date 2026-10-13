@@ -16,6 +16,10 @@ actual fun MapRoutePreview(
     markers: List<Coordinates>,
     modifier: Modifier,
 ) {
+    if (!hasMapsApiKey) {
+        MapPlaceholder(modifier)
+        return
+    }
     val factory = koinInject<NativeMapViewFactory>()
     val map = remember(factory) { factory.createRouteMap() }
     val lineColor = MaterialTheme.colorScheme.primary

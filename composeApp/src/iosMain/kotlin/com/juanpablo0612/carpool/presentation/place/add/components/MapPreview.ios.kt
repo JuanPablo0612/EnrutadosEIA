@@ -18,6 +18,10 @@ actual fun MapPreview(
     isMyLocationEnabled: Boolean,
     onPoiSelected: (MapPointOfInterest) -> Unit,
 ) {
+    if (!hasMapsApiKey) {
+        MapPlaceholder(modifier)
+        return
+    }
     val factory = koinInject<NativeMapViewFactory>()
     val currentOnPinDragged by rememberUpdatedState(onPinDragged)
     val currentOnPoiSelected by rememberUpdatedState(onPoiSelected)

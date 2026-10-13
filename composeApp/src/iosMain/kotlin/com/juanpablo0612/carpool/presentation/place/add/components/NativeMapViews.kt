@@ -1,5 +1,11 @@
 package com.juanpablo0612.carpool.presentation.place.add.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.juanpablo0612.carpool.core.config.BuildKonfig
 import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.place.model.MapPointOfInterest
 import platform.UIKit.UIColor
@@ -40,4 +46,15 @@ interface NativeRouteMap {
 
     /** Pins every stop, joins them with a [lineColor] line and frames them all. */
     fun showRoute(stops: List<Coordinates>, lineColor: UIColor)
+}
+
+/**
+ * Whether secrets.properties provided a Maps key. Without one the Maps SDK for iOS throws on the
+ * first map view, so the map areas stay blank instead, as Android's do.
+ */
+internal val hasMapsApiKey: Boolean get() = BuildKonfig.MAPS_API_KEY.isNotEmpty()
+
+@Composable
+internal fun MapPlaceholder(modifier: Modifier) {
+    Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
 }
