@@ -1,15 +1,13 @@
 package com.juanpablo0612.carpool.presentation.place.add.components
 
+import com.juanpablo0612.carpool.core.location.iosLocationPermissionController
 import dev.jordond.compass.Priority
 import dev.jordond.compass.permissions.LocationPermissionController
 import dev.jordond.compass.permissions.PermissionState
-import dev.jordond.compass.permissions.mobile
 
-// dev.jordond.compass:permissions-mobile ships a CLLocationManager-backed implementation, the same
-// controller CompassLocationService's Geolocator.mobile() relies on for current() on this platform.
-// Requires NSLocationWhenInUseUsageDescription in Info.plist.
+// Asks for When-In-Use access, so Info.plist needs only NSLocationWhenInUseUsageDescription.
 private class IosLocationPermissionRequester(
-    private val controller: LocationPermissionController = LocationPermissionController.mobile(),
+    private val controller: LocationPermissionController = iosLocationPermissionController,
 ) : LocationPermissionRequester {
 
     override fun hasPermission(): Boolean = controller.hasPermission()
