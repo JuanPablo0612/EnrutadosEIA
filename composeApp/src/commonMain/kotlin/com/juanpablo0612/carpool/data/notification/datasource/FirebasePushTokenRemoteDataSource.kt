@@ -20,8 +20,13 @@ class FirebasePushTokenRemoteDataSource(
 
     override suspend fun unregister(userId: String) {
         val token = messaging.getToken()
-        tokenDocument(userId, token).delete()
-        messaging.deleteToken()
+        // Invalidate first: the Firestore delete waits for the server and can outlast the
+        // sign-out timeout, which would otherwise leave the token able to receive pushes.
+        try {
+            messaging.deleteToken()
+        } finally {
+            tokenDocument(userId, token).delete()
+        }
     }
 
     override suspend fun deleteLocalToken() {
