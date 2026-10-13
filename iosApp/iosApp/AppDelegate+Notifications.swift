@@ -14,6 +14,9 @@ extension AppDelegate {
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
         Messaging.messaging().apnsToken = deviceToken
+        // FCM can't hand out a token before this, so the registrations attempted at launch may have
+        // failed; retry now that one can succeed. A no-op while signed out.
+        IosPushNotifications.shared.onNewToken()
     }
 
     func application(

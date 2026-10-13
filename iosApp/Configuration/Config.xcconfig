@@ -7,6 +7,15 @@ PRODUCT_NAME = EnrutadosEIA
 APP_BUNDLE_IDENTIFIER = com.juanpablo0612.carpool
 PRODUCT_BUNDLE_IDENTIFIER = $(APP_BUNDLE_IDENTIFIER)
 
+// Shared by the app and the NotificationService extension (SignedInUserStore.swift). Must equal
+// the group written literally in both .entitlements files: Xcode doesn't reliably expand build
+// settings in an extension's entitlements.
+APP_GROUP_IDENTIFIER = group.com.juanpablo0612.carpool
+
+// Read by CODE_SIGN_ENTITLEMENTS of each target, so Local.xcconfig can drop them (see the example).
+APP_ENTITLEMENTS = Configuration/iosApp.entitlements
+EXTENSION_ENTITLEMENTS = Configuration/NotificationService.entitlements
+
 // Keep in step with versionCode / versionName in androidApp/build.gradle.kts.
 CURRENT_PROJECT_VERSION = 1
 MARKETING_VERSION = 1.0
