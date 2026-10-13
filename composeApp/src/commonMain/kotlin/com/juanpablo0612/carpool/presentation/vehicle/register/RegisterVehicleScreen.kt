@@ -113,7 +113,6 @@ fun RegisterVehicleContent(
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         if (file != null) onAction(RegisterVehicleAction.OnPhotoSelected(file))
     }
-    val isCameraAvailable = rememberIsCameraAvailable()
 
     if (state.showDiscardConfirm) {
         ConfirmDialog(
@@ -128,6 +127,8 @@ fun RegisterVehicleContent(
 
     // Photo source bottom sheet
     if (state.showPhotoSheet) {
+        // Read each time the sheet opens: another app may be holding the camera by then.
+        val isCameraAvailable = rememberIsCameraAvailable()
         ModalBottomSheet(
             onDismissRequest = { onAction(RegisterVehicleAction.OnDismissPhotoSheet) },
             dragHandle = { BottomSheetDefaults.DragHandle() },

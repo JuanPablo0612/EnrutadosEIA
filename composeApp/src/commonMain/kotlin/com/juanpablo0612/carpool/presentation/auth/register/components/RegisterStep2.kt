@@ -87,7 +87,6 @@ internal fun RegisterStep2(
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         onAction(RegisterAction.OnPhotoSelected(file))
     }
-    val isCameraAvailable = rememberIsCameraAvailable()
 
     Column(modifier = modifier.fillMaxWidth()) {
         AuthHeader(
@@ -151,6 +150,8 @@ internal fun RegisterStep2(
     }
 
     if (showImageSourceSheet) {
+        // Read each time the sheet opens: another app may be holding the camera by then.
+        val isCameraAvailable = rememberIsCameraAvailable()
         ModalBottomSheet(onDismissRequest = { showImageSourceSheet = false }) {
             Column(modifier = Modifier.navigationBarsPadding().padding(bottom = Spacing.lg)) {
                 Text(

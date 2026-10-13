@@ -118,7 +118,6 @@ fun EditProfileContent(
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         onAction(EditProfileAction.OnPhotoSelected(file))
     }
-    val isCameraAvailable = rememberIsCameraAvailable()
 
     if (state.showDiscardConfirm) {
         ConfirmDialog(
@@ -264,6 +263,8 @@ fun EditProfileContent(
     }
 
     if (showImageSourceSheet) {
+        // Read each time the sheet opens: another app may be holding the camera by then.
+        val isCameraAvailable = rememberIsCameraAvailable()
         ModalBottomSheet(onDismissRequest = { showImageSourceSheet = false }) {
             Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontalForm, vertical = Spacing.lg)) {
                 Text(
