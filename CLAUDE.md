@@ -43,7 +43,7 @@ A fresh clone is missing two gitignored files the Android build needs:
 The iOS build additionally needs (all gitignored or outside the repo):
 
 1. **`iosApp/iosApp/GoogleService-Info.plist`** — from the Firebase iOS app with bundle ID `com.juanpablo0612.carpool`. The "Check Firebase config" build phase fails the build without it.
-2. **`iosApp/Configuration/Local.xcconfig`** — copy `Local.xcconfig.example` and set `TEAM_ID` (Apple Developer team) for automatic signing of the app and its `.NotificationService` extension, with the Push Notifications and App Groups capabilities. Push needs the paid Apple Developer Program; a free Personal Team can use the overrides commented in the example to build without push and the app group.
+2. **`iosApp/Configuration/Local.xcconfig`** — copy `Local.xcconfig.example` and set `TEAM_ID` (Apple Developer team) for automatic signing of the app and its `.NotificationService` extension, with the Push Notifications and App Groups capabilities. The bundle and app-group ids belong to the owner's paid team, so builds with push need `TEAM_ID` set to that team; any other team, a free Personal Team included, uses the overrides commented in the example to build without push and the app group.
 3. An **APNs authentication key** uploaded in the Firebase console (Project settings → Cloud Messaging → Apple app configuration); without it FCM cannot reach iOS devices.
 
 Xcode resolves the Swift packages on first open; commit the generated `iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.

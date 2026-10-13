@@ -33,7 +33,7 @@ Tests live in `composeApp/src/commonTest` (kotlin-test + kotlinx-coroutines-test
 
 Gradle configuration cache is enabled. On Windows use `gradlew.bat` instead of `./gradlew`.
 
-A fresh clone needs two gitignored files before `:androidApp:assembleDebug` will succeed: `androidApp/google-services.json` (Firebase config) and a root `secrets.properties` with `MAPS_API_KEY` (copy `secrets.properties.example`). The iOS build also needs `iosApp/iosApp/GoogleService-Info.plist` (Firebase iOS app, bundle ID `com.juanpablo0612.carpool`), `iosApp/Configuration/Local.xcconfig` with the signing `TEAM_ID` (copy `Local.xcconfig.example`; push needs the paid Apple Developer Program, and the example shows the overrides for a free Personal Team), an APNs key uploaded to Firebase Cloud Messaging, and **Maps SDK for iOS** enabled on the same `MAPS_API_KEY`. See `README.md` for details.
+A fresh clone needs two gitignored files before `:androidApp:assembleDebug` will succeed: `androidApp/google-services.json` (Firebase config) and a root `secrets.properties` with `MAPS_API_KEY` (copy `secrets.properties.example`). The iOS build also needs `iosApp/iosApp/GoogleService-Info.plist` (Firebase iOS app, bundle ID `com.juanpablo0612.carpool`), `iosApp/Configuration/Local.xcconfig` with the signing `TEAM_ID` (copy `Local.xcconfig.example`; the bundle and app-group ids belong to the owner's paid team, so push builds need that `TEAM_ID`, and the example shows the overrides any other team uses to build without push), an APNs key uploaded to Firebase Cloud Messaging, and **Maps SDK for iOS** enabled on the same `MAPS_API_KEY`. See `README.md` for details.
 
 ------------------------------------------------------------------------
 

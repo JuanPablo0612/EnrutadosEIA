@@ -3,10 +3,11 @@
 // Your Apple Developer Team ID (Xcode > Settings > Accounts, or developer.apple.com > Membership).
 TEAM_ID = ABCDE12345
 
-// Signing with a free Personal Team instead of the Apple Developer Program: Personal Teams can't
-// use push, and the app's bundle and group ids already belong to the owner's team. Uncomment to
-// build without push and the app group, under ids of your own. Pushes then never arrive, and Firebase
-// warns that the bundle id doesn't match GoogleService-Info.plist.
+// Signing with any team other than the one that owns com.juanpablo0612.carpool (for example a
+// free Personal Team, which can't use push at all): the app's bundle and group ids can't be
+// registered there. Uncomment to build without push and the app group, under ids of your own.
+// Pushes then never arrive, and Firebase warns that the bundle id doesn't match
+// GoogleService-Info.plist. To keep push on the owner's ids, ask the owner to add you to their team.
 // APP_BUNDLE_IDENTIFIER = com.yourname.carpool
 // APP_ENTITLEMENTS =
 // EXTENSION_ENTITLEMENTS =

@@ -52,16 +52,19 @@ archive with that one release) and:
 2. **`iosApp/Configuration/Local.xcconfig`** — copy `Local.xcconfig.example` next to it and set
    `TEAM_ID` to your Apple Developer team. Automatic signing then registers the app and its
    `com.juanpablo0612.carpool.NotificationService` extension with the Push Notifications and
-   App Groups capabilities (`group.com.juanpablo0612.carpool`). Push needs a membership in the
-   Apple Developer Program; with a free Personal Team, use the overrides commented in the example
-   to run on a device without push.
+   App Groups capabilities (`group.com.juanpablo0612.carpool`). Those ids can only be registered
+   by the paid Apple Developer team that owns them, so builds with push need `TEAM_ID` set to that
+   team (ask the owner to add you). Any other team, including a free Personal Team, uses the
+   overrides commented in the example to run on a device without push.
 3. **An APNs authentication key** — create one under Certificates, Identifiers & Profiles → Keys
    in the Apple Developer site and upload it in the Firebase console (Project settings → Cloud
    Messaging → Apple app configuration). Without it FCM can't deliver pushes to iOS.
 
-Firebase Analytics runs on iOS too (linked with `-ObjC`, as Firebase documents). Its data, like the
-app's own, is declared in `iosApp/iosApp/PrivacyInfo.xcprivacy`; use that file when filling in the
-App Privacy section of App Store Connect.
+Firebase Analytics runs on iOS too (linked with `-ObjC`, as Firebase documents). It ships no
+privacy manifest, so its data is declared in the app's own `iosApp/iosApp/PrivacyInfo.xcprivacy`.
+Before filling in the App Privacy section of App Store Connect, archive the app and use Organizer
+→ Archives → (Control-click) Generate Privacy Report: it merges that file with the manifests of
+Google Maps and the other Firebase SDKs, which declare data of their own.
 
 The first time Xcode opens the project it resolves the Swift packages (`firebase-ios-sdk` 11.x and
 `ios-maps-sdk`); commit the `Package.resolved` it writes under
