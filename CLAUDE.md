@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app for university students (EIA, Envigado). Anyone can search and book seats; anyone with a registered vehicle can publish trips. There are **no user roles** — one account, one navigation. Currently targeting Android (iOS scaffold exists but is not active).
+EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app for university students (EIA, Envigado). Anyone can search and book seats; anyone with a registered vehicle can publish trips. There are **no user roles** — one account, one navigation. Targets Android and iOS (16+).
 
 ## Build, Test & Run
 
@@ -21,27 +21,38 @@ EnrutadosEIA — a Kotlin Multiplatform / Compose Multiplatform carpooling app f
 # Compile shared code only (no Android SDK required)
 ./gradlew :composeApp:compileCommonMainKotlinMetadata
 
+# Type-check the iOS Kotlin code (works on any host; linking and running need a Mac)
+./gradlew :composeApp:compileKotlinIosSimulatorArm64
+
 # Cloud Functions
 npm --prefix functions run lint
 npm --prefix functions run build
 ```
 
-On Windows use `gradlew.bat`. Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP **library** — `:composeApp:assembleDebug` is not a valid task; the APK comes from `:androidApp:assembleDebug`). Gradle configuration cache is enabled. JVM target is 17. There is no CI workflow and no lint/detekt/ktlint config for Kotlin.
+On Windows use `gradlew.bat`. Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP **library** — `:composeApp:assembleDebug` is not a valid task; the APK comes from `:androidApp:assembleDebug`). The iOS app is the Xcode project `iosApp/iosApp.xcodeproj` (scheme `iosApp`, Xcode 26+, on a Mac); its "Compile Kotlin Framework" phase runs `./gradlew :composeApp:embedAndSignAppleFrameworkForXcode`. Gradle configuration cache is enabled. JVM target is 17. There is no CI workflow and no lint/detekt/ktlint config for Kotlin.
 
-**Tests** live in `composeApp/src/commonTest` (kotlin-test + kotlinx-coroutines-test) and cover pure domain logic: trip matching (`MatchTripsUseCase`, `GeoDistance`), recurring slots, trip validation, the publish and update-trip use cases (with in-memory fakes in `PublishFakes.kt`) and notification deep links. Add tests for any new domain logic; there are no UI/instrumented tests.
+**Tests** live in `composeApp/src/commonTest` (kotlin-test + kotlinx-coroutines-test) and cover pure domain logic: trip matching (`MatchTripsUseCase`, `GeoDistance`), recurring slots, trip validation, the publish and update-trip use cases (with in-memory fakes in `PublishFakes.kt`), notification deep links and push payload parsing (`PushPayload`). Add tests for any new domain logic; there are no UI/instrumented tests.
 
 ### First-time setup
 
 A fresh clone is missing two gitignored files the Android build needs:
 
 1. **`androidApp/google-services.json`** — Firebase config for the `com.juanpablo0612.carpool` app. Download it from the Firebase console (Project settings → your Android app) and place it at that exact path. Without it, the `googleServices` Gradle plugin fails the build.
-2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` (manifest placeholder) and by `composeApp/build.gradle.kts` via BuildKonfig as `com.juanpablo0612.carpool.core.config.BuildKonfig.MAPS_API_KEY`, used for Places API (New) autocomplete/details and Geocoding (`data/place/datasource/GooglePlacesSearchService.kt`). Copy `secrets.properties.example` and fill in a key with **Maps SDK for Android**, **Places API (New)** and **Geocoding API** enabled. Without it the build succeeds but maps render blank and address search returns nothing.
+2. **`secrets.properties`** at the repo root — holds `MAPS_API_KEY`, consumed by `androidApp/build.gradle.kts` (manifest placeholder) and by `composeApp/build.gradle.kts` via BuildKonfig as `com.juanpablo0612.carpool.core.config.BuildKonfig.MAPS_API_KEY`, used for Places API (New) autocomplete/details and Geocoding (`data/place/datasource/GooglePlacesSearchService.kt`). Copy `secrets.properties.example` and fill in a key with **Maps SDK for Android**, **Places API (New)** and **Geocoding API** enabled. Without it the build succeeds but maps render blank and address search returns nothing. iOS uses the same key for the Maps SDK, so also enable **Maps SDK for iOS** on it.
+
+The iOS build additionally needs (all gitignored or outside the repo):
+
+1. **`iosApp/iosApp/GoogleService-Info.plist`** — from the Firebase iOS app with bundle ID `com.juanpablo0612.carpool`. The "Check Firebase config" build phase fails the build without it.
+2. **`iosApp/Configuration/Local.xcconfig`** — copy `Local.xcconfig.example` and set `TEAM_ID` (Apple Developer team) for automatic signing of the app and its `.NotificationService` extension.
+3. An **APNs authentication key** uploaded in the Firebase console (Project settings → Cloud Messaging → Apple app configuration); without it FCM cannot reach iOS devices.
+
+Xcode resolves the Swift packages on first open; commit the generated `iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
 
 ### Backend: Cloud Functions, rules, indexes
 
 `functions/` (TypeScript, Node 22, firebase-functions 7 / firebase-admin 13, eslint-config-google — JSDoc on every function, max 80 columns) is the backend. It **owns** these writes; the app must never do them itself:
 
-- **Notifications** — in-app documents in `notifications/{uid}/items` (type + string params, deterministic ids for idempotency) and FCM data-only pushes, sent from Firestore triggers on bookings, trips and chat messages (`functions/src/triggers`, `functions/src/notifications`). Clients may only read, mark read and delete their own notifications.
+- **Notifications** — in-app documents in `notifications/{uid}/items` (type + string params, deterministic ids for idempotency) and FCM pushes (data-only on Android; on iOS an `apns` alert with a generic loc-key text and `mutable-content`, rewritten on the device by the NotificationService extension), sent from Firestore triggers on bookings, trips and chat messages (`functions/src/triggers`, `functions/src/notifications`). Clients may only read, mark read and delete their own notifications.
 - **Trip cancellation cascade** — cancelling or deleting a trip cancels its open bookings (`cancelledBy: "system"`) and resets `confirmedSeats`.
 - **Rating aggregate** — `users/{uid}.ratingSum` / `ratingCount` (integers; the app computes the average).
 - **Account deletion** — the `deleteAccount` callable purges the user's data and then the auth user (plus a 1st-gen `auth.user().onDelete` safety net).
@@ -74,7 +85,7 @@ com/juanpablo0612/carpool/
 └── di/                      # one Koin module file per feature (see DI below)
 ```
 
-Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab host), `onboarding`, `profile`, `session`, `splash`. Shared presentation pieces worth knowing: `presentation/place/stops/` (StopsDraft, SelectionTarget, `stopsEditorItems`/`stopsReadOnlyItems`, `StopSelectionHost` — the stop editor used by route create/edit and trip publishing), `presentation/notification/NotificationText.kt` (`resolveNotificationText`, shared by the in-app list and the push renderer). Android-only push code lives in `composeApp/src/androidMain/.../push/`.
+Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab host), `onboarding`, `profile`, `session`, `splash`. Shared presentation pieces worth knowing: `presentation/place/stops/` (StopsDraft, SelectionTarget, `stopsEditorItems`/`stopsReadOnlyItems`, `StopSelectionHost` — the stop editor used by route create/edit and trip publishing), `presentation/notification/NotificationText.kt` (`resolveNotificationText`, shared by the in-app list and the push renderer). Android-only push code lives in `composeApp/src/androidMain/.../push/`, iOS push glue in `composeApp/src/iosMain/.../push/`; both parse the backend's envelope with the shared `data/notification/model/PushPayload`.
 
 **Dependency rule:** presentation → domain ← data. Domain is pure Kotlin with no framework imports.
 
@@ -96,7 +107,9 @@ Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab ho
 
 **Navigation** — type-safe routes via one flat `@Serializable sealed interface Route` (31 routes) in `presentation/navigation/Route.kt`. One set of tabs for everyone: **Inicio · Buscar · Mis viajes · Perfil** (`BottomNavItem`), shown by `NavigationSuiteScaffoldLayout` as the bottom bar on phones and `NavigationRailBar` on medium/expanded windows. Always switch tabs with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination. `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph` (Entry — where signed-out users start, asking whether they have an account — then Login, Register, ForgotPassword, EmailVerification), `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive — routes, publishing and editing trips, vehicles, booking requests — reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, and push-tap handling (`PendingDeepLinks`). Notification deep links are plain strings built and parsed in `NotificationDeepLink.kt` (`forNotification(type, params)` / `toRouteOrNull()`), opened with `navigateToNotificationDeepLink`. One-time events use `ObserveAsEvents` (in `presentation/ui/util/`) with `SharedFlow`.
 
-**Notifications (client side)** — the app never creates notifications. It renders them from `type` + `params` with `resolveNotificationText`. `PushTokenSync` registers the device's FCM token under `users/{uid}/fcmTokens` on sign-in; sign-out removes it. `CarpoolMessagingService` shows data-only pushes in the device language; POST_NOTIFICATIONS is requested via `rememberNotificationPermissionState()` right after a meaningful action (requesting a seat, publishing a trip), never at launch.
+**Notifications (client side)** — the app never creates notifications. It renders them from `type` + `params` with `resolveNotificationText`. `PushTokenSync` registers the device's FCM token under `users/{uid}/fcmTokens` on sign-in; sign-out removes it. `CarpoolMessagingService` shows data-only pushes in the device language; on iOS the `NotificationService` app extension rewrites the backend's alert before display (`iosApp/NotificationService/NotificationText.swift` mirrors `resolveNotificationText`, with its strings in `iosApp/Shared/Localizable.xcstrings`, same keys and texts as composeResources) and `IosPushNotifications` decides foreground banners and handles taps. A new or changed notification kind therefore touches `NotificationType.kt`/`NotificationText.kt`/`strings.xml`, `functions/src/model.ts`, `NotificationText.swift` and `Localizable.xcstrings`. The notification permission (POST_NOTIFICATIONS on Android, `UNUserNotificationCenter` authorization on iOS) is requested via `rememberNotificationPermissionState()` right after a meaningful action (requesting a seat, publishing a trip), never at launch.
+
+**iOS** — `iosApp/` is a SwiftUI shell around `MainViewController()`. `AppDelegate.swift` configures Firebase (`GoogleService-Info.plist`) and the Maps SDK, then calls `IosApp.start` (iosMain; Koin + `PushTokenSync`, the counterpart of `CarpoolApplication`); `AppDelegate+Notifications.swift` hands the APNs token to FCM (swizzling is off) and forwards foreground pushes and taps to `IosPushNotifications`. Native SDKs are Swift packages in the Xcode project, not CocoaPods: `firebase-ios-sdk` 11.x (the version the gitlive 2.x cinterop is built against — don't jump to 12.x without upgrading gitlive) and `ios-maps-sdk`. Kotlin can't import them, so Google Maps views are written in Swift (`iosApp/iosApp/Maps/`), implement the Kotlin interfaces in `NativeMapViews.kt`, and are embedded by the iOS `MapPreview`/`MapRoutePreview` through `UIKitView`. Permission prompts and other system strings live in `iosApp/iosApp/InfoPlist.xcstrings`; the privacy manifest is `iosApp/iosApp/PrivacyInfo.xcprivacy` (update it when the app starts collecting a new kind of data).
 
 ## DI (Koin)
 
@@ -106,7 +119,7 @@ Non-feature presentation packages: `home` (Inicio), `mytrips` (Mis viajes tab ho
 
 - **Naming:** `AuthRepository` (interface), `AuthRepositoryImpl` (impl), `UserDto` (DTO), `User` (model), `LoginUseCase` (verb + UseCase, in `domain/{feature}/usecase/`).
 - **Sealed classes over enums** for errors, events, actions and states. The only enum-like exception is a type-safe navigation argument (`MyTripsTab`), since navigation supports enums natively.
-- **Localization:** all UI strings via `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, in exact key parity — add, rename and remove keys in both). No hardcoded strings. Use `stringResource` in composition and the suspend `getString` outside it (e.g. rendering a push).
+- **Localization:** all UI strings via `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` (Spanish in `values-es/`, in exact key parity — add, rename and remove keys in both). No hardcoded strings. Use `stringResource` in composition and the suspend `getString` outside it (e.g. rendering a push). The iOS-only String Catalogs (`InfoPlist.xcstrings`, `Localizable.xcstrings`) keep the same en/es parity.
 - **DTOs default every field**, so a partially-missing Firestore document decodes. Unknown fields in a document are ignored by the gitlive decoder.
 - **No compatibility code for old data.** The app is not in production: when a schema changes, change the code to the new shape only — no migrations, backfill scripts or legacy fallbacks.
 - **Icons:** local XML vectors in `composeResources/drawable/`, accessed with `vectorResource(Res.drawable.icon_name)`. **`material-icons-extended` is forbidden.** Reuse an existing vector when possible; if a new icon is needed, reference it and tell the user which Material Symbol to download — never invent path data.
@@ -124,4 +137,5 @@ Versions are tracked in `gradle/libs.versions.toml` — treat that file as the s
 - Koin 4.2.1, AndroidX Navigation Compose 2.9.2, KotlinX Serialization, KotlinX Coroutines 1.10.2
 - FileKit 0.14.1, KotlinX DateTime 0.8.0
 - Android: compileSdk 37, minSdk 24, targetSdk 37
+- iOS: deployment target 16.0 (required by the Maps SDK), Xcode 26+, Swift packages `firebase-ios-sdk` 11.x and `ios-maps-sdk` 11.2.0 (pinned in `project.pbxproj`)
 - Backend: Node 22, firebase-functions 7, firebase-admin 13, TypeScript

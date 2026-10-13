@@ -21,16 +21,19 @@ Agents must strictly follow these guidelines when generating, modifying, or refa
 # Compile shared code only (no Android SDK required)
 ./gradlew :composeApp:compileCommonMainKotlinMetadata
 
+# Type-check the iOS Kotlin code (works on any host; linking and running need a Mac)
+./gradlew :composeApp:compileKotlinIosSimulatorArm64
+
 # Cloud Functions (backend)
 npm --prefix functions run lint
 npm --prefix functions run build
 ```
 
-Tests live in `composeApp/src/commonTest` (kotlin-test + kotlinx-coroutines-test) and cover pure domain logic; add tests for new domain logic. There are no UI/instrumented tests. `composeApp` is a Kotlin Multiplatform **library**, not an application module, so `:composeApp:assembleDebug` is not a valid task — the installable APK comes from `:androidApp:assembleDebug`. There is no CI workflow and no Kotlin lint/detekt/ktlint config; build, host tests and the functions lint/build are the automated checks.
+Tests live in `composeApp/src/commonTest` (kotlin-test + kotlinx-coroutines-test) and cover pure domain logic; add tests for new domain logic. There are no UI/instrumented tests. `composeApp` is a Kotlin Multiplatform **library**, not an application module, so `:composeApp:assembleDebug` is not a valid task — the installable APK comes from `:androidApp:assembleDebug`. The iOS app is the Xcode project `iosApp/iosApp.xcodeproj` (scheme `iosApp`, Xcode 26+, on a Mac); its "Compile Kotlin Framework" phase runs `./gradlew :composeApp:embedAndSignAppleFrameworkForXcode`. There is no CI workflow and no Kotlin lint/detekt/ktlint config; build, host tests and the functions lint/build are the automated checks.
 
 Gradle configuration cache is enabled. On Windows use `gradlew.bat` instead of `./gradlew`.
 
-A fresh clone needs two gitignored files before `:androidApp:assembleDebug` will succeed: `androidApp/google-services.json` (Firebase config) and a root `secrets.properties` with `MAPS_API_KEY` (copy `secrets.properties.example`). See `README.md` for details.
+A fresh clone needs two gitignored files before `:androidApp:assembleDebug` will succeed: `androidApp/google-services.json` (Firebase config) and a root `secrets.properties` with `MAPS_API_KEY` (copy `secrets.properties.example`). The iOS build also needs `iosApp/iosApp/GoogleService-Info.plist` (Firebase iOS app, bundle ID `com.juanpablo0612.carpool`), `iosApp/Configuration/Local.xcconfig` with the signing `TEAM_ID` (copy `Local.xcconfig.example`), an APNs key uploaded to Firebase Cloud Messaging, and **Maps SDK for iOS** enabled on the same `MAPS_API_KEY`. See `README.md` for details.
 
 ------------------------------------------------------------------------
 
@@ -57,12 +60,13 @@ Versions are tracked in `gradle/libs.versions.toml` — treat that file as the s
 - **Language:** Kotlin 2.3.21
 - **Architecture:** Clean Architecture + MVVM
 - **UI Framework:** Compose Multiplatform 1.10.3, Material3, Material3 Adaptive 1.2.0 + navigation suite
-- **Platform:** Kotlin Multiplatform (Android active, iOS scaffold exists but inactive)
+- **Platform:** Kotlin Multiplatform — Android and iOS (deployment target 16.0, required by the Maps SDK; Xcode 26+)
 - **Backend:** Firebase Auth, Firestore, Storage, Functions, Messaging, Analytics (`dev.gitlive:firebase-*` 2.4.0) + Cloud Functions in `functions/` (TypeScript, Node 22, firebase-functions 7, firebase-admin 13)
 - **DI:** Koin 4.2.1 (hand-written DSL modules — no `koin-annotations`/compiler plugin)
 - **Navigation:** AndroidX Navigation Compose 2.9.2 with type-safe routes
 - **Other:** KotlinX Serialization, KotlinX Coroutines 1.10.2, KotlinX DateTime 0.8.0, FileKit 0.14.1
 - **Android:** compileSdk 37, minSdk 24, targetSdk 37, JVM target 17
+- **iOS:** Swift packages in the Xcode project (no CocoaPods): `firebase-ios-sdk` 11.x — the version the gitlive 2.x cinterop is built against, so don't move to 12.x without upgrading gitlive — and `ios-maps-sdk` 11.2.0
 
 ------------------------------------------------------------------------
 
@@ -78,7 +82,7 @@ Follow Clean Architecture: **presentation → domain → data**.
 
 # 6. Project Structure
 
-Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library).
+Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library), plus the Xcode project `iosApp/` (iOS application shell).
 
 Hybrid architecture (layers + features) inside `composeApp`. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, trip, vehicle` (`route` is a driver's saved route template; `trip` is a bookable trip with date, vehicle and seats — separate features on purpose; a one-off trip has `routeId == ""`).
 
@@ -102,7 +106,9 @@ com/juanpablo0612/carpool/
 └── di/                       # one Koin module file per feature (see section 11)
 ```
 
-Non-feature presentation packages also exist alongside the feature ones: `home` (Inicio), `mytrips` (Mis viajes tab host), `onboarding`, `profile`, `session`, `splash`. `presentation/place/stops/` holds the stop editor shared by route create/edit and trip publishing (`StopsDraft`, `SelectionTarget`, `stopsEditorItems`, `StopSelectionHost`). Android-only push code lives in `composeApp/src/androidMain/.../push/`.
+Non-feature presentation packages also exist alongside the feature ones: `home` (Inicio), `mytrips` (Mis viajes tab host), `onboarding`, `profile`, `session`, `splash`. `presentation/place/stops/` holds the stop editor shared by route create/edit and trip publishing (`StopsDraft`, `SelectionTarget`, `stopsEditorItems`, `StopSelectionHost`). Android-only push code lives in `composeApp/src/androidMain/.../push/`, iOS push glue in `composeApp/src/iosMain/.../push/`; both parse the backend's envelope with the shared `data/notification/model/PushPayload`.
+
+**iOS shell (`iosApp/`).** A SwiftUI app around `MainViewController()`. `AppDelegate.swift` configures Firebase and the Maps SDK, then calls `IosApp.start` (iosMain; Koin + `PushTokenSync`, the counterpart of `CarpoolApplication`). `AppDelegate+Notifications.swift` hands the APNs token to FCM (swizzling is off) and forwards foreground pushes and taps to `IosPushNotifications`. Kotlin can't import the Swift-package SDKs, so the Google Maps views are Swift (`iosApp/iosApp/Maps/`) implementing the Kotlin interfaces in `NativeMapViews.kt`, embedded by the iOS `MapPreview`/`MapRoutePreview` with `UIKitView`. The `NotificationService` app extension rewrites each push's text on the device (`NotificationText.swift` mirrors `resolveNotificationText`; strings in `iosApp/Shared/Localizable.xcstrings`). The privacy manifest is `iosApp/iosApp/PrivacyInfo.xcprivacy`; update it when the app starts collecting a new kind of data.
 
 ------------------------------------------------------------------------
 
@@ -208,7 +214,7 @@ To enable Compose Previews and maintain a clean separation of concerns:
 
 # 18. Localization
 
-No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` for all UI text. Spanish translations live in `values-es/`, in exact key parity with `values/` (add, rename and remove keys in both). Inside a `@Composable`, resolve with `stringResource(Res.string.x)`; outside composition (e.g. rendering a push notification) use the suspend `getString(Res.string.x)`. Never persist localized text to Firestore: notifications are stored as a type plus params and rendered on the reader's device by `resolveNotificationText`.
+No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/values/strings.xml` for all UI text. Spanish translations live in `values-es/`, in exact key parity with `values/` (add, rename and remove keys in both). Inside a `@Composable`, resolve with `stringResource(Res.string.x)`; outside composition (e.g. rendering a push notification) use the suspend `getString(Res.string.x)`. Never persist localized text to Firestore: notifications are stored as a type plus params and rendered on the reader's device by `resolveNotificationText` (and, for iOS pushes, by its Swift mirror in the NotificationService extension). A new or changed notification kind touches `NotificationType.kt`/`NotificationText.kt`/`strings.xml`, `functions/src/model.ts`, `iosApp/NotificationService/NotificationText.swift` and `iosApp/Shared/Localizable.xcstrings` (same keys and texts as composeResources). iOS system strings such as permission prompts live in `iosApp/iosApp/InfoPlist.xcstrings`. The iOS String Catalogs keep the same en/es parity.
 
 ------------------------------------------------------------------------
 
@@ -242,7 +248,7 @@ No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/
 
 # 22. Backend (Cloud Functions) & Security
 
-`functions/` owns these writes; the app must never do them itself: in-app notifications and FCM pushes (triggers on bookings, trips and chat messages), the trip-cancellation cascade, the rating aggregate (`users/{uid}.ratingSum`/`ratingCount`), and account deletion (the `deleteAccount` callable plus an `auth.user().onDelete` safety net). Functions code follows eslint-config-google (JSDoc on every function, max 80 columns) and deploys to `us-central1` (matching the Firestore location and `BackendConfig.FUNCTIONS_REGION`). Firestore rules must stay the enforcement counterpart of every client write; validate rule changes with `firebase deploy --only firestore:rules --dry-run`.
+`functions/` owns these writes; the app must never do them itself: in-app notifications and FCM pushes (triggers on bookings, trips and chat messages; data-only on Android, an `apns` alert with a generic loc-key text and `mutable-content` on iOS), the trip-cancellation cascade, the rating aggregate (`users/{uid}.ratingSum`/`ratingCount`), and account deletion (the `deleteAccount` callable plus an `auth.user().onDelete` safety net). Functions code follows eslint-config-google (JSDoc on every function, max 80 columns) and deploys to `us-central1` (matching the Firestore location and `BackendConfig.FUNCTIONS_REGION`). Firestore rules must stay the enforcement counterpart of every client write; validate rule changes with `firebase deploy --only firestore:rules --dry-run`.
 
 Validate inputs before sending requests (client) and in the rules (server). Never store passwords locally. Do not log sensitive info.
 
