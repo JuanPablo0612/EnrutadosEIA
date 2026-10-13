@@ -48,6 +48,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.AuthHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.SecondaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.rememberIsCameraAvailable
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_terms_not_accepted
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
@@ -86,6 +87,7 @@ internal fun RegisterStep2(
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         onAction(RegisterAction.OnPhotoSelected(file))
     }
+    val isCameraAvailable = rememberIsCameraAvailable()
 
     Column(modifier = modifier.fillMaxWidth()) {
         AuthHeader(
@@ -156,13 +158,15 @@ internal fun RegisterStep2(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(horizontal = Spacing.xl, vertical = Spacing.sm)
                 )
-                PhotoSourceItem(
-                    text = stringResource(Res.string.register_photo_action_camera),
-                    onClick = {
-                        showImageSourceSheet = false
-                        cameraLauncher.launch()
-                    },
-                )
+                if (isCameraAvailable) {
+                    PhotoSourceItem(
+                        text = stringResource(Res.string.register_photo_action_camera),
+                        onClick = {
+                            showImageSourceSheet = false
+                            cameraLauncher.launch()
+                        },
+                    )
+                }
                 PhotoSourceItem(
                     text = stringResource(Res.string.register_photo_action_gallery),
                     onClick = {

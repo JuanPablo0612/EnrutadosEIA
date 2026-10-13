@@ -55,6 +55,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
+import com.juanpablo0612.carpool.presentation.ui.util.rememberIsCameraAvailable
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.full_name_placeholder
 import enrutadoseia.composeapp.generated.resources.discard_changes_body
@@ -117,6 +118,7 @@ fun EditProfileContent(
     val cameraLauncher = rememberCameraPickerLauncher { file ->
         onAction(EditProfileAction.OnPhotoSelected(file))
     }
+    val isCameraAvailable = rememberIsCameraAvailable()
 
     if (state.showDiscardConfirm) {
         ConfirmDialog(
@@ -269,17 +271,19 @@ fun EditProfileContent(
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(Spacing.lg))
-                TextButton(
-                    onClick = {
-                        cameraLauncher.launch()
-                        showImageSourceSheet = false
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(Res.string.register_photo_action_camera),
+                if (isCameraAvailable) {
+                    TextButton(
+                        onClick = {
+                            cameraLauncher.launch()
+                            showImageSourceSheet = false
+                        },
                         modifier = Modifier.fillMaxWidth()
-                    )
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.register_photo_action_camera),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
                 TextButton(
                     onClick = {
