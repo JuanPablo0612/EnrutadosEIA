@@ -57,6 +57,11 @@ actual fun rememberNotificationPermissionState(): NotificationPermissionState {
             }
 
             override fun openSettings() {
+                // Until the app has asked once, Settings has no notification switch for it.
+                if (status == null || status == UNAuthorizationStatusNotDetermined) {
+                    request()
+                    return
+                }
                 val url = NSURL.URLWithString(UIApplicationOpenNotificationSettingsURLString) ?: return
                 UIApplication.sharedApplication.openURL(url, options = emptyMap<Any?, Any>(), completionHandler = null)
             }
