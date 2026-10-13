@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Keeps this device's push token registered for whoever is signed in, for the whole app process.
@@ -26,10 +28,15 @@ class PushTokenSync(
                 .map { it?.uid }
                 .pushTokenActions()
                 .collect { action ->
-                    runCatching {
-                        when (action) {
-                            is PushTokenAction.Register -> pushTokens.register(action.userId)
-                            PushTokenAction.Invalidate -> pushTokens.deleteLocalToken()
+                    // Bounded: a Firestore write waits for the server's ack, and offline that wait
+                    // can outlive the user, which would hold back every later action. The write
+                    // itself is already queued locally by then.
+                    withTimeoutOrNull(ACTION_TIMEOUT) {
+                        runCatching {
+                            when (action) {
+                                is PushTokenAction.Register -> pushTokens.register(action.userId)
+                                PushTokenAction.Invalidate -> pushTokens.deleteLocalToken()
+                            }
                         }
                     }
                 }
@@ -40,6 +47,10 @@ class PushTokenSync(
     fun onNewToken() {
         val uid = firebaseAuth.currentUser?.uid ?: return
         scope.launch { runCatching { pushTokens.register(uid) } }
+    }
+
+    private companion object {
+        val ACTION_TIMEOUT = 10.seconds
     }
 }
 
