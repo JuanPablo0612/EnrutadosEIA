@@ -15,6 +15,8 @@ import platform.CoreLocation.kCLAuthorizationStatusAuthorizedWhenInUse
 import platform.CoreLocation.kCLAuthorizationStatusNotDetermined
 import platform.Foundation.NSBundle
 import platform.Foundation.NSThread
+import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationState
 import platform.darwin.NSObject
 import platform.darwin.dispatch_get_main_queue
 import platform.darwin.dispatch_sync
@@ -53,6 +55,10 @@ private class IosLocationPermissionController : LocationPermissionController {
                 status != kCLAuthorizationStatusNotDetermined -> status.toPermissionState()
                 // iOS ignores the request without the purpose string, so waiting would never end.
                 !hasWhenInUsePurposeString() -> PermissionState.DeniedForever
+                // The prompt only shows in the foreground (e.g. a tracking poll right after an
+                // "Allow Once" grant expired in the background); ask again on the next request.
+                UIApplication.sharedApplication.applicationState !=
+                    UIApplicationState.UIApplicationStateActive -> PermissionState.Denied
                 else -> suspendCancellableCoroutine { continuation ->
                     delegate.waiting += continuation
                     manager.requestWhenInUseAuthorization()
