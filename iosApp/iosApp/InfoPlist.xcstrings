@@ -1,0 +1,40 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSCameraUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EnrutadosEIA uses the camera so you can take your profile photo and a photo of your vehicle."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EnrutadosEIA usa la cámara para que tomes tu foto de perfil y la de tu vehículo."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EnrutadosEIA uses your location to suggest nearby starting points and to show the driver's position during a trip in progress."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EnrutadosEIA usa tu ubicación para sugerir puntos de partida cercanos y mostrar la posición del conductor durante un viaje en curso."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

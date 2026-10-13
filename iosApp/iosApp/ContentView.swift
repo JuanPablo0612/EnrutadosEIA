@@ -1,6 +1,6 @@
-import UIKit
-import SwiftUI
 import ComposeApp
+import SwiftUI
+import UIKit
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
@@ -12,10 +12,8 @@ struct ComposeView: UIViewControllerRepresentable {
 
 struct ContentView: View {
     var body: some View {
+        // Compose applies the safe-area and keyboard insets itself (ScreenInsets).
         ComposeView()
             .ignoresSafeArea()
     }
 }
-
-
-
