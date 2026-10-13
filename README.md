@@ -38,21 +38,30 @@ Before building Android, add two gitignored files that a fresh clone doesn't hav
    `secrets.properties` and fill in a real Google Maps API key as `MAPS_API_KEY`. It's read by
    `androidApp/build.gradle.kts` and injected into the manifest as a placeholder; without it (or
    with a blank key) the build still succeeds but the key resolves to an empty string and every
-   map screen renders blank. The key needs **Maps SDK for Android**, **Places API (New)** and
+   map screen renders blank (on iOS the map areas stay empty, since the Maps SDK refuses to start
+   without a key). The key needs **Maps SDK for Android**, **Places API (New)** and
    **Geocoding API** enabled, plus **Maps SDK for iOS** for the iOS app, which uses the same key.
 
-iOS additionally needs a Mac with Xcode 26 or newer (the Maps SDK for iOS requires it) and:
+iOS additionally needs a Mac with Xcode 26.4.1 or newer (the Maps SDK for iOS requires Xcode 26,
+and Xcode 26.4.0's compiler breaks Firebase 11's `async let` code in Release builds, so don't
+archive with that one release) and:
 
 1. **`iosApp/iosApp/GoogleService-Info.plist`** — register an iOS app with bundle ID
    `com.juanpablo0612.carpool` in the Firebase console, download its config file and place it at
    that exact path. The "Check Firebase config" build phase fails the build without it.
 2. **`iosApp/Configuration/Local.xcconfig`** — copy `Local.xcconfig.example` next to it and set
    `TEAM_ID` to your Apple Developer team. Automatic signing then registers the app and its
-   `com.juanpablo0612.carpool.NotificationService` extension, including the Push Notifications
-   capability.
+   `com.juanpablo0612.carpool.NotificationService` extension with the Push Notifications and
+   App Groups capabilities (`group.com.juanpablo0612.carpool`). Push needs a membership in the
+   Apple Developer Program; with a free Personal Team, use the overrides commented in the example
+   to run on a device without push.
 3. **An APNs authentication key** — create one under Certificates, Identifiers & Profiles → Keys
    in the Apple Developer site and upload it in the Firebase console (Project settings → Cloud
    Messaging → Apple app configuration). Without it FCM can't deliver pushes to iOS.
+
+Firebase Analytics runs on iOS too (linked with `-ObjC`, as Firebase documents). Its data, like the
+app's own, is declared in `iosApp/iosApp/PrivacyInfo.xcprivacy`; use that file when filling in the
+App Privacy section of App Store Connect.
 
 The first time Xcode opens the project it resolves the Swift packages (`firebase-ios-sdk` 11.x and
 `ios-maps-sdk`); commit the `Package.resolved` it writes under
