@@ -1,5 +1,5 @@
 import {getFirestore} from "firebase-admin/firestore";
-import {getMessaging} from "firebase-admin/messaging";
+import {ApnsConfig, getMessaging} from "firebase-admin/messaging";
 import * as logger from "firebase-functions/logger";
 import {Collections, PushTtlMs} from "../config";
 import {NotificationParams, NotificationType} from "../model";
@@ -21,7 +21,7 @@ export interface NotifyRequest {
 
 /**
  * Stores an in-app notification (if [NotifyRequest.inAppId] is set) and
- * sends a data-only push the app renders in the device's language.
+ * sends a push the app renders in the device's language.
  *
  * Idempotent: if the in-app document already exists, a previous delivery of
  * the same event handled it and nothing is sent again. Never throws, so a
@@ -79,7 +79,8 @@ async function createInApp(
 }
 
 /**
- * Sends a high-priority data-only push to every device of the recipient.
+ * Sends a high-priority push to every device of the recipient: data-only on
+ * Android, an alert on iOS (see [apnsConfig]).
  * @param {string} recipientId the user notified
  * @param {NotificationType} type the notification kind
  * @param {NotificationParams} params the render params
@@ -114,8 +115,49 @@ async function sendPush(
     tokens,
     data,
     android: {priority: "high", ttl},
+    apns: apnsConfig(type, params, ttl),
   });
   if (response.failureCount > 0) {
     await pruneDeadTokens(recipientId, response, tokens);
   }
+}
+
+/**
+ * iOS delivery options. A data-only push reaches iOS at low priority and is
+ * never shown, so iOS gets an alert instead: a generic localized text that
+ * the app's NotificationService extension replaces, before display, with the
+ * full text rendered from the data keys in the device's language. The loc
+ * keys live in iosApp/Shared/Localizable.xcstrings.
+ * @param {NotificationType} type the notification kind
+ * @param {NotificationParams} params the render params
+ * @param {number} ttlMs how long an undelivered push stays useful
+ * @return {ApnsConfig} the APNs headers and payload
+ */
+function apnsConfig(
+  type: NotificationType,
+  params: NotificationParams,
+  ttlMs: number,
+): ApnsConfig {
+  const headers: Record<string, string> = {
+    "apns-push-type": "alert",
+    "apns-priority": "10",
+    "apns-expiration": String(Math.floor((Date.now() + ttlMs) / 1000)),
+  };
+  if (type === "new_message" && params.bookingId) {
+    // Like the Android tag: a chat only shows its latest message.
+    headers["apns-collapse-id"] = `chat:${params.bookingId}`;
+  }
+  return {
+    headers,
+    payload: {
+      aps: {
+        alert: {
+          titleLocKey: "notification_generic_title",
+          locKey: "notification_generic_body",
+        },
+        sound: "default",
+        mutableContent: true,
+      },
+    },
+  };
 }

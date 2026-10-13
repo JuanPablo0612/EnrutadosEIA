@@ -2,9 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AppGroupIdentifier</key>
+	<string>$(APP_GROUP_IDENTIFIER)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>googlechromes</string>
+		<string>comgooglemaps</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>EnrutadosEIA uses the camera so you can take your profile photo and a photo of your vehicle.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>EnrutadosEIA usa tu ubicación para sugerir puntos de partida cercanos y mostrar la posición del conductor durante un viaje en curso.</string>
+	<string>EnrutadosEIA uses your location to suggest nearby starting points and to show the driver's position during a trip in progress.</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
 </dict>
 </plist>

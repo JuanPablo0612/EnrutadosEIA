@@ -43,6 +43,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
+import com.juanpablo0612.carpool.presentation.ui.util.rememberIsCameraAvailable
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleBrandSection
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleColorSection
 import com.juanpablo0612.carpool.presentation.vehicle.register.components.VehicleModelSection
@@ -126,6 +127,8 @@ fun RegisterVehicleContent(
 
     // Photo source bottom sheet
     if (state.showPhotoSheet) {
+        // Read each time the sheet opens: another app may be holding the camera by then.
+        val isCameraAvailable = rememberIsCameraAvailable()
         ModalBottomSheet(
             onDismissRequest = { onAction(RegisterVehicleAction.OnDismissPhotoSheet) },
             dragHandle = { BottomSheetDefaults.DragHandle() },
@@ -144,27 +147,29 @@ fun RegisterVehicleContent(
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = Spacing.xl)
                 )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .clickable {
-                            onAction(RegisterVehicleAction.OnDismissPhotoSheet)
-                            cameraLauncher.launch()
-                        }
-                        .padding(vertical = Spacing.lg),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.photo_camera_24px),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.width(Spacing.lg))
-                    Text(
-                        stringResource(Res.string.vehicle_photo_take_photo),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
+                if (isCameraAvailable) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable {
+                                onAction(RegisterVehicleAction.OnDismissPhotoSheet)
+                                cameraLauncher.launch()
+                            }
+                            .padding(vertical = Spacing.lg),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.photo_camera_24px),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(Modifier.width(Spacing.lg))
+                        Text(
+                            stringResource(Res.string.vehicle_photo_take_photo),
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                        )
+                    }
                 }
                 Row(
                     modifier = Modifier

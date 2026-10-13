@@ -6,8 +6,45 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6B416218F0552D817564E0D7 /* NotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DDB067A23C47EF446DBBF28C /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3E979DAA9BDC846DF54B207C /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9D4798A5BA72BAEF276BAB17 /* FirebaseCore */; };
+		6190D7E07D1695B12A8D15E4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1E4F04B28EE52E2A844AA8B /* FirebaseAuth */; };
+		A5C619D2E0CAA8EB693AC39B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BE008CB82BA99FC014E37584 /* FirebaseFirestore */; };
+		20B9D5367AA59C80A424F5EB /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 7BE03FA6CC89A5A99D935C3F /* FirebaseFunctions */; };
+		F5B68C1474A62C4029ABC60B /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = D82DCAFBCF56B263D0ED05E0 /* FirebaseMessaging */; };
+		3732EEBFCABD048164182953 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 164CC18D9742CBC874ED8343 /* FirebaseStorage */; };
+		53BD1BC63144EE3F841A44A9 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1E719D3FE6C37D66F36A35CB /* FirebaseAnalyticsCore */; };
+		814286CFF100A6D1238BB821 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 7D34C8DB9119B1610AEFEAF4 /* GoogleMaps */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		741FBFB9E5221F9E657CB9D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5F94340D0FB33674A12B8EBA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 224FD8B3D1E5ED85B3821BB0;
+			remoteInfo = NotificationService;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0CA366B89B114A306AC7D224 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6B416218F0552D817564E0D7 /* NotificationService.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		A13887E92B6E69ECF0890C7C /* EnrutadosEIA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EnrutadosEIA.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDB067A23C47EF446DBBF28C /* NotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -17,6 +54,13 @@
 				Info.plist,
 			);
 			target = 890B9692F030D6D73D173A05 /* iosApp */;
+		};
+		02421A6747935A0DD9BF71C1 /* Exceptions for "NotificationService" folder in "NotificationService" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 224FD8B3D1E5ED85B3821BB0 /* NotificationService */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -34,10 +78,38 @@
 			path = Configuration;
 			sourceTree = "<group>";
 		};
+		CCE66CB261DF371237DFD6EE /* NotificationService */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				02421A6747935A0DD9BF71C1 /* Exceptions for "NotificationService" folder in "NotificationService" target */,
+			);
+			path = NotificationService;
+			sourceTree = "<group>";
+		};
+		1EE1DD8CAAD42796F94F786F /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5E1FDD3DC183780A803B2EDE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E979DAA9BDC846DF54B207C /* FirebaseCore in Frameworks */,
+				6190D7E07D1695B12A8D15E4 /* FirebaseAuth in Frameworks */,
+				A5C619D2E0CAA8EB693AC39B /* FirebaseFirestore in Frameworks */,
+				20B9D5367AA59C80A424F5EB /* FirebaseFunctions in Frameworks */,
+				F5B68C1474A62C4029ABC60B /* FirebaseMessaging in Frameworks */,
+				3732EEBFCABD048164182953 /* FirebaseStorage in Frameworks */,
+				53BD1BC63144EE3F841A44A9 /* FirebaseAnalyticsCore in Frameworks */,
+				814286CFF100A6D1238BB821 /* GoogleMaps in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03D80D9A9C35458E806D7A6B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -52,6 +124,8 @@
 			children = (
 				2A57537354E3578DA0B1FDF8 /* Configuration */,
 				D378378684C0173CEC602E9D /* iosApp */,
+				CCE66CB261DF371237DFD6EE /* NotificationService */,
+				1EE1DD8CAAD42796F94F786F /* Shared */,
 				5A709935793486109B624C04 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				A13887E92B6E69ECF0890C7C /* EnrutadosEIA.app */,
+				DDB067A23C47EF446DBBF28C /* NotificationService.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -71,24 +146,59 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5C0D73114B2E2D6CE88871A5 /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
+				68D0E8DCE43EC63FC9CD7FEE /* Check Firebase config */,
 				E2F3E3B20D80B89428C9A059 /* Compile Kotlin Framework */,
 				4D22A7518C4B8D24DDB71357 /* Sources */,
 				5E1FDD3DC183780A803B2EDE /* Frameworks */,
 				563A263FA76D1601CCEA62F8 /* Resources */,
+				0CA366B89B114A306AC7D224 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				914A8C898C7B51F10B71F84C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D378378684C0173CEC602E9D /* iosApp */,
+				1EE1DD8CAAD42796F94F786F /* Shared */,
+			);
+			name = iosApp;
+			packageProductDependencies = (
+				9D4798A5BA72BAEF276BAB17 /* FirebaseCore */,
+				A1E4F04B28EE52E2A844AA8B /* FirebaseAuth */,
+				BE008CB82BA99FC014E37584 /* FirebaseFirestore */,
+				7BE03FA6CC89A5A99D935C3F /* FirebaseFunctions */,
+				D82DCAFBCF56B263D0ED05E0 /* FirebaseMessaging */,
+				164CC18D9742CBC874ED8343 /* FirebaseStorage */,
+				1E719D3FE6C37D66F36A35CB /* FirebaseAnalyticsCore */,
+				7D34C8DB9119B1610AEFEAF4 /* GoogleMaps */,
+			);
+			productName = iosApp;
+			productReference = A13887E92B6E69ECF0890C7C /* EnrutadosEIA.app */;
+			productType = "com.apple.product-type.application";
+		};
+		224FD8B3D1E5ED85B3821BB0 /* NotificationService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9C4480B21FFAF1CB8D3B2371 /* Build configuration list for PBXNativeTarget "NotificationService" */;
+			buildPhases = (
+				EB40E2A8522E7FC44836FF79 /* Sources */,
+				03D80D9A9C35458E806D7A6B /* Frameworks */,
+				3B3316A86561A1F44C0F8E84 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D378378684C0173CEC602E9D /* iosApp */,
+				CCE66CB261DF371237DFD6EE /* NotificationService */,
+				1EE1DD8CAAD42796F94F786F /* Shared */,
 			);
-			name = iosApp;
+			name = NotificationService;
 			packageProductDependencies = (
 			);
-			productName = iosApp;
-			productReference = A13887E92B6E69ECF0890C7C /* EnrutadosEIA.app */;
-			productType = "com.apple.product-type.application";
+			productName = NotificationService;
+			productReference = DDB067A23C47EF446DBBF28C /* NotificationService.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -103,6 +213,9 @@
 					890B9692F030D6D73D173A05 = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					224FD8B3D1E5ED85B3821BB0 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 				};
 			};
 			buildConfigurationList = 1C4C366F948675F669141D9F /* Build configuration list for PBXProject "iosApp" */;
@@ -111,15 +224,21 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 78395291CFB93E0DD4383FDF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				978B2A9E70817737D88A3074 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5A709935793486109B624C04 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				890B9692F030D6D73D173A05 /* iosApp */,
+				224FD8B3D1E5ED85B3821BB0 /* NotificationService */,
 			);
 		};
 /* End PBXProject section */
@@ -132,9 +251,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3B3316A86561A1F44C0F8E84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		68D0E8DCE43EC63FC9CD7FEE /* Check Firebase config */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check Firebase config";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f \"$SRCROOT/iosApp/GoogleService-Info.plist\" ]; then\n  echo \"error: iosApp/iosApp/GoogleService-Info.plist is missing. Download it from the Firebase console (Project settings > Your apps > the iOS app with bundle ID $PRODUCT_BUNDLE_IDENTIFIER) and put it there.\"\n  exit 1\nfi\n";
+		};
 		E2F3E3B20D80B89428C9A059 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -164,7 +309,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EB40E2A8522E7FC44836FF79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		914A8C898C7B51F10B71F84C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 224FD8B3D1E5ED85B3821BB0 /* NotificationService */;
+			targetProxy = 741FBFB9E5221F9E657CB9D0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BD55CD12627C67C40F69446D /* Debug */ = {
@@ -221,7 +381,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -280,7 +440,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -296,6 +456,7 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "$(APP_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
@@ -305,12 +466,15 @@
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
 				);
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -324,6 +488,7 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "$(APP_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
@@ -333,13 +498,62 @@
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F72BBFDB0C02C38EF656BDB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "$(EXTENSION_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).NotificationService";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		40BE4A25D72D9397D696C41A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "$(EXTENSION_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationService/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_IDENTIFIER).NotificationService";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -367,7 +581,78 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		9C4480B21FFAF1CB8D3B2371 /* Build configuration list for PBXNativeTarget "NotificationService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F72BBFDB0C02C38EF656BDB1 /* Debug */,
+				40BE4A25D72D9397D696C41A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.15.0;
+			};
+		};
+		978B2A9E70817737D88A3074 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 11.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D4798A5BA72BAEF276BAB17 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		A1E4F04B28EE52E2A844AA8B /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		BE008CB82BA99FC014E37584 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		7BE03FA6CC89A5A99D935C3F /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		D82DCAFBCF56B263D0ED05E0 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		164CC18D9742CBC874ED8343 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		1E719D3FE6C37D66F36A35CB /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F87CE1CFB121BC2FA0876627 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		7D34C8DB9119B1610AEFEAF4 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 978B2A9E70817737D88A3074 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5F94340D0FB33674A12B8EBA /* Project object */;
 }

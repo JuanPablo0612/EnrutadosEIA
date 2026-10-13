@@ -12,7 +12,11 @@ interface NotificationPermissionState {
      */
     fun request()
 
-    /** Opens the app's notification settings, for when the user explicitly asks to enable them. */
+    /**
+     * For when the user explicitly asks to enable notifications: shows the system permission dialog
+     * if the platform still allows asking (iOS before the first answer), otherwise opens the app's
+     * notification settings.
+     */
     fun openSettings()
 }
 

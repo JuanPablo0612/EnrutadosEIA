@@ -48,6 +48,7 @@ import com.juanpablo0612.carpool.presentation.ui.components.AuthHeader
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.SecondaryButton
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.rememberIsCameraAvailable
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.error_terms_not_accepted
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
@@ -149,6 +150,8 @@ internal fun RegisterStep2(
     }
 
     if (showImageSourceSheet) {
+        // Read each time the sheet opens: another app may be holding the camera by then.
+        val isCameraAvailable = rememberIsCameraAvailable()
         ModalBottomSheet(onDismissRequest = { showImageSourceSheet = false }) {
             Column(modifier = Modifier.navigationBarsPadding().padding(bottom = Spacing.lg)) {
                 Text(
@@ -156,13 +159,15 @@ internal fun RegisterStep2(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(horizontal = Spacing.xl, vertical = Spacing.sm)
                 )
-                PhotoSourceItem(
-                    text = stringResource(Res.string.register_photo_action_camera),
-                    onClick = {
-                        showImageSourceSheet = false
-                        cameraLauncher.launch()
-                    },
-                )
+                if (isCameraAvailable) {
+                    PhotoSourceItem(
+                        text = stringResource(Res.string.register_photo_action_camera),
+                        onClick = {
+                            showImageSourceSheet = false
+                            cameraLauncher.launch()
+                        },
+                    )
+                }
                 PhotoSourceItem(
                     text = stringResource(Res.string.register_photo_action_gallery),
                     onClick = {

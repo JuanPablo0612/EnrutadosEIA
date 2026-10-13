@@ -20,15 +20,16 @@ The project is two modules:
   (UI, domain logic, data layer). [commonMain](./composeApp/src/commonMain/kotlin) is where nearly
   everything lives today.
 
+Next to them, [/iosApp](./iosApp) is the Xcode project for iOS: a SwiftUI shell that hosts the
+shared Compose UI, the Google Maps views (written in Swift because the Maps SDK for iOS is a Swift
+package) and a Notification Service extension that renders push texts on the device.
+
 Unit tests for the domain logic live in `composeApp/src/commonTest` and run on the JVM with
 `./gradlew :composeApp:testAndroidHostTest`. The backend lives in [/functions](./functions/src).
 
-An [/iosApp](./iosApp/iosApp) scaffold and an `iosMain` source set exist but are not currently
-active — iOS is not a supported target yet.
-
 ### First-time setup
 
-Before building, add two gitignored files that a fresh clone doesn't have:
+Before building Android, add two gitignored files that a fresh clone doesn't have:
 
 1. **`androidApp/google-services.json`** — download it from the Firebase console (Project settings
    → your Android app, package `com.juanpablo0612.carpool`) and place it at that exact path. The
@@ -37,7 +38,37 @@ Before building, add two gitignored files that a fresh clone doesn't have:
    `secrets.properties` and fill in a real Google Maps API key as `MAPS_API_KEY`. It's read by
    `androidApp/build.gradle.kts` and injected into the manifest as a placeholder; without it (or
    with a blank key) the build still succeeds but the key resolves to an empty string and every
-   map screen renders blank.
+   map screen renders blank (on iOS the map areas stay empty, since the Maps SDK refuses to start
+   without a key). The key needs **Maps SDK for Android**, **Places API (New)** and
+   **Geocoding API** enabled, plus **Maps SDK for iOS** for the iOS app, which uses the same key.
+
+iOS additionally needs a Mac with Xcode 26.4.1 or newer (the Maps SDK for iOS requires Xcode 26,
+and Xcode 26.4.0's compiler breaks Firebase 11's `async let` code in Release builds, so don't
+archive with that one release) and:
+
+1. **`iosApp/iosApp/GoogleService-Info.plist`** — register an iOS app with bundle ID
+   `com.juanpablo0612.carpool` in the Firebase console, download its config file and place it at
+   that exact path. The "Check Firebase config" build phase fails the build without it.
+2. **`iosApp/Configuration/Local.xcconfig`** — copy `Local.xcconfig.example` next to it and set
+   `TEAM_ID` to your Apple Developer team. Automatic signing then registers the app and its
+   `com.juanpablo0612.carpool.NotificationService` extension with the Push Notifications and
+   App Groups capabilities (`group.com.juanpablo0612.carpool`). Those ids can only be registered
+   by the paid Apple Developer team that owns them, so builds with push need `TEAM_ID` set to that
+   team (ask the owner to add you). Any other team, including a free Personal Team, uses the
+   overrides commented in the example to run on a device without push.
+3. **An APNs authentication key** — create one under Certificates, Identifiers & Profiles → Keys
+   in the Apple Developer site and upload it in the Firebase console (Project settings → Cloud
+   Messaging → Apple app configuration). Without it FCM can't deliver pushes to iOS.
+
+Firebase Analytics runs on iOS too (linked with `-ObjC`, as Firebase documents). It ships no
+privacy manifest, so its data is declared in the app's own `iosApp/iosApp/PrivacyInfo.xcprivacy`.
+Before filling in the App Privacy section of App Store Connect, archive the app and use Organizer
+→ Archives → (Control-click) Generate Privacy Report: it merges that file with the manifests of
+Google Maps and the other Firebase SDKs, which declare data of their own.
+
+The first time Xcode opens the project it resolves the Swift packages (`firebase-ios-sdk` 11.x and
+`ios-maps-sdk`); commit the `Package.resolved` it writes under
+`iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/`.
 
 ### Build and Run Android Application
 
@@ -53,15 +84,20 @@ module, not an application — the installable APK is built from `androidApp`:
   .\gradlew.bat :androidApp:assembleDebug
   ```
 
-There is currently no test command — Android host tests are not enabled and the project has no
-tests. `./gradlew :composeApp:compileCommonMainKotlinMetadata` compiles the shared `commonMain`
-source set only (useful without an Android SDK installed) and is the closest thing to a CI check
-today.
+`./gradlew :composeApp:testAndroidHostTest` runs the unit tests on the JVM, and
+`./gradlew :composeApp:compileCommonMainKotlinMetadata` compiles the shared `commonMain` source set
+only (useful without an Android SDK installed).
 
 ### Build and Run iOS Application
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+Open [iosApp/iosApp.xcodeproj](./iosApp) in Xcode, pick the `iosApp` scheme and run it, or use the
+iOS run configuration from your IDE's run widget. The "Compile Kotlin Framework" build phase runs
+`./gradlew :composeApp:embedAndSignAppleFrameworkForXcode`, so the Kotlin code is rebuilt with each
+Xcode build. The deployment target is iOS 16.
+
+Push notifications need the APNs key above and the backend's current functions deployed; test them
+on a physical device. To type-check the iOS Kotlin code without a Mac, run
+`./gradlew :composeApp:compileKotlinIosSimulatorArm64` (linking and running still need Xcode).
 
 ### Deploying Firestore and Storage rules, and Firestore indexes
 
@@ -114,6 +150,10 @@ npm --prefix functions run lint
 npm --prefix functions run build
 firebase deploy --only functions
 ```
+
+Pushes are data-only on Android, where the app renders them; iOS gets an APNs alert with a
+generic localized text that the app's Notification Service extension replaces with the full text
+before display.
 
 `firebase.json` runs lint and build as predeploy steps. Functions deploy to `us-central1`, which
 must match the Firestore location (`nam5`) and `FUNCTIONS_REGION` in the app's `BackendConfig.kt`.
