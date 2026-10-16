@@ -33,6 +33,8 @@ service cloud.firestore {
     //
     // users/{uid}/fcmTokens/{token} — the owner's push tokens, one document per device, keyed by
     // the token itself.
+    //
+    // users/{uid}/paymentMethods/{methodId} — the user's Bre-B keys and QR codes, see below.
     // ---------------------------------------------------------------------------------------
     match /users/{uid} {
       allow read: if isSignedIn();
@@ -47,6 +49,27 @@ service cloud.firestore {
         allow create, update: if isOwner(uid) &&
           request.resource.data.token == token &&
           request.resource.data.keys().hasOnly(['token', 'updatedAt']);
+      }
+
+      // How the user takes passengers' contributions (PaymentMethodDto). Readable by any signed-in
+      // user, like the phone on the profile itself: a passenger needs the driver's Bre-B key or QR
+      // to pay, and the trip detail lists the kinds before booking. One document per method,
+      // told apart by `type`; a new kind is added to the list below. The key cap matches
+      // PaymentMethodValidator.BRE_B_KEY_MAX_LENGTH.
+      match /paymentMethods/{methodId} {
+        allow read: if isSignedIn();
+        allow create, update: if isOwner(uid) &&
+          request.resource.data.id == methodId &&
+          request.resource.data.keys().hasOnly(['id', 'type', 'key', 'imageUrl', 'createdAt']) &&
+          (
+            (request.resource.data.type == 'BRE_B_KEY' &&
+              request.resource.data.key is string &&
+              request.resource.data.key.size() > 0 &&
+              request.resource.data.key.size() <= 50) ||
+            (request.resource.data.type == 'QR_CODE' &&
+              request.resource.data.imageUrl is string)
+          );
+        allow delete: if isOwner(uid);
       }
     }
 

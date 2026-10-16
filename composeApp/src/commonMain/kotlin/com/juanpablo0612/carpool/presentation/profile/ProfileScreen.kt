@@ -46,6 +46,8 @@ import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.logout_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_button
 import enrutadoseia.composeapp.generated.resources.notifications_24px
+import enrutadoseia.composeapp.generated.resources.payment_methods_title
+import enrutadoseia.composeapp.generated.resources.payments_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_description
 import enrutadoseia.composeapp.generated.resources.logout_confirm_title
 import enrutadoseia.composeapp.generated.resources.logout_title
@@ -68,6 +70,7 @@ fun ProfileScreen(
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
     onNavigateToNotifications: () -> Unit,
+    onNavigateToPaymentMethods: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccountSuccess: () -> Unit,
 ) {
@@ -81,6 +84,7 @@ fun ProfileScreen(
             ProfileEvent.NavigateToEditProfile -> onNavigateToEditProfile()
             ProfileEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
             ProfileEvent.NavigateToNotifications -> onNavigateToNotifications()
+            ProfileEvent.NavigateToPaymentMethods -> onNavigateToPaymentMethods()
             ProfileEvent.DeleteAccountSuccess -> onDeleteAccountSuccess()
         }
     }
@@ -160,6 +164,11 @@ fun ProfileContent(
                     title = stringResource(Res.string.vehicles_list_title),
                     icon = { Icon(vectorResource(Res.drawable.directions_car_24px), null) },
                     onClick = { onAction(ProfileAction.OnMyVehiclesClick) }
+                )
+                ProfileListItem(
+                    title = stringResource(Res.string.payment_methods_title),
+                    icon = { Icon(vectorResource(Res.drawable.payments_24px), null) },
+                    onClick = { onAction(ProfileAction.OnPaymentMethodsClick) }
                 )
                 ProfileListItem(
                     title = stringResource(Res.string.routes_list_title),

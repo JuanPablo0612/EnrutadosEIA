@@ -15,9 +15,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.juanpablo0612.carpool.domain.payment.model.PaymentMethodType
 import com.juanpablo0612.carpool.domain.rating.model.RatingSummary
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
+import com.juanpablo0612.carpool.presentation.payment.label
 import com.juanpablo0612.carpool.presentation.trip.description
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolListCard
 import com.juanpablo0612.carpool.presentation.ui.components.RatingBadge
@@ -34,6 +36,7 @@ import enrutadoseia.composeapp.generated.resources.trip_detail_arrival
 import enrutadoseia.composeapp.generated.resources.trip_detail_contribution
 import enrutadoseia.composeapp.generated.resources.trip_detail_departs_at
 import enrutadoseia.composeapp.generated.resources.trip_detail_departure_caption
+import enrutadoseia.composeapp.generated.resources.trip_detail_driver_accepts
 import enrutadoseia.composeapp.generated.resources.trip_detail_driver_says
 import enrutadoseia.composeapp.generated.resources.trip_detail_free_seats
 import enrutadoseia.composeapp.generated.resources.trip_detail_route
@@ -131,6 +134,7 @@ internal fun DriverCard(
     rating: RatingSummary?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    paymentTypes: List<PaymentMethodType> = emptyList(),
 ) {
     val name = trip.driver.name.ifBlank { stringResource(Res.string.trip_driver_placeholder) }
     CarpoolListCard(modifier = modifier, onClick = onClick) {
@@ -141,6 +145,14 @@ internal fun DriverCard(
                 rating?.let { RatingBadge(rating = it, showCount = true, textStyle = MaterialTheme.typography.bodySmall) }
                 trip.vehicle.description()?.let {
                     Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                if (paymentTypes.isNotEmpty()) {
+                    val labels = paymentTypes.map { stringResource(it.label) }.joinToString(" · ")
+                    Text(
+                        text = stringResource(Res.string.trip_detail_driver_accepts, labels),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
             Icon(

@@ -140,6 +140,7 @@ fun RouteDetailPassengerContent(
                         DriverCard(
                             trip = trip,
                             rating = state.driver?.rating,
+                            paymentTypes = state.driverPaymentTypes,
                             onClick = { onAction(RouteDetailPassengerAction.OnOpenDriverProfile) },
                         )
                     }

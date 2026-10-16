@@ -8,5 +8,6 @@ sealed class ProfileEvent {
     data object NavigateToEditProfile : ProfileEvent()
     data object NavigateToSavedPlaces : ProfileEvent()
     data object NavigateToNotifications : ProfileEvent()
+    data object NavigateToPaymentMethods : ProfileEvent()
     data object DeleteAccountSuccess : ProfileEvent()
 }

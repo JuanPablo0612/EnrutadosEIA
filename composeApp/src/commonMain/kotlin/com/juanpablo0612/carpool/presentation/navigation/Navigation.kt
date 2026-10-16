@@ -298,6 +298,7 @@ fun AppNavigation(
                         onNavigateToChat = { bookingId, tripId, otherPartyName, isReadOnly ->
                             navController.navigate(Route.Chat(bookingId, tripId, otherPartyName, isReadOnly))
                         },
+                        onNavigateToPayDriver = { tripId -> navController.navigate(Route.PayDriver(tripId)) },
                         onNavigateBack = { navController.popBackStack() },
                     )
 
@@ -351,6 +352,8 @@ fun AppNavigation(
                         // The list, not the creation form — the row is labelled "saved places".
                         onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
                         onNavigateToNotifications = { navController.navigate(Route.Notifications) },
+                        onNavigateToPaymentMethods = { navController.navigate(Route.PaymentMethods) },
+                        onNavigateToPayDriver = { tripId -> navController.navigate(Route.PayDriver(tripId)) },
                         onDeleteAccountSuccess = {
                             navController.navigate(Route.Entry) {
                                 popUpTo(0) { inclusive = true }

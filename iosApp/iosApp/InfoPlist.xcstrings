@@ -34,6 +34,23 @@
           }
         }
       }
+    },
+    "NSPhotoLibraryAddUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EnrutadosEIA saves your driver's payment QR code to your photos so you can upload it in your bank app."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EnrutadosEIA guarda en tus fotos el código QR de pago del conductor para que lo subas en tu app bancaria."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

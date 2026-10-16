@@ -93,6 +93,7 @@ fun MyTripsScreen(
     onPublishTrip: () -> Unit,
     onOpenChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
     onRateDriver: (RatingTarget) -> Unit,
+    onPayDriver: (tripId: String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -107,6 +108,7 @@ fun MyTripsScreen(
             MyTripsEvent.NavigateToPublish -> onPublishTrip()
             is MyTripsEvent.NavigateToChat -> onOpenChat(event.bookingId, event.tripId, event.otherPartyName, event.isReadOnly)
             is MyTripsEvent.NavigateToRating -> onRateDriver(event.target)
+            is MyTripsEvent.NavigateToPayDriver -> onPayDriver(event.tripId)
         }
     }
 

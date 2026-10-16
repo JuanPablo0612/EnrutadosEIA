@@ -113,6 +113,14 @@ sealed interface Route {
     @Serializable
     data class TripTracking(val tripId: String) : Route
 
+    /** The signed-in user's own payment methods, which passengers of their trips see. */
+    @Serializable
+    data object PaymentMethods : Route
+
+    /** How to pay the driver of [tripId], for a passenger with a confirmed seat. */
+    @Serializable
+    data class PayDriver(val tripId: String) : Route
+
     @Serializable
     data class Chat(
         val bookingId: String,

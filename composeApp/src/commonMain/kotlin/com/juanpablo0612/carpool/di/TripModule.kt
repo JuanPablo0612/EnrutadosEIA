@@ -37,7 +37,7 @@ val tripModule = module {
     viewModel { (campusId: String?, fromCampus: Boolean) -> SearchRoutesViewModel(campusId, fromCampus, get(), get()) }
     viewModel { (routeId: String?) -> PublishTripViewModel(routeId, get(), get(), get(), get(), get(), get()) }
     viewModel { (routeId: String) -> PublishWeekViewModel(routeId, get(), get(), get(), get(), get(), get()) }
-    viewModel { (tripId: String, meetingStop: TripMeetingStop?) -> RouteDetailPassengerViewModel(tripId, meetingStop, get(), get(), get(), get()) }
+    viewModel { (tripId: String, meetingStop: TripMeetingStop?) -> RouteDetailPassengerViewModel(tripId, meetingStop, get(), get(), get(), get(), get()) }
     viewModel { (tripId: String) -> EditTripViewModel(tripId, get(), get(), get(), get()) }
     viewModel { (tripId: String) -> TripTrackingViewModel(tripId, get(), get(), get(), get(), get()) }
 }

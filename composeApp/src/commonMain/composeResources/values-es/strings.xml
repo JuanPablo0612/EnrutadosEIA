@@ -953,4 +953,51 @@
         <item>sábado</item>
         <item>domingo</item>
     </string-array>
+
+    <!-- Payment methods -->
+    <string name="booking_action_pay">Pagar</string>
+    <string name="trip_detail_driver_accepts">Recibe pago por %1$s</string>
+    <string name="payment_methods_title">Métodos de pago</string>
+    <string name="payment_methods_subtitle">Cómo te pagan tus pasajeros</string>
+    <string name="payment_methods_empty_title">Recibe tus pagos sin ir y venir</string>
+    <string name="payment_methods_empty_description">Agrega tu llave Bre-B o el QR de tu app bancaria. Los pasajeros con cupo confirmado lo verán cuando llegue el momento de pagar.</string>
+    <string name="payment_add_method">Agregar método</string>
+    <string name="payment_type_picker_title">¿Qué quieres agregar?</string>
+    <string name="payment_type_bre_b_key">Llave Bre-B</string>
+    <string name="payment_type_bre_b_key_description">Tu celular, cédula, correo o alias registrado en Bre-B.</string>
+    <string name="payment_type_qr_code">Código QR</string>
+    <string name="payment_type_qr_code_description">Una captura del QR que genera tu app bancaria para recibir dinero.</string>
+    <string name="payment_bre_b_key_label">Llave Bre-B</string>
+    <string name="payment_bre_b_key_placeholder">Ej. 3001234567 o @tualias</string>
+    <string name="payment_qr_change_image">Elegir otra imagen</string>
+    <string name="payment_qr_image_cd">Código QR para pagarle al conductor</string>
+    <string name="payment_save">Guardar</string>
+    <string name="payment_delete_cd">Eliminar %1$s</string>
+    <string name="payment_delete_confirm_title">¿Eliminar este método de pago?</string>
+    <string name="payment_delete_confirm_description">Tus pasajeros dejarán de verlo.</string>
+    <string name="payment_delete_confirm_button">Eliminar</string>
+    <string name="pay_driver_title">Pagar al conductor</string>
+    <string name="pay_driver_to">Págale a %1$s</string>
+    <string name="pay_driver_amount">Aporte acordado</string>
+    <string name="pay_driver_free">Este viaje no tiene un aporte definido.</string>
+    <string name="pay_driver_empty_title">Aún no hay métodos de pago</string>
+    <string name="pay_driver_empty_description">El conductor no ha agregado cómo recibir el pago. Acuérdenlo por el chat.</string>
+    <string name="payment_bre_b_hint">Pégala en tu app bancaria, en transferencias Bre-B.</string>
+    <string name="payment_bre_b_copy">Copiar llave</string>
+    <string name="payment_bre_b_copied">Copiada</string>
+    <string name="payment_qr_hint">Guárdalo en tu galería y súbelo en tu app bancaria, o escanéalo desde otro celular.</string>
+    <string name="payment_qr_save">Guardar en galería</string>
+    <string name="payment_qr_saved">Guardado en tu galería.</string>
+    <string name="error_payment_bre_b_key_required">Escribe tu llave Bre-B.</string>
+    <string name="error_payment_bre_b_key_has_spaces">Una llave Bre-B no lleva espacios.</string>
+    <string name="error_payment_bre_b_key_too_long">Esa llave es demasiado larga. Revísala.</string>
+    <string name="error_payment_qr_required">Elige la imagen del QR.</string>
+    <string name="error_payment_save_failed">No pudimos guardar el método de pago. Inténtalo de nuevo.</string>
+    <string name="error_payment_delete_failed">No pudimos eliminar el método de pago. Inténtalo de nuevo.</string>
+    <string name="error_payment_limit_reached">Puedes tener hasta 5 métodos de pago. Elimina uno para agregar otro.</string>
+    <string name="error_payment_already_added">Ya agregaste esa llave.</string>
+    <string name="error_payment_load_failed">No pudimos cargar tus métodos de pago.</string>
+    <string name="error_payment_driver_load_failed">No pudimos cargar los métodos de pago del conductor.</string>
+    <string name="error_payment_gallery_permission">Permite que la app guarde fotos para conservar el QR.</string>
+    <string name="error_payment_qr_save_failed">No pudimos guardar el QR. Revisa tu conexión y que la app pueda guardar fotos.</string>
 </resources>

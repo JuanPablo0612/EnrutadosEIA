@@ -951,4 +951,51 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+
+    <!-- Payment methods -->
+    <string name="booking_action_pay">Pay</string>
+    <string name="trip_detail_driver_accepts">Takes payment by %1$s</string>
+    <string name="payment_methods_title">Payment methods</string>
+    <string name="payment_methods_subtitle">How your passengers pay you</string>
+    <string name="payment_methods_empty_title">Get paid without the back-and-forth</string>
+    <string name="payment_methods_empty_description">Add your Bre-B key or the QR code from your bank app. Passengers with a confirmed seat will see it when it\'s time to pay.</string>
+    <string name="payment_add_method">Add method</string>
+    <string name="payment_type_picker_title">What do you want to add?</string>
+    <string name="payment_type_bre_b_key">Bre-B key</string>
+    <string name="payment_type_bre_b_key_description">Your phone number, ID number, email or alias registered with Bre-B.</string>
+    <string name="payment_type_qr_code">QR code</string>
+    <string name="payment_type_qr_code_description">A screenshot of the QR your bank app generates to receive money.</string>
+    <string name="payment_bre_b_key_label">Bre-B key</string>
+    <string name="payment_bre_b_key_placeholder">e.g. 3001234567 or @youralias</string>
+    <string name="payment_qr_change_image">Choose another image</string>
+    <string name="payment_qr_image_cd">QR code to pay the driver</string>
+    <string name="payment_save">Save</string>
+    <string name="payment_delete_cd">Delete %1$s</string>
+    <string name="payment_delete_confirm_title">Delete this payment method?</string>
+    <string name="payment_delete_confirm_description">Your passengers will stop seeing it.</string>
+    <string name="payment_delete_confirm_button">Delete</string>
+    <string name="pay_driver_title">Pay the driver</string>
+    <string name="pay_driver_to">Pay %1$s</string>
+    <string name="pay_driver_amount">Agreed contribution</string>
+    <string name="pay_driver_free">This trip has no set contribution.</string>
+    <string name="pay_driver_empty_title">No payment methods yet</string>
+    <string name="pay_driver_empty_description">The driver hasn\'t added how to receive payment. Agree on it in the chat.</string>
+    <string name="payment_bre_b_hint">Paste it into your bank app under Bre-B transfers.</string>
+    <string name="payment_bre_b_copy">Copy key</string>
+    <string name="payment_bre_b_copied">Copied</string>
+    <string name="payment_qr_hint">Save it to your gallery and upload it in your bank app, or scan it from another phone.</string>
+    <string name="payment_qr_save">Save to gallery</string>
+    <string name="payment_qr_saved">Saved to your gallery.</string>
+    <string name="error_payment_bre_b_key_required">Enter your Bre-B key.</string>
+    <string name="error_payment_bre_b_key_has_spaces">A Bre-B key has no spaces.</string>
+    <string name="error_payment_bre_b_key_too_long">That key is too long. Check it.</string>
+    <string name="error_payment_qr_required">Choose the QR image.</string>
+    <string name="error_payment_save_failed">Couldn\'t save the payment method. Please try again.</string>
+    <string name="error_payment_delete_failed">Couldn\'t delete the payment method. Please try again.</string>
+    <string name="error_payment_limit_reached">You can have up to 5 payment methods. Delete one to add another.</string>
+    <string name="error_payment_already_added">You already added that key.</string>
+    <string name="error_payment_load_failed">Couldn\'t load your payment methods.</string>
+    <string name="error_payment_driver_load_failed">Couldn\'t load the driver\'s payment methods.</string>
+    <string name="error_payment_gallery_permission">Allow the app to save photos to keep the QR.</string>
+    <string name="error_payment_qr_save_failed">Couldn\'t save the QR. Check your connection and that the app may save photos.</string>
 </resources>

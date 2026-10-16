@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
 sealed class TripTrackingEvent {
     data object TripCompleted : TripTrackingEvent()
     data object NavigateBack : TripTrackingEvent()
+    data class NavigateToPayDriver(val tripId: String) : TripTrackingEvent()
     data class NavigateToChat(
         val bookingId: String,
         val tripId: String,

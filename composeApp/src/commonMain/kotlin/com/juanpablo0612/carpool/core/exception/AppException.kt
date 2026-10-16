@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.core.exception
 
+import com.juanpablo0612.carpool.domain.payment.validation.PaymentMethodValidationError
 import com.juanpablo0612.carpool.domain.trip.validation.TripValidationError
 
 /**
@@ -67,5 +68,13 @@ sealed class AppException : Exception() {
 
     sealed class NotificationException : AppException() {
         data object Unknown : NotificationException()
+    }
+
+    sealed class PaymentException : AppException() {
+        data object NotAuthenticated : PaymentException()
+        data class Invalid(val errors: List<PaymentMethodValidationError>) : PaymentException()
+        data object LimitReached : PaymentException()
+        data object AlreadyAdded : PaymentException()
+        data object Unknown : PaymentException()
     }
 }

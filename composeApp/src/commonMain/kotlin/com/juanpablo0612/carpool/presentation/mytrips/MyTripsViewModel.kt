@@ -106,6 +106,7 @@ class MyTripsViewModel(
                     isReadOnly = action.isReadOnly,
                 )
             )
+            is MyTripsAction.OnPayDriver -> emit(MyTripsEvent.NavigateToPayDriver(action.item.tripId))
             is MyTripsAction.OnRateDriver -> {
                 val booking = action.item.booking
                 emit(

@@ -10,6 +10,7 @@ sealed class ProfileAction {
     data object OnEditProfileClick : ProfileAction()
     data object OnSavedPlacesClick : ProfileAction()
     data object OnNotificationsClick : ProfileAction()
+    data object OnPaymentMethodsClick : ProfileAction()
     data object OnDeleteAccountClick : ProfileAction()
     data object OnDeleteAccountDismissed : ProfileAction()
     data class OnDeleteAccountNameChange(val name: String) : ProfileAction()
