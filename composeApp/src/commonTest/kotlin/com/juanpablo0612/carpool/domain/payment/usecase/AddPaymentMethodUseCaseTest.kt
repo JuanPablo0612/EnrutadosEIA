@@ -40,7 +40,7 @@ class AddPaymentMethodUseCaseTest {
         val result = AddPaymentMethodUseCase(repository, FakeAuthRepository("u1"))(PaymentMethodDraft.BreBKey(" @carolina "))
 
         assertTrue(result.isSuccess)
-        assertEquals(listOf("u1" to PaymentMethodDraft.BreBKey("@carolina")), repository.added)
+        assertEquals(listOf<Pair<String, PaymentMethodDraft>>("u1" to PaymentMethodDraft.BreBKey("@carolina")), repository.added)
     }
 
     @Test
