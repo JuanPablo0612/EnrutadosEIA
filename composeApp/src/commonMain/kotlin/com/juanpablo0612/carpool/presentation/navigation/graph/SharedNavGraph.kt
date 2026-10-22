@@ -10,6 +10,10 @@ import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.navigation.toTarget
 import com.juanpablo0612.carpool.presentation.notification.NotificationsScreen
 import com.juanpablo0612.carpool.presentation.notification.NotificationsViewModel
+import com.juanpablo0612.carpool.presentation.payment.manage.PaymentMethodsScreen
+import com.juanpablo0612.carpool.presentation.payment.manage.PaymentMethodsViewModel
+import com.juanpablo0612.carpool.presentation.payment.pay.PayDriverScreen
+import com.juanpablo0612.carpool.presentation.payment.pay.PayDriverViewModel
 import com.juanpablo0612.carpool.presentation.place.add.AddPlaceAction
 import com.juanpablo0612.carpool.presentation.place.add.AddPlaceScreen
 import com.juanpablo0612.carpool.presentation.place.add.AddPlaceViewModel
@@ -31,8 +35,8 @@ import org.koin.core.parameter.parametersOf
 
 /**
  * Role-agnostic routes reachable from both the driver and the passenger side of the app —
- * profile/account management, places, notifications, chat, trip tracking, and
- * post-trip rating.
+ * profile/account management, places, notifications, chat, trip tracking, payment methods
+ * and paying a driver, and post-trip rating.
  */
 fun NavGraphBuilder.sharedNavGraph(
     onNavigateBack: () -> Unit,
@@ -45,6 +49,8 @@ fun NavGraphBuilder.sharedNavGraph(
     onNavigateToEditProfile: () -> Unit,
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToNotifications: () -> Unit,
+    onNavigateToPaymentMethods: () -> Unit,
+    onNavigateToPayDriver: (tripId: String) -> Unit,
     onDeleteAccountSuccess: () -> Unit,
     onNavigateToDeepLink: (String) -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
@@ -108,6 +114,7 @@ fun NavGraphBuilder.sharedNavGraph(
             // The list, not the creation form — the row is labelled "saved places".
             onNavigateToSavedPlaces = onNavigateToSavedPlaces,
             onNavigateToNotifications = onNavigateToNotifications,
+            onNavigateToPaymentMethods = onNavigateToPaymentMethods,
             onDeleteAccountSuccess = onDeleteAccountSuccess,
         )
     }
@@ -151,8 +158,20 @@ fun NavGraphBuilder.sharedNavGraph(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
             onNavigateToChat = onNavigateToChat,
+            onNavigateToPayDriver = onNavigateToPayDriver,
             onTripCompleted = onNavigateBack
         )
+    }
+
+    composable<Route.PaymentMethods> {
+        val viewModel: PaymentMethodsViewModel = koinViewModel()
+        PaymentMethodsScreen(viewModel = viewModel, onBackClick = onNavigateBack)
+    }
+
+    composable<Route.PayDriver> { backStackEntry ->
+        val args = backStackEntry.toRoute<Route.PayDriver>()
+        val viewModel: PayDriverViewModel = koinViewModel { parametersOf(args.tripId) }
+        PayDriverScreen(viewModel = viewModel, onBackClick = onNavigateBack)
     }
 
     composable<Route.PostTripRating> { backStackEntry ->

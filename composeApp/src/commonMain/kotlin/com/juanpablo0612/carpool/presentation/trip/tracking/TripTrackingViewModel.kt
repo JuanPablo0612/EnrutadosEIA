@@ -136,6 +136,8 @@ class TripTrackingViewModel(
                 _state.update { it.copy(showCompleteTripDialog = false) }
             TripTrackingAction.OnBackClick ->
                 viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateBack) }
+            TripTrackingAction.OnPayDriverClick ->
+                viewModelScope.launch { _events.emit(TripTrackingEvent.NavigateToPayDriver(tripId)) }
             is TripTrackingAction.OnChatClick ->
                 viewModelScope.launch {
                     _events.emit(

@@ -17,4 +17,5 @@ sealed class MyTripsEvent {
         val isReadOnly: Boolean,
     ) : MyTripsEvent()
     data class NavigateToRating(val target: RatingTarget) : MyTripsEvent()
+    data class NavigateToPayDriver(val tripId: String) : MyTripsEvent()
 }

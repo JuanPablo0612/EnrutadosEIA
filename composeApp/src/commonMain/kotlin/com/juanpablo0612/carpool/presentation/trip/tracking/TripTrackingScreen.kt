@@ -35,6 +35,7 @@ fun TripTrackingScreen(
     viewModel: TripTrackingViewModel,
     onBackClick: () -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToPayDriver: (tripId: String) -> Unit,
     onTripCompleted: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -43,6 +44,7 @@ fun TripTrackingScreen(
         when (event) {
             TripTrackingEvent.NavigateBack -> onBackClick()
             TripTrackingEvent.TripCompleted -> onTripCompleted()
+            is TripTrackingEvent.NavigateToPayDriver -> onNavigateToPayDriver(event.tripId)
             is TripTrackingEvent.NavigateToChat ->
                 onNavigateToChat(event.bookingId, event.tripId, event.otherPartyName, event.isReadOnly)
         }

@@ -57,6 +57,9 @@ class ProfileViewModel(
             ProfileAction.OnNotificationsClick -> viewModelScope.launch {
                 _events.emit(ProfileEvent.NavigateToNotifications)
             }
+            ProfileAction.OnPaymentMethodsClick -> viewModelScope.launch {
+                _events.emit(ProfileEvent.NavigateToPaymentMethods)
+            }
 
             ProfileAction.OnDeleteAccountClick -> _state.update {
                 it.copy(showDeleteAccountDialog = true, deleteAccountNameInput = "", deleteAccountError = null)

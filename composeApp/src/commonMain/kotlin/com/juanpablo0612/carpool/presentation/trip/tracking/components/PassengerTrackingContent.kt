@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.centeredContent
 import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
 import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.booking_action_pay
 import enrutadoseia.composeapp.generated.resources.trip_tracking_message_driver
 import enrutadoseia.composeapp.generated.resources.trip_tracking_no_location
 import enrutadoseia.composeapp.generated.resources.trip_tracking_your_status
@@ -142,6 +144,13 @@ internal fun PassengerTrackingContent(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(Res.string.trip_tracking_message_driver))
+                }
+                // Riding is when most passengers pay, so the driver's methods are one tap away.
+                Button(
+                    onClick = { onAction(TripTrackingAction.OnPayDriverClick) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(Res.string.booking_action_pay))
                 }
             }
         }

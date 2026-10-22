@@ -38,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_action_message_driver
+import enrutadoseia.composeapp.generated.resources.booking_action_pay
 import enrutadoseia.composeapp.generated.resources.booking_action_rate
 import enrutadoseia.composeapp.generated.resources.cancel_confirm_button
 import enrutadoseia.composeapp.generated.resources.cancel_pending_confirm_button
@@ -201,14 +202,42 @@ private fun Actions(item: MyTripItem, isUpcoming: Boolean, isBusy: Boolean, onAc
                     onClick = { onAction(MyTripsAction.OnCancelBooking(item)) },
                     enabled = enabled,
                 )
-                isUpcoming && status == BookingStatus.Confirmed -> SecondaryButton(
-                    text = stringResource(Res.string.booking_action_message_driver),
-                    onClick = { onAction(MyTripsAction.OnMessageDriver(item, isReadOnly = false)) },
-                    enabled = enabled,
+                // Paying is offered before and after the ride: passengers settle up at either end.
+                isUpcoming && status == BookingStatus.Confirmed -> ButtonPair(
+                    spacing = Spacing.sm,
+                    secondary = {
+                        SecondaryButton(
+                            text = stringResource(Res.string.booking_action_message_driver),
+                            onClick = { onAction(MyTripsAction.OnMessageDriver(item, isReadOnly = false)) },
+                            enabled = enabled,
+                            modifier = it,
+                        )
+                    },
+                    primary = {
+                        PrimaryButton(
+                            text = stringResource(Res.string.booking_action_pay),
+                            onClick = { onAction(MyTripsAction.OnPayDriver(item)) },
+                            enabled = enabled,
+                            modifier = it,
+                        )
+                    },
                 )
-                !isUpcoming && item.canRate -> PrimaryButton(
-                    text = stringResource(Res.string.booking_action_rate),
-                    onClick = { onAction(MyTripsAction.OnRateDriver(item)) },
+                !isUpcoming && item.canRate -> ButtonPair(
+                    spacing = Spacing.sm,
+                    secondary = {
+                        SecondaryButton(
+                            text = stringResource(Res.string.booking_action_pay),
+                            onClick = { onAction(MyTripsAction.OnPayDriver(item)) },
+                            modifier = it,
+                        )
+                    },
+                    primary = {
+                        PrimaryButton(
+                            text = stringResource(Res.string.booking_action_rate),
+                            onClick = { onAction(MyTripsAction.OnRateDriver(item)) },
+                            modifier = it,
+                        )
+                    },
                 )
             }
         }

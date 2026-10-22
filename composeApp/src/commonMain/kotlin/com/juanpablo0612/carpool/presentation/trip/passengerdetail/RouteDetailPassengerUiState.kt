@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.presentation.trip.passengerdetail
 
 import com.juanpablo0612.carpool.domain.auth.model.PublicProfile
+import com.juanpablo0612.carpool.domain.payment.model.PaymentMethodType
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripClosedReason
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
@@ -13,6 +14,8 @@ data class RouteDetailPassengerUiState(
     val trip: Trip? = null,
     /** The driver's live profile, for the rating; name and photo come from the trip's snapshot. */
     val driver: PublicProfile? = null,
+    /** The kinds of payment the driver takes, to show before booking; empty when none or unknown. */
+    val driverPaymentTypes: List<PaymentMethodType> = emptyList(),
     val meetingStop: TripMeetingStop? = null,
     val alreadyRequested: Boolean = false,
     /**

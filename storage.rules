@@ -2,11 +2,12 @@ rules_version = '2';
 
 // EnrutadosEIA — Firebase Storage security rules.
 //
-// Mirrors the ownership model in firestore.rules for the two paths the app actually writes to
-// (see FirebaseAuthRemoteDataSource.kt and VehicleRepositoryImpl.kt): profile photos and vehicle
-// photos. Both are shown on other users' screens (trip cards, booking requests, search results),
-// so reads are open to any signed-in user; writes are restricted to the owning uid and capped to
-// image content under 5MB to match the .jpg uploads the app performs.
+// Mirrors the ownership model in firestore.rules for the paths the app actually writes to
+// (see FirebaseAuthRemoteDataSource.kt, VehicleRepositoryImpl.kt and
+// FirebasePaymentMethodRemoteDataSource.kt): profile photos, payment QR codes and vehicle photos.
+// All are shown on other users' screens (trip cards, booking requests, search results, paying a
+// driver), so reads are open to any signed-in user; writes are restricted to the owning uid and
+// capped to image content under 5MB to match the .jpg uploads the app performs.
 service firebase.storage {
   match /b/{bucket}/o {
 
@@ -35,6 +36,17 @@ service firebase.storage {
     }
 
     // -----------------------------------------------------------------------------------------
+    // users/{uid}/payment/{methodId}.jpg — the QR code of a payment method (users/{uid}/
+    // paymentMethods in firestore.rules). Readable by any signed-in user, like that document, so
+    // passengers can show and save it; writable only by the owning uid, as an image under 5MB.
+    // -----------------------------------------------------------------------------------------
+    match /users/{uid}/payment/{fileName} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && request.auth.uid == uid && isValidImageUpload();
+      allow delete: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // -----------------------------------------------------------------------------------------
     // vehicles/{driverId}/{vehicleId}.jpg — vehicle photo. Readable by any signed-in user (a
     // passenger browsing search results sees the driver's vehicle photo, same as vehicles/{id}
     // in firestore.rules); writable only by the owning driverId. Create/update must be an image
@@ -48,7 +60,7 @@ service firebase.storage {
       allow delete: if isSignedIn() && request.auth.uid == driverId;
     }
 
-    // Everything else: no path in this project writes outside the two prefixes above, so deny by
+    // Everything else: no path in this project writes outside the paths above, so deny by
     // default rather than falling through to an open catch-all.
     match /{allPaths=**} {
       allow read, write: if false;

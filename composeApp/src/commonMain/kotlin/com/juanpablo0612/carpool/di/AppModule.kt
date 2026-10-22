@@ -22,7 +22,8 @@ val appModule = module {
         myTripsModule,
         ratingModule,
         chatModule,
-        notificationModule
+        notificationModule,
+        paymentModule
     )
 }
 

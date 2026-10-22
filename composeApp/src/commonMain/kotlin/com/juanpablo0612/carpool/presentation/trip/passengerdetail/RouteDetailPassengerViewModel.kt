@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CheckExistingBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.CreateBookingUseCase
+import com.juanpablo0612.carpool.domain.payment.repository.PaymentMethodRepository
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 import com.juanpablo0612.carpool.domain.trip.model.TripMeetingStop
 import com.juanpablo0612.carpool.domain.trip.model.acceptsBookings
@@ -31,8 +32,8 @@ private const val MAX_PASSENGER_MESSAGE_LENGTH = 140
 
 /**
  * One listener on the trip document keeps the seats and status current; the driver's name, photo
- * and car come with it. The only other reads are the driver's profile (for the rating) and the
- * check for a request the passenger already made.
+ * and car come with it. The only other reads are the driver's profile (for the rating), how they
+ * take payment, and the check for a request the passenger already made.
  */
 class RouteDetailPassengerViewModel(
     private val tripId: String,
@@ -41,6 +42,7 @@ class RouteDetailPassengerViewModel(
     private val createBookingUseCase: CreateBookingUseCase,
     private val checkExistingBookingUseCase: CheckExistingBookingUseCase,
     private val authRepository: AuthRepository,
+    private val paymentMethodRepository: PaymentMethodRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RouteDetailPassengerUiState(meetingStop = meetingStop))
@@ -105,6 +107,12 @@ class RouteDetailPassengerViewModel(
             // A failed profile read only hides the rating; it never fails the screen.
             val profile = authRepository.getPublicProfile(driverId).getOrNull()
             _state.update { it.copy(driver = profile) }
+        }
+        viewModelScope.launch {
+            // Only informs the choice of trip, so a failed read just leaves the line out.
+            val types = paymentMethodRepository.getPaymentMethods(driverId).getOrNull()
+                ?.map { it.type }?.distinct().orEmpty()
+            _state.update { it.copy(driverPaymentTypes = types) }
         }
         if (!isOwner) {
             viewModelScope.launch {

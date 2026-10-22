@@ -43,6 +43,7 @@ fun NavGraphBuilder.mainNavGraph(
     onNavigateToRating: (RatingTarget) -> Unit,
     onNavigateToAddPlace: () -> Unit,
     onNavigateToChat: (bookingId: String, tripId: String, otherPartyName: String, isReadOnly: Boolean) -> Unit,
+    onNavigateToPayDriver: (tripId: String) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     composable<Route.Home> {
@@ -83,6 +84,7 @@ fun NavGraphBuilder.mainNavGraph(
             onOpenChat = onNavigateToChat,
             // Here the user rides, so the ratee is always the driver.
             onRateDriver = onNavigateToRating,
+            onPayDriver = onNavigateToPayDriver,
         )
     }
 

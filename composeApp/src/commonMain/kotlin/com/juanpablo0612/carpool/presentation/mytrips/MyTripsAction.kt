@@ -19,6 +19,7 @@ sealed class MyTripsAction {
     data class OnMessageDriver(val item: MyTripItem.Riding, val isReadOnly: Boolean) : MyTripsAction()
     data class OnCancelBooking(val item: MyTripItem.Riding) : MyTripsAction()
     data class OnRateDriver(val item: MyTripItem.Riding) : MyTripsAction()
+    data class OnPayDriver(val item: MyTripItem.Riding) : MyTripsAction()
 
     data object OnConfirm : MyTripsAction()
     data object OnDismissConfirmation : MyTripsAction()

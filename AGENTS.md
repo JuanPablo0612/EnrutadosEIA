@@ -84,7 +84,7 @@ Follow Clean Architecture: **presentation → domain → data**.
 
 Two-module project: `androidApp` (Android application shell) + `composeApp` (shared KMP library), plus the Xcode project `iosApp/` (iOS application shell).
 
-Hybrid architecture (layers + features) inside `composeApp`. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, place, preferences, rating, route, trip, vehicle` (`route` is a driver's saved route template; `trip` is a bookable trip with date, vehicle and seats — separate features on purpose; a one-off trip has `routeId == ""`).
+Hybrid architecture (layers + features) inside `composeApp`. Feature packages are singular and identical across `data/`, `domain/`, and `presentation/`: `auth, booking, chat, notification, payment, place, preferences, rating, route, trip, vehicle` (`payment` is the Bre-B keys and QR codes a driver is paid through; `route` is a driver's saved route template; `trip` is a bookable trip with date, vehicle and seats — separate features on purpose; a one-off trip has `routeId == ""`).
 
 ```
 com/juanpablo0612/carpool/
@@ -132,15 +132,16 @@ Convert external errors into domain-safe errors. Every DTO field has a default s
 Responsibilities: Domain models, business rules, use cases, and repository interfaces.
 Pure Kotlin only. No dependency on frameworks or other layers.
 
-**Use cases exist only where there is real logic** — orchestration across repositories, derivation, ownership checks, validation, or entity construction. A plain single-call read or write does not get a use case; the ViewModel injects the repository directly instead. There are 19 use cases today, in `domain/{feature}/usecase/`:
+**Use cases exist only where there is real logic** — orchestration across repositories, derivation, ownership checks, validation, or entity construction. A plain single-call read or write does not get a use case; the ViewModel injects the repository directly instead. There are 20 use cases today, in `domain/{feature}/usecase/`:
 - `booking`: CreateBooking, CheckExistingBooking, GetTripAvailableSeats, GetBookingsForTrip, RejectBooking, ConfirmBooking, CancelBooking
 - `place`: CreatePlace, DeletePlace, GetSavedPlaces
 - `route`: DuplicateRoute
 - `trip`: GetAvailableTrips, MatchTrips, GenerateRecurringTripSlots, PublishTrip, PublishRecurringTrips, UpdateTrip
 - `chat`: SendMessage
 - `rating`: CreateRating
+- `payment`: AddPaymentMethod
 
-Pure validators (`domain/auth/validation/Validator.kt`, `domain/trip/validation/TripDraftValidator.kt`) are called directly. Time-dependent domain logic takes `now` and the time zone as parameters so it stays deterministic and testable. Also, `BookingWithPassenger`, `PassengerSummary`, and `TripSummary` live in `presentation/booking/model/` rather than here, since a ViewModel builds them and only Compose consumes them.
+Pure validators (`domain/auth/validation/Validator.kt`, `domain/trip/validation/TripDraftValidator.kt`, `domain/payment/validation/PaymentMethodValidator.kt`) are called directly. Time-dependent domain logic takes `now` and the time zone as parameters so it stays deterministic and testable. Also, `BookingWithPassenger`, `PassengerSummary`, and `TripSummary` live in `presentation/booking/model/` rather than here, since a ViewModel builds them and only Compose consumes them.
 
 ------------------------------------------------------------------------
 
@@ -197,7 +198,7 @@ Represent events from UI to ViewModel. UI calls `viewModel.onAction(Action)`. Us
 - **Inline Errors:** Use `errorMessage` properties in text fields and the `ErrorMessage` component for global screen errors.
 - Two error-typing styles coexist, both in `presentation/{feature}/` now (no error types live in `domain/` any more):
   - **Sealed class + mapper** (`AuthError`/`AuthErrorMapper.kt`, `BookingError`/`BookingErrorMapper.kt`, `TripError`/`TripErrorMapper.kt`, `RatingError`/`RatingErrorMapper.kt`, `NotificationError`/`NotificationErrorMapper.kt`) — for errors that originate from a repository/use-case failure. A `presentation/{feature}/XxxErrorMapper.kt` holds `Throwable.toXxxError()` and `XxxError.asStringResource()` as extension functions. One deliberate exception: `BookingError.VehicleNotFound` is constructed directly in `RouteDetailPassengerViewModel` for a trip whose vehicle is missing, not via a mapped repository failure.
-  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`) — for screen-local errors that never touch the domain layer, carrying their own member `.asStringResource()`.
+  - **Self-contained presentation error class** (`AddPlaceError`, `CreateRouteError`, `RegisterVehicleError`, `EditProfileFieldError`, `HomeError`, `RouteDetailError`, `TripTrackingError`, `PaymentMethodsError`, `PayDriverError`) — for screen-local errors that never touch the domain layer, carrying their own member `.asStringResource()`.
 
 ------------------------------------------------------------------------
 
@@ -238,9 +239,9 @@ No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/
 
 # 21. Navigation & Side-Effects
 
-- Type-safe routes via one flat `@Serializable sealed interface Route` (31 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose.
+- Type-safe routes via one flat `@Serializable sealed interface Route` (33 routes) in `presentation/navigation/Route.kt`, plus AndroidX Navigation Compose.
 - One set of tabs for everyone: **Inicio · Buscar · Mis viajes · Perfil**, shown by `NavigationSuiteScaffoldLayout` as the bottom bar on phones and `NavigationRailBar` on medium/expanded windows. Switch tabs only with `NavHostController.navigateToTopLevel` (saves/restores each tab's stack, Home is the root); never push a tab destination.
-- `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph` (Entry — where signed-out users start, asking whether they have an account — then Login, Register, ForgotPassword, EmailVerification), `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive, reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, session reload after process death, and push-tap handling (`PendingDeepLinks`).
+- `presentation/navigation/graph/`: `RootNavGraph` (Splash, Onboarding), `AuthNavGraph` (Entry — where signed-out users start, asking whether they have an account — then Login, Register, ForgotPassword, EmailVerification), `MainNavGraph` (Home, SearchTrips, MyTrips, TripDetailPassenger), `DriverNavGraph` (screens for trips you drive, reachable by everyone) and `SharedNavGraph` (profile, places, notifications, chat, tracking, payment methods and paying a driver, rating). `Navigation.kt` assembles the `NavHost`, bottom bar and badges, logout, session reload after process death, and push-tap handling (`PendingDeepLinks`).
 - Notification deep links are plain strings built/parsed in `NotificationDeepLink.kt` (`forNotification`, `toRouteOrNull`) and opened with `navigateToNotificationDeepLink`.
 - **ObserveAsEvents:** lives in `presentation/ui/util/` (it's a utility, not a component). Use it to handle one-time side-effects like navigation or showing success messages, triggered by a `SharedFlow` in the ViewModel.
 
@@ -249,6 +250,8 @@ No hardcoded strings. Use `Res.string.*`/`Res.plurals.*` from `composeResources/
 # 22. Backend (Cloud Functions) & Security
 
 `functions/` owns these writes; the app must never do them itself: in-app notifications and FCM pushes (triggers on bookings, trips and chat messages; data-only on Android, an `apns` alert with a generic loc-key text and `mutable-content` on iOS), the trip-cancellation cascade, the rating aggregate (`users/{uid}.ratingSum`/`ratingCount`), and account deletion (the `deleteAccount` callable plus an `auth.user().onDelete` safety net). Functions code follows eslint-config-google (JSDoc on every function, max 80 columns) and deploys to `us-central1` (matching the Firestore location and `BackendConfig.FUNCTIONS_REGION`). Firestore rules must stay the enforcement counterpart of every client write; validate rule changes with `firebase deploy --only firestore:rules --dry-run`.
+
+**Payment methods** are a client write, not a backend one: a driver's Bre-B keys and QR images live in `users/{uid}/paymentMethods/{id}` (one flat `PaymentMethodDto` per method, told apart by `type`; QR images at `users/{uid}/payment/{id}.jpg`), readable by any signed-in user like the profile itself, and the account purge already removes both. They are edited from Perfil → Métodos de pago (`presentation/payment/manage/`) and shown to passengers by `Route.PayDriver(tripId)` (`presentation/payment/pay/`), opened from a confirmed seat in Mis viajes and from the tracking screen; the trip detail lists the kinds before booking. A new kind adds a `PaymentMethod`/`PaymentMethodType`/`PaymentMethodDraft` subtype, its DTO type in `PaymentMethodDto`, its editor and cards, its strings, and its `type` in the `paymentMethods` rule in `firestore.rules`; the `when`s over the sealed types point at every place to touch. Saving a QR to the gallery uses FileKit's `saveImageToGallery` behind `rememberGalleryWriteAccess()` (WRITE_EXTERNAL_STORAGE up to Android 9, `NSPhotoLibraryAddUsageDescription` on iOS); copying a key uses `plainTextClipEntry`.
 
 Validate inputs before sending requests (client) and in the rules (server). Never store passwords locally. Do not log sensitive info.
 

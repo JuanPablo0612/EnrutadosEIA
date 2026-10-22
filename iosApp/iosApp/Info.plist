@@ -17,6 +17,8 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>EnrutadosEIA uses the camera so you can take your profile photo and a photo of your vehicle.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>EnrutadosEIA saves your driver's payment QR code to your photos so you can upload it in your bank app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>EnrutadosEIA uses your location to suggest nearby starting points and to show the driver's position during a trip in progress.</string>
 	<key>UILaunchScreen</key>
