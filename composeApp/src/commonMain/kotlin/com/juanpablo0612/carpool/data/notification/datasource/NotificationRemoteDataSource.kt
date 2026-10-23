@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface NotificationRemoteDataSource {
     fun getNotifications(userId: String): Flow<List<NotificationDto>>
+    fun observeUnreadCount(userId: String): Flow<Int>
     suspend fun markRead(userId: String, notificationId: String)
     suspend fun delete(userId: String, notificationId: String)
     suspend fun clearAll(userId: String)

@@ -5,6 +5,7 @@ import com.juanpablo0612.carpool.data.notification.datasource.NotificationRemote
 import com.juanpablo0612.carpool.domain.notification.model.AppNotification
 import com.juanpablo0612.carpool.domain.notification.repository.NotificationRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 class NotificationRepositoryImpl(
@@ -16,6 +17,11 @@ class NotificationRepositoryImpl(
             .map { list ->
                 list.map { it.toDomain() }.sortedByDescending { it.timestamp }
             }
+    }
+
+    override fun observeUnreadCount(userId: String): Flow<Int> {
+        return remoteDataSource.observeUnreadCount(userId)
+            .catch { throw AppException.NotificationException.Unknown }
     }
 
     override suspend fun markRead(userId: String, notificationId: String): Result<Unit> {
