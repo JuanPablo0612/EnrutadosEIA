@@ -2,6 +2,7 @@ package com.juanpablo0612.carpool.presentation.trip.tracking
 
 import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.trip.model.Trip
+import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 
 data class TripTrackingUiState(
     val trip: Trip? = null,
@@ -28,6 +29,13 @@ data class TripTrackingUiState(
             val longitude = driverLongitude ?: return null
             return Coordinates(latitude, longitude)
         }
+
+    /**
+     * The passenger is waiting on the driver's first location report: the trip is under way but
+     * the driver's device hasn't shared a fix yet.
+     */
+    val isLocatingDriver: Boolean
+        get() = !isLoading && !isDriver && trip?.status is TripStatus.InProgress && driverPosition == null
     val allDroppedOff: Boolean get() = passengers.isNotEmpty() &&
             passengers.all { it.status is com.juanpablo0612.carpool.domain.trip.model.PickupStatus.DroppedOff }
 

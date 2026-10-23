@@ -1012,4 +1012,5 @@
     <string name="trip_cancel_dialog_notify_none">Nobody has booked a seat yet. This can\'t be undone.</string>
     <string name="trip_cancel_dialog_back">Back</string>
     <string name="error_trip_cancel_failed">Couldn\'t cancel the trip. Check your connection and try again.</string>
+    <string name="trip_tracking_locating_driver">Locating driver…</string>
 </resources>
