@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.trip.tracking
 
+import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.trip.model.Trip
 
 data class TripTrackingUiState(
@@ -21,6 +22,12 @@ data class TripTrackingUiState(
 ) {
     val driverLatitude: Double? get() = trip?.driverLatitude
     val driverLongitude: Double? get() = trip?.driverLongitude
+    val driverPosition: Coordinates?
+        get() {
+            val latitude = driverLatitude ?: return null
+            val longitude = driverLongitude ?: return null
+            return Coordinates(latitude, longitude)
+        }
     val allDroppedOff: Boolean get() = passengers.isNotEmpty() &&
             passengers.all { it.status is com.juanpablo0612.carpool.domain.trip.model.PickupStatus.DroppedOff }
 
