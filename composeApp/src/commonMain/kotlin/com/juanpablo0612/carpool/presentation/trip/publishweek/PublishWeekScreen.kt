@@ -45,6 +45,7 @@ import com.juanpablo0612.carpool.presentation.trip.publish.components.TripContri
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripMessageSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripSeatsSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
+import com.juanpablo0612.carpool.presentation.trip.publishweek.components.PublishWeekSummarySheet
 import com.juanpablo0612.carpool.presentation.trip.publishweek.components.WeekSlotRow
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -78,7 +79,7 @@ import enrutadoseia.composeapp.generated.resources.publish_week_all_published_ti
 import enrutadoseia.composeapp.generated.resources.publish_week_edit_route
 import enrutadoseia.composeapp.generated.resources.publish_week_no_schedule_body
 import enrutadoseia.composeapp.generated.resources.publish_week_no_schedule_title
-import enrutadoseia.composeapp.generated.resources.publish_week_publish_button
+import enrutadoseia.composeapp.generated.resources.publish_week_review_button
 import enrutadoseia.composeapp.generated.resources.publish_week_settings_title
 import enrutadoseia.composeapp.generated.resources.publish_week_title
 import enrutadoseia.composeapp.generated.resources.publish_week_window_label
@@ -140,6 +141,20 @@ fun PublishWeekContent(
 
     val canPublish = !state.isLoading && state.route != null && !state.scheduleMissing && !state.nothingToPublish
 
+    if (state.showSummary) {
+        state.toSummary()?.let { summary ->
+            PublishWeekSummarySheet(
+                summary = summary,
+                isPublishing = state.isPublishing,
+                dayLabel = dayLabel,
+                timeLabel = instantTime,
+                routeTimeText = summary.route.typicalDepartureTime?.let(timeLabel),
+                onConfirm = { onAction(PublishWeekAction.OnConfirmPublish) },
+                onDismiss = { onAction(PublishWeekAction.OnDismissSummary) },
+            )
+        }
+    }
+
     Scaffold(
         contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
@@ -156,9 +171,8 @@ fun PublishWeekContent(
                     Column {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         PrimaryButton(
-                            text = pluralStringResource(Res.plurals.publish_week_publish_button, state.selectedCount, state.selectedCount),
-                            onClick = { onAction(PublishWeekAction.OnPublishClick) },
-                            isLoading = state.isPublishing,
+                            text = pluralStringResource(Res.plurals.publish_week_review_button, state.selectedCount, state.selectedCount),
+                            onClick = { onAction(PublishWeekAction.OnReviewClick) },
                             modifier = Modifier
                                 .windowInsetsPadding(BottomBarInsets)
                                 .centeredContent(ContentWidth.form)

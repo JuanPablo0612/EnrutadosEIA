@@ -20,8 +20,8 @@ data class PublishTripUiState(
     val departureTime: LocalTime? = null,
     val vehicles: List<Vehicle> = emptyList(),
     val selectedVehicleId: String? = null,
-    /** Vehicles that existed when the driver left to register one; a new id gets auto-selected. */
-    val vehicleIdsBeforeRegister: Set<String>? = null,
+    /** A vehicle just registered from this form, selected as soon as the vehicle list has it. */
+    val pendingVehicleId: String? = null,
     val seatCount: Int = 1,
     val contributionPerPassenger: Int? = null,
     val message: String = "",

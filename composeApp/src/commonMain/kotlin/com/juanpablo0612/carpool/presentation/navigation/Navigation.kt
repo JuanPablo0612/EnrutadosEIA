@@ -305,6 +305,7 @@ fun AppNavigation(
                     driverNavGraph(
                         onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                         onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
+                        onVehicleRegistered = { id -> navController.popWithRegisteredVehicle(id) },
                         onNavigateToEditVehicle = { id -> navController.navigate(Route.RegisterVehicle(id)) },
                         onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
                         onNavigateToPublishTrip = { routeId -> navController.navigate(Route.PublishTrip(routeId)) },

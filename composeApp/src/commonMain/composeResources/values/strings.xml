@@ -998,4 +998,13 @@
     <string name="error_payment_driver_load_failed">Couldn\'t load the driver\'s payment methods.</string>
     <string name="error_payment_gallery_permission">Allow the app to save photos to keep the QR.</string>
     <string name="error_payment_qr_save_failed">Couldn\'t save the QR. Check your connection and that the app may save photos.</string>
+    <string name="publish_week_summary_title">Review your week</string>
+    <string name="publish_week_summary_subtitle">Every trip is published with these details.</string>
+    <string name="publish_week_summary_trips_label">Trips to publish</string>
+    <string name="publish_week_summary_skipped_label">Days left out</string>
+    <string name="publish_week_summary_skip_not_selected">Not selected</string>
+    <plurals name="publish_week_review_button">
+        <item quantity="one">Review %1$d trip</item>
+        <item quantity="other">Review %1$d trips</item>
+    </plurals>
 </resources>

@@ -7,6 +7,7 @@ import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsScre
 import com.juanpablo0612.carpool.presentation.booking.driver.BookingRequestsViewModel
 import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersScreen
 import com.juanpablo0612.carpool.presentation.booking.driver.TripPassengersViewModel
+import com.juanpablo0612.carpool.presentation.navigation.ObserveRegisteredVehicle
 import com.juanpablo0612.carpool.presentation.navigation.Route
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileScreen
 import com.juanpablo0612.carpool.presentation.profile.passenger.PassengerProfileViewModel
@@ -19,8 +20,10 @@ import com.juanpablo0612.carpool.presentation.route.list.RoutesListScreen
 import com.juanpablo0612.carpool.presentation.route.list.RoutesListViewModel
 import com.juanpablo0612.carpool.presentation.trip.edit.EditTripScreen
 import com.juanpablo0612.carpool.presentation.trip.edit.EditTripViewModel
+import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripAction
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripScreen
 import com.juanpablo0612.carpool.presentation.trip.publish.PublishTripViewModel
+import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekAction
 import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekScreen
 import com.juanpablo0612.carpool.presentation.trip.publishweek.PublishWeekViewModel
 import com.juanpablo0612.carpool.presentation.vehicle.list.VehiclesListScreen
@@ -37,6 +40,8 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.driverNavGraph(
     onNavigateToCreateRoute: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
+    /** Pops [Route.RegisterVehicle], handing the new vehicle's id back to the screen below. */
+    onVehicleRegistered: (vehicleId: String) -> Unit,
     onNavigateToEditVehicle: (String) -> Unit,
     onNavigateToRouteDetail: (String) -> Unit,
     onNavigateToPublishTrip: (String?) -> Unit,
@@ -91,6 +96,7 @@ fun NavGraphBuilder.driverNavGraph(
     composable<Route.PublishWeek> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.PublishWeek>()
         val viewModel: PublishWeekViewModel = koinViewModel { parametersOf(args.routeId) }
+        backStackEntry.ObserveRegisteredVehicle { viewModel.onAction(PublishWeekAction.OnVehicleRegistered(it)) }
         PublishWeekScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
@@ -103,6 +109,7 @@ fun NavGraphBuilder.driverNavGraph(
     composable<Route.PublishTrip> { backStackEntry ->
         val args = backStackEntry.toRoute<Route.PublishTrip>()
         val viewModel: PublishTripViewModel = koinViewModel { parametersOf(args.routeId) }
+        backStackEntry.ObserveRegisteredVehicle { viewModel.onAction(PublishTripAction.OnVehicleRegistered(it)) }
         PublishTripScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
@@ -153,7 +160,8 @@ fun NavGraphBuilder.driverNavGraph(
         RegisterVehicleScreen(
             viewModel = viewModel,
             onBackClick = onNavigateBack,
-            onVehicleRegistered = onNavigateBack
+            onVehicleRegistered = onVehicleRegistered,
+            onVehicleUpdated = onNavigateBack,
         )
     }
 

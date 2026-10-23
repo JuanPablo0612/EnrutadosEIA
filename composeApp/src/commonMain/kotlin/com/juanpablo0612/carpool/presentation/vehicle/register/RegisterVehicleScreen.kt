@@ -80,13 +80,15 @@ import org.jetbrains.compose.resources.vectorResource
 fun RegisterVehicleScreen(
     viewModel: RegisterVehicleViewModel,
     onBackClick: () -> Unit,
-    onVehicleRegistered: () -> Unit
+    onVehicleRegistered: (vehicleId: String) -> Unit,
+    onVehicleUpdated: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            RegisterVehicleEvent.VehicleRegistered -> onVehicleRegistered()
+            is RegisterVehicleEvent.VehicleRegistered -> onVehicleRegistered(event.vehicleId)
+            RegisterVehicleEvent.VehicleUpdated -> onVehicleUpdated()
             RegisterVehicleEvent.NavigateBack -> onBackClick()
         }
     }
