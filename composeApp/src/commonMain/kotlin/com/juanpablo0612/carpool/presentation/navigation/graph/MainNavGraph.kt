@@ -24,6 +24,8 @@ import org.koin.core.parameter.parametersOf
  * [sharedNavGraph]) plus the trip detail a search result opens.
  */
 fun NavGraphBuilder.mainNavGraph(
+    /** Read inside Inicio so only it recomposes when the session's unread count changes. */
+    unreadNotificationCount: () -> Int,
     onNavigateToProfile: () -> Unit,
     onPublishTrip: () -> Unit,
     onNavigateToRegisterVehicle: () -> Unit,
@@ -55,6 +57,7 @@ fun NavGraphBuilder.mainNavGraph(
             onRegisterVehicle = onNavigateToRegisterVehicle,
             onOpenRequests = onNavigateToDriverBookingRequests,
             onOpenNotifications = onNavigateToNotifications,
+            unreadNotificationCount = unreadNotificationCount(),
             onOpenTripDetail = onNavigateToTripDetail,
             onOpenPassengers = onNavigateToPassengers,
         )

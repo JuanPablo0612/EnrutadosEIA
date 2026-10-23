@@ -523,14 +523,12 @@
     <string name="trip_detail_driver_says">%1$s says</string>
     <string name="trip_detail_load_failed">We couldn\'t load this trip. It may have been cancelled.</string>
     <string name="trip_detail_unavailable_title">This trip is no longer available</string>
-    <string name="confirm_row_driver">Driver</string>
     <string name="confirm_row_get_on">You get on at</string>
     <string name="confirm_row_get_off">You get off at</string>
-    <string name="confirm_row_route">Route</string>
     <string name="route_from_to">%1$s → %2$s</string>
     <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Contribution</string>
-    <string name="confirm_request_note">Your seat is held once the driver accepts. We\'ll let you know right away.</string>
+    <string name="confirm_request_note">Your seat is reserved once the driver accepts.</string>
     <string name="request_quick_luggage">I\'m bringing a bag</string>
     <string name="request_quick_on_time">I\'ll be there on time</string>
     <string name="send_request_button">Send request</string>
@@ -745,11 +743,9 @@
     <string name="chat_date_today">Today</string>
     <string name="chat_date_yesterday">Yesterday</string>
     <string name="chat_input_hint">Type a message…</string>
-    <string name="chat_read_only_banner">This trip has ended. The conversation is read-only.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
-    <string name="chat_send_failed">Message couldn\'t be sent. Try again.</string>
     <string name="chat_empty_title">No messages yet</string>
     <string name="chat_empty_description">Say hi to get the conversation started.</string>
 
@@ -1038,4 +1034,20 @@
     <string name="place_selector_choose_on_map_description">Use any point without saving it</string>
     <string name="place_selector_map_point_name">Point on the map</string>
     <string name="rating_scale_anchor">%1$d · %2$s</string>
+    <plurals name="notifications_unread_count">
+        <item quantity="one">%1$d unread notification</item>
+        <item quantity="other">%1$d unread notifications</item>
+    </plurals>
+    <string name="home_empty_title">No upcoming trips</string>
+    <string name="home_empty_body">Find a seat for your next trip, or offer the empty seats in your car.</string>
+    <string name="home_vehicle_required_title">First, register your car</string>
+    <string name="home_vehicle_required_body">To publish a trip you need a registered vehicle, so passengers know which car to look for. It only takes a minute.</string>
+    <string name="action_not_now">Not now</string>
+    <string name="cd_clear_time">Clear time</string>
+    <string name="confirm_request_driver_route">%1$s · %2$s</string>
+    <string name="confirm_request_add_message">Add a message for %1$s (optional)</string>
+    <string name="confirm_request_add_message_generic">Add a message for the driver (optional)</string>
+    <string name="chat_message_sending">Sending…</string>
+    <string name="chat_message_not_sent">Not sent · Tap to retry</string>
+    <string name="chat_closed_trip_ended">This chat closed because the trip ended</string>
 </resources>

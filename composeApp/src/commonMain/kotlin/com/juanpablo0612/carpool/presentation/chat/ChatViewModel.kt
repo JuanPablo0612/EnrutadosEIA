@@ -3,6 +3,7 @@ package com.juanpablo0612.carpool.presentation.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juanpablo0612.carpool.domain.auth.repository.AuthRepository
+import com.juanpablo0612.carpool.domain.chat.model.Message
 import com.juanpablo0612.carpool.domain.chat.repository.ChatRepository
 import com.juanpablo0612.carpool.domain.chat.usecase.SendMessageUseCase
 import com.juanpablo0612.carpool.domain.trip.model.TripStatus
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 class ChatViewModel(
     private val bookingId: String,
@@ -61,7 +63,7 @@ class ChatViewModel(
     }
 
     // Re-derives isReadOnly from the trip's live status instead of trusting the nav-arg snapshot
-    // forever, so the banner/input gating doesn't go stale if the trip completes or is cancelled
+    // forever, so the input gating doesn't go stale if the trip completes or is cancelled
     // while this screen is already open.
     private fun observeTripStatus() {
         viewModelScope.launch {
@@ -81,25 +83,45 @@ class ChatViewModel(
             is ChatAction.OnQuickReplyClick -> sendText(action.text)
             ChatAction.OnSendClick -> {
                 val text = _state.value.inputText.trim()
-                if (text.isNotBlank()) sendText(text)
+                if (text.isNotBlank() && sendText(text)) _state.update { it.copy(inputText = "") }
             }
+            is ChatAction.OnRetryMessage -> retry(action.messageId)
             ChatAction.OnBackClick -> viewModelScope.launch { _events.emit(ChatEvent.NavigateBack) }
-            ChatAction.OnDismissSendError -> _state.update { it.copy(sendFailed = false) }
             ChatAction.OnRetryLoad -> loadMessages()
         }
     }
 
-    private fun sendText(text: String) {
-        val senderId = authRepository.getCurrentUserId() ?: return
+    /** Shows the message at once as sending and delivers it; false when nobody is signed in. */
+    private fun sendText(text: String): Boolean {
+        val senderId = authRepository.getCurrentUserId() ?: return false
+        val message = sendMessageUseCase.createMessage(bookingId, senderId, text, Clock.System.now().toEpochMilliseconds())
+        _state.update { it.copy(outgoing = it.outgoing + ChatMessageItem(message, MessageStatus.Sending)) }
+        deliver(message)
+        return true
+    }
+
+    private fun retry(messageId: String) {
+        val failed = _state.value.outgoing.firstOrNull {
+            it.message.id == messageId && it.status == MessageStatus.Failed
+        } ?: return
+        setOutgoingStatus(messageId, MessageStatus.Sending)
+        deliver(failed.message)
+    }
+
+    private fun deliver(message: Message) {
         viewModelScope.launch {
-            _state.update { it.copy(isSending = true, sendFailed = false) }
-            sendMessageUseCase(bookingId, senderId, text)
-                .onFailure {
-                    _state.update { it.copy(isSending = false, sendFailed = true) }
-                }
+            sendMessageUseCase(message)
                 .onSuccess {
-                    _state.update { it.copy(isSending = false, inputText = "") }
+                    // The stored copy, already in the listener's list, takes over.
+                    _state.update { state -> state.copy(outgoing = state.outgoing.filterNot { it.message.id == message.id }) }
                 }
+                .onFailure { setOutgoingStatus(message.id, MessageStatus.Failed) }
+        }
+    }
+
+    private fun setOutgoingStatus(messageId: String, status: MessageStatus) {
+        _state.update { state ->
+            state.copy(outgoing = state.outgoing.map { if (it.message.id == messageId) it.copy(status = status) else it })
         }
     }
 }

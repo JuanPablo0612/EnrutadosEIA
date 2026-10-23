@@ -1,6 +1,5 @@
 package com.juanpablo0612.carpool.presentation.chat
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -31,13 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.juanpablo0612.carpool.presentation.chat.components.ChatClosedRow
 import com.juanpablo0612.carpool.presentation.chat.components.ChatInputRow
 import com.juanpablo0612.carpool.presentation.chat.components.MessageBubble
 import com.juanpablo0612.carpool.presentation.chat.components.QuickRepliesRow
-import com.juanpablo0612.carpool.presentation.chat.components.ReadOnlyBanner
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
-import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -49,7 +47,6 @@ import enrutadoseia.composeapp.generated.resources.chat_date_yesterday
 import enrutadoseia.composeapp.generated.resources.chat_default_title
 import enrutadoseia.composeapp.generated.resources.chat_empty_description
 import enrutadoseia.composeapp.generated.resources.chat_empty_title
-import enrutadoseia.composeapp.generated.resources.chat_send_failed
 import enrutadoseia.composeapp.generated.resources.mail_24px
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -91,9 +88,11 @@ fun ChatContent(
 ) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(state.messages.size) {
-        if (state.messages.isNotEmpty()) {
-            listState.animateScrollToItem(state.messages.lastIndex)
+    val items = remember(state.messages, state.outgoing) { state.items }
+
+    LaunchedEffect(items.size) {
+        if (items.isNotEmpty()) {
+            listState.animateScrollToItem(items.lastIndex)
         }
     }
 
@@ -115,29 +114,15 @@ fun ChatContent(
                 .consumeWindowInsets(padding)
                 .imePadding()
         ) {
-            if (state.isReadOnly) {
-                ReadOnlyBanner()
-            }
-
-            if (state.sendFailed) {
-                ErrorMessage(
-                    message = stringResource(Res.string.chat_send_failed),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                        .clickable { onAction(ChatAction.OnDismissSendError) },
-                )
-            }
-
             val timeZone = TimeZone.currentSystemDefault()
-            val messagesWithDateFlag = remember(state.messages) {
+            val messagesWithDateFlag = remember(items) {
                 var lastDate: LocalDate? = null
-                state.messages.map { message ->
-                    val date = Instant.fromEpochMilliseconds(message.timestamp)
+                items.map { item ->
+                    val date = Instant.fromEpochMilliseconds(item.message.timestamp)
                         .toLocalDateTime(timeZone).date
                     val isNewDay = date != lastDate
                     lastDate = date
-                    message to isNewDay
+                    item to isNewDay
                 }
             }
 
@@ -164,7 +149,7 @@ fun ChatContent(
                                 modifier = Modifier.fillParentMaxSize(),
                             )
                         }
-                        state.messages.isEmpty() -> item {
+                        items.isEmpty() -> item {
                             EmptyState(
                                 icon = vectorResource(Res.drawable.mail_24px),
                                 title = stringResource(Res.string.chat_empty_title),
@@ -172,28 +157,27 @@ fun ChatContent(
                                 modifier = Modifier.fillParentMaxSize(),
                             )
                         }
-                        else -> items(messagesWithDateFlag, key = { it.first.id }) { (message, isNewDay) ->
+                        else -> items(messagesWithDateFlag, key = { it.first.message.id }) { (item, isNewDay) ->
                             if (isNewDay) {
-                                DateSeparator(epochMs = message.timestamp)
+                                DateSeparator(epochMs = item.message.timestamp)
                             }
                             MessageBubble(
-                                message = message,
-                                isOwn = message.senderId == state.currentUserId,
+                                item = item,
+                                isOwn = item.message.senderId == state.currentUserId,
                                 maxWidth = bubbleMaxWidth,
+                                onRetry = { onAction(ChatAction.OnRetryMessage(item.message.id)) },
                             )
                         }
                     }
                 }
             }
 
-            if (!state.isReadOnly) {
-                QuickRepliesRow(
-                    onQuickReply = { onAction(ChatAction.OnQuickReplyClick(it)) },
-                    enabled = !state.isSending,
-                )
+            if (state.isReadOnly) {
+                ChatClosedRow()
+            } else {
+                QuickRepliesRow(onQuickReply = { onAction(ChatAction.OnQuickReplyClick(it)) })
                 ChatInputRow(
                     text = state.inputText,
-                    isSending = state.isSending,
                     onTextChange = { onAction(ChatAction.OnInputChange(it)) },
                     onSendClick = { onAction(ChatAction.OnSendClick) }
                 )

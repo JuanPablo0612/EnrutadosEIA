@@ -614,11 +614,9 @@
     <string name="chat_date_today">Hoy</string>
     <string name="chat_date_yesterday">Ayer</string>
     <string name="chat_input_hint">Escribe un mensaje…</string>
-    <string name="chat_read_only_banner">Este viaje ha terminado. La conversación es solo lectura.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
-    <string name="chat_send_failed">No se pudo enviar el mensaje. Inténtalo de nuevo.</string>
     <string name="chat_empty_title">Aún no hay mensajes</string>
     <string name="chat_empty_description">Saluda para iniciar la conversación.</string>
 
@@ -741,14 +739,12 @@
     <string name="trip_detail_driver_says">%1$s dice</string>
     <string name="trip_detail_load_failed">No pudimos cargar este viaje. Puede que lo hayan cancelado.</string>
     <string name="trip_detail_unavailable_title">Este viaje ya no está disponible</string>
-    <string name="confirm_row_driver">Conductor</string>
     <string name="confirm_row_get_on">Subes en</string>
     <string name="confirm_row_get_off">Te bajas en</string>
-    <string name="confirm_row_route">Recorrido</string>
     <string name="route_from_to">%1$s → %2$s</string>
     <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Aporte</string>
-    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte. Te avisamos al instante.</string>
+    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte.</string>
     <string name="request_quick_luggage">Llevo maleta</string>
     <string name="request_quick_on_time">Estaré a tiempo</string>
     <string name="send_request_button">Enviar solicitud</string>
@@ -1040,4 +1036,20 @@
     <string name="place_selector_choose_on_map_description">Usa cualquier punto sin guardarlo</string>
     <string name="place_selector_map_point_name">Punto en el mapa</string>
     <string name="rating_scale_anchor">%1$d · %2$s</string>
+    <plurals name="notifications_unread_count">
+        <item quantity="one">%1$d notificación sin leer</item>
+        <item quantity="other">%1$d notificaciones sin leer</item>
+    </plurals>
+    <string name="home_empty_title">No tienes viajes próximos</string>
+    <string name="home_empty_body">Busca un cupo para tu próximo viaje u ofrece los puestos libres de tu carro.</string>
+    <string name="home_vehicle_required_title">Primero, registra tu carro</string>
+    <string name="home_vehicle_required_body">Para publicar un viaje necesitas un vehículo registrado, así los pasajeros saben qué carro buscar. Solo toma un minuto.</string>
+    <string name="action_not_now">Ahora no</string>
+    <string name="cd_clear_time">Quitar la hora</string>
+    <string name="confirm_request_driver_route">%1$s · %2$s</string>
+    <string name="confirm_request_add_message">Agrega un mensaje para %1$s (opcional)</string>
+    <string name="confirm_request_add_message_generic">Agrega un mensaje para el conductor (opcional)</string>
+    <string name="chat_message_sending">Enviando…</string>
+    <string name="chat_message_not_sent">No enviado · Toca para reintentar</string>
+    <string name="chat_closed_trip_ended">Este chat se cerró porque el viaje terminó</string>
 </resources>

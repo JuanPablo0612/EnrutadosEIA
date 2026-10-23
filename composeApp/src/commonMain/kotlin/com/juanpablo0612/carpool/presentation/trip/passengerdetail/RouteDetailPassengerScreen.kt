@@ -128,12 +128,13 @@ fun RouteDetailPassengerContent(
                     contentPadding = PaddingValues(horizontal = Spacing.screenHorizontal, vertical = Spacing.lg).plusHorizontal(margin),
                     verticalArrangement = Arrangement.spacedBy(Spacing.lg),
                 ) {
-                    item(key = "header") { TripDetailHeader(trip = trip, now = now) }
-                    // The driver keeps the plain view of their own trip; a passenger is told why
-                    // the seat can no longer be asked for, before the details.
+                    // The driver keeps the plain view of their own trip; a passenger is told
+                    // first thing why the seat can no longer be asked for. The details below stay
+                    // at full contrast: they are still worth reading, just not bookable.
                     if (state.closedReason != null && !state.isOwner) {
                         item(key = "closed") { TripClosedBanner(reason = state.closedReason) }
                     }
+                    item(key = "header") { TripDetailHeader(trip = trip, now = now) }
                     item(key = "stats") { TripStats(trip = trip, availableSeats = state.availableSeats) }
                     item(key = "route") { TripRouteCard(trip = trip, meetingStop = state.meetingStop) }
                     item(key = "driver") {

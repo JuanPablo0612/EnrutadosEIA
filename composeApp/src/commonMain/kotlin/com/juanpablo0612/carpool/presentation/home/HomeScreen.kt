@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -42,6 +43,9 @@ import com.juanpablo0612.carpool.presentation.home.components.SearchEntryCard
 import com.juanpablo0612.carpool.presentation.home.components.UpcomingTripCard
 import com.juanpablo0612.carpool.presentation.home.components.VehicleSuggestionCard
 import com.juanpablo0612.carpool.presentation.route.search.SearchShortcut
+import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
+import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
+import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
 import com.juanpablo0612.carpool.presentation.ui.components.ListSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.SectionHeader
@@ -54,7 +58,15 @@ import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.action_not_now
 import enrutadoseia.composeapp.generated.resources.add_24px
+import enrutadoseia.composeapp.generated.resources.calendar_month_24px
+import enrutadoseia.composeapp.generated.resources.home_empty_body
+import enrutadoseia.composeapp.generated.resources.home_empty_title
+import enrutadoseia.composeapp.generated.resources.home_vehicle_required_body
+import enrutadoseia.composeapp.generated.resources.home_vehicle_required_title
+import enrutadoseia.composeapp.generated.resources.passenger_home_title
+import enrutadoseia.composeapp.generated.resources.trip_register_vehicle_action
 import enrutadoseia.composeapp.generated.resources.home_action_publish_trip
 import enrutadoseia.composeapp.generated.resources.home_later_title
 import enrutadoseia.composeapp.generated.resources.home_next_up_title
@@ -70,6 +82,7 @@ fun HomeScreen(
     onRegisterVehicle: () -> Unit,
     onOpenRequests: () -> Unit,
     onOpenNotifications: () -> Unit,
+    unreadNotificationCount: Int,
     onOpenTripDetail: (String) -> Unit,
     onOpenPassengers: (String) -> Unit,
 ) {
@@ -87,7 +100,7 @@ fun HomeScreen(
         }
     }
 
-    HomeContent(state = state, onAction = viewModel::onAction)
+    HomeContent(state = state, onAction = viewModel::onAction, unreadNotificationCount = unreadNotificationCount)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,26 +108,39 @@ fun HomeScreen(
 internal fun HomeContent(
     state: HomeUiState,
     onAction: (HomeAction) -> Unit,
+    unreadNotificationCount: Int = 0,
     now: Long = rememberNowMs(),
 ) {
     // Measured rather than assumed: the extended FAB grows with the font scale, and the list's
     // last card must still scroll clear of it.
     var fabHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+
+    if (state.showVehicleRequiredDialog) {
+        ConfirmDialog(
+            title = stringResource(Res.string.home_vehicle_required_title),
+            description = stringResource(Res.string.home_vehicle_required_body),
+            confirmText = stringResource(Res.string.trip_register_vehicle_action),
+            dismissText = stringResource(Res.string.action_not_now),
+            onConfirm = { onAction(HomeAction.RegisterVehicle) },
+            onDismiss = { onAction(HomeAction.DismissVehicleRequired) },
+        )
+    }
+
     Scaffold(
         contentWindowInsets = ScreenInsets,
         containerColor = MaterialTheme.colorScheme.background,
+        // Shown with or without a vehicle so driving stays discoverable; without one, the tap
+        // explains what is missing instead of opening a form that can't be finished.
         floatingActionButton = {
-            if (state.canPublishTrip) {
-                ExtendedFloatingActionButton(
-                    onClick = { onAction(HomeAction.PublishTrip) },
-                    modifier = Modifier.onSizeChanged { fabHeight = with(density) { it.height.toDp() } },
-                    icon = { Icon(vectorResource(Res.drawable.add_24px), contentDescription = null) },
-                    text = { Text(stringResource(Res.string.home_action_publish_trip), style = MaterialTheme.typography.titleMedium) },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
+            ExtendedFloatingActionButton(
+                onClick = { onAction(HomeAction.PublishTrip) },
+                modifier = Modifier.onSizeChanged { fabHeight = with(density) { it.height.toDp() } },
+                icon = { Icon(vectorResource(Res.drawable.add_24px), contentDescription = null) },
+                text = { Text(stringResource(Res.string.home_action_publish_trip), style = MaterialTheme.typography.titleMedium) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            )
         },
     ) { innerPadding ->
         PullToRefreshBox(
@@ -138,10 +164,11 @@ internal fun HomeContent(
                 )
                 else -> HomeDashboard(
                     state = state,
+                    unreadNotificationCount = unreadNotificationCount,
                     now = now,
                     onAction = onAction,
                     // The FAB sits Spacing.lg above the bottom; Spacing.xl more keeps a gap.
-                    bottomClearance = if (state.canPublishTrip) fabHeight + Spacing.lg + Spacing.xl else Spacing.xl,
+                    bottomClearance = fabHeight + Spacing.lg + Spacing.xl,
                 )
             }
         }
@@ -149,7 +176,13 @@ internal fun HomeContent(
 }
 
 @Composable
-private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit, bottomClearance: Dp) {
+private fun HomeDashboard(
+    state: HomeUiState,
+    unreadNotificationCount: Int,
+    now: Long,
+    onAction: (HomeAction) -> Unit,
+    bottomClearance: Dp,
+) {
     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
         // One lane on phones; two on wide windows, where the dashboard's cards sit side by side
         // instead of leaving a long single column. Staggered because the cards differ in height.
@@ -169,6 +202,7 @@ private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) 
                 HomeHeader(
                     firstName = state.user?.firstName().orEmpty(),
                     now = now,
+                    unreadNotificationCount = unreadNotificationCount,
                     onOpenNotifications = { onAction(HomeAction.OpenNotifications) },
                 )
             }
@@ -177,6 +211,22 @@ private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) 
                     onSearch = { onAction(HomeAction.SearchTrips) },
                     onShortcut = { onAction(HomeAction.SearchShortcutSelected(it)) },
                 )
+            }
+            if (state.showNoUpcomingTrips) {
+                item(key = "no_upcoming") {
+                    EmptyState(
+                        icon = vectorResource(Res.drawable.calendar_month_24px),
+                        title = stringResource(Res.string.home_empty_title),
+                        description = stringResource(Res.string.home_empty_body),
+                        primaryAction = ActionButton(stringResource(Res.string.passenger_home_title)) {
+                            onAction(HomeAction.SearchTrips)
+                        },
+                        secondaryAction = ActionButton(stringResource(Res.string.home_action_publish_trip)) {
+                            onAction(HomeAction.PublishTrip)
+                        },
+                        modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.lg),
+                    )
+                }
             }
             state.nextUp?.let { next ->
                 item(key = "next_up") {
@@ -306,6 +356,7 @@ private fun HomeContentPopulatedPreview() {
                 hasBookedBefore = true,
             ),
             onAction = {},
+            unreadNotificationCount = 3,
             now = previewNow,
         )
     }
@@ -322,6 +373,18 @@ private fun HomeContentRiderPreview() {
                 nextUp = UpcomingTrip.Riding(previewBooking),
                 hasBookedBefore = true,
             ),
+            onAction = {},
+            now = previewNow,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeContentNoUpcomingPreview() {
+    CarpoolTheme {
+        HomeContent(
+            state = HomeUiState(user = previewUser, isLoading = false, hasBookedBefore = true, vehicleSuggestionDismissed = true),
             onAction = {},
             now = previewNow,
         )
