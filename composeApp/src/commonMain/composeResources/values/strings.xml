@@ -998,4 +998,18 @@
     <string name="error_payment_driver_load_failed">Couldn\'t load the driver\'s payment methods.</string>
     <string name="error_payment_gallery_permission">Allow the app to save photos to keep the QR.</string>
     <string name="error_payment_qr_save_failed">Couldn\'t save the QR. Check your connection and that the app may save photos.</string>
+    <!-- Managing a trip you drive -->
+    <plurals name="trip_cancel_dialog_confirmed">
+        <item quantity="one">%d confirmed passenger</item>
+        <item quantity="other">%d confirmed passengers</item>
+    </plurals>
+    <plurals name="trip_cancel_dialog_pending">
+        <item quantity="one">%d pending request</item>
+        <item quantity="other">%d pending requests</item>
+    </plurals>
+    <string name="trip_cancel_dialog_notify_both">We\'ll notify %1$s and %2$s. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_notify_one">We\'ll notify %1$s. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_notify_none">Nobody has booked a seat yet. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_back">Back</string>
+    <string name="error_trip_cancel_failed">Couldn\'t cancel the trip. Check your connection and try again.</string>
 </resources>

@@ -1000,4 +1000,18 @@
     <string name="error_payment_driver_load_failed">No pudimos cargar los métodos de pago del conductor.</string>
     <string name="error_payment_gallery_permission">Permite que la app guarde fotos para conservar el QR.</string>
     <string name="error_payment_qr_save_failed">No pudimos guardar el QR. Revisa tu conexión y que la app pueda guardar fotos.</string>
+    <!-- Managing a trip you drive -->
+    <plurals name="trip_cancel_dialog_confirmed">
+        <item quantity="one">%d pasajero confirmado</item>
+        <item quantity="other">%d pasajeros confirmados</item>
+    </plurals>
+    <plurals name="trip_cancel_dialog_pending">
+        <item quantity="one">%d solicitud pendiente</item>
+        <item quantity="other">%d solicitudes pendientes</item>
+    </plurals>
+    <string name="trip_cancel_dialog_notify_both">Avisaremos a %1$s y %2$s. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_notify_one">Avisaremos a %1$s. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_notify_none">Nadie ha reservado un cupo todavía. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_back">Volver</string>
+    <string name="error_trip_cancel_failed">No pudimos cancelar el viaje. Revisa tu conexión e inténtalo de nuevo.</string>
 </resources>

@@ -2,6 +2,16 @@ package com.juanpablo0612.carpool.presentation.booking.driver
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.juanpablo0612.carpool.presentation.booking.driver.components.CancelTripDialog
+import enrutadoseia.composeapp.generated.resources.cd_more_options
+import enrutadoseia.composeapp.generated.resources.more_vert_24px
+import enrutadoseia.composeapp.generated.resources.trip_cancel_confirm_button
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -82,6 +92,7 @@ fun TripPassengersScreen(
                 onNavigateToChat(event.bookingId, event.tripId, event.passengerName, event.isReadOnly)
             is TripPassengersEvent.NavigateToRating -> onNavigateToRating(event.target)
             is TripPassengersEvent.NavigateToEditTrip -> onNavigateToEditTrip(event.tripId)
+            TripPassengersEvent.NavigateBack -> onBackClick()
         }
     }
 
@@ -97,6 +108,16 @@ fun TripPassengersContent(
 ) {
     val onDecision: (BookingDecisionAction) -> Unit = { onAction(TripPassengersAction.OnDecision(it)) }
     BookingDecisionDialogs(state = state.decisions, onDecision = onDecision)
+    if (state.showCancelTripDialog) {
+        CancelTripDialog(
+            confirmedCount = state.confirmed.size,
+            pendingCount = state.pending.size,
+            isCancelling = state.isCancellingTrip,
+            error = state.cancelTripError,
+            onConfirm = { onAction(TripPassengersAction.OnCancelTripConfirm) },
+            onDismiss = { onAction(TripPassengersAction.OnCancelTripDismiss) },
+        )
+    }
 
     Scaffold(
         contentWindowInsets = ScreenInsets,
@@ -114,6 +135,10 @@ fun TripPassengersContent(
                                 contentDescription = stringResource(Res.string.cd_edit_trip),
                             )
                         }
+                    }
+                    // Tucked in the overflow so a destructive action never sits beside the primary ones.
+                    if (state.canCancelTrip) {
+                        TripOverflowMenu(onCancelTrip = { onAction(TripPassengersAction.OnCancelTripClick) })
                     }
                 },
             )
@@ -247,6 +272,33 @@ private fun TripSummaryCard(trip: Trip, nowMs: Long) {
                 text = stringResource(Res.string.trip_seats_occupied, trip.confirmedSeats, trip.seatCount),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TripOverflowMenu(onCancelTrip: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.more_vert_24px),
+                contentDescription = stringResource(Res.string.cd_more_options),
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(Res.string.trip_cancel_confirm_button),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onCancelTrip()
+                },
             )
         }
     }
