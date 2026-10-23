@@ -29,6 +29,7 @@ sealed class PublishTripAction {
 
     data class OnVehicleSelected(val vehicleId: String) : PublishTripAction()
     data object OnRegisterVehicleClick : PublishTripAction()
+    data class OnVehicleRegistered(val vehicleId: String) : PublishTripAction()
     data class OnSetSeats(val count: Int) : PublishTripAction()
     data class OnSetContribution(val pesos: Int?) : PublishTripAction()
     data class OnSetMessage(val text: String) : PublishTripAction()

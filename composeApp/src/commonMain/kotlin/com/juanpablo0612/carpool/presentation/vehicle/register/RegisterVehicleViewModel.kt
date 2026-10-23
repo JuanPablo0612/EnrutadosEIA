@@ -192,15 +192,17 @@ class RegisterVehicleViewModel(
 
             val result = if (s.mode == RegisterVehicleUiState.Mode.Create) {
                 vehicleRepository.createVehicle(vehicle, photoBytes)
+                    .map { id -> RegisterVehicleEvent.VehicleRegistered(id) }
             } else {
                 vehicleRepository.updateVehicle(vehicle, photoBytes)
+                    .map { RegisterVehicleEvent.VehicleUpdated }
             }
 
             result
-                .onSuccess {
+                .onSuccess { event ->
                     _state.update { it.copy(isSaving = false, isSaved = true) }
                     delay(SAVED_BANNER_DURATION_MS)
-                    _events.emit(RegisterVehicleEvent.VehicleRegistered)
+                    _events.emit(event)
                 }
                 .onFailure {
                     _state.update { it.copy(isSaving = false, generalError = RegisterVehicleError.Unknown) }

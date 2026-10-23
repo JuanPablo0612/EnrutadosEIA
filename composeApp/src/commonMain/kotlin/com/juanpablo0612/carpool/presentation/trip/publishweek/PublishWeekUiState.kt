@@ -13,6 +13,8 @@ data class PublishWeekUiState(
     val selectedDates: Set<LocalDate> = emptySet(),
     val vehicles: List<Vehicle> = emptyList(),
     val selectedVehicleId: String? = null,
+    /** A vehicle just registered from this screen, selected as soon as the vehicle list has it. */
+    val pendingVehicleId: String? = null,
     val seatCount: Int = 1,
     val contributionPerPassenger: Int? = null,
     val message: String = "",

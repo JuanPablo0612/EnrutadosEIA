@@ -87,16 +87,20 @@ class PublishWeekViewModel(
             val firstLoad = s.isLoading
             // Defaults from the driver's latest trip on this route, as when publishing a single one.
             val latest = trips.filter { it.routeId == route.id }.maxByOrNull { it.departureTime }
-            val vehicle = vehicles.firstOrNull { it.id == s.selectedVehicleId }
+            val newlyRegistered = s.pendingVehicleId?.let { id -> vehicles.firstOrNull { it.id == id } }
+            val vehicle = newlyRegistered
+                ?: vehicles.firstOrNull { it.id == s.selectedVehicleId }
                 ?: latest?.vehicleId?.let { id -> vehicles.firstOrNull { it.id == id } }
                 ?: vehicles.firstOrNull { it.isPrimary }
                 ?: vehicles.firstOrNull()
             val seats = when {
                 vehicle == null -> s.seatCount
+                newlyRegistered != null -> vehicle.seatsAvailable
                 firstLoad -> (latest?.seatCount ?: vehicle.seatsAvailable).coerceIn(1, vehicle.seatsAvailable)
                 else -> s.seatCount.coerceIn(1, vehicle.seatsAvailable)
             }
             s.copy(
+                pendingVehicleId = if (newlyRegistered != null) null else s.pendingVehicleId,
                 isLoading = false,
                 slots = slots,
                 // Available days start ticked; conflicts have to be ticked on purpose.
@@ -130,6 +134,7 @@ class PublishWeekViewModel(
                 it.copy(message = action.text.take(TripDraftValidator.MAX_MESSAGE_LENGTH))
             }
             PublishWeekAction.OnRegisterVehicleClick -> emit(PublishWeekEvent.NavigateToRegisterVehicle)
+            is PublishWeekAction.OnVehicleRegistered -> selectRegisteredVehicle(action.vehicleId)
             PublishWeekAction.OnEditRouteClick -> emit(PublishWeekEvent.NavigateToRouteDetail(routeId))
             PublishWeekAction.OnPublishClick -> publish()
             PublishWeekAction.OnBackClick -> emit(PublishWeekEvent.NavigateBack)
@@ -137,6 +142,18 @@ class PublishWeekViewModel(
                 _state.update { it.copy(isLoading = true, error = null) }
                 load()
             }
+        }
+    }
+
+    /**
+     * Selects a vehicle registered from this screen. The live vehicle list may not include it
+     * yet; then [applySnapshot] selects it when it arrives.
+     */
+    private fun selectRegisteredVehicle(vehicleId: String) {
+        _state.update { s ->
+            val vehicle = s.vehicles.firstOrNull { it.id == vehicleId }
+                ?: return@update s.copy(pendingVehicleId = vehicleId)
+            s.copy(selectedVehicleId = vehicle.id, seatCount = vehicle.seatsAvailable, pendingVehicleId = null, error = null)
         }
     }
 

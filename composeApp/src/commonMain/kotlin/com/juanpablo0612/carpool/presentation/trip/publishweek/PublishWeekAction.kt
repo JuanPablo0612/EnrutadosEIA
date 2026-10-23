@@ -9,6 +9,7 @@ sealed class PublishWeekAction {
     data class OnSetContribution(val pesos: Int?) : PublishWeekAction()
     data class OnSetMessage(val text: String) : PublishWeekAction()
     data object OnRegisterVehicleClick : PublishWeekAction()
+    data class OnVehicleRegistered(val vehicleId: String) : PublishWeekAction()
     data object OnEditRouteClick : PublishWeekAction()
     data object OnPublishClick : PublishWeekAction()
     data object OnBackClick : PublishWeekAction()
