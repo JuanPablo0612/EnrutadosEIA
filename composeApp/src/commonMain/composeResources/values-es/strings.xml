@@ -555,9 +555,7 @@
     <!-- Perfil mejorado -->
     <string name="profile_edit_button">Editar perfil</string>
     <string name="profile_my_account_section">Mi cuenta</string>
-    <string name="profile_config_section">Configuración</string>
     <string name="profile_saved_places">Mis lugares guardados</string>
-    <string name="profile_notifications_settings">Notificaciones</string>
     <string name="profile_delete_account">Eliminar cuenta</string>
     <string name="profile_delete_account_confirm_title">¿Eliminar tu cuenta?</string>
     <string name="profile_delete_account_confirm_desc">Tus datos serán eliminados de forma permanente. Esta acción no se puede deshacer. Escribe tu nombre para confirmar.</string>
@@ -878,7 +876,6 @@
     <string name="notice_route_updated">Ruta actualizada</string>
     <string name="notice_route_duplicated">Ruta duplicada</string>
     <string name="notice_vehicle_saved">Vehículo guardado</string>
-    <string name="notice_profile_saved">Perfil actualizado</string>
 
     <!-- Guardia de cambios sin guardar, reutilizada por cada formulario de creación/edición -->
     <string name="discard_changes_title">¿Descartar los cambios?</string>
@@ -968,7 +965,6 @@
     <string name="payment_type_qr_code_description">Una captura del QR que genera tu app bancaria para recibir dinero.</string>
     <string name="payment_bre_b_key_label">Llave Bre-B</string>
     <string name="payment_bre_b_key_placeholder">Ej. 3001234567 o @tualias</string>
-    <string name="payment_qr_change_image">Elegir otra imagen</string>
     <string name="payment_qr_image_cd">Código QR para pagarle al conductor</string>
     <string name="payment_save">Guardar</string>
     <string name="payment_delete_cd">Eliminar %1$s</string>
@@ -1023,4 +1019,25 @@
     <string name="trip_cancel_dialog_back">Volver</string>
     <string name="error_trip_cancel_failed">No pudimos cancelar el viaje. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="trip_tracking_locating_driver">Ubicando al conductor…</string>
+    <!-- Profile summaries, payment QR editor, pay driver, place map pick, rating -->
+    <plurals name="profile_vehicles_registered">
+        <item quantity="one">Mis vehículos · %1$d registrado</item>
+        <item quantity="other">Mis vehículos · %1$d registrados</item>
+    </plurals>
+    <string name="profile_vehicle_empty">Registra un vehículo</string>
+    <string name="profile_vehicle_empty_body">Lo necesitas para publicar viajes</string>
+    <plurals name="profile_payment_methods_count">
+        <item quantity="one">%1$d método de pago</item>
+        <item quantity="other">%1$d métodos de pago</item>
+    </plurals>
+    <string name="profile_payment_empty">Agrega cómo te pagan tus pasajeros</string>
+    <string name="payment_kinds_join">%1$s y %2$s</string>
+    <string name="payment_qr_no_image">Aún no has elegido una imagen</string>
+    <string name="payment_qr_choose_gallery">Elegir de la galería</string>
+    <string name="payment_qr_take_photo">Tomar foto</string>
+    <string name="pay_driver_done">Listo</string>
+    <string name="place_selector_choose_on_map">Elegir en el mapa</string>
+    <string name="place_selector_choose_on_map_description">Usa cualquier punto sin guardarlo</string>
+    <string name="place_selector_map_point_name">Punto en el mapa</string>
+    <string name="rating_scale_anchor">%1$d · %2$s</string>
 </resources>

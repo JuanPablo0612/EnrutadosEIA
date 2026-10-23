@@ -352,7 +352,6 @@ fun AppNavigation(
                         onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
                         // The list, not the creation form — the row is labelled "saved places".
                         onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
-                        onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                         onNavigateToPaymentMethods = { navController.navigate(Route.PaymentMethods) },
                         onNavigateToPayDriver = { tripId -> navController.navigate(Route.PayDriver(tripId)) },
                         onDeleteAccountSuccess = {

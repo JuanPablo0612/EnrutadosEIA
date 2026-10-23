@@ -49,7 +49,6 @@ import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
-import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
@@ -69,7 +68,6 @@ import enrutadoseia.composeapp.generated.resources.edit_profile_phone_label
 import enrutadoseia.composeapp.generated.resources.edit_profile_photo_error
 import enrutadoseia.composeapp.generated.resources.edit_profile_save_button
 import enrutadoseia.composeapp.generated.resources.edit_profile_title
-import enrutadoseia.composeapp.generated.resources.notice_profile_saved
 import enrutadoseia.composeapp.generated.resources.photo_camera_24px
 import enrutadoseia.composeapp.generated.resources.register_photo_action_camera
 import enrutadoseia.composeapp.generated.resources.register_photo_action_gallery
@@ -245,14 +243,10 @@ fun EditProfileContent(
                     ErrorMessage(message = stringResource(it.asStringResource()))
                 }
 
-                if (state.isSaved) {
-                    SuccessMessage(message = stringResource(Res.string.notice_profile_saved))
-                }
-
                 PrimaryButton(
                     text = stringResource(Res.string.edit_profile_save_button),
                     onClick = { onAction(EditProfileAction.OnSaveClick) },
-                    enabled = !state.isSaving && !state.isSaved,
+                    enabled = !state.isSaving,
                     isLoading = state.isSaving,
                     modifier = Modifier.fillMaxWidth()
                 )

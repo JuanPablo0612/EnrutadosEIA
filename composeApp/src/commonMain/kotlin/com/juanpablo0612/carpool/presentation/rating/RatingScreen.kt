@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -31,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -77,6 +81,7 @@ import enrutadoseia.composeapp.generated.resources.rating_comment_placeholder
 import enrutadoseia.composeapp.generated.resources.rating_default_ratee_name
 import enrutadoseia.composeapp.generated.resources.rating_highlights
 import enrutadoseia.composeapp.generated.resources.rating_highlights_hint
+import enrutadoseia.composeapp.generated.resources.rating_scale_anchor
 import enrutadoseia.composeapp.generated.resources.rating_skip
 import enrutadoseia.composeapp.generated.resources.rating_stars_1
 import enrutadoseia.composeapp.generated.resources.rating_stars_2
@@ -262,22 +267,33 @@ private fun tripLine(target: RatingTarget): String? {
 private fun StarPicker(selectedStars: Int, onSelect: (Int) -> Unit) {
     val ratingColor = LocalExtendedColors.current.rating
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-        Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            for (stars in 1..5) {
-                val filled = stars <= selectedStars
-                Box(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .selectable(selected = stars == selectedStars, role = Role.RadioButton, onClick = { onSelect(stars) }),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = vectorResource(if (filled) Res.drawable.star_24px else Res.drawable.star_outline_24px),
-                        contentDescription = stringResource(Res.string.cd_rating_star, stars),
-                        tint = if (filled) ratingColor else MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.size(40.dp),
-                    )
+        // As wide as the stars, so the anchors sit under the first and the last.
+        Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+            Row(modifier = Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                for (stars in 1..5) {
+                    val filled = stars <= selectedStars
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .selectable(selected = stars == selectedStars, role = Role.RadioButton, onClick = { onSelect(stars) }),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = vectorResource(if (filled) Res.drawable.star_24px else Res.drawable.star_outline_24px),
+                            contentDescription = stringResource(Res.string.cd_rating_star, stars),
+                            tint = if (filled) ratingColor else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.size(40.dp),
+                        )
+                    }
                 }
+            }
+            // Each star already announces its number, so the anchors are for sighted users only.
+            Row(
+                modifier = Modifier.fillMaxWidth().clearAndSetSemantics {},
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                ScaleAnchor(stars = 1, label = Res.string.rating_stars_1, textAlign = TextAlign.Start)
+                ScaleAnchor(stars = 5, label = Res.string.rating_stars_5, textAlign = TextAlign.End)
             }
         }
         Text(
@@ -287,6 +303,17 @@ private fun StarPicker(selectedStars: Int, onSelect: (Int) -> Unit) {
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         )
     }
+}
+
+@Composable
+private fun RowScope.ScaleAnchor(stars: Int, label: StringResource, textAlign: TextAlign) {
+    Text(
+        text = stringResource(Res.string.rating_scale_anchor, stars, stringResource(label)),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = textAlign,
+        modifier = Modifier.weight(1f),
+    )
 }
 
 private fun starLabel(stars: Int): StringResource = when (stars) {

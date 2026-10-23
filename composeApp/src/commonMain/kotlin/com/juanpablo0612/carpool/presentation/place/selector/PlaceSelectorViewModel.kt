@@ -13,6 +13,7 @@ import com.juanpablo0612.carpool.domain.place.usecase.GetSavedPlacesUseCase
 import com.juanpablo0612.carpool.presentation.place.add.components.LocationPermissionRequester
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.place_selector_current_location_name
+import enrutadoseia.composeapp.generated.resources.place_selector_map_point_name
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -65,6 +66,7 @@ class PlaceSelectorViewModel(
     val events: SharedFlow<PlaceSelectorEvent> = _events.asSharedFlow()
 
     private var getPlacesJob: Job? = null
+    private var mapPickSessions = 0
     private var searchJob: Job? = null
 
     init {
@@ -102,7 +104,7 @@ class PlaceSelectorViewModel(
             }
             PlaceSelectorAction.OnDismiss -> viewModelScope.launch {
                 sessionToken = Uuid.random().toString()
-                _state.update { it.copy(searchQuery = "", searchResults = emptyList(), error = null) }
+                _state.update { it.copy(searchQuery = "", searchResults = emptyList(), error = null, mapPick = null) }
                 _events.emit(PlaceSelectorEvent.Dismiss)
             }
             is PlaceSelectorAction.OnDeletePlace ->
@@ -111,6 +113,30 @@ class PlaceSelectorViewModel(
                 _state.update { it.copy(isConfirmingDelete = null) }
             PlaceSelectorAction.OnConfirmDelete -> deleteCurrentPlace()
             is PlaceSelectorAction.OnAddToMyPlaces -> addToMyPlaces(action.place)
+            PlaceSelectorAction.OnChooseOnMap -> {
+                val session = ++mapPickSessions
+                _state.update { state ->
+                    // Start where the user is when that's known, otherwise at the main campus.
+                    val start = state.currentLocation ?: Place.EIA_LAS_PALMAS
+                    state.copy(mapPick = MapPickRequest(session, start.latitude, start.longitude))
+                }
+            }
+            PlaceSelectorAction.OnCancelMapPick -> _state.update { it.copy(mapPick = null) }
+            is PlaceSelectorAction.OnMapPointPicked -> selectMapPoint(action)
+        }
+    }
+
+    private fun selectMapPoint(action: PlaceSelectorAction.OnMapPointPicked) {
+        viewModelScope.launch {
+            val place = mapPointPlace(
+                latitude = action.latitude,
+                longitude = action.longitude,
+                placeName = action.placeName,
+                address = action.address,
+                fallbackName = getString(Res.string.place_selector_map_point_name),
+            )
+            _state.update { it.copy(mapPick = null) }
+            _events.emit(PlaceSelectorEvent.PlaceSelected(place))
         }
     }
 

@@ -686,9 +686,7 @@
     <!-- Profile enhancement -->
     <string name="profile_edit_button">Edit profile</string>
     <string name="profile_my_account_section">My account</string>
-    <string name="profile_config_section">Settings</string>
     <string name="profile_saved_places">My saved places</string>
-    <string name="profile_notifications_settings">Notifications</string>
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
     <string name="profile_delete_account_confirm_desc">Your data will be permanently deleted. This action cannot be undone. Type your name to confirm.</string>
@@ -876,7 +874,6 @@
     <string name="notice_route_updated">Route updated</string>
     <string name="notice_route_duplicated">Route duplicated</string>
     <string name="notice_vehicle_saved">Vehicle saved</string>
-    <string name="notice_profile_saved">Profile updated</string>
 
     <!-- Unsaved-changes guard, reused by every create/edit form with a discard-on-back risk -->
     <string name="discard_changes_title">Discard changes?</string>
@@ -966,7 +963,6 @@
     <string name="payment_type_qr_code_description">A screenshot of the QR your bank app generates to receive money.</string>
     <string name="payment_bre_b_key_label">Bre-B key</string>
     <string name="payment_bre_b_key_placeholder">e.g. 3001234567 or @youralias</string>
-    <string name="payment_qr_change_image">Choose another image</string>
     <string name="payment_qr_image_cd">QR code to pay the driver</string>
     <string name="payment_save">Save</string>
     <string name="payment_delete_cd">Delete %1$s</string>
@@ -1021,4 +1017,25 @@
     <string name="trip_cancel_dialog_back">Back</string>
     <string name="error_trip_cancel_failed">Couldn\'t cancel the trip. Check your connection and try again.</string>
     <string name="trip_tracking_locating_driver">Locating driver…</string>
+    <!-- Profile summaries, payment QR editor, pay driver, place map pick, rating -->
+    <plurals name="profile_vehicles_registered">
+        <item quantity="one">My vehicles · %1$d registered</item>
+        <item quantity="other">My vehicles · %1$d registered</item>
+    </plurals>
+    <string name="profile_vehicle_empty">Register a vehicle</string>
+    <string name="profile_vehicle_empty_body">You need one to publish trips</string>
+    <plurals name="profile_payment_methods_count">
+        <item quantity="one">%1$d payment method</item>
+        <item quantity="other">%1$d payment methods</item>
+    </plurals>
+    <string name="profile_payment_empty">Add how passengers pay you</string>
+    <string name="payment_kinds_join">%1$s and %2$s</string>
+    <string name="payment_qr_no_image">No image selected yet</string>
+    <string name="payment_qr_choose_gallery">Choose from gallery</string>
+    <string name="payment_qr_take_photo">Take photo</string>
+    <string name="pay_driver_done">Done</string>
+    <string name="place_selector_choose_on_map">Choose on map</string>
+    <string name="place_selector_choose_on_map_description">Use any point without saving it</string>
+    <string name="place_selector_map_point_name">Point on the map</string>
+    <string name="rating_scale_anchor">%1$d · %2$s</string>
 </resources>

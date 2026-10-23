@@ -10,5 +10,9 @@ data class ProfileUiState(
     val showDeleteAccountDialog: Boolean = false,
     val deleteAccountNameInput: String = "",
     val isDeleting: Boolean = false,
-    val deleteAccountError: AuthError? = null
+    val deleteAccountError: AuthError? = null,
+    /** Null while loading or after a failed load; the card then shows a neutral fallback. */
+    val vehicleSummary: VehicleSummary? = null,
+    /** Null while loading or after a failed load; the card then shows a neutral fallback. */
+    val paymentSummary: PaymentSummary? = null,
 )

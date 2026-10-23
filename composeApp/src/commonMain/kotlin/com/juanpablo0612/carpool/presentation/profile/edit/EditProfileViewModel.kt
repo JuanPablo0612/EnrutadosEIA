@@ -10,7 +10,6 @@ import com.juanpablo0612.carpool.presentation.auth.toAuthError
 import com.juanpablo0612.carpool.presentation.session.UserSession
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,8 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private const val SAVED_BANNER_DURATION_MS = 900L
 
 class EditProfileViewModel(
     private val userSession: UserSession,
@@ -128,8 +125,8 @@ class EditProfileViewModel(
             ).fold(
                 onSuccess = { updatedUser ->
                     userSession.setUser(updatedUser)
-                    _state.update { it.copy(isSaving = false, isSaved = true) }
-                    delay(SAVED_BANNER_DURATION_MS)
+                    // The updated profile behind this screen is the confirmation, so no message.
+                    _state.update { it.copy(isSaving = false) }
                     _events.emit(EditProfileEvent.SaveSuccess)
                 },
                 onFailure = { throwable ->

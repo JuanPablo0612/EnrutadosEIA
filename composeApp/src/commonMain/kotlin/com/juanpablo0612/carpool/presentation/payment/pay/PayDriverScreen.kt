@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,10 +35,12 @@ import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
 import com.juanpablo0612.carpool.presentation.ui.components.EmptyState
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
+import com.juanpablo0612.carpool.presentation.ui.components.PrimaryButton
 import com.juanpablo0612.carpool.presentation.ui.components.UserAvatar
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
 import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
+import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
@@ -48,6 +52,7 @@ import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cd_back
 import enrutadoseia.composeapp.generated.resources.error_payment_driver_load_failed
 import enrutadoseia.composeapp.generated.resources.pay_driver_amount
+import enrutadoseia.composeapp.generated.resources.pay_driver_done
 import enrutadoseia.composeapp.generated.resources.pay_driver_empty_description
 import enrutadoseia.composeapp.generated.resources.pay_driver_empty_title
 import enrutadoseia.composeapp.generated.resources.pay_driver_free
@@ -109,6 +114,22 @@ fun PayDriverContent(
                 title = stringResource(Res.string.pay_driver_title),
                 onBack = { onAction(PayDriverAction.OnBackClick) },
             )
+        },
+        bottomBar = {
+            // Only leaves the screen: the app can't see the transfer, so it confirms nothing.
+            if (!state.isLoading && !state.loadFailed && state.methods.isNotEmpty()) {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    PrimaryButton(
+                        text = stringResource(Res.string.pay_driver_done),
+                        onClick = { onAction(PayDriverAction.OnBackClick) },
+                        modifier = Modifier
+                            .windowInsetsPadding(BottomBarInsets)
+                            .centeredContent(ContentWidth.list)
+                            .padding(horizontal = Spacing.lg, vertical = Spacing.md)
+                            .fillMaxWidth(),
+                    )
+                }
+            }
         },
     ) { padding ->
         val modifier = Modifier.fillMaxSize().padding(padding)

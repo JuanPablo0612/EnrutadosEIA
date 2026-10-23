@@ -87,12 +87,9 @@ class PaymentMethodsViewModel(
     }
 
     private fun onQrImagePicked(action: PaymentMethodsAction.OnQrImagePicked) {
-        val editor = _state.value.editor as? PaymentMethodEditor.QrCode ?: return
-        when {
-            action.file != null -> updateEditor<PaymentMethodEditor.QrCode> { it.copy(imageFile = action.file, fieldError = null) }
-            // Closing the picker before ever choosing an image means the user changed their mind.
-            editor.imageFile == null -> _state.update { it.copy(editor = null) }
-        }
+        // Closing the gallery or camera without choosing leaves the form as it was.
+        val file = action.file ?: return
+        updateEditor<PaymentMethodEditor.QrCode> { it.copy(imageFile = file, fieldError = null) }
     }
 
     private inline fun <reified E : PaymentMethodEditor> updateEditor(crossinline transform: (E) -> E) {

@@ -182,6 +182,20 @@ fun AddPlaceContent(
                 errorMessage = null,
             )
 
+            // Above the suggestions rather than below, so it stays in place while they show.
+            OutlinedButton(
+                onClick = { onAction(AddPlaceAction.PickOnMap) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(
+                    imageVector = vectorResource(Res.drawable.location_on_24px),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp), // icon-intrinsic size
+                )
+                Spacer(Modifier.width(Spacing.sm))
+                Text(stringResource(Res.string.add_place_pick_on_map))
+            }
+
             // Inline autocomplete suggestions
             AnimatedVisibility(visible = state.autocompleteSuggestions.isNotEmpty()) {
                 Card(
@@ -210,22 +224,6 @@ fun AddPlaceContent(
                             }
                         }
                     }
-                }
-            }
-
-            // "Pick on map" button — visible when no suggestions are showing
-            if (state.autocompleteSuggestions.isEmpty()) {
-                OutlinedButton(
-                    onClick = { onAction(AddPlaceAction.PickOnMap) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.location_on_24px),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp), // icon-intrinsic size
-                    )
-                    Spacer(Modifier.width(Spacing.sm))
-                    Text(stringResource(Res.string.add_place_pick_on_map))
                 }
             }
 

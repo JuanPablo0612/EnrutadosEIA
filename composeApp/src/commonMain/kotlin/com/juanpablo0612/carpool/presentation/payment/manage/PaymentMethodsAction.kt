@@ -9,7 +9,7 @@ sealed class PaymentMethodsAction {
     data object OnDismissTypePicker : PaymentMethodsAction()
     data class OnTypeSelected(val type: PaymentMethodType) : PaymentMethodsAction()
     data class OnBreBKeyChange(val key: String) : PaymentMethodsAction()
-    /** Null when the user closed the image picker without choosing. */
+    /** Null when the user closed the gallery or camera without choosing. */
     data class OnQrImagePicked(val file: PlatformFile?) : PaymentMethodsAction()
     data object OnSave : PaymentMethodsAction()
     data object OnDismissEditor : PaymentMethodsAction()
