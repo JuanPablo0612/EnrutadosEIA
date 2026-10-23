@@ -9,7 +9,6 @@ sealed class ProfileAction {
     data object OnMyVehiclesClick : ProfileAction()
     data object OnEditProfileClick : ProfileAction()
     data object OnSavedPlacesClick : ProfileAction()
-    data object OnNotificationsClick : ProfileAction()
     data object OnPaymentMethodsClick : ProfileAction()
     data object OnDeleteAccountClick : ProfileAction()
     data object OnDeleteAccountDismissed : ProfileAction()

@@ -555,9 +555,7 @@
     <!-- Perfil mejorado -->
     <string name="profile_edit_button">Editar perfil</string>
     <string name="profile_my_account_section">Mi cuenta</string>
-    <string name="profile_config_section">Configuración</string>
     <string name="profile_saved_places">Mis lugares guardados</string>
-    <string name="profile_notifications_settings">Notificaciones</string>
     <string name="profile_delete_account">Eliminar cuenta</string>
     <string name="profile_delete_account_confirm_title">¿Eliminar tu cuenta?</string>
     <string name="profile_delete_account_confirm_desc">Tus datos serán eliminados de forma permanente. Esta acción no se puede deshacer. Escribe tu nombre para confirmar.</string>
@@ -999,4 +997,17 @@
     <string name="error_payment_driver_load_failed">No pudimos cargar los métodos de pago del conductor.</string>
     <string name="error_payment_gallery_permission">Permite que la app guarde fotos para conservar el QR.</string>
     <string name="error_payment_qr_save_failed">No pudimos guardar el QR. Revisa tu conexión y que la app pueda guardar fotos.</string>
+    <!-- Profile summaries, payment QR editor, pay driver, place map pick, rating -->
+    <plurals name="profile_vehicles_registered">
+        <item quantity="one">Mis vehículos · %1$d registrado</item>
+        <item quantity="other">Mis vehículos · %1$d registrados</item>
+    </plurals>
+    <string name="profile_vehicle_empty">Registra un vehículo</string>
+    <string name="profile_vehicle_empty_body">Lo necesitas para publicar viajes</string>
+    <plurals name="profile_payment_methods_count">
+        <item quantity="one">%1$d método de pago</item>
+        <item quantity="other">%1$d métodos de pago</item>
+    </plurals>
+    <string name="profile_payment_empty">Agrega cómo te pagan tus pasajeros</string>
+    <string name="payment_kinds_join">%1$s y %2$s</string>
 </resources>

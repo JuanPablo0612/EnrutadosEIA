@@ -686,9 +686,7 @@
     <!-- Profile enhancement -->
     <string name="profile_edit_button">Edit profile</string>
     <string name="profile_my_account_section">My account</string>
-    <string name="profile_config_section">Settings</string>
     <string name="profile_saved_places">My saved places</string>
-    <string name="profile_notifications_settings">Notifications</string>
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
     <string name="profile_delete_account_confirm_desc">Your data will be permanently deleted. This action cannot be undone. Type your name to confirm.</string>
@@ -997,4 +995,17 @@
     <string name="error_payment_driver_load_failed">Couldn\'t load the driver\'s payment methods.</string>
     <string name="error_payment_gallery_permission">Allow the app to save photos to keep the QR.</string>
     <string name="error_payment_qr_save_failed">Couldn\'t save the QR. Check your connection and that the app may save photos.</string>
+    <!-- Profile summaries, payment QR editor, pay driver, place map pick, rating -->
+    <plurals name="profile_vehicles_registered">
+        <item quantity="one">My vehicles · %1$d registered</item>
+        <item quantity="other">My vehicles · %1$d registered</item>
+    </plurals>
+    <string name="profile_vehicle_empty">Register a vehicle</string>
+    <string name="profile_vehicle_empty_body">You need one to publish trips</string>
+    <plurals name="profile_payment_methods_count">
+        <item quantity="one">%1$d payment method</item>
+        <item quantity="other">%1$d payment methods</item>
+    </plurals>
+    <string name="profile_payment_empty">Add how passengers pay you</string>
+    <string name="payment_kinds_join">%1$s and %2$s</string>
 </resources>
