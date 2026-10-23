@@ -1002,4 +1002,9 @@
         <item quantity="one">%1$d unread notification</item>
         <item quantity="other">%1$d unread notifications</item>
     </plurals>
+    <string name="home_empty_title">No upcoming trips</string>
+    <string name="home_empty_body">Find a seat for your next trip, or offer the empty seats in your car.</string>
+    <string name="home_vehicle_required_title">First, register your car</string>
+    <string name="home_vehicle_required_body">To publish a trip you need a registered vehicle, so passengers know which car to look for. It only takes a minute.</string>
+    <string name="action_not_now">Not now</string>
 </resources>

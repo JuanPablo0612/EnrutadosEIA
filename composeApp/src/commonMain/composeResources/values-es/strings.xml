@@ -1004,4 +1004,9 @@
         <item quantity="one">%1$d notificación sin leer</item>
         <item quantity="other">%1$d notificaciones sin leer</item>
     </plurals>
+    <string name="home_empty_title">No tienes viajes próximos</string>
+    <string name="home_empty_body">Busca un cupo para tu próximo viaje u ofrece los puestos libres de tu carro.</string>
+    <string name="home_vehicle_required_title">Primero, registra tu carro</string>
+    <string name="home_vehicle_required_body">Para publicar un viaje necesitas un vehículo registrado, así los pasajeros saben qué carro buscar. Solo toma un minuto.</string>
+    <string name="action_not_now">Ahora no</string>
 </resources>
