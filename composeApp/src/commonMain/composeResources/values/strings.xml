@@ -765,7 +765,7 @@
     <string name="trip_tracking_complete_confirm_button">End trip</string>
 
     <!-- Notifications -->
-    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_title">Notifications</string>
     <string name="notifications_empty_title">No notifications</string>
     <string name="notifications_empty_subtitle">Your trip and booking notifications will appear here.</string>
     <string name="notifications_clear_all">Borrar todo</string>
