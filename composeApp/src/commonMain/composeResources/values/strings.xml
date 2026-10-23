@@ -877,7 +877,6 @@
     <string name="notice_route_updated">Route updated</string>
     <string name="notice_route_duplicated">Route duplicated</string>
     <string name="notice_vehicle_saved">Vehicle saved</string>
-    <string name="notice_profile_saved">Profile updated</string>
 
     <!-- Unsaved-changes guard, reused by every create/edit form with a discard-on-back risk -->
     <string name="discard_changes_title">Discard changes?</string>

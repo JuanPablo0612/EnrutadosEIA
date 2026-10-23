@@ -879,7 +879,6 @@
     <string name="notice_route_updated">Ruta actualizada</string>
     <string name="notice_route_duplicated">Ruta duplicada</string>
     <string name="notice_vehicle_saved">Vehículo guardado</string>
-    <string name="notice_profile_saved">Perfil actualizado</string>
 
     <!-- Guardia de cambios sin guardar, reutilizada por cada formulario de creación/edición -->
     <string name="discard_changes_title">¿Descartar los cambios?</string>
