@@ -1000,4 +1000,13 @@
     <string name="error_payment_driver_load_failed">No pudimos cargar los métodos de pago del conductor.</string>
     <string name="error_payment_gallery_permission">Permite que la app guarde fotos para conservar el QR.</string>
     <string name="error_payment_qr_save_failed">No pudimos guardar el QR. Revisa tu conexión y que la app pueda guardar fotos.</string>
+    <string name="publish_week_summary_title">Revisa tu semana</string>
+    <string name="publish_week_summary_subtitle">Todos los viajes se publican con estos datos.</string>
+    <string name="publish_week_summary_trips_label">Viajes que se publicarán</string>
+    <string name="publish_week_summary_skipped_label">Días que quedan por fuera</string>
+    <string name="publish_week_summary_skip_not_selected">No lo marcaste</string>
+    <plurals name="publish_week_review_button">
+        <item quantity="one">Revisar %1$d viaje</item>
+        <item quantity="other">Revisar %1$d viajes</item>
+    </plurals>
 </resources>

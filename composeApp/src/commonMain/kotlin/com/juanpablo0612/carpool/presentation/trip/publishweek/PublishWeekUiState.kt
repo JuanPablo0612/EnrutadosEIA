@@ -18,6 +18,7 @@ data class PublishWeekUiState(
     val seatCount: Int = 1,
     val contributionPerPassenger: Int? = null,
     val message: String = "",
+    val showSummary: Boolean = false,
     val isPublishing: Boolean = false,
     val error: TripError? = null,
 ) {

@@ -11,7 +11,9 @@ sealed class PublishWeekAction {
     data object OnRegisterVehicleClick : PublishWeekAction()
     data class OnVehicleRegistered(val vehicleId: String) : PublishWeekAction()
     data object OnEditRouteClick : PublishWeekAction()
-    data object OnPublishClick : PublishWeekAction()
+    data object OnReviewClick : PublishWeekAction()
+    data object OnConfirmPublish : PublishWeekAction()
+    data object OnDismissSummary : PublishWeekAction()
     data object OnBackClick : PublishWeekAction()
     data object OnRetry : PublishWeekAction()
 }
