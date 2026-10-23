@@ -71,6 +71,7 @@ import com.juanpablo0612.carpool.presentation.trip.publish.components.TripMessag
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripSeatsSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.TripWhenSection
 import com.juanpablo0612.carpool.presentation.trip.publish.components.VehicleRadioItem
+import com.juanpablo0612.carpool.presentation.trip.publish.components.summaryText
 import com.juanpablo0612.carpool.presentation.ui.components.ActionButton
 import com.juanpablo0612.carpool.presentation.ui.components.AdaptiveTimePicker
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
@@ -267,9 +268,7 @@ fun PublishTripContent(
                 timeText = formattedTime,
                 seatCount = state.seatCount,
                 contributionPerPassenger = state.contributionPerPassenger,
-                vehicleText = state.selectedVehicle?.let {
-                    listOf("${it.brand} ${it.model}".trim(), it.licensePlate).filter(String::isNotBlank).joinToString(" · ")
-                },
+                vehicleText = state.selectedVehicle?.summaryText(),
                 message = state.message,
                 routeNameToSave = state.routeName.trim().takeIf { state.isFromScratch && state.saveAsRoute },
             ),
