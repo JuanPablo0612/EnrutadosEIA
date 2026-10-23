@@ -49,6 +49,9 @@ import enrutadoseia.composeapp.generated.resources.delete_24px
 import enrutadoseia.composeapp.generated.resources.delete_place_confirm_body
 import enrutadoseia.composeapp.generated.resources.delete_place_confirm_title
 import enrutadoseia.composeapp.generated.resources.location_on_24px
+import enrutadoseia.composeapp.generated.resources.map_24px
+import enrutadoseia.composeapp.generated.resources.place_selector_choose_on_map
+import enrutadoseia.composeapp.generated.resources.place_selector_choose_on_map_description
 import enrutadoseia.composeapp.generated.resources.place_selector_allow_location
 import enrutadoseia.composeapp.generated.resources.place_selector_current_location
 import enrutadoseia.composeapp.generated.resources.place_selector_empty_my_places_description
@@ -102,6 +105,8 @@ fun PlaceSelectorContent(
     onAction: (PlaceSelectorAction) -> Unit,
     onBack: () -> Unit,
     onPlaceSelected: (Place) -> Unit = {},
+    /** Offers "choose on map"; only hosts that render [PlaceSelectorUiState.mapPick] turn it on. */
+    showChooseOnMap: Boolean = false,
 ) {
     val title = when (state.mode) {
         PlaceSelectorMode.Origin -> stringResource(Res.string.place_selector_title_origin)
@@ -199,6 +204,17 @@ fun PlaceSelectorContent(
                                 }
                             }
                             HorizontalDivider()
+                        }
+                        if (showChooseOnMap) {
+                            item(key = "choose_on_map") {
+                                PlaceRow(
+                                    icon = vectorResource(Res.drawable.map_24px),
+                                    name = stringResource(Res.string.place_selector_choose_on_map),
+                                    address = stringResource(Res.string.place_selector_choose_on_map_description),
+                                    onClick = { onAction(PlaceSelectorAction.OnChooseOnMap) },
+                                )
+                                HorizontalDivider()
+                            }
                         }
                     }
 
@@ -363,6 +379,7 @@ private fun PlaceSelectorContentPreview() {
             ),
             onAction = {},
             onBack = {},
+            showChooseOnMap = true,
         )
     }
 }

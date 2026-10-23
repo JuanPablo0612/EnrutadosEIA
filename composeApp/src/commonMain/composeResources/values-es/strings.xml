@@ -1013,4 +1013,7 @@
     <string name="payment_qr_choose_gallery">Elegir de la galería</string>
     <string name="payment_qr_take_photo">Tomar foto</string>
     <string name="pay_driver_done">Listo</string>
+    <string name="place_selector_choose_on_map">Elegir en el mapa</string>
+    <string name="place_selector_choose_on_map_description">Usa cualquier punto sin guardarlo</string>
+    <string name="place_selector_map_point_name">Punto en el mapa</string>
 </resources>

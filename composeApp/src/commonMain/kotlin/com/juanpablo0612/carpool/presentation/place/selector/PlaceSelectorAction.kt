@@ -15,4 +15,13 @@ sealed class PlaceSelectorAction {
     data object OnConfirmDelete : PlaceSelectorAction()
     data object OnCancelDelete : PlaceSelectorAction()
     data class OnAddToMyPlaces(val place: Place) : PlaceSelectorAction()
+    data object OnChooseOnMap : PlaceSelectorAction()
+    data object OnCancelMapPick : PlaceSelectorAction()
+    /** [placeName] is set when a point of interest was tapped; [address] once it has resolved. */
+    data class OnMapPointPicked(
+        val latitude: Double,
+        val longitude: Double,
+        val placeName: String?,
+        val address: String?,
+    ) : PlaceSelectorAction()
 }

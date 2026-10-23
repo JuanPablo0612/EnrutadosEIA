@@ -1011,4 +1011,7 @@
     <string name="payment_qr_choose_gallery">Choose from gallery</string>
     <string name="payment_qr_take_photo">Take photo</string>
     <string name="pay_driver_done">Done</string>
+    <string name="place_selector_choose_on_map">Choose on map</string>
+    <string name="place_selector_choose_on_map_description">Use any point without saving it</string>
+    <string name="place_selector_map_point_name">Point on the map</string>
 </resources>
