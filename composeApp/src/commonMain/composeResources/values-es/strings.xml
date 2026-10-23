@@ -1012,4 +1012,5 @@
     <string name="payment_qr_no_image">Aún no has elegido una imagen</string>
     <string name="payment_qr_choose_gallery">Elegir de la galería</string>
     <string name="payment_qr_take_photo">Tomar foto</string>
+    <string name="pay_driver_done">Listo</string>
 </resources>
