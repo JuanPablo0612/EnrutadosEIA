@@ -629,7 +629,6 @@
     <string name="trip_tracking_mark_picked_up">Marcar recogido</string>
     <string name="trip_tracking_mark_dropped_off">Marcar bajó</string>
     <string name="trip_tracking_complete_trip">Finalizar viaje</string>
-    <string name="trip_tracking_no_location">Sin ubicación aún</string>
     <string name="trip_tracking_message_driver">Mensaje</string>
     <string name="trip_tracking_your_status">Tu estado</string>
     <string name="pickup_status_picked_up">Recogido</string>
@@ -1009,4 +1008,19 @@
         <item quantity="one">Revisar %1$d viaje</item>
         <item quantity="other">Revisar %1$d viajes</item>
     </plurals>
+    <!-- Managing a trip you drive -->
+    <plurals name="trip_cancel_dialog_confirmed">
+        <item quantity="one">%d pasajero confirmado</item>
+        <item quantity="other">%d pasajeros confirmados</item>
+    </plurals>
+    <plurals name="trip_cancel_dialog_pending">
+        <item quantity="one">%d solicitud pendiente</item>
+        <item quantity="other">%d solicitudes pendientes</item>
+    </plurals>
+    <string name="trip_cancel_dialog_notify_both">Avisaremos a %1$s y %2$s. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_notify_one">Avisaremos a %1$s. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_notify_none">Nadie ha reservado un cupo todavía. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_back">Volver</string>
+    <string name="error_trip_cancel_failed">No pudimos cancelar el viaje. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="trip_tracking_locating_driver">Ubicando al conductor…</string>
 </resources>

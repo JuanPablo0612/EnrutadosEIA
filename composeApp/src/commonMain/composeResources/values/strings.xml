@@ -760,7 +760,6 @@
     <string name="trip_tracking_mark_picked_up">Marcar recogido</string>
     <string name="trip_tracking_mark_dropped_off">Marcar bajó</string>
     <string name="trip_tracking_complete_trip">End trip</string>
-    <string name="trip_tracking_no_location">No location yet</string>
     <string name="trip_tracking_message_driver">Message</string>
     <string name="trip_tracking_your_status">Your status</string>
     <string name="pickup_status_picked_up">Picked up</string>
@@ -1007,4 +1006,19 @@
         <item quantity="one">Review %1$d trip</item>
         <item quantity="other">Review %1$d trips</item>
     </plurals>
+    <!-- Managing a trip you drive -->
+    <plurals name="trip_cancel_dialog_confirmed">
+        <item quantity="one">%d confirmed passenger</item>
+        <item quantity="other">%d confirmed passengers</item>
+    </plurals>
+    <plurals name="trip_cancel_dialog_pending">
+        <item quantity="one">%d pending request</item>
+        <item quantity="other">%d pending requests</item>
+    </plurals>
+    <string name="trip_cancel_dialog_notify_both">We\'ll notify %1$s and %2$s. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_notify_one">We\'ll notify %1$s. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_notify_none">Nobody has booked a seat yet. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_back">Back</string>
+    <string name="error_trip_cancel_failed">Couldn\'t cancel the trip. Check your connection and try again.</string>
+    <string name="trip_tracking_locating_driver">Locating driver…</string>
 </resources>

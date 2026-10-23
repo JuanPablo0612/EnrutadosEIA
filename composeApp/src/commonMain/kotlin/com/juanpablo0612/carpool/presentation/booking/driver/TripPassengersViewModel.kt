@@ -8,6 +8,7 @@ import com.juanpablo0612.carpool.domain.booking.repository.BookingRepository
 import com.juanpablo0612.carpool.domain.booking.usecase.CancelBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.ConfirmBookingUseCase
 import com.juanpablo0612.carpool.domain.booking.usecase.RejectBookingUseCase
+import com.juanpablo0612.carpool.domain.trip.model.TripStatus
 import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.presentation.booking.BookingError
 import com.juanpablo0612.carpool.presentation.booking.driver.decision.BookingDecisions
@@ -88,6 +89,14 @@ class TripPassengersViewModel(
             }
             is TripPassengersAction.OnDecision -> decisions.onAction(action.action)
             TripPassengersAction.OnEditTripClick -> emit(TripPassengersEvent.NavigateToEditTrip(tripId))
+            TripPassengersAction.OnCancelTripClick -> if (screenState.value.canCancelTrip) {
+                screenState.update { it.copy(showCancelTripDialog = true, cancelTripError = null) }
+            }
+            TripPassengersAction.OnCancelTripConfirm -> cancelTrip()
+            TripPassengersAction.OnCancelTripDismiss -> screenState.update {
+                // The request is already on its way; closing the dialog would hide its outcome.
+                if (it.isCancellingTrip) it else it.copy(showCancelTripDialog = false, cancelTripError = null)
+            }
             TripPassengersAction.OnRetry -> load()
         }
     }
@@ -117,6 +126,22 @@ class TripPassengersViewModel(
             }
                 .catch { error -> screenState.update { it.copy(isLoading = false, loadError = error.toBookingError()) } }
                 .collect {}
+        }
+    }
+
+    private fun cancelTrip() {
+        if (screenState.value.isCancellingTrip) return
+        screenState.update { it.copy(isCancellingTrip = true, cancelTripError = null) }
+        viewModelScope.launch {
+            // Cloud Functions cancels the trip's open bookings and notifies their passengers.
+            tripRepository.updateTripStatus(tripId, TripStatus.Cancelled)
+                .onSuccess {
+                    screenState.update { it.copy(isCancellingTrip = false, showCancelTripDialog = false) }
+                    _events.emit(TripPassengersEvent.NavigateBack)
+                }
+                .onFailure {
+                    screenState.update { it.copy(isCancellingTrip = false, cancelTripError = TripCancelError.Failed) }
+                }
         }
     }
 
