@@ -1,5 +1,11 @@
 package com.juanpablo0612.carpool.presentation.route.search
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -101,15 +107,32 @@ fun SearchRoutesScreen(
         viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection)
     }
 
-    if (state.isPickingPlace) {
-        PlaceSelectorContent(
-            state = selectorState,
-            onAction = selectorViewModel::onAction,
-            onPlaceSelected = onPlaceSelected,
-            onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
-        )
-    } else {
-        SearchRoutesContent(state = state, onAction = viewModel::onAction)
+    // The selector slides up over the search and back down, so it reads as a transient sheet
+    // laid over the form rather than a new screen.
+    AnimatedContent(
+        targetState = state.isPickingPlace,
+        transitionSpec = {
+            if (targetState) {
+                (slideInVertically { it } + fadeIn()) togetherWith fadeOut(targetAlpha = 1f)
+            } else {
+                fadeIn(initialAlpha = 1f) togetherWith (slideOutVertically { it } + fadeOut())
+            }.apply {
+                // The selector stays on top both ways: entering over the search, leaving off it.
+                targetContentZIndex = if (targetState) 1f else -1f
+            }
+        },
+        label = "placeSelector",
+    ) { isPickingPlace ->
+        if (isPickingPlace) {
+            PlaceSelectorContent(
+                state = selectorState,
+                onAction = selectorViewModel::onAction,
+                onPlaceSelected = onPlaceSelected,
+                onBack = { viewModel.onAction(SearchRoutesAction.OnCancelPlaceSelection) },
+            )
+        } else {
+            SearchRoutesContent(state = state, onAction = viewModel::onAction)
+        }
     }
 }
 

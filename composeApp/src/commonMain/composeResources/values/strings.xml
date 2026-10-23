@@ -1007,4 +1007,5 @@
     <string name="home_vehicle_required_title">First, register your car</string>
     <string name="home_vehicle_required_body">To publish a trip you need a registered vehicle, so passengers know which car to look for. It only takes a minute.</string>
     <string name="action_not_now">Not now</string>
+    <string name="cd_clear_time">Clear time</string>
 </resources>

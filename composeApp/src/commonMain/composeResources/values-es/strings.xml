@@ -1009,4 +1009,5 @@
     <string name="home_vehicle_required_title">Primero, registra tu carro</string>
     <string name="home_vehicle_required_body">Para publicar un viaje necesitas un vehículo registrado, así los pasajeros saben qué carro buscar. Solo toma un minuto.</string>
     <string name="action_not_now">Ahora no</string>
+    <string name="cd_clear_time">Quitar la hora</string>
 </resources>
