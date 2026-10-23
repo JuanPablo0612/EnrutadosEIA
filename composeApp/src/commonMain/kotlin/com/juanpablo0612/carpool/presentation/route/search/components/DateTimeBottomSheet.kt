@@ -42,6 +42,7 @@ import enrutadoseia.composeapp.generated.resources.search_date_placeholder
 import enrutadoseia.composeapp.generated.resources.search_time_field_placeholder
 import enrutadoseia.composeapp.generated.resources.search_tolerance_label
 import enrutadoseia.composeapp.generated.resources.search_tolerance_minutes
+import enrutadoseia.composeapp.generated.resources.search_when_any
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
@@ -154,6 +155,13 @@ internal fun DateTimeBottomSheet(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(Res.string.confirm))
+                }
+
+                TextButton(
+                    onClick = { onConfirm(null, selectedTolerance) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(Res.string.search_when_any))
                 }
             }
 

@@ -1,6 +1,7 @@
 package com.juanpablo0612.carpool.presentation.route.search.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -24,7 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,6 +46,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.formatTime
 import com.juanpablo0612.carpool.presentation.ui.util.rememberNowMs
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.cd_clear_place
+import enrutadoseia.composeapp.generated.resources.cd_clear_time
 import enrutadoseia.composeapp.generated.resources.close_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.passenger_home_title
@@ -102,6 +107,7 @@ internal fun SearchHeader(
                     selectedEpochMs = state.selectedEpochMs,
                     onCampusSelected = { onAction(SearchRoutesAction.OnCampusSelected(it)) },
                     onPickTime = { onAction(SearchRoutesAction.OnShowDateTimeSheet) },
+                    onClearTime = { onAction(SearchRoutesAction.OnSearchAnyTime) },
                 )
             }
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -211,6 +217,7 @@ private fun CampusAndTimeRow(
     selectedEpochMs: Long?,
     onCampusSelected: (Place) -> Unit,
     onPickTime: () -> Unit,
+    onClearTime: () -> Unit,
 ) {
     val now = rememberNowMs()
     val whenLabel = selectedEpochMs?.let {
@@ -243,6 +250,21 @@ private fun CampusAndTimeRow(
                     contentDescription = null,
                     modifier = Modifier.size(FilterChipDefaults.IconSize),
                 )
+            },
+            // Its own click target inside the chip, so clearing the time doesn't open the sheet.
+            trailingIcon = if (selectedEpochMs != null) {
+                {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.close_24px),
+                        contentDescription = stringResource(Res.string.cd_clear_time),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable(role = Role.Button, onClick = onClearTime)
+                            .size(FilterChipDefaults.IconSize),
+                    )
+                }
+            } else {
+                null
             },
         )
     }

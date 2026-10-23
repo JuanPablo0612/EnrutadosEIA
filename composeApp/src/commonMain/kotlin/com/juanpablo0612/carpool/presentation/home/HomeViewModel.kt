@@ -105,14 +105,26 @@ class HomeViewModel(
         when (action) {
             HomeAction.SearchTrips -> emit(HomeEvent.NavigateToSearchTrips(shortcut = null))
             is HomeAction.SearchShortcutSelected -> emit(HomeEvent.NavigateToSearchTrips(action.shortcut))
-            HomeAction.PublishTrip -> emit(HomeEvent.NavigateToPublishTrip)
-            HomeAction.RegisterVehicle -> emit(HomeEvent.NavigateToRegisterVehicle)
+            HomeAction.PublishTrip -> publishTrip()
+            HomeAction.DismissVehicleRequired -> _state.update { it.copy(showVehicleRequiredDialog = false) }
+            HomeAction.RegisterVehicle -> {
+                _state.update { it.copy(showVehicleRequiredDialog = false) }
+                emit(HomeEvent.NavigateToRegisterVehicle)
+            }
             HomeAction.DismissVehicleSuggestion -> dismissVehicleSuggestion()
             HomeAction.OpenRequests -> emit(HomeEvent.NavigateToRequests)
             HomeAction.OpenNotifications -> emit(HomeEvent.NavigateToNotifications)
             HomeAction.Refresh -> refresh()
             is HomeAction.OpenTrip -> emit(HomeEvent.NavigateToTripDetail(action.tripId))
             is HomeAction.OpenPassengers -> emit(HomeEvent.NavigateToPassengers(action.tripId))
+        }
+    }
+
+    private fun publishTrip() {
+        if (_state.value.hasVehicles) {
+            emit(HomeEvent.NavigateToPublishTrip)
+        } else {
+            _state.update { it.copy(showVehicleRequiredDialog = true) }
         }
     }
 

@@ -15,7 +15,6 @@ data class EditProfileUiState(
     val photoError: Boolean = false,
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
-    val isSaved: Boolean = false,
     val showDiscardConfirm: Boolean = false,
     val initialSnapshot: EditProfileSnapshot? = null,
     val nameError: EditProfileFieldError? = null,

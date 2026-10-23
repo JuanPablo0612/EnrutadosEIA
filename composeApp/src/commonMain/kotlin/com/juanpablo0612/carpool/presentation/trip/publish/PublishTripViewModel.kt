@@ -96,12 +96,12 @@ class PublishTripViewModel(
     }
 
     /**
-     * Selects a vehicle registered while the driver was away (the "register vehicle" detour),
-     * otherwise keeps the current choice or defaults to the primary/first vehicle, and keeps the
-     * seat count within the chosen vehicle's capacity.
+     * Selects the vehicle registered from this form (the "register vehicle" detour) once the list
+     * has it, otherwise keeps the current choice or defaults to the primary/first vehicle, and
+     * keeps the seat count within the chosen vehicle's capacity.
      */
     private fun PublishTripUiState.withVehicles(vehicles: List<Vehicle>): PublishTripUiState {
-        val newlyRegistered = vehicleIdsBeforeRegister?.let { before -> vehicles.firstOrNull { it.id !in before } }
+        val newlyRegistered = pendingVehicleId?.let { id -> vehicles.firstOrNull { it.id == id } }
         val selected = newlyRegistered
             ?: vehicles.firstOrNull { it.id == selectedVehicleId }
             ?: vehicles.firstOrNull { it.isPrimary }
@@ -115,7 +115,7 @@ class PublishTripViewModel(
             vehicles = vehicles,
             selectedVehicleId = selected?.id,
             seatCount = seats,
-            vehicleIdsBeforeRegister = if (newlyRegistered != null) null else vehicleIdsBeforeRegister,
+            pendingVehicleId = if (newlyRegistered != null) null else pendingVehicleId,
             fieldErrors = fieldErrors - TripError.NoVehicleSelected,
         )
     }
@@ -196,9 +196,11 @@ class PublishTripViewModel(
                     fieldErrors = s.fieldErrors - TripError.SeatsOutOfRange - TripError.NoVehicleSelected,
                 )
             }
-            PublishTripAction.OnRegisterVehicleClick -> {
-                _state.update { s -> s.copy(vehicleIdsBeforeRegister = s.vehicles.map { it.id }.toSet()) }
+            PublishTripAction.OnRegisterVehicleClick ->
                 viewModelScope.launch { _events.emit(PublishTripEvent.NavigateToRegisterVehicle) }
+            // The vehicle snapshot may not include the new vehicle yet, so it's selected on arrival.
+            is PublishTripAction.OnVehicleRegistered -> _state.update { s ->
+                s.copy(pendingVehicleId = action.vehicleId).withVehicles(s.vehicles)
             }
             is PublishTripAction.OnSetSeats -> _state.update {
                 it.copy(seatCount = action.count, fieldErrors = it.fieldErrors - TripError.SeatsOutOfRange)

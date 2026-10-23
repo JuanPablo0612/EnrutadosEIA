@@ -1,58 +1,52 @@
 package com.juanpablo0612.carpool.presentation.route.detail
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import com.juanpablo0612.carpool.presentation.place.stops.StopSelectionHost
-import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
-import com.juanpablo0612.carpool.presentation.place.stops.stopsEditorItems
-import com.juanpablo0612.carpool.presentation.place.stops.stopsReadOnlyItems
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.juanpablo0612.carpool.domain.place.model.Coordinates
 import com.juanpablo0612.carpool.domain.place.model.Place
 import com.juanpablo0612.carpool.domain.route.model.Route
-import com.juanpablo0612.carpool.presentation.place.add.components.MapRoutePreview
+import com.juanpablo0612.carpool.presentation.place.stops.StopSelectionHost
+import com.juanpablo0612.carpool.presentation.place.stops.StopsDraft
 import com.juanpablo0612.carpool.presentation.route.create.CreateRouteUiState
-import com.juanpablo0612.carpool.presentation.ui.components.AdaptiveTimePicker
-import com.juanpablo0612.carpool.presentation.ui.components.DaySelector
-import com.juanpablo0612.carpool.presentation.route.create.components.SectionHeader
-import com.juanpablo0612.carpool.presentation.route.detail.components.RecurrenceRow
+import com.juanpablo0612.carpool.presentation.route.detail.components.RouteEditActions
+import com.juanpablo0612.carpool.presentation.route.detail.components.RouteEditDialogs
+import com.juanpablo0612.carpool.presentation.route.detail.components.RouteDetailBody
+import com.juanpablo0612.carpool.presentation.route.detail.components.RouteReadActions
 import com.juanpablo0612.carpool.presentation.ui.components.CarpoolBackTopBar
 import com.juanpablo0612.carpool.presentation.ui.components.ConfirmDialog
 import com.juanpablo0612.carpool.presentation.ui.components.DetailSkeleton
-import com.juanpablo0612.carpool.presentation.ui.components.ErrorMessage
 import com.juanpablo0612.carpool.presentation.ui.components.ErrorState
-import com.juanpablo0612.carpool.presentation.ui.components.SuccessMessage
-import com.juanpablo0612.carpool.presentation.ui.theme.ContentWidth
-import com.juanpablo0612.carpool.presentation.ui.util.CenteredContent
+import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
+import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
 import com.juanpablo0612.carpool.presentation.ui.util.WindowLayout
-import com.juanpablo0612.carpool.presentation.ui.util.formatNumericDate
-import com.juanpablo0612.carpool.presentation.ui.components.TimePickerDialog
-import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
-import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
-import com.juanpablo0612.carpool.presentation.ui.util.mediaPreviewSize
-import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
 import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
-import enrutadoseia.composeapp.generated.resources.*
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import enrutadoseia.composeapp.generated.resources.Res
+import enrutadoseia.composeapp.generated.resources.cd_delete_route
+import enrutadoseia.composeapp.generated.resources.cd_edit_route
+import enrutadoseia.composeapp.generated.resources.delete_24px
+import enrutadoseia.composeapp.generated.resources.edit_24px
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_button
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_description
+import enrutadoseia.composeapp.generated.resources.route_delete_confirm_title
+import enrutadoseia.composeapp.generated.resources.route_detail_title
+import enrutadoseia.composeapp.generated.resources.route_edit_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -86,8 +80,7 @@ fun RouteDetailScreen(
         )
     }
 
-    val draft = state.draft
-    val selectionTarget = draft?.selectionTarget
+    val selectionTarget = state.draft?.selectionTarget
 
     // Route system back through the same dirty-check as the edit form's top-bar back arrow,
     // so a swipe/gesture back can't silently discard in-progress edits either.
@@ -101,393 +94,134 @@ fun RouteDetailScreen(
         onCancelSelection = { viewModel.onAction(RouteDetailAction.OnCancelSelection) },
         onNavigateToAddPlace = onNavigateToAddPlace,
     ) {
-    when {
-        state.isEditing && draft != null -> {
-            RouteDetailEditContent(
-                draft = draft,
-                isSaving = state.isSaving,
-                isSaved = state.isSaved,
-                showDiscardConfirm = state.showDiscardEditConfirm,
-                onAction = viewModel::onAction
-            )
-        }
-        else -> {
-            RouteDetailReadContent(
-                state = state,
-                onAction = viewModel::onAction
-            )
-        }
-    }
+        RouteDetailContent(state = state, onAction = viewModel::onAction)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Read and edit mode share this scaffold: the route map stays at the top (or beside the details on
+ * wide windows) and follows the draft's stops while editing, and only the fields below switch
+ * between read-only and editable.
+ */
 @Composable
-internal fun RouteDetailReadContent(
+internal fun RouteDetailContent(
     state: RouteDetailUiState,
     onAction: (RouteDetailAction) -> Unit,
     layout: WindowLayout = rememberWindowLayout(),
 ) {
-    Scaffold(
-        contentWindowInsets = ScreenInsets,
-        topBar = {
-            CarpoolBackTopBar(
-                title = state.route?.name?.takeIf { it.isNotBlank() }
-                    ?: stringResource(Res.string.route_detail_title),
-                onBack = { onAction(RouteDetailAction.OnBackClick) },
-                actions = {
-                    if (state.route != null) {
-                        IconButton(onClick = { onAction(RouteDetailAction.OnEditClick) }) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.edit_24px),
-                                contentDescription = stringResource(Res.string.cd_edit_route)
-                            )
-                        }
-                        IconButton(onClick = { onAction(RouteDetailAction.OnDeleteClick) }) {
-                            Icon(
-                                imageVector = vectorResource(Res.drawable.delete_24px),
-                                contentDescription = stringResource(Res.string.cd_delete_route),
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                }
-            )
-        },
-        bottomBar = {
-            if (state.route != null) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = Spacing.screenHorizontal)
-                        .padding(bottom = Spacing.lg),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.xs)
-                ) {
-                    Button(
-                        onClick = { onAction(RouteDetailAction.OnPublishTripClick) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(Res.string.route_publish_trip_button))
-                    }
-                    val route = state.route
-                    if (route.recurringDays.isNotEmpty() && route.typicalDepartureTime != null) {
-                        OutlinedButton(
-                            onClick = { onAction(RouteDetailAction.OnPublishWeekClick) },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(stringResource(Res.string.publish_week_title))
-                        }
-                    }
-                    TextButton(
-                        onClick = { onAction(RouteDetailAction.OnDuplicateClick) },
-                        enabled = !state.isDuplicating,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        if (state.isDuplicating) {
-                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        } else {
-                            Text(stringResource(Res.string.route_duplicate_button))
-                        }
-                    }
-                }
-            }
-        }
-    ) { padding ->
-        if (state.isLoading) {
-            DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
-            return@Scaffold
-        }
+    val route = state.route
+    val draft = state.draft?.takeIf { state.isEditing }
+    var showTimePicker by rememberSaveable { mutableStateOf(false) }
 
-        if (state.route == null) {
-            ErrorState(
-                description = stringResource(
-                    (state.error ?: RouteDetailError.NotFound).asStringResource()
-                ),
-                onRetry = { onAction(RouteDetailAction.OnRetry) },
-                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
-            )
-            return@Scaffold
-        }
-
-        val route = state.route
-        // Route map: origin -> waypoints -> destination, in order.
-        val stops = remember(route.id) {
-            (listOf(route.origin) + route.waypoints + route.destination)
-                .map { Coordinates(it.latitude, it.longitude) }
-        }
-        // Wide or short windows show the map beside the details, at the full height, rather than
-        // as a preview the details scroll away.
-        val mapBeside = layout.prefersTwoPanes
-
-        Row(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (mapBeside) {
-                MapRoutePreview(
-                    markers = stops,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .padding(start = Spacing.screenHorizontal, top = Spacing.sm, bottom = Spacing.lg)
-                        .clip(MaterialTheme.shapes.medium),
-                )
-            }
-            CenteredContent(ContentWidth.list, modifier = Modifier.weight(1f).fillMaxHeight(), gutter = 0.dp) { margin ->
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
-                ) {
-                    if (!mapBeside) {
-                        item {
-                            MapRoutePreview(
-                                markers = stops,
-                                modifier = Modifier
-                                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                                    .mediaPreviewSize()
-                                    .clip(MaterialTheme.shapes.medium),
-                            )
-                        }
-                    }
-
-                    // Recurrence row
-                    if (route.recurringDays.isNotEmpty()) {
-                        item {
-                            RecurrenceRow(
-                                recurringDays = route.recurringDays,
-                                typicalDepartureTime = route.typicalDepartureTime
-                            )
-                        }
-                    }
-
-                    // Trajectory section
-                    item { SectionHeader(stringResource(Res.string.route_detail_trajectory_section)) }
-
-                    stopsReadOnlyItems(StopsDraft.of(route))
-
-                    item { SectionHeader(stringResource(Res.string.route_detail_stats_section)) }
-
-                    item {
-                        Column(modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs)) {
-                            if (state.tripsPublished > 0) {
-                                Text(
-                                    text = stringResource(Res.string.route_detail_trips_published, state.tripsPublished),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                state.lastUsedAt?.let { instant ->
-                                    val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                                    Text(
-                                        text = stringResource(
-                                            Res.string.route_detail_last_used,
-                                            formatNumericDate(local.date)
-                                        ),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            } else {
-                                Text(
-                                    text = stringResource(Res.string.route_detail_never_used),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-
-                    state.error?.let { error ->
-                        item {
-                            ErrorMessage(
-                                message = stringResource(error.asStringResource()),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun RouteDetailEditContent(
-    draft: CreateRouteUiState,
-    isSaving: Boolean,
-    isSaved: Boolean = false,
-    showDiscardConfirm: Boolean = false,
-    onAction: (RouteDetailAction) -> Unit
-) {
-    var showTimePicker by remember { mutableStateOf(false) }
-    val timePickerState = rememberTimePickerState(
-        initialHour = draft.typicalDepartureTime?.hour ?: 7,
-        initialMinute = draft.typicalDepartureTime?.minute ?: 0
-    )
-
-    if (showDiscardConfirm) {
-        ConfirmDialog(
-            title = stringResource(Res.string.discard_changes_title),
-            description = stringResource(Res.string.discard_changes_body),
-            confirmText = stringResource(Res.string.discard_changes_confirm),
-            onConfirm = { onAction(RouteDetailAction.OnConfirmDiscardEdit) },
-            onDismiss = { onAction(RouteDetailAction.OnDismissDiscardEditConfirm) },
-            isDestructive = true
+    if (draft != null) {
+        RouteEditDialogs(
+            draft = draft,
+            showTimePicker = showTimePicker,
+            showDiscardConfirm = state.showDiscardEditConfirm,
+            onDismissTimePicker = { showTimePicker = false },
+            onAction = onAction,
         )
     }
 
-    if (showTimePicker) {
-        TimePickerDialog(
-            onCancel = { showTimePicker = false },
-            onConfirm = {
-                onAction(
-                    RouteDetailAction.OnSetDepartureTime(
-                        LocalTime(timePickerState.hour, timePickerState.minute)
-                    )
-                )
-                showTimePicker = false
-            }
-        ) {
-            AdaptiveTimePicker(state = timePickerState)
-        }
-    }
-
     Scaffold(
         contentWindowInsets = ScreenInsets,
         topBar = {
             CarpoolBackTopBar(
-                title = stringResource(Res.string.route_edit_title),
-                onBack = { onAction(RouteDetailAction.OnCancelEdit) },
+                title = when {
+                    draft != null -> stringResource(Res.string.route_edit_title)
+                    else -> route?.name?.takeIf { it.isNotBlank() } ?: stringResource(Res.string.route_detail_title)
+                },
+                onBack = {
+                    onAction(if (draft != null) RouteDetailAction.OnCancelEdit else RouteDetailAction.OnBackClick)
+                },
+                actions = { if (route != null && draft == null) ReadModeActions(onAction) },
             )
+        },
+        bottomBar = {
+            when {
+                draft != null -> RouteEditActions(
+                    canSave = draft.isValid && !state.isSaved,
+                    isSaving = state.isSaving,
+                    onAction = onAction,
+                )
+                route != null -> RouteReadActions(route = route, isDuplicating = state.isDuplicating, onAction = onAction)
+            }
         }
     ) { padding ->
-        CenteredContent(ContentWidth.form, modifier = Modifier.fillMaxSize().padding(padding), gutter = 0.dp) { margin ->
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = Spacing.lg).plusHorizontal(margin)
-            ) {
-                // Name field
-                item {
-                    OutlinedTextField(
-                        value = draft.name,
-                        onValueChange = { onAction(RouteDetailAction.OnNameChange(it)) },
-                        label = { Text(stringResource(Res.string.route_name_label)) },
-                        placeholder = { Text(stringResource(Res.string.route_name_placeholder)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm),
-                        singleLine = true
-                    )
-                }
-
-                item { SectionHeader(stringResource(Res.string.waypoints_section_title)) }
-
-                stopsEditorItems(
-                    stops = draft.stops,
-                    onOriginClick = { onAction(RouteDetailAction.OnOriginClick) },
-                    onDestinationClick = { onAction(RouteDetailAction.OnDestinationClick) },
-                    onEditWaypoint = { onAction(RouteDetailAction.OnEditWaypointClick(it)) },
-                    onRemoveWaypoint = { onAction(RouteDetailAction.OnRemoveWaypoint(it)) },
-                    onAddWaypoint = { onAction(RouteDetailAction.OnAddWaypointClick) },
-                )
-
-                item { SectionHeader(stringResource(Res.string.recurrence_section_title)) }
-
-                item {
-                    DaySelector(
-                        selectedDays = draft.recurringDays,
-                        onToggleDay = { onAction(RouteDetailAction.OnToggleRecurringDay(it)) },
-                        modifier = Modifier.padding(horizontal = Spacing.screenHorizontal)
-                    )
-                }
-
-                item {
-                    val timeLabel = draft.typicalDepartureTime?.let { t ->
-                        stringResource(
-                            Res.string.departure_time_label,
-                            "${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
-                        )
-                    } ?: stringResource(Res.string.departure_time_not_set)
-                    TextButton(
-                        onClick = { showTimePicker = true },
-                        modifier = Modifier.padding(horizontal = Spacing.sm)
-                    ) {
-                        Text(timeLabel)
-                    }
-                }
-
-                if (isSaved) {
-                    item {
-                        SuccessMessage(
-                            message = stringResource(Res.string.notice_route_updated),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.sm)
-                        )
-                    }
-                }
-
-                item {
-                    Button(
-                        onClick = { onAction(RouteDetailAction.OnSaveChangesClick) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Spacing.lg),
-                        enabled = draft.isValid && !isSaving && !isSaved
-                    ) {
-                        if (isSaving) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(stringResource(Res.string.route_save_changes_button))
-                        }
-                    }
-                }
-            }
+        when {
+            state.isLoading -> DetailSkeleton(modifier = Modifier.fillMaxSize().padding(padding))
+            route == null -> ErrorState(
+                description = stringResource((state.error ?: RouteDetailError.NotFound).asStringResource()),
+                onRetry = { onAction(RouteDetailAction.OnRetry) },
+                modifier = Modifier.fillMaxSize().padding(padding).padding(Spacing.lg)
+            )
+            else -> RouteDetailBody(
+                route = route,
+                draft = draft,
+                state = state,
+                layout = layout,
+                onAction = onAction,
+                onPickTime = { showTimePicker = true },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .imePadding(),
+            )
         }
     }
 }
+
+@Composable
+private fun ReadModeActions(onAction: (RouteDetailAction) -> Unit) {
+    IconButton(onClick = { onAction(RouteDetailAction.OnEditClick) }) {
+        Icon(
+            imageVector = vectorResource(Res.drawable.edit_24px),
+            contentDescription = stringResource(Res.string.cd_edit_route)
+        )
+    }
+    IconButton(onClick = { onAction(RouteDetailAction.OnDeleteClick) }) {
+        Icon(
+            imageVector = vectorResource(Res.drawable.delete_24px),
+            contentDescription = stringResource(Res.string.cd_delete_route),
+            tint = MaterialTheme.colorScheme.error
+        )
+    }
+}
+
+private val previewRoute = Route(
+    id = "r1",
+    driverId = "d1",
+    name = "Ida a clase",
+    origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
+    destination = Place(name = "EIA", address = "Cl. 49 Sur #50-90", latitude = 6.18, longitude = -75.59),
+    waypoints = listOf(
+        Place(name = "Parada 1", address = "Carrera 43A", latitude = 6.21, longitude = -75.57)
+    )
+)
 
 @ScreenPreviews
 @Composable
 private fun RouteDetailReadPreview() {
     CarpoolTheme {
-        RouteDetailReadContent(
-            state = RouteDetailUiState(
-                isLoading = false,
-                route = Route(
-                    id = "r1",
-                    driverId = "d1",
-                    name = "Ida a clase",
-                    origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
-                    destination = Place(name = "EIA", address = "Cl. 49 Sur #50-90", latitude = 6.18, longitude = -75.59),
-                    waypoints = listOf(
-                        Place(name = "Parada 1", address = "Carrera 43A", latitude = 6.21, longitude = -75.57)
-                    )
-                ),
-                tripsPublished = 5
-            ),
+        RouteDetailContent(
+            state = RouteDetailUiState(isLoading = false, route = previewRoute, tripsPublished = 5),
             onAction = {}
         )
     }
 }
 
-@Preview
+@ScreenPreviews
 @Composable
 private fun RouteDetailEditPreview() {
     CarpoolTheme {
-        RouteDetailEditContent(
-            draft = CreateRouteUiState(
-                name = "Ida a clase",
-                stops = StopsDraft(
-                    origin = Place(name = "Casa", address = "Calle 10 #20-30", latitude = 6.2, longitude = -75.6),
-                    destination = Place(name = "EIA", address = "Cl. 49 Sur #50-90", latitude = 6.18, longitude = -75.59),
-                    waypoints = listOf(
-                        Place(name = "Parada 1", address = "Carrera 43A", latitude = 6.21, longitude = -75.57)
-                    ),
-                ),
+        RouteDetailContent(
+            state = RouteDetailUiState(
+                isLoading = false,
+                route = previewRoute,
+                isEditing = true,
+                draft = CreateRouteUiState(name = previewRoute.name, stops = StopsDraft.of(previewRoute)),
             ),
-            isSaving = false,
             onAction = {}
         )
     }

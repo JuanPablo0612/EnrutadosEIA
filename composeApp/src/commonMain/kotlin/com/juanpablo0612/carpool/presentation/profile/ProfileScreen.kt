@@ -45,20 +45,25 @@ import enrutadoseia.composeapp.generated.resources.directions_car_24px
 import enrutadoseia.composeapp.generated.resources.location_on_24px
 import enrutadoseia.composeapp.generated.resources.logout_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_button
-import enrutadoseia.composeapp.generated.resources.notifications_24px
 import enrutadoseia.composeapp.generated.resources.payment_methods_title
 import enrutadoseia.composeapp.generated.resources.payments_24px
 import enrutadoseia.composeapp.generated.resources.logout_confirm_description
 import enrutadoseia.composeapp.generated.resources.logout_confirm_title
 import enrutadoseia.composeapp.generated.resources.logout_title
-import enrutadoseia.composeapp.generated.resources.profile_config_section
 import enrutadoseia.composeapp.generated.resources.profile_delete_account
 import enrutadoseia.composeapp.generated.resources.profile_my_account_section
-import enrutadoseia.composeapp.generated.resources.profile_notifications_settings
 import enrutadoseia.composeapp.generated.resources.profile_saved_places
 import enrutadoseia.composeapp.generated.resources.profile_title
 import enrutadoseia.composeapp.generated.resources.routes_list_title
 import enrutadoseia.composeapp.generated.resources.vehicles_list_title
+import enrutadoseia.composeapp.generated.resources.profile_payment_empty
+import enrutadoseia.composeapp.generated.resources.profile_payment_methods_count
+import enrutadoseia.composeapp.generated.resources.profile_vehicle_empty
+import enrutadoseia.composeapp.generated.resources.profile_vehicle_empty_body
+import enrutadoseia.composeapp.generated.resources.profile_vehicles_registered
+import com.juanpablo0612.carpool.presentation.payment.paymentKindsText
+import com.juanpablo0612.carpool.presentation.profile.components.ProfileSummaryCard
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -69,7 +74,6 @@ fun ProfileScreen(
     onNavigateToVehicles: () -> Unit,
     onNavigateToSavedPlaces: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
-    onNavigateToNotifications: () -> Unit,
     onNavigateToPaymentMethods: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccountSuccess: () -> Unit,
@@ -83,7 +87,6 @@ fun ProfileScreen(
             ProfileEvent.NavigateToVehicles -> onNavigateToVehicles()
             ProfileEvent.NavigateToEditProfile -> onNavigateToEditProfile()
             ProfileEvent.NavigateToSavedPlaces -> onNavigateToSavedPlaces()
-            ProfileEvent.NavigateToNotifications -> onNavigateToNotifications()
             ProfileEvent.NavigateToPaymentMethods -> onNavigateToPaymentMethods()
             ProfileEvent.DeleteAccountSuccess -> onDeleteAccountSuccess()
         }
@@ -160,16 +163,19 @@ fun ProfileContent(
                 HorizontalDivider()
 
                 SectionHeader(stringResource(Res.string.profile_my_account_section))
-                ProfileListItem(
-                    title = stringResource(Res.string.vehicles_list_title),
-                    icon = { Icon(vectorResource(Res.drawable.directions_car_24px), null) },
-                    onClick = { onAction(ProfileAction.OnMyVehiclesClick) }
-                )
-                ProfileListItem(
-                    title = stringResource(Res.string.payment_methods_title),
-                    icon = { Icon(vectorResource(Res.drawable.payments_24px), null) },
-                    onClick = { onAction(ProfileAction.OnPaymentMethodsClick) }
-                )
+                Column(
+                    modifier = Modifier.padding(horizontal = Spacing.screenHorizontal, vertical = Spacing.xs),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                ) {
+                    VehicleSummaryCard(
+                        summary = state.vehicleSummary,
+                        onClick = { onAction(ProfileAction.OnMyVehiclesClick) },
+                    )
+                    PaymentSummaryCard(
+                        summary = state.paymentSummary,
+                        onClick = { onAction(ProfileAction.OnPaymentMethodsClick) },
+                    )
+                }
                 ProfileListItem(
                     title = stringResource(Res.string.routes_list_title),
                     icon = { Icon(vectorResource(Res.drawable.add_road_24px), null) },
@@ -181,14 +187,6 @@ fun ProfileContent(
                     onClick = { onAction(ProfileAction.OnSavedPlacesClick) }
                 )
 
-                HorizontalDivider()
-
-                SectionHeader(stringResource(Res.string.profile_config_section))
-                ProfileListItem(
-                    title = stringResource(Res.string.profile_notifications_settings),
-                    icon = { Icon(vectorResource(Res.drawable.notifications_24px), null) },
-                    onClick = { onAction(ProfileAction.OnNotificationsClick) }
-                )
                 HorizontalDivider()
 
                 Column(
@@ -222,3 +220,40 @@ fun ProfileContent(
     }
 }
 
+
+@Composable
+private fun VehicleSummaryCard(summary: VehicleSummary?, onClick: () -> Unit) {
+    val featured = summary?.featured
+    ProfileSummaryCard(
+        icon = Res.drawable.directions_car_24px,
+        headline = when {
+            summary == null -> stringResource(Res.string.vehicles_list_title)
+            featured == null -> stringResource(Res.string.profile_vehicle_empty)
+            else -> featured.summaryLine()
+        },
+        supporting = when {
+            summary == null -> null
+            featured == null -> stringResource(Res.string.profile_vehicle_empty_body)
+            else -> pluralStringResource(Res.plurals.profile_vehicles_registered, summary.count, summary.count)
+        },
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun PaymentSummaryCard(summary: PaymentSummary?, onClick: () -> Unit) {
+    ProfileSummaryCard(
+        icon = Res.drawable.payments_24px,
+        headline = when {
+            summary == null -> stringResource(Res.string.payment_methods_title)
+            summary.count == 0 -> stringResource(Res.string.profile_payment_empty)
+            else -> pluralStringResource(Res.plurals.profile_payment_methods_count, summary.count, summary.count)
+        },
+        supporting = when {
+            summary == null -> null
+            summary.count == 0 -> stringResource(Res.string.payment_methods_title)
+            else -> paymentKindsText(summary.kinds)
+        },
+        onClick = onClick,
+    )
+}

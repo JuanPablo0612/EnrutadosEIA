@@ -1,6 +1,14 @@
 package com.juanpablo0612.carpool.presentation.trip.tracking.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Surface
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.juanpablo0612.carpool.domain.place.model.Coordinates
-import com.juanpablo0612.carpool.presentation.place.add.components.MapPreview
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingAction
 import com.juanpablo0612.carpool.presentation.trip.tracking.TripTrackingUiState
 import com.juanpablo0612.carpool.presentation.trip.tracking.previewTrip
@@ -38,7 +44,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.rememberWindowLayout
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.booking_action_pay
 import enrutadoseia.composeapp.generated.resources.trip_tracking_message_driver
-import enrutadoseia.composeapp.generated.resources.trip_tracking_no_location
+import enrutadoseia.composeapp.generated.resources.trip_tracking_locating_driver
 import enrutadoseia.composeapp.generated.resources.trip_tracking_your_status
 import org.jetbrains.compose.resources.stringResource
 
@@ -49,20 +55,13 @@ internal fun PassengerTrackingContent(
     modifier: Modifier = Modifier,
     layout: WindowLayout = rememberWindowLayout(),
 ) {
-    val driverLatitude = state.driverLatitude
-    val driverLongitude = state.driverLongitude
-    val driverPosition = if (driverLatitude != null && driverLongitude != null) {
-        Coordinates(driverLatitude, driverLongitude)
-    } else {
-        null
-    }
-    // Wide or short windows give the driver's position the full height beside the details.
-    val mapBeside = layout.prefersTwoPanes && driverPosition != null
+    // Wide or short windows give the map the full height beside the details.
+    val mapBeside = layout.prefersTwoPanes
 
     Row(modifier = modifier.fillMaxSize()) {
-        if (mapBeside && driverPosition != null) {
-            DriverMap(
-                position = driverPosition,
+        if (mapBeside) {
+            PassengerMap(
+                state = state,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
@@ -118,15 +117,7 @@ internal fun PassengerTrackingContent(
 
                     if (!mapBeside) {
                         Spacer(Modifier.height(Spacing.sm))
-                        if (driverPosition != null) {
-                            DriverMap(position = driverPosition, modifier = Modifier.mediaPreviewSize())
-                        } else {
-                            Text(
-                                text = stringResource(Res.string.trip_tracking_no_location),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        PassengerMap(state = state, modifier = Modifier.mediaPreviewSize())
                     }
                 }
             }
@@ -158,14 +149,37 @@ internal fun PassengerTrackingContent(
 }
 
 @Composable
-private fun DriverMap(position: Coordinates, modifier: Modifier = Modifier) {
-    MapPreview(
-        coordinates = position,
-        // Read-only: the passenger only observes the driver's position, so a dragged pin is
-        // discarded rather than fed back into any action.
-        onPinDragged = {},
-        modifier = modifier,
-    )
+private fun PassengerMap(state: TripTrackingUiState, modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
+        TripTrackingMap(trip = state.trip, driverPosition = state.driverPosition, modifier = Modifier.fillMaxSize())
+        if (state.isLocatingDriver) {
+            LocatingDriverIndicator(modifier = Modifier.align(Alignment.TopCenter).padding(Spacing.sm))
+        }
+    }
+}
+
+@Composable
+private fun LocatingDriverIndicator(modifier: Modifier = Modifier) {
+    Surface(
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shadowElevation = 2.dp,
+        modifier = modifier.semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+            Text(
+                text = stringResource(Res.string.trip_tracking_locating_driver),
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
 }
 
 @ScreenPreviews

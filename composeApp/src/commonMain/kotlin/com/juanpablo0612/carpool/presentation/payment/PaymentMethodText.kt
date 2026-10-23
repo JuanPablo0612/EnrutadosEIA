@@ -1,5 +1,6 @@
 package com.juanpablo0612.carpool.presentation.payment
 
+import androidx.compose.runtime.Composable
 import com.juanpablo0612.carpool.domain.payment.model.PaymentMethodType
 import com.juanpablo0612.carpool.domain.payment.validation.PaymentMethodValidationError
 import enrutadoseia.composeapp.generated.resources.Res
@@ -8,6 +9,7 @@ import enrutadoseia.composeapp.generated.resources.error_payment_bre_b_key_requi
 import enrutadoseia.composeapp.generated.resources.error_payment_bre_b_key_too_long
 import enrutadoseia.composeapp.generated.resources.error_payment_qr_required
 import enrutadoseia.composeapp.generated.resources.key_24px
+import enrutadoseia.composeapp.generated.resources.payment_kinds_join
 import enrutadoseia.composeapp.generated.resources.payment_type_bre_b_key
 import enrutadoseia.composeapp.generated.resources.payment_type_bre_b_key_description
 import enrutadoseia.composeapp.generated.resources.payment_type_qr_code
@@ -15,6 +17,7 @@ import enrutadoseia.composeapp.generated.resources.payment_type_qr_code_descript
 import enrutadoseia.composeapp.generated.resources.qr_code_2_24px
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 /** Name, explanation and icon of each payment method kind, shared by the driver's and passenger's screens. */
 val PaymentMethodType.label: StringResource
@@ -40,4 +43,12 @@ fun PaymentMethodValidationError.asStringResource(): StringResource = when (this
     PaymentMethodValidationError.KeyHasSpaces -> Res.string.error_payment_bre_b_key_has_spaces
     PaymentMethodValidationError.KeyTooLong -> Res.string.error_payment_bre_b_key_too_long
     PaymentMethodValidationError.ImageRequired -> Res.string.error_payment_qr_required
+}
+
+/** The kinds as a sentence fragment, e.g. "Bre-B key and QR code". */
+@Composable
+fun paymentKindsText(kinds: List<PaymentMethodType>): String {
+    val labels = kinds.map { stringResource(it.label) }
+    if (labels.size < 2) return labels.firstOrNull().orEmpty()
+    return stringResource(Res.string.payment_kinds_join, labels.dropLast(1).joinToString(", "), labels.last())
 }

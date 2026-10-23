@@ -16,6 +16,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.presentation.home.greetingResourceForTime
 import com.juanpablo0612.carpool.presentation.home.homeHeaderDate
+import com.juanpablo0612.carpool.presentation.notification.UnreadBadgedBox
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.notifications_24px
 import enrutadoseia.composeapp.generated.resources.notifications_title
@@ -25,11 +26,15 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import kotlin.time.Instant
 
-/** Today's date over a time-of-day greeting, with the notifications entry point beside it. */
+/**
+ * Today's date over a time-of-day greeting, with the notifications bell beside it: the app's only
+ * one, badged with the unread count.
+ */
 @Composable
 fun HomeHeader(
     firstName: String,
     now: Long,
+    unreadNotificationCount: Int,
     onOpenNotifications: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -54,10 +59,12 @@ fun HomeHeader(
             )
         }
         IconButton(onClick = onOpenNotifications) {
-            Icon(
-                imageVector = vectorResource(Res.drawable.notifications_24px),
-                contentDescription = stringResource(Res.string.notifications_title),
-            )
+            UnreadBadgedBox(count = unreadNotificationCount) {
+                Icon(
+                    imageVector = vectorResource(Res.drawable.notifications_24px),
+                    contentDescription = stringResource(Res.string.notifications_title),
+                )
+            }
         }
     }
 }

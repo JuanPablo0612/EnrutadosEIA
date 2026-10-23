@@ -4,7 +4,8 @@ import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import kotlinx.coroutines.flow.Flow
 
 interface VehicleRepository {
-    suspend fun createVehicle(vehicle: Vehicle, photoBytes: ByteArray?): Result<Unit>
+    /** Registers [vehicle] and returns the id it was stored under. */
+    suspend fun createVehicle(vehicle: Vehicle, photoBytes: ByteArray?): Result<String>
     suspend fun getVehicleById(vehicleId: String): Result<Vehicle>
     suspend fun updateVehicle(vehicle: Vehicle, photoBytes: ByteArray?): Result<Unit>
     suspend fun deleteVehicle(vehicleId: String, driverId: String): Result<Unit>

@@ -18,7 +18,7 @@ class VehicleRepositoryImpl(
     private val storageDataSource: VehicleStorageDataSource
 ) : VehicleRepository {
 
-    override suspend fun createVehicle(vehicle: Vehicle, photoBytes: ByteArray?): Result<Unit> {
+    override suspend fun createVehicle(vehicle: Vehicle, photoBytes: ByteArray?): Result<String> {
         return try {
             val vehicleId = remoteDataSource.newVehicleDocumentId()
             var photoUrl = ""
@@ -42,7 +42,7 @@ class VehicleRepositoryImpl(
                 isPrimary = isPrimary,
             )
             remoteDataSource.createVehicle(dto)
-            Result.success(Unit)
+            Result.success(vehicleId)
         } catch (_: Exception) {
             Result.failure(AppException.VehicleException.Unknown)
         }

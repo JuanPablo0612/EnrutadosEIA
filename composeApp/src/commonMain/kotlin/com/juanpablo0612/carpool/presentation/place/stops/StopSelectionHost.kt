@@ -6,6 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import com.juanpablo0612.carpool.domain.place.model.Place
+import com.juanpablo0612.carpool.presentation.place.picker.MapPickerContent
+import com.juanpablo0612.carpool.presentation.place.picker.MapPickerUiState
+import com.juanpablo0612.carpool.presentation.place.picker.MapPickerViewModel
+import com.juanpablo0612.carpool.presentation.place.selector.MapPickRequest
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorAction
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorContent
 import com.juanpablo0612.carpool.presentation.place.selector.PlaceSelectorEvent
@@ -58,14 +62,65 @@ fun StopSelectionHost(
 
     BackHandler(enabled = selectionTarget != null, onBack = onCancelSelection)
 
-    if (selectionTarget != null) {
+    val mapPick = selectorState.mapPick
+    // Declared after the selector's handler so it wins: back from the map returns to the list.
+    BackHandler(enabled = selectionTarget != null && mapPick != null) {
+        activeSelector.onAction(PlaceSelectorAction.OnCancelMapPick)
+    }
+
+    if (selectionTarget != null && mapPick != null) {
+        InlineMapPicker(
+            request = mapPick,
+            selectorKey = selectorState.mode.toString(),
+            onPicked = { picked ->
+                activeSelector.onAction(
+                    PlaceSelectorAction.OnMapPointPicked(
+                        latitude = picked.pickedCoordinates.latitude,
+                        longitude = picked.pickedCoordinates.longitude,
+                        placeName = picked.pickedPlaceName,
+                        address = picked.resolvedAddress,
+                    )
+                )
+            },
+            onBack = { activeSelector.onAction(PlaceSelectorAction.OnCancelMapPick) },
+        )
+    } else if (selectionTarget != null) {
         PlaceSelectorContent(
             state = selectorState,
             onAction = activeSelector::onAction,
             onPlaceSelected = select,
             onBack = onCancelSelection,
+            showChooseOnMap = true,
         )
     } else {
         content()
     }
+}
+
+/**
+ * The map picker shown in place of the selector. It is inline, like the selector itself, rather
+ * than the [com.juanpablo0612.carpool.presentation.navigation.Route.MapPicker] destination, so
+ * the picked point comes back without every form that hosts stops wiring a navigation result.
+ */
+@Composable
+private fun InlineMapPicker(
+    request: MapPickRequest,
+    selectorKey: String,
+    onPicked: (MapPickerUiState) -> Unit,
+    onBack: () -> Unit,
+) {
+    // Keyed by opening, so each "choose on map" starts from a fresh pin.
+    val viewModel: MapPickerViewModel = koinViewModel(key = "map_pick_${selectorKey}_${request.session}") {
+        parametersOf(request.initialLatitude, request.initialLongitude)
+    }
+    val state by viewModel.state.collectAsState()
+    MapPickerContent(
+        state = state,
+        onPinDragged = viewModel::onPinDragged,
+        onPoiSelected = viewModel::onPoiSelected,
+        onMyLocationClick = viewModel::onMyLocationClick,
+        onConfirm = { onPicked(state) },
+        onBack = onBack,
+        onDismissError = viewModel::onDismissError,
+    )
 }

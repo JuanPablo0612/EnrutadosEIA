@@ -9,5 +9,8 @@ sealed class TripPassengersAction {
     data class OnRatePassenger(val booking: Booking) : TripPassengersAction()
     data class OnDecision(val action: BookingDecisionAction) : TripPassengersAction()
     data object OnEditTripClick : TripPassengersAction()
+    data object OnCancelTripClick : TripPassengersAction()
+    data object OnCancelTripConfirm : TripPassengersAction()
+    data object OnCancelTripDismiss : TripPassengersAction()
     data object OnRetry : TripPassengersAction()
 }

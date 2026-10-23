@@ -20,6 +20,15 @@ class FirebaseNotificationRemoteDataSource(
             }
     }
 
+    override fun observeUnreadCount(userId: String): Flow<Int> {
+        return firestore.collection(COLLECTION)
+            .document(userId)
+            .collection(ITEMS_COLLECTION)
+            .where { "isRead" equalTo false }
+            .snapshots
+            .map { it.documents.size }
+    }
+
     override suspend fun markRead(userId: String, notificationId: String) {
         firestore.collection(COLLECTION)
             .document(userId)

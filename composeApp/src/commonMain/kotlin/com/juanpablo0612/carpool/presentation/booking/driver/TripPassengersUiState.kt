@@ -13,7 +13,13 @@ data class TripPassengersUiState(
     val pending: List<Booking> = emptyList(),
     val confirmed: List<Booking> = emptyList(),
     val decisions: BookingDecisionsState = BookingDecisionsState(),
+    val showCancelTripDialog: Boolean = false,
+    val isCancellingTrip: Boolean = false,
+    val cancelTripError: TripCancelError? = null,
 ) {
+    /** Only a trip that hasn't started can be cancelled; once under way, the driver finishes it. */
+    val canCancelTrip: Boolean get() = trip?.status == TripStatus.Active
+
     /** Requests are answered, and seats taken back, only until the trip starts. */
     val isOpen: Boolean get() = trip?.status == TripStatus.Active
 

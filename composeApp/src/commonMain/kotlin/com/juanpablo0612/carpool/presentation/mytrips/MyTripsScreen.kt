@@ -192,7 +192,8 @@ private fun MyTripsList(state: MyTripsUiState, now: Long, onAction: (MyTripsActi
     }
     val groups = remember(visible) { visible.groupBy { it.localDate() } }
     val isUpcoming = state.segment == MyTripsSegment.Upcoming
-    val showBanner = isUpcoming && state.pendingRequestCount > 0 && state.filter != MyTripsFilter.Riding
+    // Requests concern trips the user drives, so they surface only under that filter.
+    val showBanner = isUpcoming && state.pendingRequestCount > 0 && state.filter == MyTripsFilter.Driving
 
     if (visible.isEmpty() && !showBanner) {
         MyTripsEmptyState(isUpcoming = isUpcoming, onAction = onAction)
@@ -242,23 +243,15 @@ private fun MyTripsList(state: MyTripsUiState, now: Long, onAction: (MyTripsActi
 
 @Composable
 private fun MyTripsEmptyState(isUpcoming: Boolean, onAction: (MyTripsAction) -> Unit) {
-    if (isUpcoming) {
-        EmptyState(
-            icon = vectorResource(Res.drawable.calendar_month_24px),
-            title = stringResource(Res.string.my_trips_empty_upcoming_title),
-            description = stringResource(Res.string.my_trips_empty_upcoming_body),
-            primaryAction = ActionButton(stringResource(Res.string.passenger_home_title)) { onAction(MyTripsAction.OnSearchTrips) },
-            secondaryAction = ActionButton(stringResource(Res.string.home_action_publish_trip)) { onAction(MyTripsAction.OnPublishTrip) },
-            modifier = Modifier.fillMaxSize(),
-        )
-    } else {
-        EmptyState(
-            icon = vectorResource(Res.drawable.calendar_month_24px),
-            title = stringResource(Res.string.my_trips_empty_history_title),
-            description = stringResource(Res.string.my_trips_empty_history_body),
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+    // Both segments lead somewhere: an empty history is also a cue to take a first trip.
+    EmptyState(
+        icon = vectorResource(Res.drawable.calendar_month_24px),
+        title = stringResource(if (isUpcoming) Res.string.my_trips_empty_upcoming_title else Res.string.my_trips_empty_history_title),
+        description = stringResource(if (isUpcoming) Res.string.my_trips_empty_upcoming_body else Res.string.my_trips_empty_history_body),
+        primaryAction = ActionButton(stringResource(Res.string.passenger_home_title)) { onAction(MyTripsAction.OnSearchTrips) },
+        secondaryAction = ActionButton(stringResource(Res.string.home_action_publish_trip)) { onAction(MyTripsAction.OnPublishTrip) },
+        modifier = Modifier.fillMaxSize(),
+    )
 }
 
 @Composable

@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -40,6 +41,8 @@ import com.juanpablo0612.carpool.presentation.session.UserSession
 import com.juanpablo0612.carpool.presentation.ui.theme.CarpoolTheme
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -100,6 +103,18 @@ fun AppNavigation(
             authRepository.getCurrentUser().onSuccess(userSession::setUser)
         }
     }
+
+    // The one unread-notifications listener for the session, shared by Inicio's bell and the
+    // Inicio tab. Keyed on the user so it closes on sign-out (UserSession is cleared) and never
+    // outlives the account it counts for. A failure just hides the badge.
+    val currentUserId = currentUser?.id
+    val unreadNotificationCount by remember(currentUserId) {
+        if (currentUserId == null) {
+            flowOf(0)
+        } else {
+            notificationRepository.observeUnreadCount(currentUserId).catch { emit(0) }
+        }
+    }.collectAsState(initial = 0)
 
     val navBackstackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackstackEntry?.destination
@@ -170,12 +185,14 @@ fun AppNavigation(
                         NavigationRailBar(
                             currentDestination = currentDestination,
                             items = topLevelItems,
+                            unreadNotificationCount = unreadNotificationCount,
                             onNavigate = onNavigateToTab,
                         )
                     } else {
                         BottomNavigationBar(
                             currentDestination = currentDestination,
                             items = topLevelItems,
+                            unreadNotificationCount = unreadNotificationCount,
                             onNavigate = onNavigateToTab,
                         )
                     }
@@ -254,6 +271,7 @@ fun AppNavigation(
                     )
 
                     mainNavGraph(
+                        unreadNotificationCount = { unreadNotificationCount },
                         onNavigateToProfile = { navController.navigateToTopLevel(Route.Profile) },
                         onPublishTrip = onPublishTrip,
                         onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
@@ -305,6 +323,7 @@ fun AppNavigation(
                     driverNavGraph(
                         onNavigateToCreateRoute = { navController.navigate(Route.CreateRoute) },
                         onNavigateToRegisterVehicle = { navController.navigate(Route.RegisterVehicle()) },
+                        onVehicleRegistered = { id -> navController.popWithRegisteredVehicle(id) },
                         onNavigateToEditVehicle = { id -> navController.navigate(Route.RegisterVehicle(id)) },
                         onNavigateToRouteDetail = { routeId -> navController.navigate(Route.RouteDetail(routeId)) },
                         onNavigateToPublishTrip = { routeId -> navController.navigate(Route.PublishTrip(routeId)) },
@@ -351,7 +370,6 @@ fun AppNavigation(
                         onNavigateToEditProfile = { navController.navigate(Route.EditProfile) },
                         // The list, not the creation form — the row is labelled "saved places".
                         onNavigateToSavedPlaces = { navController.navigate(Route.SavedPlaces) },
-                        onNavigateToNotifications = { navController.navigate(Route.Notifications) },
                         onNavigateToPaymentMethods = { navController.navigate(Route.PaymentMethods) },
                         onNavigateToPayDriver = { tripId -> navController.navigate(Route.PayDriver(tripId)) },
                         onDeleteAccountSuccess = {

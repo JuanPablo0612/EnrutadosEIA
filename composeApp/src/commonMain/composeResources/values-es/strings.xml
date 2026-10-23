@@ -555,9 +555,7 @@
     <!-- Perfil mejorado -->
     <string name="profile_edit_button">Editar perfil</string>
     <string name="profile_my_account_section">Mi cuenta</string>
-    <string name="profile_config_section">Configuración</string>
     <string name="profile_saved_places">Mis lugares guardados</string>
-    <string name="profile_notifications_settings">Notificaciones</string>
     <string name="profile_delete_account">Eliminar cuenta</string>
     <string name="profile_delete_account_confirm_title">¿Eliminar tu cuenta?</string>
     <string name="profile_delete_account_confirm_desc">Tus datos serán eliminados de forma permanente. Esta acción no se puede deshacer. Escribe tu nombre para confirmar.</string>
@@ -616,11 +614,9 @@
     <string name="chat_date_today">Hoy</string>
     <string name="chat_date_yesterday">Ayer</string>
     <string name="chat_input_hint">Escribe un mensaje…</string>
-    <string name="chat_read_only_banner">Este viaje ha terminado. La conversación es solo lectura.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
-    <string name="chat_send_failed">No se pudo enviar el mensaje. Inténtalo de nuevo.</string>
     <string name="chat_empty_title">Aún no hay mensajes</string>
     <string name="chat_empty_description">Saluda para iniciar la conversación.</string>
 
@@ -629,7 +625,6 @@
     <string name="trip_tracking_mark_picked_up">Marcar recogido</string>
     <string name="trip_tracking_mark_dropped_off">Marcar bajó</string>
     <string name="trip_tracking_complete_trip">Finalizar viaje</string>
-    <string name="trip_tracking_no_location">Sin ubicación aún</string>
     <string name="trip_tracking_message_driver">Mensaje</string>
     <string name="trip_tracking_your_status">Tu estado</string>
     <string name="pickup_status_picked_up">Recogido</string>
@@ -744,14 +739,12 @@
     <string name="trip_detail_driver_says">%1$s dice</string>
     <string name="trip_detail_load_failed">No pudimos cargar este viaje. Puede que lo hayan cancelado.</string>
     <string name="trip_detail_unavailable_title">Este viaje ya no está disponible</string>
-    <string name="confirm_row_driver">Conductor</string>
     <string name="confirm_row_get_on">Subes en</string>
     <string name="confirm_row_get_off">Te bajas en</string>
-    <string name="confirm_row_route">Recorrido</string>
     <string name="route_from_to">%1$s → %2$s</string>
     <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Aporte</string>
-    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte. Te avisamos al instante.</string>
+    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte.</string>
     <string name="request_quick_luggage">Llevo maleta</string>
     <string name="request_quick_on_time">Estaré a tiempo</string>
     <string name="send_request_button">Enviar solicitud</string>
@@ -879,7 +872,6 @@
     <string name="notice_route_updated">Ruta actualizada</string>
     <string name="notice_route_duplicated">Ruta duplicada</string>
     <string name="notice_vehicle_saved">Vehículo guardado</string>
-    <string name="notice_profile_saved">Perfil actualizado</string>
 
     <!-- Guardia de cambios sin guardar, reutilizada por cada formulario de creación/edición -->
     <string name="discard_changes_title">¿Descartar los cambios?</string>
@@ -969,7 +961,6 @@
     <string name="payment_type_qr_code_description">Una captura del QR que genera tu app bancaria para recibir dinero.</string>
     <string name="payment_bre_b_key_label">Llave Bre-B</string>
     <string name="payment_bre_b_key_placeholder">Ej. 3001234567 o @tualias</string>
-    <string name="payment_qr_change_image">Elegir otra imagen</string>
     <string name="payment_qr_image_cd">Código QR para pagarle al conductor</string>
     <string name="payment_save">Guardar</string>
     <string name="payment_delete_cd">Eliminar %1$s</string>
@@ -1000,4 +991,65 @@
     <string name="error_payment_driver_load_failed">No pudimos cargar los métodos de pago del conductor.</string>
     <string name="error_payment_gallery_permission">Permite que la app guarde fotos para conservar el QR.</string>
     <string name="error_payment_qr_save_failed">No pudimos guardar el QR. Revisa tu conexión y que la app pueda guardar fotos.</string>
+    <string name="publish_week_summary_title">Revisa tu semana</string>
+    <string name="publish_week_summary_subtitle">Todos los viajes se publican con estos datos.</string>
+    <string name="publish_week_summary_trips_label">Viajes que se publicarán</string>
+    <string name="publish_week_summary_skipped_label">Días que quedan por fuera</string>
+    <string name="publish_week_summary_skip_not_selected">No lo marcaste</string>
+    <plurals name="publish_week_review_button">
+        <item quantity="one">Revisar %1$d viaje</item>
+        <item quantity="other">Revisar %1$d viajes</item>
+    </plurals>
+    <!-- Managing a trip you drive -->
+    <plurals name="trip_cancel_dialog_confirmed">
+        <item quantity="one">%d pasajero confirmado</item>
+        <item quantity="other">%d pasajeros confirmados</item>
+    </plurals>
+    <plurals name="trip_cancel_dialog_pending">
+        <item quantity="one">%d solicitud pendiente</item>
+        <item quantity="other">%d solicitudes pendientes</item>
+    </plurals>
+    <string name="trip_cancel_dialog_notify_both">Avisaremos a %1$s y %2$s. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_notify_one">Avisaremos a %1$s. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_notify_none">Nadie ha reservado un cupo todavía. Esto no se puede deshacer.</string>
+    <string name="trip_cancel_dialog_back">Volver</string>
+    <string name="error_trip_cancel_failed">No pudimos cancelar el viaje. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="trip_tracking_locating_driver">Ubicando al conductor…</string>
+    <!-- Profile summaries, payment QR editor, pay driver, place map pick, rating -->
+    <plurals name="profile_vehicles_registered">
+        <item quantity="one">Mis vehículos · %1$d registrado</item>
+        <item quantity="other">Mis vehículos · %1$d registrados</item>
+    </plurals>
+    <string name="profile_vehicle_empty">Registra un vehículo</string>
+    <string name="profile_vehicle_empty_body">Lo necesitas para publicar viajes</string>
+    <plurals name="profile_payment_methods_count">
+        <item quantity="one">%1$d método de pago</item>
+        <item quantity="other">%1$d métodos de pago</item>
+    </plurals>
+    <string name="profile_payment_empty">Agrega cómo te pagan tus pasajeros</string>
+    <string name="payment_kinds_join">%1$s y %2$s</string>
+    <string name="payment_qr_no_image">Aún no has elegido una imagen</string>
+    <string name="payment_qr_choose_gallery">Elegir de la galería</string>
+    <string name="payment_qr_take_photo">Tomar foto</string>
+    <string name="pay_driver_done">Listo</string>
+    <string name="place_selector_choose_on_map">Elegir en el mapa</string>
+    <string name="place_selector_choose_on_map_description">Usa cualquier punto sin guardarlo</string>
+    <string name="place_selector_map_point_name">Punto en el mapa</string>
+    <string name="rating_scale_anchor">%1$d · %2$s</string>
+    <plurals name="notifications_unread_count">
+        <item quantity="one">%1$d notificación sin leer</item>
+        <item quantity="other">%1$d notificaciones sin leer</item>
+    </plurals>
+    <string name="home_empty_title">No tienes viajes próximos</string>
+    <string name="home_empty_body">Busca un cupo para tu próximo viaje u ofrece los puestos libres de tu carro.</string>
+    <string name="home_vehicle_required_title">Primero, registra tu carro</string>
+    <string name="home_vehicle_required_body">Para publicar un viaje necesitas un vehículo registrado, así los pasajeros saben qué carro buscar. Solo toma un minuto.</string>
+    <string name="action_not_now">Ahora no</string>
+    <string name="cd_clear_time">Quitar la hora</string>
+    <string name="confirm_request_driver_route">%1$s · %2$s</string>
+    <string name="confirm_request_add_message">Agrega un mensaje para %1$s (opcional)</string>
+    <string name="confirm_request_add_message_generic">Agrega un mensaje para el conductor (opcional)</string>
+    <string name="chat_message_sending">Enviando…</string>
+    <string name="chat_message_not_sent">No enviado · Toca para reintentar</string>
+    <string name="chat_closed_trip_ended">Este chat se cerró porque el viaje terminó</string>
 </resources>

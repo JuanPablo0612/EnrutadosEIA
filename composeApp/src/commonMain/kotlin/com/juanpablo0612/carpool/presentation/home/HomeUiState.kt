@@ -36,6 +36,8 @@ data class HomeUiState(
     /** Whether the user has ever asked for a seat, whatever became of it. */
     val hasBookedBefore: Boolean = false,
     val vehicleSuggestionDismissed: Boolean = false,
+    /** Publish was tapped without a vehicle: explain that one is needed first. */
+    val showVehicleRequiredDialog: Boolean = false,
     val error: HomeError? = null,
 ) {
     val welcome: HomeWelcome
@@ -46,7 +48,10 @@ data class HomeUiState(
             vehicleSuggestionDismissed = vehicleSuggestionDismissed,
         )
 
-    /** Publishing needs a vehicle; without one the button would lead to a dead end. */
-    val canPublishTrip: Boolean
-        get() = hasVehicles
+    /**
+     * Someone who has used the app before but has nothing coming up. A new account gets the
+     * welcome instead, which already offers both ways to start.
+     */
+    val showNoUpcomingTrips: Boolean
+        get() = nextUp == null && welcome != HomeWelcome.ChooseHowToStart
 }

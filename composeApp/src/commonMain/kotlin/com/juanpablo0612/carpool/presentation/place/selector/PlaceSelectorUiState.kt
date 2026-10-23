@@ -19,4 +19,16 @@ data class PlaceSelectorUiState(
     val isResolvingSuggestion: Boolean = false,
     val isConfirmingDelete: Place? = null,
     val error: PlaceSelectorError? = null,
+    /** Set while the user is choosing a point on the map instead of from the list. */
+    val mapPick: MapPickRequest? = null,
+)
+
+/**
+ * An open "choose on map" view, starting at the given point. [session] grows with each opening,
+ * so the host can give every opening a fresh map instead of the last one's pin.
+ */
+data class MapPickRequest(
+    val session: Int,
+    val initialLatitude: Double,
+    val initialLongitude: Double,
 )

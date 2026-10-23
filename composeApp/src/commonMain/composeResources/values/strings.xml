@@ -523,14 +523,12 @@
     <string name="trip_detail_driver_says">%1$s says</string>
     <string name="trip_detail_load_failed">We couldn\'t load this trip. It may have been cancelled.</string>
     <string name="trip_detail_unavailable_title">This trip is no longer available</string>
-    <string name="confirm_row_driver">Driver</string>
     <string name="confirm_row_get_on">You get on at</string>
     <string name="confirm_row_get_off">You get off at</string>
-    <string name="confirm_row_route">Route</string>
     <string name="route_from_to">%1$s → %2$s</string>
     <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Contribution</string>
-    <string name="confirm_request_note">Your seat is held once the driver accepts. We\'ll let you know right away.</string>
+    <string name="confirm_request_note">Your seat is reserved once the driver accepts.</string>
     <string name="request_quick_luggage">I\'m bringing a bag</string>
     <string name="request_quick_on_time">I\'ll be there on time</string>
     <string name="send_request_button">Send request</string>
@@ -686,9 +684,7 @@
     <!-- Profile enhancement -->
     <string name="profile_edit_button">Edit profile</string>
     <string name="profile_my_account_section">My account</string>
-    <string name="profile_config_section">Settings</string>
     <string name="profile_saved_places">My saved places</string>
-    <string name="profile_notifications_settings">Notifications</string>
     <string name="profile_delete_account">Delete account</string>
     <string name="profile_delete_account_confirm_title">Delete your account?</string>
     <string name="profile_delete_account_confirm_desc">Your data will be permanently deleted. This action cannot be undone. Type your name to confirm.</string>
@@ -747,11 +743,9 @@
     <string name="chat_date_today">Today</string>
     <string name="chat_date_yesterday">Yesterday</string>
     <string name="chat_input_hint">Type a message…</string>
-    <string name="chat_read_only_banner">This trip has ended. The conversation is read-only.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
-    <string name="chat_send_failed">Message couldn\'t be sent. Try again.</string>
     <string name="chat_empty_title">No messages yet</string>
     <string name="chat_empty_description">Say hi to get the conversation started.</string>
 
@@ -760,7 +754,6 @@
     <string name="trip_tracking_mark_picked_up">Marcar recogido</string>
     <string name="trip_tracking_mark_dropped_off">Marcar bajó</string>
     <string name="trip_tracking_complete_trip">End trip</string>
-    <string name="trip_tracking_no_location">No location yet</string>
     <string name="trip_tracking_message_driver">Message</string>
     <string name="trip_tracking_your_status">Your status</string>
     <string name="pickup_status_picked_up">Picked up</string>
@@ -772,7 +765,7 @@
     <string name="trip_tracking_complete_confirm_button">End trip</string>
 
     <!-- Notifications -->
-    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_title">Notifications</string>
     <string name="notifications_empty_title">No notifications</string>
     <string name="notifications_empty_subtitle">Your trip and booking notifications will appear here.</string>
     <string name="notifications_clear_all">Borrar todo</string>
@@ -877,7 +870,6 @@
     <string name="notice_route_updated">Route updated</string>
     <string name="notice_route_duplicated">Route duplicated</string>
     <string name="notice_vehicle_saved">Vehicle saved</string>
-    <string name="notice_profile_saved">Profile updated</string>
 
     <!-- Unsaved-changes guard, reused by every create/edit form with a discard-on-back risk -->
     <string name="discard_changes_title">Discard changes?</string>
@@ -967,7 +959,6 @@
     <string name="payment_type_qr_code_description">A screenshot of the QR your bank app generates to receive money.</string>
     <string name="payment_bre_b_key_label">Bre-B key</string>
     <string name="payment_bre_b_key_placeholder">e.g. 3001234567 or @youralias</string>
-    <string name="payment_qr_change_image">Choose another image</string>
     <string name="payment_qr_image_cd">QR code to pay the driver</string>
     <string name="payment_save">Save</string>
     <string name="payment_delete_cd">Delete %1$s</string>
@@ -998,4 +989,65 @@
     <string name="error_payment_driver_load_failed">Couldn\'t load the driver\'s payment methods.</string>
     <string name="error_payment_gallery_permission">Allow the app to save photos to keep the QR.</string>
     <string name="error_payment_qr_save_failed">Couldn\'t save the QR. Check your connection and that the app may save photos.</string>
+    <string name="publish_week_summary_title">Review your week</string>
+    <string name="publish_week_summary_subtitle">Every trip is published with these details.</string>
+    <string name="publish_week_summary_trips_label">Trips to publish</string>
+    <string name="publish_week_summary_skipped_label">Days left out</string>
+    <string name="publish_week_summary_skip_not_selected">Not selected</string>
+    <plurals name="publish_week_review_button">
+        <item quantity="one">Review %1$d trip</item>
+        <item quantity="other">Review %1$d trips</item>
+    </plurals>
+    <!-- Managing a trip you drive -->
+    <plurals name="trip_cancel_dialog_confirmed">
+        <item quantity="one">%d confirmed passenger</item>
+        <item quantity="other">%d confirmed passengers</item>
+    </plurals>
+    <plurals name="trip_cancel_dialog_pending">
+        <item quantity="one">%d pending request</item>
+        <item quantity="other">%d pending requests</item>
+    </plurals>
+    <string name="trip_cancel_dialog_notify_both">We\'ll notify %1$s and %2$s. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_notify_one">We\'ll notify %1$s. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_notify_none">Nobody has booked a seat yet. This can\'t be undone.</string>
+    <string name="trip_cancel_dialog_back">Back</string>
+    <string name="error_trip_cancel_failed">Couldn\'t cancel the trip. Check your connection and try again.</string>
+    <string name="trip_tracking_locating_driver">Locating driver…</string>
+    <!-- Profile summaries, payment QR editor, pay driver, place map pick, rating -->
+    <plurals name="profile_vehicles_registered">
+        <item quantity="one">My vehicles · %1$d registered</item>
+        <item quantity="other">My vehicles · %1$d registered</item>
+    </plurals>
+    <string name="profile_vehicle_empty">Register a vehicle</string>
+    <string name="profile_vehicle_empty_body">You need one to publish trips</string>
+    <plurals name="profile_payment_methods_count">
+        <item quantity="one">%1$d payment method</item>
+        <item quantity="other">%1$d payment methods</item>
+    </plurals>
+    <string name="profile_payment_empty">Add how passengers pay you</string>
+    <string name="payment_kinds_join">%1$s and %2$s</string>
+    <string name="payment_qr_no_image">No image selected yet</string>
+    <string name="payment_qr_choose_gallery">Choose from gallery</string>
+    <string name="payment_qr_take_photo">Take photo</string>
+    <string name="pay_driver_done">Done</string>
+    <string name="place_selector_choose_on_map">Choose on map</string>
+    <string name="place_selector_choose_on_map_description">Use any point without saving it</string>
+    <string name="place_selector_map_point_name">Point on the map</string>
+    <string name="rating_scale_anchor">%1$d · %2$s</string>
+    <plurals name="notifications_unread_count">
+        <item quantity="one">%1$d unread notification</item>
+        <item quantity="other">%1$d unread notifications</item>
+    </plurals>
+    <string name="home_empty_title">No upcoming trips</string>
+    <string name="home_empty_body">Find a seat for your next trip, or offer the empty seats in your car.</string>
+    <string name="home_vehicle_required_title">First, register your car</string>
+    <string name="home_vehicle_required_body">To publish a trip you need a registered vehicle, so passengers know which car to look for. It only takes a minute.</string>
+    <string name="action_not_now">Not now</string>
+    <string name="cd_clear_time">Clear time</string>
+    <string name="confirm_request_driver_route">%1$s · %2$s</string>
+    <string name="confirm_request_add_message">Add a message for %1$s (optional)</string>
+    <string name="confirm_request_add_message_generic">Add a message for the driver (optional)</string>
+    <string name="chat_message_sending">Sending…</string>
+    <string name="chat_message_not_sent">Not sent · Tap to retry</string>
+    <string name="chat_closed_trip_ended">This chat closed because the trip ended</string>
 </resources>

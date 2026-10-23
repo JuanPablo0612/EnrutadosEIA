@@ -11,6 +11,7 @@ import com.juanpablo0612.carpool.domain.trip.repository.TripRepository
 import com.juanpablo0612.carpool.domain.trip.usecase.GenerateRecurringTripSlotsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.PublishRecurringTripsUseCase
 import com.juanpablo0612.carpool.domain.trip.usecase.WeekTripSettings
+import com.juanpablo0612.carpool.domain.trip.validation.TripDraft
 import com.juanpablo0612.carpool.domain.trip.validation.TripDraftValidator
 import com.juanpablo0612.carpool.domain.vehicle.model.Vehicle
 import com.juanpablo0612.carpool.domain.vehicle.repository.VehicleRepository
@@ -87,16 +88,20 @@ class PublishWeekViewModel(
             val firstLoad = s.isLoading
             // Defaults from the driver's latest trip on this route, as when publishing a single one.
             val latest = trips.filter { it.routeId == route.id }.maxByOrNull { it.departureTime }
-            val vehicle = vehicles.firstOrNull { it.id == s.selectedVehicleId }
+            val newlyRegistered = s.pendingVehicleId?.let { id -> vehicles.firstOrNull { it.id == id } }
+            val vehicle = newlyRegistered
+                ?: vehicles.firstOrNull { it.id == s.selectedVehicleId }
                 ?: latest?.vehicleId?.let { id -> vehicles.firstOrNull { it.id == id } }
                 ?: vehicles.firstOrNull { it.isPrimary }
                 ?: vehicles.firstOrNull()
             val seats = when {
                 vehicle == null -> s.seatCount
+                newlyRegistered != null -> vehicle.seatsAvailable
                 firstLoad -> (latest?.seatCount ?: vehicle.seatsAvailable).coerceIn(1, vehicle.seatsAvailable)
                 else -> s.seatCount.coerceIn(1, vehicle.seatsAvailable)
             }
             s.copy(
+                pendingVehicleId = if (newlyRegistered != null) null else s.pendingVehicleId,
                 isLoading = false,
                 slots = slots,
                 // Available days start ticked; conflicts have to be ticked on purpose.
@@ -130,8 +135,13 @@ class PublishWeekViewModel(
                 it.copy(message = action.text.take(TripDraftValidator.MAX_MESSAGE_LENGTH))
             }
             PublishWeekAction.OnRegisterVehicleClick -> emit(PublishWeekEvent.NavigateToRegisterVehicle)
+            is PublishWeekAction.OnVehicleRegistered -> selectRegisteredVehicle(action.vehicleId)
             PublishWeekAction.OnEditRouteClick -> emit(PublishWeekEvent.NavigateToRouteDetail(routeId))
-            PublishWeekAction.OnPublishClick -> publish()
+            PublishWeekAction.OnReviewClick -> review()
+            PublishWeekAction.OnConfirmPublish -> publish()
+            PublishWeekAction.OnDismissSummary -> _state.update {
+                if (it.isPublishing) it else it.copy(showSummary = false)
+            }
             PublishWeekAction.OnBackClick -> emit(PublishWeekEvent.NavigateBack)
             PublishWeekAction.OnRetry -> {
                 _state.update { it.copy(isLoading = true, error = null) }
@@ -140,17 +150,60 @@ class PublishWeekViewModel(
         }
     }
 
+    /**
+     * Selects a vehicle registered from this screen. The live vehicle list may not include it
+     * yet; then [applySnapshot] selects it when it arrives.
+     */
+    private fun selectRegisteredVehicle(vehicleId: String) {
+        _state.update { s ->
+            val vehicle = s.vehicles.firstOrNull { it.id == vehicleId }
+                ?: return@update s.copy(pendingVehicleId = vehicleId)
+            s.copy(selectedVehicleId = vehicle.id, seatCount = vehicle.seatsAvailable, pendingVehicleId = null, error = null)
+        }
+    }
+
+    /** Opens the review sheet once the selection could be published, otherwise says why not. */
+    private fun review() {
+        val error = validationError(_state.value)
+        _state.update { it.copy(error = error, showSummary = error == null) }
+    }
+
+    /**
+     * The first problem that would stop the week from publishing, checked per selected day with
+     * the same rules the use case applies.
+     */
+    private fun validationError(s: PublishWeekUiState): TripError? {
+        val route = s.route ?: return TripError.Unknown
+        if (s.selectedCount == 0) return TripError.NothingSelected
+        val vehicle = s.selectedVehicle ?: return TripError.NoVehicleSelected
+        val now = Clock.System.now()
+        return s.slots
+            .filter { it.date in s.selectedDates && it.status.isPublishable }
+            .firstNotNullOfOrNull { slot ->
+                val draft = TripDraft(
+                    origin = route.origin,
+                    destination = route.destination,
+                    waypoints = route.waypoints,
+                    departure = slot.departure,
+                    vehicleCapacity = vehicle.seatsAvailable,
+                    seatCount = s.seatCount,
+                    contributionPerPassenger = s.contributionPerPassenger,
+                    message = s.message,
+                )
+                TripDraftValidator.validate(draft, now).firstOrNull()?.toTripError()
+            }
+    }
+
     private fun publish() {
         val s = _state.value
         val route = s.route ?: return
-        if (s.selectedCount == 0) {
-            _state.update { it.copy(error = TripError.NothingSelected) }
+        if (s.isPublishing) return
+        validationError(s)?.let { error ->
+            _state.update { it.copy(showSummary = false, error = error) }
             return
         }
-        val vehicleId = s.selectedVehicleId ?: run {
-            _state.update { it.copy(error = TripError.NoVehicleSelected) }
-            return
-        }
+        val vehicleId = s.selectedVehicleId ?: return
+        // The sheet stays open with its button spinning, so the driver sees the outcome there.
         _state.update { it.copy(isPublishing = true, error = null) }
         viewModelScope.launch {
             publishRecurringTrips(
@@ -163,7 +216,7 @@ class PublishWeekViewModel(
                 _state.update { it.copy(isPublishing = false) }
                 _events.emit(PublishWeekEvent.TripsPublished)
             }.onFailure { e ->
-                _state.update { it.copy(isPublishing = false, error = e.toTripError()) }
+                _state.update { it.copy(isPublishing = false, showSummary = false, error = e.toTripError()) }
             }
         }
     }

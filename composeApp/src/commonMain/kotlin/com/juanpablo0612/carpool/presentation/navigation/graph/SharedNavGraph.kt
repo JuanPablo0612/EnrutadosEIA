@@ -48,7 +48,6 @@ fun NavGraphBuilder.sharedNavGraph(
     onLogout: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
     onNavigateToSavedPlaces: () -> Unit,
-    onNavigateToNotifications: () -> Unit,
     onNavigateToPaymentMethods: () -> Unit,
     onNavigateToPayDriver: (tripId: String) -> Unit,
     onDeleteAccountSuccess: () -> Unit,
@@ -113,7 +112,6 @@ fun NavGraphBuilder.sharedNavGraph(
             onNavigateToEditProfile = onNavigateToEditProfile,
             // The list, not the creation form — the row is labelled "saved places".
             onNavigateToSavedPlaces = onNavigateToSavedPlaces,
-            onNavigateToNotifications = onNavigateToNotifications,
             onNavigateToPaymentMethods = onNavigateToPaymentMethods,
             onDeleteAccountSuccess = onDeleteAccountSuccess,
         )
