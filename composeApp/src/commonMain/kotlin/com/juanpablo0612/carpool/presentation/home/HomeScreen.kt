@@ -70,6 +70,7 @@ fun HomeScreen(
     onRegisterVehicle: () -> Unit,
     onOpenRequests: () -> Unit,
     onOpenNotifications: () -> Unit,
+    unreadNotificationCount: Int,
     onOpenTripDetail: (String) -> Unit,
     onOpenPassengers: (String) -> Unit,
 ) {
@@ -87,7 +88,7 @@ fun HomeScreen(
         }
     }
 
-    HomeContent(state = state, onAction = viewModel::onAction)
+    HomeContent(state = state, onAction = viewModel::onAction, unreadNotificationCount = unreadNotificationCount)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,6 +96,7 @@ fun HomeScreen(
 internal fun HomeContent(
     state: HomeUiState,
     onAction: (HomeAction) -> Unit,
+    unreadNotificationCount: Int = 0,
     now: Long = rememberNowMs(),
 ) {
     // Measured rather than assumed: the extended FAB grows with the font scale, and the list's
@@ -138,6 +140,7 @@ internal fun HomeContent(
                 )
                 else -> HomeDashboard(
                     state = state,
+                    unreadNotificationCount = unreadNotificationCount,
                     now = now,
                     onAction = onAction,
                     // The FAB sits Spacing.lg above the bottom; Spacing.xl more keeps a gap.
@@ -149,7 +152,13 @@ internal fun HomeContent(
 }
 
 @Composable
-private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) -> Unit, bottomClearance: Dp) {
+private fun HomeDashboard(
+    state: HomeUiState,
+    unreadNotificationCount: Int,
+    now: Long,
+    onAction: (HomeAction) -> Unit,
+    bottomClearance: Dp,
+) {
     CenteredContent(ContentWidth.list, modifier = Modifier.fillMaxSize(), gutter = 0.dp) { margin ->
         // One lane on phones; two on wide windows, where the dashboard's cards sit side by side
         // instead of leaving a long single column. Staggered because the cards differ in height.
@@ -169,6 +178,7 @@ private fun HomeDashboard(state: HomeUiState, now: Long, onAction: (HomeAction) 
                 HomeHeader(
                     firstName = state.user?.firstName().orEmpty(),
                     now = now,
+                    unreadNotificationCount = unreadNotificationCount,
                     onOpenNotifications = { onAction(HomeAction.OpenNotifications) },
                 )
             }
@@ -306,6 +316,7 @@ private fun HomeContentPopulatedPreview() {
                 hasBookedBefore = true,
             ),
             onAction = {},
+            unreadNotificationCount = 3,
             now = previewNow,
         )
     }

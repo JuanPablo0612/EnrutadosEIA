@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.juanpablo0612.carpool.presentation.notification.UnreadBadgedBox
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -28,6 +29,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun NavigationRailBar(
     currentDestination: NavDestination?,
     items: List<BottomNavItem<out Any>>,
+    unreadNotificationCount: Int,
     onNavigate: (route: Any) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -43,7 +45,13 @@ fun NavigationRailBar(
                     icon = {
                         // The label below already names the item; describing the icon too would
                         // make TalkBack read it twice.
-                        Icon(imageVector = vectorResource(item.icon), contentDescription = null)
+                        val icon = @Composable { Icon(imageVector = vectorResource(item.icon), contentDescription = null) }
+                        if (item == BottomNavItem.Home) {
+                            // A dot rather than the count: Inicio's bell shows the number.
+                            UnreadBadgedBox(count = unreadNotificationCount, showCount = false, content = icon)
+                        } else {
+                            icon()
+                        }
                     },
                     label = {
                         Text(

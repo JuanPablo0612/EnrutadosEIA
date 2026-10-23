@@ -1000,4 +1000,8 @@
     <string name="error_payment_driver_load_failed">No pudimos cargar los métodos de pago del conductor.</string>
     <string name="error_payment_gallery_permission">Permite que la app guarde fotos para conservar el QR.</string>
     <string name="error_payment_qr_save_failed">No pudimos guardar el QR. Revisa tu conexión y que la app pueda guardar fotos.</string>
+    <plurals name="notifications_unread_count">
+        <item quantity="one">%1$d notificación sin leer</item>
+        <item quantity="other">%1$d notificaciones sin leer</item>
+    </plurals>
 </resources>

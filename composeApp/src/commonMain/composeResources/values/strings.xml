@@ -998,4 +998,8 @@
     <string name="error_payment_driver_load_failed">Couldn\'t load the driver\'s payment methods.</string>
     <string name="error_payment_gallery_permission">Allow the app to save photos to keep the QR.</string>
     <string name="error_payment_qr_save_failed">Couldn\'t save the QR. Check your connection and that the app may save photos.</string>
+    <plurals name="notifications_unread_count">
+        <item quantity="one">%1$d unread notification</item>
+        <item quantity="other">%1$d unread notifications</item>
+    </plurals>
 </resources>

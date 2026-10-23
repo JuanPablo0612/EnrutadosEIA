@@ -13,19 +13,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.juanpablo0612.carpool.presentation.notification.UnreadBadgedBox
 import com.juanpablo0612.carpool.presentation.ui.theme.Elevation
 import com.juanpablo0612.carpool.presentation.ui.util.BottomBarInsets
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 /**
- * The app's single bottom bar. It carries no badges: each would need a live Firestore listener
- * for the whole session, and the screens themselves surface what needs attention.
+ * The app's single bottom bar. Inicio carries a dot while notifications are unread, since the
+ * bell that opens them lives only in Inicio's header; the count comes from the one session-wide
+ * listener in [AppNavigation].
  */
 @Composable
 fun BottomNavigationBar(
     currentDestination: NavDestination?,
     items: List<BottomNavItem<out Any>>,
+    unreadNotificationCount: Int,
     onNavigate: (route: Any) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -44,7 +47,13 @@ fun BottomNavigationBar(
                     icon = {
                         // The label below already names the item; describing the icon too would
                         // make TalkBack read it twice.
-                        Icon(imageVector = vectorResource(item.icon), contentDescription = null)
+                        val icon = @Composable { Icon(imageVector = vectorResource(item.icon), contentDescription = null) }
+                        if (item == BottomNavItem.Home) {
+                            // A dot rather than the count: Inicio's bell shows the number.
+                            UnreadBadgedBox(count = unreadNotificationCount, showCount = false, content = icon)
+                        } else {
+                            icon()
+                        }
                     },
                     label = {
                         Text(
