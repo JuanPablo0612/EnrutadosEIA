@@ -523,14 +523,12 @@
     <string name="trip_detail_driver_says">%1$s says</string>
     <string name="trip_detail_load_failed">We couldn\'t load this trip. It may have been cancelled.</string>
     <string name="trip_detail_unavailable_title">This trip is no longer available</string>
-    <string name="confirm_row_driver">Driver</string>
     <string name="confirm_row_get_on">You get on at</string>
     <string name="confirm_row_get_off">You get off at</string>
-    <string name="confirm_row_route">Route</string>
     <string name="route_from_to">%1$s → %2$s</string>
     <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Contribution</string>
-    <string name="confirm_request_note">Your seat is held once the driver accepts. We\'ll let you know right away.</string>
+    <string name="confirm_request_note">Your seat is reserved once the driver accepts.</string>
     <string name="request_quick_luggage">I\'m bringing a bag</string>
     <string name="request_quick_on_time">I\'ll be there on time</string>
     <string name="send_request_button">Send request</string>
@@ -1008,4 +1006,7 @@
     <string name="home_vehicle_required_body">To publish a trip you need a registered vehicle, so passengers know which car to look for. It only takes a minute.</string>
     <string name="action_not_now">Not now</string>
     <string name="cd_clear_time">Clear time</string>
+    <string name="confirm_request_driver_route">%1$s · %2$s</string>
+    <string name="confirm_request_add_message">Add a message for %1$s (optional)</string>
+    <string name="confirm_request_add_message_generic">Add a message for the driver (optional)</string>
 </resources>

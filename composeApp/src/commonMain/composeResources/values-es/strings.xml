@@ -744,14 +744,12 @@
     <string name="trip_detail_driver_says">%1$s dice</string>
     <string name="trip_detail_load_failed">No pudimos cargar este viaje. Puede que lo hayan cancelado.</string>
     <string name="trip_detail_unavailable_title">Este viaje ya no está disponible</string>
-    <string name="confirm_row_driver">Conductor</string>
     <string name="confirm_row_get_on">Subes en</string>
     <string name="confirm_row_get_off">Te bajas en</string>
-    <string name="confirm_row_route">Recorrido</string>
     <string name="route_from_to">%1$s → %2$s</string>
     <string name="label_pair">%1$s · %2$s</string>
     <string name="confirm_row_contribution">Aporte</string>
-    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte. Te avisamos al instante.</string>
+    <string name="confirm_request_note">Tu cupo queda reservado cuando el conductor lo acepte.</string>
     <string name="request_quick_luggage">Llevo maleta</string>
     <string name="request_quick_on_time">Estaré a tiempo</string>
     <string name="send_request_button">Enviar solicitud</string>
@@ -1010,4 +1008,7 @@
     <string name="home_vehicle_required_body">Para publicar un viaje necesitas un vehículo registrado, así los pasajeros saben qué carro buscar. Solo toma un minuto.</string>
     <string name="action_not_now">Ahora no</string>
     <string name="cd_clear_time">Quitar la hora</string>
+    <string name="confirm_request_driver_route">%1$s · %2$s</string>
+    <string name="confirm_request_add_message">Agrega un mensaje para %1$s (opcional)</string>
+    <string name="confirm_request_add_message_generic">Agrega un mensaje para el conductor (opcional)</string>
 </resources>
