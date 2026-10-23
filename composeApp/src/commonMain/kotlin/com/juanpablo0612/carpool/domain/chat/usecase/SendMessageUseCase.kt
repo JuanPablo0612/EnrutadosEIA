@@ -2,22 +2,23 @@ package com.juanpablo0612.carpool.domain.chat.usecase
 
 import com.juanpablo0612.carpool.domain.chat.model.Message
 import com.juanpablo0612.carpool.domain.chat.repository.ChatRepository
-import kotlin.time.Clock
 
+/**
+ * Sending is split in two so a message keeps one identity from the moment it is typed: the
+ * caller builds it with [createMessage], can show it right away, and passes the same message to
+ * [invoke] for the first attempt and every retry. The repository writes it under its id, so a
+ * retry after an unclear failure can never duplicate it.
+ */
 class SendMessageUseCase(private val repository: ChatRepository) {
-    suspend operator fun invoke(
-        bookingId: String,
-        senderId: String,
-        text: String
-    ): Result<Unit> {
-        val message = Message(
-            id = "${Clock.System.now().toEpochMilliseconds()}_$senderId",
-            bookingId = bookingId,
-            senderId = senderId,
-            text = text.trim(),
-            timestamp = Clock.System.now().toEpochMilliseconds(),
-            isRead = false
-        )
-        return repository.sendMessage(message)
-    }
+
+    fun createMessage(bookingId: String, senderId: String, text: String, now: Long): Message = Message(
+        id = "${now}_$senderId",
+        bookingId = bookingId,
+        senderId = senderId,
+        text = text.trim(),
+        timestamp = now,
+        isRead = false,
+    )
+
+    suspend operator fun invoke(message: Message): Result<Unit> = repository.sendMessage(message)
 }

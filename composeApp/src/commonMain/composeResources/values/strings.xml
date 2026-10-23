@@ -745,11 +745,9 @@
     <string name="chat_date_today">Today</string>
     <string name="chat_date_yesterday">Yesterday</string>
     <string name="chat_input_hint">Type a message…</string>
-    <string name="chat_read_only_banner">This trip has ended. The conversation is read-only.</string>
     <string name="chat_quick_reply_en_camino">Voy en camino</string>
     <string name="chat_quick_reply_llegue">Llegué</string>
     <string name="chat_quick_reply_esperando">Estoy esperando</string>
-    <string name="chat_send_failed">Message couldn\'t be sent. Try again.</string>
     <string name="chat_empty_title">No messages yet</string>
     <string name="chat_empty_description">Say hi to get the conversation started.</string>
 
@@ -1009,4 +1007,7 @@
     <string name="confirm_request_driver_route">%1$s · %2$s</string>
     <string name="confirm_request_add_message">Add a message for %1$s (optional)</string>
     <string name="confirm_request_add_message_generic">Add a message for the driver (optional)</string>
+    <string name="chat_message_sending">Sending…</string>
+    <string name="chat_message_not_sent">Not sent · Tap to retry</string>
+    <string name="chat_closed_trip_ended">This chat closed because the trip ended</string>
 </resources>

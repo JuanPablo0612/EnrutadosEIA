@@ -3,9 +3,7 @@ package com.juanpablo0612.carpool.presentation.chat.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +26,6 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 internal fun ChatInputRow(
     text: String,
-    isSending: Boolean,
     onTextChange: (String) -> Unit,
     onSendClick: () -> Unit
 ) {
@@ -47,23 +44,17 @@ internal fun ChatInputRow(
             maxLines = 4,
             shape = RoundedCornerShape(24.dp)
         )
-        // Always the same IconButton (48dp touch target) — overlay the spinner while sending
-        // instead of swapping it out for a bare CircularProgressIndicator, which would shrink
-        // the tappable area to 24dp and shift layout as the button disappeared.
+        // Never blocked on a send in flight: each message shows its own status in the list.
         IconButton(
             onClick = onSendClick,
-            enabled = text.isNotBlank() && !isSending
+            enabled = text.isNotBlank()
         ) {
-            if (isSending) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            } else {
-                Icon(
-                    imageVector = vectorResource(Res.drawable.arrow_forward_24px),
-                    contentDescription = stringResource(Res.string.cd_send_message),
-                    tint = if (text.isNotBlank()) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.outlineVariant
-                )
-            }
+            Icon(
+                imageVector = vectorResource(Res.drawable.arrow_forward_24px),
+                contentDescription = stringResource(Res.string.cd_send_message),
+                tint = if (text.isNotBlank()) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outlineVariant
+            )
         }
     }
 }
