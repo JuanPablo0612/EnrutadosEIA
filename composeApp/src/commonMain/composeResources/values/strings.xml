@@ -1014,4 +1014,5 @@
     <string name="place_selector_choose_on_map">Choose on map</string>
     <string name="place_selector_choose_on_map_description">Use any point without saving it</string>
     <string name="place_selector_map_point_name">Point on the map</string>
+    <string name="rating_scale_anchor">%1$d · %2$s</string>
 </resources>
