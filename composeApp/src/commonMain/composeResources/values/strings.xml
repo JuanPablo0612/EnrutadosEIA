@@ -964,7 +964,6 @@
     <string name="payment_type_qr_code_description">A screenshot of the QR your bank app generates to receive money.</string>
     <string name="payment_bre_b_key_label">Bre-B key</string>
     <string name="payment_bre_b_key_placeholder">e.g. 3001234567 or @youralias</string>
-    <string name="payment_qr_change_image">Choose another image</string>
     <string name="payment_qr_image_cd">QR code to pay the driver</string>
     <string name="payment_save">Save</string>
     <string name="payment_delete_cd">Delete %1$s</string>
@@ -1008,4 +1007,7 @@
     </plurals>
     <string name="profile_payment_empty">Add how passengers pay you</string>
     <string name="payment_kinds_join">%1$s and %2$s</string>
+    <string name="payment_qr_no_image">No image selected yet</string>
+    <string name="payment_qr_choose_gallery">Choose from gallery</string>
+    <string name="payment_qr_take_photo">Take photo</string>
 </resources>

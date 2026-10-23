@@ -1,6 +1,11 @@
 package com.juanpablo0612.carpool.presentation.payment.manage.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -10,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -17,11 +23,14 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.payment.validation.PaymentMethodValidator
 import com.juanpablo0612.carpool.presentation.payment.asStringResource
 import com.juanpablo0612.carpool.presentation.payment.components.QrImage
@@ -38,10 +47,15 @@ import com.juanpablo0612.carpool.presentation.ui.theme.Spacing
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.payment_bre_b_key_label
 import enrutadoseia.composeapp.generated.resources.payment_bre_b_key_placeholder
-import enrutadoseia.composeapp.generated.resources.payment_qr_change_image
+import enrutadoseia.composeapp.generated.resources.payment_qr_choose_gallery
+import enrutadoseia.composeapp.generated.resources.payment_qr_no_image
+import enrutadoseia.composeapp.generated.resources.payment_qr_take_photo
+import enrutadoseia.composeapp.generated.resources.photo_camera_24px
+import enrutadoseia.composeapp.generated.resources.qr_code_2_24px
 import enrutadoseia.composeapp.generated.resources.payment_qr_image_cd
 import enrutadoseia.composeapp.generated.resources.payment_save
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 /**
  * The form for the method being added. Each [PaymentMethodEditor] kind brings its own fields;
@@ -54,7 +68,9 @@ internal fun PaymentMethodEditorSheet(
     isSaving: Boolean,
     errorMessage: String?,
     onAction: (PaymentMethodsAction) -> Unit,
-    onPickQrImage: () -> Unit,
+    onPickFromGallery: () -> Unit,
+    /** Null where there is no usable camera, which hides the option. */
+    onTakePhoto: (() -> Unit)?,
 ) {
     val type = when (editor) {
         is PaymentMethodEditor.BreBKey -> PaymentMethodType.BreBKey
@@ -111,16 +127,28 @@ internal fun PaymentMethodEditorSheet(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Spacing.sm),
                 ) {
-                    editor.imageFile?.let {
-                        QrImage(model = it, contentDescription = stringResource(Res.string.payment_qr_image_cd))
+                    val imageFile = editor.imageFile
+                    if (imageFile != null) {
+                        QrImage(model = imageFile, contentDescription = stringResource(Res.string.payment_qr_image_cd))
+                    } else {
+                        QrImagePlaceholder(isError = fieldError != null)
                     }
+                    fieldError?.let { ErrorMessage(message = it, modifier = Modifier.fillMaxWidth()) }
                     SecondaryButton(
-                        text = stringResource(Res.string.payment_qr_change_image),
-                        onClick = onPickQrImage,
+                        text = stringResource(Res.string.payment_qr_choose_gallery),
+                        onClick = onPickFromGallery,
                         enabled = !isSaving,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    fieldError?.let { ErrorMessage(message = it, modifier = Modifier.fillMaxWidth()) }
+                    onTakePhoto?.let { takePhoto ->
+                        SecondaryButton(
+                            text = stringResource(Res.string.payment_qr_take_photo),
+                            onClick = takePhoto,
+                            enabled = !isSaving,
+                            leadingIcon = vectorResource(Res.drawable.photo_camera_24px),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                 }
             }
 
@@ -133,5 +161,36 @@ internal fun PaymentMethodEditorSheet(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+    }
+}
+
+/** Where the QR preview goes until an image is chosen; the same square as [QrImage]. */
+@Composable
+private fun QrImagePlaceholder(isError: Boolean) {
+    val borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outlineVariant
+    Column(
+        modifier = Modifier
+            .widthIn(max = 320.dp)
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, borderColor, MaterialTheme.shapes.medium)
+            .padding(Spacing.lg),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm, Alignment.CenterVertically),
+    ) {
+        Icon(
+            imageVector = vectorResource(Res.drawable.qr_code_2_24px),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(48.dp),
+        )
+        Text(
+            text = stringResource(Res.string.payment_qr_no_image),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
     }
 }

@@ -966,7 +966,6 @@
     <string name="payment_type_qr_code_description">Una captura del QR que genera tu app bancaria para recibir dinero.</string>
     <string name="payment_bre_b_key_label">Llave Bre-B</string>
     <string name="payment_bre_b_key_placeholder">Ej. 3001234567 o @tualias</string>
-    <string name="payment_qr_change_image">Elegir otra imagen</string>
     <string name="payment_qr_image_cd">Código QR para pagarle al conductor</string>
     <string name="payment_save">Guardar</string>
     <string name="payment_delete_cd">Eliminar %1$s</string>
@@ -1010,4 +1009,7 @@
     </plurals>
     <string name="profile_payment_empty">Agrega cómo te pagan tus pasajeros</string>
     <string name="payment_kinds_join">%1$s y %2$s</string>
+    <string name="payment_qr_no_image">Aún no has elegido una imagen</string>
+    <string name="payment_qr_choose_gallery">Elegir de la galería</string>
+    <string name="payment_qr_take_photo">Tomar foto</string>
 </resources>

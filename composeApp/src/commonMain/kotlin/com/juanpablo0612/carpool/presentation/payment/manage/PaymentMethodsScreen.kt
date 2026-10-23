@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.juanpablo0612.carpool.domain.payment.model.PaymentMethod
-import com.juanpablo0612.carpool.domain.payment.model.PaymentMethodType
 import com.juanpablo0612.carpool.presentation.payment.manage.components.PaymentMethodCard
 import com.juanpablo0612.carpool.presentation.payment.manage.components.PaymentMethodEditorSheet
 import com.juanpablo0612.carpool.presentation.payment.manage.components.PaymentTypePickerSheet
@@ -39,6 +38,7 @@ import com.juanpablo0612.carpool.presentation.ui.util.ObserveAsEvents
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenInsets
 import com.juanpablo0612.carpool.presentation.ui.util.ScreenPreviews
 import com.juanpablo0612.carpool.presentation.ui.util.plusHorizontal
+import com.juanpablo0612.carpool.presentation.ui.util.rememberIsCameraAvailable
 import enrutadoseia.composeapp.generated.resources.Res
 import enrutadoseia.composeapp.generated.resources.add_24px
 import enrutadoseia.composeapp.generated.resources.error_payment_load_failed
@@ -52,6 +52,7 @@ import enrutadoseia.composeapp.generated.resources.payment_methods_subtitle
 import enrutadoseia.composeapp.generated.resources.payment_methods_title
 import enrutadoseia.composeapp.generated.resources.payments_24px
 import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -77,33 +78,30 @@ fun PaymentMethodsContent(
     state: PaymentMethodsUiState,
     onAction: (PaymentMethodsAction) -> Unit,
 ) {
-    // QR codes are screenshots from the bank app, so the gallery is the only source offered.
     val qrPicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        onAction(PaymentMethodsAction.OnQrImagePicked(file))
+    }
+    val qrCamera = rememberCameraPickerLauncher { file ->
         onAction(PaymentMethodsAction.OnQrImagePicked(file))
     }
 
     if (state.showTypePicker) {
         PaymentTypePickerSheet(
-            onTypeSelected = { type ->
-                onAction(PaymentMethodsAction.OnTypeSelected(type))
-                if (type == PaymentMethodType.QrCode) qrPicker.launch()
-            },
+            onTypeSelected = { type -> onAction(PaymentMethodsAction.OnTypeSelected(type)) },
             onDismiss = { onAction(PaymentMethodsAction.OnDismissTypePicker) },
         )
     }
 
     state.editor?.let { editor ->
-        // A QR editor opens behind the image picker and only shows once an image is chosen.
-        val waitingForImage = editor is PaymentMethodEditor.QrCode && editor.imageFile == null
-        if (!waitingForImage) {
-            PaymentMethodEditorSheet(
-                editor = editor,
-                isSaving = state.isSaving,
-                errorMessage = state.error?.let { stringResource(it.asStringResource()) },
-                onAction = onAction,
-                onPickQrImage = { qrPicker.launch() },
-            )
-        }
+        val isCameraAvailable = rememberIsCameraAvailable()
+        PaymentMethodEditorSheet(
+            editor = editor,
+            isSaving = state.isSaving,
+            errorMessage = state.error?.let { stringResource(it.asStringResource()) },
+            onAction = onAction,
+            onPickFromGallery = { qrPicker.launch() },
+            onTakePhoto = if (isCameraAvailable) ({ qrCamera.launch() }) else null,
+        )
     }
 
     if (state.methodToDelete != null) {
@@ -203,6 +201,17 @@ private fun PaymentMethodsContentPreview() {
                     PaymentMethod.QrCode(id = "2", imageUrl = ""),
                 ),
             ),
+            onAction = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PaymentMethodsQrEditorPreview() {
+    CarpoolTheme {
+        PaymentMethodsContent(
+            state = PaymentMethodsUiState(isLoading = false, editor = PaymentMethodEditor.QrCode()),
             onAction = {},
         )
     }
